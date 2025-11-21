@@ -48,6 +48,35 @@ This directory contains all files, guides, and scripts needed for environment mi
   - Environments ექსპორტი
   - ლოკალურად შენახვა
 
+### 🔵 GitHub ინტეგრაცია / GitHub Integration
+
+- **GITHUB_SETUP_GUIDE.md** - GitHub-ის setup გზამკვლევი
+  - Repository შექმნა
+  - პროექტის ატვირთვა
+  - Authentication setup
+  - სხვა კომპიუტერზე გადმოწერა
+
+- **CURSOR_GITHUB_INTEGRATION.md** - Cursor-ში GitHub ინტეგრაცია
+  - Cursor-ის ჩაშენებული Git
+  - Source Control Panel
+  - GitHub Authentication
+  - Git commands
+
+- **setup_github.ps1** - GitHub repository setup script
+  - Repository initialization
+  - Remote configuration
+  - Initial commit
+
+- **setup_cursor_github.ps1** - Cursor GitHub integration setup
+  - Git installation check
+  - Git configuration
+  - Cursor integration
+
+- **clone_and_setup.ps1** - Repository clone და setup
+  - GitHub-დან clone
+  - პროექტის setup
+  - Dependencies installation
+
 ## 🚀 სწრაფი დაწყება / Quick Start
 
 ### მიმდინარე კომპიუტერზე / Current Computer:
@@ -81,6 +110,7 @@ This directory contains all files, guides, and scripts needed for environment mi
 ## 📋 რა იქნება გადატანილი / What Gets Migrated
 
 - ✅ Git/GitHub/GitLab - credentials, tokens, project IDs
+- ✅ GitHub Integration - setup guides, scripts, Cursor integration
 - ✅ Postman - API key, workspace ID, 29 collections, 5 environments
 - ✅ Database - connection strings, credentials
 - ✅ Confluence - read-only access configuration

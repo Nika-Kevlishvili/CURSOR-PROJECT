@@ -1,5 +1,90 @@
 # Autonomous Rules
 
+## GLOBAL RULES - ALL AGENTS MUST FOLLOW
+
+### Rule 1: GitHub Operations Require Explicit Permission
+
+**ABSOLUTE REQUIREMENT**: NO agent can make ANY changes to GitHub (push, commit, merge, create branch, etc.) until explicit permission is granted by the user.
+
+#### What Requires Permission:
+- Git push operations
+- Git commit operations
+- Git merge operations
+- Creating/deleting branches
+- Creating pull requests
+- Any GitHub repository modifications
+- Git remote operations that modify GitHub
+
+#### How Permission Works:
+1. **Automatic Detection**: The system automatically detects GitHub-related operations in queries
+2. **Permission Check**: Before any GitHub operation, agents MUST check with `GlobalRules.check_github_permission()`
+3. **Blocking**: If permission is not granted, the operation is BLOCKED and the user is notified
+4. **Permission Grant**: User must explicitly grant permission using `GlobalRules.grant_github_permission()`
+
+#### Implementation:
+```python
+from agents.global_rules import get_global_rules
+
+global_rules = get_global_rules()
+permission = global_rules.check_github_permission(operation="push to GitHub")
+if not permission['permitted']:
+    # BLOCK operation and notify user
+    return {'error': permission['message']}
+```
+
+#### User Commands:
+- To grant permission: "Grant GitHub permission" or "Allow GitHub operations"
+- To revoke permission: "Revoke GitHub permission" or "Block GitHub operations"
+
+### Rule 2: Automatic Agent Routing
+
+**ABSOLUTE REQUIREMENT**: When a user makes any request or question, Cursor MUST automatically:
+1. Analyze the query to determine intent
+2. Identify which agent(s) are most competent for the task
+3. Route the query to the appropriate agent(s)
+4. Combine responses from multiple agents when needed
+
+#### How Automatic Routing Works:
+
+1. **Query Analysis**: 
+   - AgentRouter analyzes the user's query
+   - Determines primary intent (test, question, documentation, etc.)
+   - Calculates confidence scores
+
+2. **Agent Selection**:
+   - Evaluates all registered agents
+   - Calculates competence scores for each agent
+   - Selects the most competent agent(s)
+
+3. **Routing**:
+   - Single agent: Routes directly to the best agent
+   - Multiple agents: Orchestrates multiple agents and combines their responses
+
+4. **Response Combination**:
+   - When multiple agents are used, intelligently combines their responses
+   - Prioritizes responses by agent competence scores
+   - Provides unified result
+
+#### Implementation:
+```python
+from agents.agent_router import get_agent_router
+
+router = get_agent_router()
+result = router.route_query(user_query, context)
+# Automatically routes to best agent(s) and returns combined result
+```
+
+#### Agent Competence Evaluation:
+- Agent capabilities matching query keywords
+- Agent name matching detected intent
+- Agent's `can_help_with()` method result
+- Historical performance (if available)
+
+#### Multi-Agent Orchestration:
+- When a query requires multiple agents, they are consulted in parallel
+- Responses are combined with the highest-scoring agent as primary
+- Supplementary responses from other agents are included
+
 ## Global Behavior
 
 - Code is authoritative, Confluence is read-only.
