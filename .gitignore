@@ -52,3 +52,9 @@ migration/MIGRATION_CHECKLIST.md
 confluence_cache/
 .cache/
 
+# MCP configuration with sensitive data
+config/mcp/mcp_servers.json
+config/mcp/*_secrets.json
+mcp_config_backup.json
+mcp_config_*.json
+

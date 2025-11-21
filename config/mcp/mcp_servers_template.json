@@ -1,0 +1,81 @@
+{
+  "mcpServers": {
+    "Jira": {
+      "url": "https://mcp.atlassian.com/v1/sse",
+      "description": "Jira MCP server for issue tracking and project management"
+    },
+    "Confluence": {
+      "url": "https://mcp.atlassian.com/v1/sse",
+      "description": "Confluence MCP server for documentation access"
+    },
+    "PostgreSQLDev": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-postgres-server"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://postgres:YOUR_PASSWORD@10.236.20.21:5432/phoenix",
+        "MCP_SERVER_NAME": "PostgreSQLDev",
+        "POSTGRES_HOST": "10.236.20.21",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "YOUR_PASSWORD"
+      },
+      "description": "PostgreSQL database connection for DEV environment"
+    },
+    "PostgreSQLDev2": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-postgres-server"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://postgres:YOUR_PASSWORD@10.236.20.22:5432/phoenix",
+        "MCP_SERVER_NAME": "PostgreSQLDev2",
+        "POSTGRES_HOST": "10.236.20.22",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "YOUR_PASSWORD"
+      },
+      "description": "PostgreSQL database connection for DEV2 environment"
+    },
+    "PostgreSQLTest": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-postgres-server"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://postgres:YOUR_PASSWORD@10.236.20.24:5432/phoenix",
+        "MCP_SERVER_NAME": "PostgreSQLTest",
+        "POSTGRES_HOST": "10.236.20.24",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "YOUR_PASSWORD"
+      },
+      "description": "PostgreSQL database connection for TEST environment"
+    },
+    "PostgreSQLPreProd": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-postgres-server"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://postgres:YOUR_PASSWORD@10.236.20.76:5432/phoenix",
+        "MCP_SERVER_NAME": "PostgreSQLPreProd",
+        "POSTGRES_HOST": "10.236.20.76",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "YOUR_PASSWORD"
+      },
+      "description": "PostgreSQL database connection for PRE-PROD environment"
+    }
+  }
+}
+
