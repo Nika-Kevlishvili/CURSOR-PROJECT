@@ -1,0 +1,54 @@
+# Environment Variables and Secrets
+environment_variables_export.ps1
+migration/environment_variables_export.ps1
+.env
+.env.local
+*.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Backup files
+*.bak
+*.backup
+*_backup/
+
+# Postman exports (may contain sensitive data)
+postman_export/
+postman_export_*/
+migration/postman_export/
+migration/postman_export_*/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Migration checklists (may contain sensitive info)
+MIGRATION_CHECKLIST.md
+migration/MIGRATION_CHECKLIST.md
+
+# Cache
+confluence_cache/
+.cache/
+

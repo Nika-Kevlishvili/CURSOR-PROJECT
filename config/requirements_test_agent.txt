@@ -1,0 +1,16 @@
+# TestAgent Dependencies
+
+# Core dependencies
+requests>=2.31.0
+
+# Optional dependencies for specific test types
+# Install these as needed:
+
+# For Postman collection execution:
+# npm install -g newman
+
+# For Playwright UI tests:
+# npm install -g @playwright/test
+# or
+# npm install --save-dev @playwright/test
+
