@@ -29,6 +29,11 @@ Get-Content $envFile | ForEach-Object {
         $key = $matches[1].Trim()
         $value = $matches[2].Trim()
         
+        # Skip empty values
+        if ([string]::IsNullOrWhiteSpace($value)) {
+            return
+        }
+        
         # Remove quotes if present
         if ($value -match '^"(.*)"$' -or $value -match "^'(.*)'$") {
             $value = $matches[1]
@@ -37,7 +42,17 @@ Get-Content $envFile | ForEach-Object {
         # Set environment variable for current session
         [Environment]::SetEnvironmentVariable($key, $value, 'Process')
         
-        Write-Host "  ✓ $key" -ForegroundColor Green
+        # Mask sensitive values in output
+        if ($key -match 'PASSWORD|TOKEN|KEY|SECRET|CREDENTIAL') {
+            $maskedValue = if ($value.Length -gt 4) { 
+                $value.Substring(0, 2) + "***" + $value.Substring($value.Length - 2)
+            } else { 
+                "***" 
+            }
+            Write-Host "  ✓ $key = $maskedValue" -ForegroundColor Green
+        } else {
+            Write-Host "  ✓ $key" -ForegroundColor Green
+        }
     }
 }
 

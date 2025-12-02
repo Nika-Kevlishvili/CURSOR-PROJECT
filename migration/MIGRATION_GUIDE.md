@@ -30,10 +30,10 @@ This guide will help you migrate your entire environment to another computer wit
 # Copy entire workspace
 
 # Windows-ზე:
-xcopy /E /I /H "C:\Users\N.kevlishvili\Cursor" "D:\Backup\Cursor"
+xcopy /E /I /H "%USERPROFILE%\Cursor" "D:\Backup\Cursor"
 
 # ან PowerShell-ში:
-Copy-Item -Path "C:\Users\N.kevlishvili\Cursor" -Destination "D:\Backup\Cursor" -Recurse -Force
+Copy-Item -Path "$env:USERPROFILE\Cursor" -Destination "D:\Backup\Cursor" -Recurse -Force
 ```
 
 ### 1.2 სტრუქტურა
@@ -614,7 +614,7 @@ curl -X GET "https://gitlab.com/api/v4/projects/$env:GITLAB_PROJECT_ID" \
 # backup.ps1
 
 $backupPath = "D:\Backups\Cursor\$(Get-Date -Format 'yyyy-MM-dd')"
-Copy-Item -Path "C:\Users\N.kevlishvili\Cursor" -Destination $backupPath -Recurse -Force
+Copy-Item -Path "$env:USERPROFILE\Cursor" -Destination $backupPath -Recurse -Force
 ```
 
 ### 13.2 Critical Files Backup

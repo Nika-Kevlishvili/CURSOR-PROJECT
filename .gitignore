@@ -60,3 +60,11 @@ config/mcp/*_secrets.json
 mcp_config_backup.json
 mcp_config_*.json
 
+# Test results (may contain sensitive data)
+test_results/
+test_cases/
+
+# Credentials backup files
+credentials_backup_*.txt
+*_credentials_backup.*
+

@@ -18,6 +18,10 @@ Multi-functional project with Python agents, Java/Gradle libraries, Postman inte
 
 ## 🚀 სწრაფი დაწყება / Quick Start
 
+**სწრაფი გზა (5 წუთი):** იხილეთ [QUICK_START.md](QUICK_START.md)
+
+**Quick way (5 minutes):** See [QUICK_START.md](QUICK_START.md)
+
 ### ⚙️ Environment Variables Setup (მნიშვნელოვანი!)
 
 **ახალ კომპიუტერზე ან GitHub-დან clone-ის შემდეგ:**
@@ -42,6 +46,9 @@ For detailed information see [migration/README.md](migration/README.md)
 
 ### Python Agents
 
+**Requirements:**
+- Python 3.8+
+
 ```bash
 # Setup virtual environment
 python -m venv venv
@@ -49,10 +56,16 @@ venv\Scripts\activate  # Windows
 source venv/bin/activate  # Linux/Mac
 
 # Install dependencies
+pip install -r requirements.txt
+# ან (თუ requirements.txt არ არსებობს)
 pip install -r config/requirements_test_agent.txt
 ```
 
 ### Java/Gradle Project
+
+**Requirements:**
+- Java 17+ (required - see `phoenix-core-lib/build.gradle`)
+- Gradle wrapper included (no installation needed)
 
 ```bash
 cd phoenix-core-lib
@@ -61,7 +74,10 @@ cd phoenix-core-lib
 
 ## 📚 დოკუმენტაცია / Documentation
 
+- [Quick Start Guide](QUICK_START.md) - ⚡ სწრაფი დაწყება (5 წუთი)
+- [Portability Assessment](PORTABILITY_ASSESSMENT.md) - პორტატულობის შეფასება
 - [Migration Guide](migration/MIGRATION_GUIDE.md) - სრული მიგრაციის გზამკვლევი
+- [Environment Setup](ENVIRONMENT_SETUP.md) - Environment variables დეტალები
 - [Architecture Knowledge Base](docs/ARCHITECTURE_KNOWLEDGE_BASE.md)
 - [Postman Collection Generator](docs/POSTMAN_COLLECTION_GENERATOR.md)
 - [Test Agent Documentation](docs/README_TEST_AGENT.md)

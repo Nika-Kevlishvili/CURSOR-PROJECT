@@ -46,20 +46,20 @@ function Setup-PythonEnvironment {
     
     # Install dependencies
     if (Test-Path "requirements.txt") {
-        Write-Host "Installing Python dependencies..." -ForegroundColor Cyan
+        Write-Host "Installing Python dependencies from requirements.txt..." -ForegroundColor Cyan
         pip install --upgrade pip
         pip install -r requirements.txt
+        Write-Host "✓ Dependencies installed from requirements.txt" -ForegroundColor Green
+    } elseif (Test-Path "config\requirements_test_agent.txt") {
+        Write-Host "Installing Python dependencies from config/requirements_test_agent.txt..." -ForegroundColor Cyan
+        pip install --upgrade pip
+        pip install -r config\requirements_test_agent.txt
         Write-Host "✓ Dependencies installed" -ForegroundColor Green
     } else {
-        Write-Host "⚠ requirements.txt not found. Installing basic dependencies..." -ForegroundColor Yellow
+        Write-Host "⚠ No requirements file found. Installing basic dependencies..." -ForegroundColor Yellow
+        pip install --upgrade pip
         pip install requests>=2.31.0
-    }
-    
-    # Install test agent dependencies
-    if (Test-Path "config\requirements_test_agent.txt") {
-        Write-Host "Installing test agent dependencies..." -ForegroundColor Cyan
-        pip install -r config\requirements_test_agent.txt
-        Write-Host "✓ Test agent dependencies installed" -ForegroundColor Green
+        Write-Host "✓ Basic dependencies installed" -ForegroundColor Green
     }
     
     return $true

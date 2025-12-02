@@ -1,0 +1,12 @@
+# Python Dependencies for Cursor Project
+# Install with: pip install -r requirements.txt
+
+# Core HTTP library (used by IntegrationService, PostmanCollectionGenerator, TestAgent)
+requests>=2.31.0
+
+# Optional: For loading .env files (if using python-dotenv)
+# python-dotenv>=1.0.0
+
+# Note: All other imports (json, os, pathlib, typing, enum, datetime, subprocess, sys, abc, re)
+# are part of Python standard library and don't need to be installed
+
