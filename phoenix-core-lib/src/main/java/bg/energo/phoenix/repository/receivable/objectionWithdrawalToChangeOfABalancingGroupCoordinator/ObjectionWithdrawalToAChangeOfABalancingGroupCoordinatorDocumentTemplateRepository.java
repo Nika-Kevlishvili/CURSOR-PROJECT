@@ -1,0 +1,14 @@
+package bg.energo.phoenix.repository.receivable.objectionWithdrawalToChangeOfABalancingGroupCoordinator;
+
+import bg.energo.phoenix.model.entity.receivable.objectionWithdrawalToChangeOfABalancingGroupCoordinator.ObjectionWithdrawalToAChangeOfABalancingGroupCoordinatorDocumentTemplate;
+import bg.energo.phoenix.model.enums.receivable.massOperationForBlocking.ReceivableSubObjectStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface ObjectionWithdrawalToAChangeOfABalancingGroupCoordinatorDocumentTemplateRepository extends JpaRepository<ObjectionWithdrawalToAChangeOfABalancingGroupCoordinatorDocumentTemplate, Long> {
+
+    Optional<List<ObjectionWithdrawalToAChangeOfABalancingGroupCoordinatorDocumentTemplate>> findAllByWithdrawalChangeOfCbgIdAndStatusIn(Long withdrawalId, List<ReceivableSubObjectStatus> receivableSubObjectStatuses);
+    Optional<ObjectionWithdrawalToAChangeOfABalancingGroupCoordinatorDocumentTemplate> findByIdAndWithdrawalChangeOfCbgId(Long id, Long withdrawalId);
+}

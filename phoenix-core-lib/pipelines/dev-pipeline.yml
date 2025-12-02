@@ -1,0 +1,41 @@
+stages:
+  - dependencies
+  - build
+  - deploy
+
+build:
+  stage: build
+  script:
+    - echo "Clean the code..."
+    - sudo sh $CI_PROJECT_DIR/gradlew clean --no-daemon
+    - echo "Compiling the code..."
+    - sudo sh $CI_PROJECT_DIR/gradlew jar --no-daemon
+    - sudo sh $CI_PROJECT_DIR/gradlew publish -Pnexus_pass=$NEXSUS_PASS -Pnexus_user=$NEXSUS_USER --no-daemon
+    - VERSION=$(grep "version = " build.gradle | sed -E "s/version = ['\"](.*)['\"]/\1/")
+    - echo "VERSION=$VERSION" > version.env
+
+  after_script:
+    - sudo chown gitlab-runner:gitlab-runner /home/gitlab-runner/builds -R
+
+  artifacts:
+    paths:
+      - build/libs/*.jar
+      - version.env
+    expire_in: 1 week
+
+  tags:
+    - dev-runner-shell
+  needs: [ "choose_env" ]
+
+deploy:
+  stage: deploy
+
+  tags:
+    - dev-runner-shell
+
+  script:
+    - source version.env
+    - echo $VERSION
+
+  dependencies:
+    - build

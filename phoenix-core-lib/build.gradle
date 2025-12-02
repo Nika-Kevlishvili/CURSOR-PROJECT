@@ -1,0 +1,199 @@
+plugins {
+    id 'java'
+    id 'io.spring.dependency-management' version '1.1.5'
+    id 'org.springframework.boot' version '3.3.2'
+    id 'java-library'
+    id 'maven-publish'
+}
+
+group = 'bg.energo'
+version = '1.18.7-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+java {
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = "nexus-repo"  // You can give your repository any name
+            url = uri("http://nexus.domain.internal:8081/repository/epro-maven-snapshots/")
+            allowInsecureProtocol = true
+            // Provide credentials for authentication
+            credentials {
+                username = project.hasProperty('nexus_user') ? project.getProperty('nexus_user') : 'defaultValue'
+                password = project.hasProperty('nexus_pass') ? project.getProperty('nexus_pass') : 'defaultValue'
+            }
+        }// Publishes to ~/.m2/repository
+    }
+}
+ext {
+    liquibaseGradlePluginVersion = '2.1.1'
+    postgresqlVersion = '42.5.1'
+    liquibaseCore = '4.16.1'
+    lombokVersion = '1.18.24'
+    openApiVersion = '2.5.0'
+    openhtmlVersion = '1.0.5'
+    iban4jVersion = '3.2.3-RELEASE'
+    springCloudVersion = '2023.0.2'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "http://nexus.domain.internal:8081/repository/epro-maven-snapshots/"
+        allowInsecureProtocol = true
+    }
+    maven {
+        url "http://nexus.domain.internal:8081/repository/epro-maven-releases/"
+        allowInsecureProtocol = true
+    }
+    maven {
+        url "https://releases.aspose.com/java/repo/"
+        allowInsecureProtocol = true
+    }
+
+}
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        mavenBom "org.springframework.boot:spring-boot-dependencies:3.3.2"
+    }
+}
+
+dependencies {
+    //LIBS FORCED BY bg.energo.common libraries
+    api 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
+    api 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+
+    api('com.sun.xml.bind:jaxb-impl:4.0.1') {
+        exclude group: 'com.sun.xml.bind', module: 'jaxb-core'
+    }
+    api group: "com.fasterxml.jackson.core", name: "jackson-core"
+    api group: "com.fasterxml.jackson.core", name: "jackson-annotations"
+    api group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-joda"
+    api group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310'
+    api group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml'
+    api group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.3'
+    api 'org.springframework.boot:spring-boot-starter-websocket'
+    api 'org.springframework.boot:spring-boot-starter-amqp'
+    //EPB lib
+    api group: 'bg.energo.common.portal.api', name: 'portal-api', version: '1.2.0-SNAPSHOT'
+    api group: 'bg.energo.common', name: 'energo-common-acl', version: '2.2.0-SNAPSHOT'
+    api group: "bg.energo.common", name: "energo-common-common-utils", version: '4.0.0-SNAPSHOT'
+    api('bg.energo.common:energo-common-shared:6.6.0-SNAPSHOT') {
+        exclude group: 'io.ebean'
+    }
+    api group: 'io.ebean', name: 'ebean-api', version: '13.13.0'
+
+    // JWT
+    api group: "io.jsonwebtoken", name: "jjwt-api", version: '0.12.5'
+    api group: "io.jsonwebtoken", name: "jjwt-impl", version: '0.12.5'
+    runtimeOnly group: "io.jsonwebtoken", name: "jjwt-jackson", version: '0.12.5'
+
+
+    api 'org.springframework.boot:spring-boot-starter-cache'
+    api 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    api 'org.springframework.boot:spring-boot-starter-data-jpa'
+    api 'org.springframework.boot:spring-boot-starter-web'
+    api 'org.springframework.boot:spring-boot-starter-validation'
+    api 'org.springframework.boot:spring-boot-starter-security'
+    api "org.postgresql:postgresql:${postgresqlVersion}"
+    api "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openApiVersion}"
+
+
+    api 'org.springframework.cloud:spring-cloud-starter-vault-config'
+    api 'org.springframework.cloud:spring-cloud-vault-config-databases'
+    api 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+    api group: 'org.apache.commons', name: 'commons-pool2', version: '2.12.0'
+
+    api 'com.oracle.database.jdbc:ojdbc10:19.20.0.0'
+    api 'com.microsoft.sqlserver:mssql-jdbc:11.2.3.jre17'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+//    implementation group: 'com.vladmihalcea', name: 'hibernate-types-52', version: '2.16.1'
+
+//    implementation group: 'com.vladmihalcea', name: 'hibernate-types-52', version: '2.16.1'
+    api 'org.springframework.boot:spring-boot-starter-webflux'
+// https://mvnrepository.com/artifact/io.hypersistence/hypersistence-utils-hibernate-63
+    api group: 'io.hypersistence', name: 'hypersistence-utils-hibernate-63', version: '3.8.2'
+
+    api 'org.springframework.boot:spring-boot-starter-actuator'
+//    testImplementation "com.github.tomakehurst:wiremock-jre8:2.35.0"
+    // https://mvnrepository.com/artifact/org.wiremock/wiremock-standalone
+
+
+    api 'net.objecthunter:exp4j:0.4.8'
+    api 'net.ttddyy:datasource-proxy:1.10'
+
+    api group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.3'
+    api 'org.apache.commons:commons-csv:1.11.0'
+    api 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
+
+    api 'org.dhatim:fastexcel:0.14.18'
+
+    //Caching
+//    implementation 'org.hibernate:hibernate-ehcache:5.6.14.Final'
+//    implementation 'org.hibernate:hibernate-core:5.6.12.Final'
+    api 'org.hibernate.orm:hibernate-jcache:6.5.2.Final'
+    api 'org.webjars:webjars-locator-core:0.48'
+
+
+    api 'org.ehcache:ehcache::jakarta'
+
+//    implementation 'org.ehcache:ehcache:3.10.8'
+
+    //Templater
+
+    api 'hr.ngs.templater:templater:8.0.0'
+    api group: 'com.google.zxing', name: 'javase', version: '3.5.2'
+    api group: 'com.google.zxing', name: 'core', version: '3.5.2'
+    implementation 'org.apache.pdfbox:pdfbox:2.0.27'
+
+    //PDF Generation   DONT CHANGE THIS VERSIONS
+    /*  implementation 'fr.opensagres.xdocreport:fr.opensagres.poi.xwpf.converter.pdf:2.0.2'
+      implementation 'org.apache.pdfbox:pdfbox-tools:2.0.27'
+      implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '4.0.1'
+      implementation group: 'org.apache.xmlbeans', name: 'xmlbeans', version: '3.0.1'
+      implementation group: 'org.apache.poi', name: 'ooxml-schemas', version: '1.4'*/
+    //DONT CHANGE THIS VERSIONS
+
+    //ASPERO Fuent Templater test
+    //implementation fileTree(dir: "tmp_libs", include: '*.jar')
+
+    //Aspose Template
+    api 'com.aspose:aspose-words:23.8:jdk17'
+
+
+    api 'commons-net:commons-net:3.9.0'
+
+    api 'ognl:ognl:3.3.3'
+
+    //rrule library
+    api group: 'org.dmfs', name: 'lib-recur', version: '0.9.2'
+    api 'org.apache.maven.plugins:maven-surefire-plugin:3.3.1'
+
+    //email imports
+    api("bg.energo.common:energo-common-common-utils:4.0.0-SNAPSHOT")
+    api("bg.energo.mass-comm.api:mass-comm-api:1.0.3-SNAPSHOT")
+
+
+}
+
+test {
+    useJUnitPlatform()
+}

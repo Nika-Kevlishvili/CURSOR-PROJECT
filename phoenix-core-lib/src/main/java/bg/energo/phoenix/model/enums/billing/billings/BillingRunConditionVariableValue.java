@@ -1,0 +1,29 @@
+package bg.energo.phoenix.model.enums.billing.billings;
+
+public enum BillingRunConditionVariableValue {
+    // CONTRACT
+    PRODUCT_CONTRACT,
+    SERVICE_CONTRACT,
+    // CUSTOMER_TYPE
+    LEGAL_ENTITY,
+    PRIVATE_CUSTOMER,
+    // CONTRACT_TYPE
+    COMBINED,
+    SUPPLY_BALANCING,
+    SUPPLY_ONLY,
+    WITHOUT_SUPPLY,
+    HIGH,
+    // MEASUREMENT_TYPE
+    SETTLEMENT_PERIOD,
+    SLP,
+    // VOLTAGE_LEVEL
+    LOW,
+    MEDIUM,
+    MEDIUM_DIRECTLY_CONNECTED,
+    //PURPOSE_OF_CONSUMPTION
+    HOUSEHOLD,
+    NON_HOUSEHOLD,
+    // INTERIM_ADVANCE_PAYMENT
+    YES,
+    NO
+}

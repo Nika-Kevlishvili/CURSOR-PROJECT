@@ -1,0 +1,62 @@
+package bg.energo.phoenix.event;
+
+import bg.energo.phoenix.process.model.enums.ProcessType;
+
+import javax.naming.OperationNotSupportedException;
+
+public enum EventType {
+
+    CUSTOMER_MASS_IMPORT_PROCESS,
+    UNWANTED_CUSTOMER_MASS_IMPORT_PROCESS,
+    POD_MASS_IMPORT_PROCESS,
+    METER_MASS_IMPORT_PROCESS,
+    SUPPLY_AUTOMATIC_ACTIVATION_MASS_IMPORT_PROCESS,
+    SUPPLY_AUTOMATIC_DEACTIVATION_MASS_IMPORT_PROCESS,
+    SUPPLY_ACTION_DEACTIVATION_MASS_IMPORT_PROCESS,
+    PRODUCT_CONTRACT_MASS_IMPORT_PROCESS,
+    INVOICE_CANCELLATION_PROCESS,
+    SERVICE_CONTRACT_MASS_IMPORT_PROCESS,
+    CUSTOMER_RECEIVABLE_MASS_IMPORT_PROCESS,
+    CUSTOMER_LIABILITY_MASS_IMPORT_PROCESS,
+    PAYMENT_MASS_IMPORT_PROCESS,
+
+    REMINDER_PROCESS,
+
+    GOVERNMENT_COMPENSATION_MASS_IMPORT_PROCESS;
+//    CUSTOMER_MASS_IMPORT_PROCESS_CREATED,
+//    CUSTOMER_MASS_IMPORT_PROCESS_PAUSED,
+//    CUSTOMER_MASS_IMPORT_PROCESS_RESUMED,
+//    CUSTOMER_MASS_IMPORT_PROCESS_CANCELLED
+//
+
+    public static EventType eventTypeFromProcessType(ProcessType processType) throws OperationNotSupportedException {
+        EventType eventType;
+        switch (processType) {
+            case PROCESS_CUSTOMER_MASS_IMPORT -> eventType = CUSTOMER_MASS_IMPORT_PROCESS;
+            // TODO: 06.03.23 will be implemented later when needed
+//            case PROCESS_PRODUCT_MASS_IMPORT -> {
+//
+//            }
+//            case PROCESS_SERVICE_MASS_IMPORT -> {
+//            }
+            case PRODUCT_CONTRACT_MASS_IMPORT -> eventType = PRODUCT_CONTRACT_MASS_IMPORT_PROCESS;
+            case PROCESS_SERVICE_CONTRACT_MASS_IMPORT -> eventType = SERVICE_CONTRACT_MASS_IMPORT_PROCESS;
+            case PROCESS_METER_MASS_IMPORT -> eventType = METER_MASS_IMPORT_PROCESS;
+            case PROCESS_UNWANTED_CUSTOMER_MASS_IMPORT -> eventType = UNWANTED_CUSTOMER_MASS_IMPORT_PROCESS;
+            case PROCESS_POD_MASS_IMPORT -> eventType = POD_MASS_IMPORT_PROCESS;
+            case PROCESS_SUPPLY_AUTOMATIC_ACTIVATION_MASS_IMPORT ->
+                    eventType = SUPPLY_AUTOMATIC_ACTIVATION_MASS_IMPORT_PROCESS;
+            case PROCESS_INVOICE_CANCELLATION -> eventType = INVOICE_CANCELLATION_PROCESS;
+            case PROCESS_SUPPLY_AUTOMATIC_DEACTIVATION_MASS_IMPORT ->
+                    eventType = SUPPLY_AUTOMATIC_DEACTIVATION_MASS_IMPORT_PROCESS;
+            case PROCESS_CUSTOMER_RECEIVABLE_MASS_IMPORT -> eventType = CUSTOMER_RECEIVABLE_MASS_IMPORT_PROCESS;
+            case PROCESS_CUSTOMER_LIABILITY_MASS_IMPORT -> eventType = CUSTOMER_LIABILITY_MASS_IMPORT_PROCESS;
+            case PROCESS_PAYMENT_MASS_IMPORT -> eventType = PAYMENT_MASS_IMPORT_PROCESS;
+            case PROCESS_REMINDER -> eventType = REMINDER_PROCESS;
+            default ->
+                    throw new OperationNotSupportedException("Event type corresponding to the process type " + processType.name() + " not found.");
+        }
+        return eventType;
+    }
+
+}

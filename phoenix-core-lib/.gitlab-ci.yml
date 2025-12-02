@@ -1,0 +1,21 @@
+stages:
+  - choose_env
+  - build
+  - deploy
+
+
+choose_env:
+  stage: choose_env
+  script:
+    - echo "approved"
+  tags:
+    - core-builder
+
+include:
+  - local: 'pipelines/dev-pipeline.yml'
+    rules:
+      - if: '$CI_COMMIT_BRANCH == "dev"'
+
+  - local: 'pipelines/feature-pipeline.yml'
+    rules:
+      - if: '$CI_COMMIT_BRANCH =~ /^feature\//'

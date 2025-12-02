@@ -1,0 +1,69 @@
+package bg.energo.phoenix.model.enums.product.penalty;
+
+import java.util.List;
+
+public enum PenaltyFormulaVariable {
+    TOTAL_ESTIMATED_CONSUMPTION_UNDER_CONTRACT,
+    TOTAL_ESTIMATED_CONSUMPTION_UNDER_CONTRACT_FOR_POD,
+    AVERAGE_ANNUAL_ESTIMATED_CONSUMPTION_UNDER_CONTRACT,
+    AVERAGE_ANNUAL_ESTIMATED_CONSUMPTION_UNDER_CONTRACT_FOR_POD,
+    AVERAGE_MONTHLY_ESTIMATED_CONSUMPTION_UNDER_CONTRACT,
+    AVERAGE_MONTHLY_ESTIMATED_CONSUMPTION_UNDER_CONTRACT_FOR_POD,
+    AVERAGE_DAILY_ESTIMATED_CONSUMPTION_UNDER_CONTRACT,
+    AVERAGE_DAILY_ESTIMATED_CONSUMPTION_UNDER_CONTRACT_FOR_POD,
+    TOTAL_ACTUAL_CONSUMPTION_UNDER_CONTRACT,
+    TOTAL_ACTUAL_CONSUMPTION_UNDER_CONTRACT_FOR_POD,
+    AVERAGE_MONTHLY_ACTUAL_CONSUMPTION_UNDER_CONTRACT,
+    AVERAGE_MONTHLY_ACTUAL_CONSUMPTION_UNDER_CONTRACT_FOR_POD,
+    AVERAGE_DAILY_ACTUAL_CONSUMPTION_UNDER_CONTRACT,
+    AVERAGE_DAILY_ACTUAL_CONSUMPTION_UNDER_CONTRACT_FOR_POD,
+    MAXIMUM_ESTIMATED_MONTHLY_CONSUMPTION_UNDER_CONTRACT_FOR_PROFILE,
+    MAXIMUM_ACTUAL_MONTHLY_CONSUMPTION_UNDER_CONTRACT_FOR_PROFILE,
+    NUMBER_OF_DAYS_FROM_REAL_TERMINATION_DATE_TO_END_DATE_OF_CONTRACT_TERM,
+    NUMBER_OF_MONTHS_FROM_REAL_TERMINATION_DATE_TO_END_DATE_OF_CONTRACT_TERM,
+    PRICE_FROM_LAST_INVOICE_FOR_ACTIVE_ENERGY,
+    NEGOTIATED_PAV,
+    NEGOTIATED_PMAX,
+    NEGOTIATED_PMIN,
+    ACTUAL_PAV,
+    ACTUAL_PMAX,
+    ACTUAL_PMIN;
+
+
+    // TODO: 12/7/23 add variables (if applicable) when story is completely implemented in the following bundles
+    public static List<PenaltyFormulaVariable> getVariablesRelatedToPods() {
+        return List.of(
+                TOTAL_ESTIMATED_CONSUMPTION_UNDER_CONTRACT_FOR_POD,
+                AVERAGE_ANNUAL_ESTIMATED_CONSUMPTION_UNDER_CONTRACT_FOR_POD,
+                AVERAGE_MONTHLY_ESTIMATED_CONSUMPTION_UNDER_CONTRACT_FOR_POD,
+                AVERAGE_DAILY_ESTIMATED_CONSUMPTION_UNDER_CONTRACT_FOR_POD,
+                TOTAL_ACTUAL_CONSUMPTION_UNDER_CONTRACT_FOR_POD,
+                AVERAGE_MONTHLY_ACTUAL_CONSUMPTION_UNDER_CONTRACT_FOR_POD,
+                AVERAGE_DAILY_ACTUAL_CONSUMPTION_UNDER_CONTRACT_FOR_POD
+        );
+    }
+
+
+    /**
+     * @return pattern for variables that are related to price parameters.
+     */
+    public static String getPriceParameterVariablePattern() {
+        return getPriceParameterVariablePrefix() + "\\d+";
+    }
+
+    public static String getPriceParameterVariablePrefix() {
+        return "PRICE_PARAMETER_";
+    }
+
+    /**
+     * @return pattern for variables that are related to price component tags.
+     */
+    public static String getPriceComponentTagVariablePattern() {
+        return getPriceComponentTagVariablePrefix() + "(.+)";
+    }
+
+    public static String getPriceComponentTagVariablePrefix() {
+        return "^PRICE_COMPONENTS_TAGS_";
+    }
+
+}

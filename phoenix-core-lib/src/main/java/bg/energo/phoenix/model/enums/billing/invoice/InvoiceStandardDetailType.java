@@ -1,0 +1,16 @@
+package bg.energo.phoenix.model.enums.billing.invoice;
+
+public enum InvoiceStandardDetailType {
+    PER_PIECE,
+    OVER_TIME_ONE_TIME,
+    OVER_TIME_PERIODICAL,
+    WITH_ELECTRICITY,
+    DISCOUNT,
+    DISCOUNT_SCALE,
+    SCALE,
+    SETTLEMENT,
+    INTERIM_DEDUCTION,
+    INTERIM_EXACT_AMOUNT,
+    INTERIM_PRICE_COMPONENT,
+    INTERIM_PERCENT_FROM_PREVIOUS_INVOICE_AMOUNT
+}

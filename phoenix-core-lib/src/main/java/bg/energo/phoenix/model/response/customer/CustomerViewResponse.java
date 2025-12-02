@@ -1,0 +1,123 @@
+package bg.energo.phoenix.model.response.customer;
+
+import bg.energo.phoenix.model.enums.customer.CustomerDetailStatus;
+import bg.energo.phoenix.model.enums.customer.CustomerStatus;
+import bg.energo.phoenix.model.enums.customer.CustomerType;
+import bg.energo.phoenix.model.enums.nomenclature.ResidentialAreaType;
+import bg.energo.phoenix.model.enums.nomenclature.StreetType;
+import bg.energo.phoenix.model.request.customer.CustomerVersionsResponse;
+import bg.energo.phoenix.model.response.activity.SystemActivityShortResponse;
+import bg.energo.phoenix.model.response.customer.communicationData.detailed.CustomerCommunicationsDetailedResponse;
+import bg.energo.phoenix.model.response.customer.customerAccountManager.CustomerAccountManagerResponse;
+import bg.energo.phoenix.model.response.customer.manager.ManagerResponse;
+import bg.energo.phoenix.model.response.customer.owner.CustomerOwnerDetailResponse;
+import bg.energo.phoenix.model.response.customer.relatedCustomer.RelatedCustomerResponse;
+import bg.energo.phoenix.model.response.nomenclature.address.*;
+import bg.energo.phoenix.model.response.nomenclature.customer.*;
+import bg.energo.phoenix.model.response.task.TaskShortResponse;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class CustomerViewResponse {
+    //CustomerObjectFields
+    private Long customerId;
+    private Long customerNumber;
+    private String identifier;
+    private CustomerType customerType;
+    private Boolean businessActivity;
+    private Long lastCustomerDetailId;
+    private String customerSystemUserId;
+    private LocalDateTime customerCreateDate;
+    private LocalDateTime customerModifyDate;
+    private String customerModifySystemUserId;
+    private CustomerStatus customerStatus;
+    //CustomerDetail Fields
+    private Long customerDetailsId;
+    private String oldCustomerNumbers;
+    private String vatNumber;
+    private String name;
+    private String nameTransl;
+    private LegalFormResponse legalForm;
+    private LegalFormTranResponse legalFormTranslId;
+    private OwnershipFormResponse ownershipFormId;
+    private EconomicBranchCIResponse economicBranchCiId;
+    private EconomicBranchNCEAResponse economicBranchNceaId;
+    private String mainActivitySubject;
+    private String customerDeclaredConsumption;
+    private CreditRatingResponse creditRating;
+    private BankResponse bank;
+    private String iban;
+    private ZipCodeResponse zipCode;
+    private String streetNumber;
+    private StreetType streetTypeForeign;
+    private String streetForeign;
+    private String addressAdditionalInfo;
+    private String block;
+    private String entrance;
+    private String floor;
+    private String apartment;
+    private String mailbox;
+    private StreetsResponse streetId;
+    private StreetType streetType;
+    private ResidentialAreaResponse residentialAreaId;
+    private ResidentialAreaType residentialAreaTypeForeign;
+    private ResidentialAreaType residentialAreaType;
+    private String residentialAreaForeign;
+    private DistrictResponse districtId;
+    private String regionForeign;
+    private String municipalityForeign;
+    private String populatedPlaceForeign;
+    private String zipCodeForeign;
+    private String districtForeign;
+    private Long customerDetailsCustomerId;
+    private Long versionId;
+    private Boolean publicProcurementLaw;
+    private Boolean marketingCommConsent;
+    private Boolean foreignEntityPerson;
+    private Boolean preferCommunicationInEnglish;
+    private Boolean directDebit;
+    private Boolean foreignAddress;
+    private PopulatedPlaceDetailedResponse populatedPlaceId;
+    private CountryResponse countryId;
+    private MunicipalityResponse localMunicipality;
+    private RegionResponse localRegion;
+    private String middleName;
+    private String middleNameTransl;
+    private String lastName;
+    private String lastNameTransl;
+    private String businessActivityName;
+    private String businessActivityNameTransl;
+    private Boolean gdprRegulationConsent;
+    private CustomerDetailStatus status;
+    private List<CustomerSegmentResponse> customerSegments;
+    private List<CustomerPreferenceResponse> customerPreferences;
+    private String customerDetailsSystemUserId;
+    private LocalDateTime customerDetailsCreateDate;
+    private LocalDateTime customerDetailsModifyDate;
+    private String customerDetailsModifySystemUserId;
+    private List<CustomerVersionsResponse> customerVersions;
+    Boolean gdprMasking;
+    private List<ManagerResponse> managers;
+    private List<RelatedCustomerResponse> relatedCustomers;
+    private List<CustomerOwnerDetailResponse> owner;
+    private List<CustomerCommunicationsDetailedResponse> communicationData;
+    private List<ConnectedGroupResponse> connectedGroups;
+    private List<CustomerAccountManagerResponse> customerAccountManagers;
+    private Boolean isUnwantedCustomer;
+    //    private List<CustomerOwnerResponse> customerOwners;
+    private Boolean isAllowedToEditCustomer;
+    private List<SystemActivityShortResponse> activities;
+    private List<TaskShortResponse> tasks;
+    private boolean isLocked;
+    private Boolean isPodDisconnected;
+    private String customerAdditionalInformation;
+}

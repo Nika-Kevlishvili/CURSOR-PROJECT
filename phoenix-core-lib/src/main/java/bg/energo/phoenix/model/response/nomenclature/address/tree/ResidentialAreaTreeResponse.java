@@ -1,0 +1,17 @@
+package bg.energo.phoenix.model.response.nomenclature.address.tree;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class ResidentialAreaTreeResponse {
+    private Long populatedPlaceId;
+    private String populatedPlaceName;
+    private Long municipalityId;
+    private String municipalityName;
+    private Long regionId;
+    private String regionName;
+    private Long countryId;
+    private String countryName;
+}

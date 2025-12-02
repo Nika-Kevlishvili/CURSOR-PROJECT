@@ -1,0 +1,19 @@
+package bg.energo.phoenix.model.request.product.iap.advancedPaymentGroup;
+
+import bg.energo.phoenix.model.customAnotations.PromptSymbolReplacer;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@PromptSymbolReplacer
+public class SearchInterimAdvancePaymentRequest {
+    @NotNull(message = "page- Page shouldn't be null;")
+    private Integer page;
+    @NotNull(message = "size- Size shouldn't be null;")
+    private Integer size;
+    private String prompt;
+}

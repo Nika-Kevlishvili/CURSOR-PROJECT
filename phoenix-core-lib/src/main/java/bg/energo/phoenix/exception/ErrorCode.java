@@ -1,0 +1,11 @@
+package bg.energo.phoenix.exception;
+
+public enum ErrorCode {
+    DOMAIN_ENTITY_NOT_FOUND,
+    APPLICATION_ERROR,
+    ILLEGAL_ARGUMENTS_PROVIDED,
+    ACCESS_DENIED,
+    UNSUPPORTED_OPERATION,
+    OPERATION_NOT_ALLOWED,
+    CONFLICT
+}
