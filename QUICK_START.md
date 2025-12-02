@@ -6,32 +6,33 @@ This guide will help you quickly set up the project on a new computer.
 
 ---
 
-## ⚡ 5-წუთიანი Setup (სწრაფი გზა)
+## ⚡ 3-ნაბიჯიანი Setup (მაქსიმალურად მარტივი)
 
-### 1. Clone ან Copy პროექტი
+### 1. Clone პროექტი GitHub-დან
 ```powershell
-# Git-დან
-git clone <repository-url>
-cd Cursor
-
-# ან უბრალოდ copy ფაილები
+git clone https://github.com/Nika-Kevlishvili/cursor-project.git
+cd cursor-project
 ```
 
 ### 2. გაუშვით Setup Script
 ```powershell
-.\migration\setup_new_computer.ps1
+.\setup.ps1
 ```
 
-აირჩიეთ "6. Run All Setup" - ეს ავტომატურად გააკეთებს ყველაფერს!
+ეს ავტომატურად:
+- ✅ შექმნის .env ფაილს
+- ✅ დააინსტალირებს Python dependencies
+- ✅ შეამოწმებს Java
 
-### 3. Environment Variables
+### 3. Credentials და Verification
 ```powershell
-.\setup_environment.ps1 -Interactive
+# შეავსეთ .env ფაილი credentials-ით
+notepad .env
+
+# Load environment variables
 .\load_environment.ps1
-```
 
-### 4. შემოწმება
-```powershell
+# შემოწმება
 .\verify_setup.ps1
 ```
 
@@ -63,8 +64,9 @@ pip install -r requirements.txt
 
 #### 2. Environment Variables
 ```powershell
-# Create .env from template
-.\setup_environment.ps1 -Interactive
+# .env ფაილი უკვე შექმნილია setup.ps1-ით
+# შეავსეთ credentials-ით
+notepad .env
 
 # Load environment variables
 .\load_environment.ps1
@@ -141,8 +143,6 @@ python -c "from agents import get_integration_service"
 
 - [README.md](README.md) - პროექტის აღწერა
 - [ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md) - Environment variables დეტალები
-- [migration/MIGRATION_GUIDE.md](migration/MIGRATION_GUIDE.md) - სრული მიგრაციის გზამკვლევი
-- [PORTABILITY_ASSESSMENT.md](PORTABILITY_ASSESSMENT.md) - პორტატულობის შეფასება
 
 ---
 
