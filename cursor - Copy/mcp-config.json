@@ -1,0 +1,51 @@
+{
+  "mcpServers": {
+    "Confluence": {
+      "url": "https://mcp.atlassian.com/v1/sse"
+    },
+    "GitLab": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "https://git.domain.internal/dashboard/projects/member"
+      ],
+      "env": {
+        "GITLAB_URL": "https://git.domain.internal/dashboard/projects/member",
+        "GITLAB_TOKEN": "YOUR_GITLAB_TOKEN_HERE"
+      }
+    },
+    "PostgreSQLTest": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-postgres-server"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://postgres:PASSWORD@10.236.20.24:5432/phoenix",
+        "MCP_SERVER_NAME": "PostgreSQLTest",
+        "POSTGRES_HOST": "10.236.20.24",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "PASSWORD"
+      }
+    },
+    "PostgreSQLDev": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-postgres-server"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://postgres:PASSWORD@10.236.20.21:5432/phoenix",
+        "MCP_SERVER_NAME": "PostgreSQLDev",
+        "POSTGRES_HOST": "10.236.20.21",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "PASSWORD"
+      }
+    }
+  }
+}
+
