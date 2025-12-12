@@ -1,0 +1,1701 @@
+================================================================================
+                    FOR_VOLUMES - APPLICATION MODEL TYPE
+                    Comprehensive Technical Documentation
+                    Standard Billing Run - Volume-Based Billing
+================================================================================
+
+TABLE OF CONTENTS
+================================================================================
+1.  Business Concept and Purpose
+2.  Definition and Enum Structure
+3.  Architecture and Design
+4.  Process Flow and Stages
+5.  Data Models and Entities
+6.  Calculations and Algorithms
+7.  Validations and Business Rules
+8.  Restrictions System
+9.  Discounts System
+10. Object Relationships and Dependencies
+11. Database Schema and Stored Procedures
+12. API and Service Layer
+13. Test Cases and Scenarios
+14. Error Handling and Edge Cases
+15. Performance Considerations
+16. Integration Points
+17. Configuration and Settings
+18. Troubleshooting Guide
+
+================================================================================
+1. BUSINESS CONCEPT AND PURPOSE
+================================================================================
+
+1.1. Business Overview
+-----------------------
+FOR_VOLUMES is an Application Model Type designed for volume-based billing 
+calculations in the Phoenix energy management system. It enables accurate 
+billing based on consumption volumes (kWh/kVArh) measured at Points of 
+Delivery (PODs) for Product Contracts.
+
+Business Value:
+- Accurate volume-based billing for electricity consumption
+- Support for complex tariff structures with multiple scales
+- Flexible settlement period calculations
+- Comprehensive restriction and discount mechanisms
+- Integration with meter reading systems
+
+1.2. Use Cases
+--------------
+Primary Use Cases:
+1. Standard monthly billing for residential and commercial customers
+2. Multi-tier tariff billing (progressive pricing based on consumption)
+3. Settlement period-based billing (using load profiles)
+4. Combined billing (scales + settlement periods)
+5. Invoice corrections and reversals
+6. Periodic billing runs
+
+1.3. Business Rules
+------------------
+- FOR_VOLUMES applies ONLY to PRODUCT_CONTRACT type contracts
+- Cannot be used with SERVICE_CONTRACT contracts
+- Requires maxEndDate for STANDARD periodicity billing runs
+- Requires periodicMaxEndDate and periodicMaxEndDateValue for PERIODIC runs
+- Must be selected together with WITH_ELECTRICITY_INVOICE if that option is chosen
+
+================================================================================
+2. DEFINITION AND ENUM STRUCTURE
+================================================================================
+
+2.1. ApplicationModelType Enum
+-------------------------------
+Location: phoenix-core-lib/src/main/java/bg/energo/phoenix/model/enums/billing/billings/ApplicationModelType.java
+
+public enum ApplicationModelType {
+    FOR_VOLUMES,                    // Volume-based billing
+    OVER_TIME_PERIODICAL,           // Periodic over-time billing
+    OVER_TIME_ONE_TIME,            // One-time over-time billing
+    PER_PIECE,                      // Per-piece billing
+    INTERIM_AND_ADVANCE_PAYMENT,   // Interim and advance payments
+    WITH_ELECTRICITY_INVOICE        // With electricity invoice (requires FOR_VOLUMES)
+}
+
+2.2. Database Enum Definition
+-------------------------------
+Schema: billing
+Type: billing.billing_application_model_type
+
+CREATE TYPE billing.billing_application_model_type AS ENUM (
+    'FOR_VOLUMES',
+    'OVER_TIME_PERIODICAL',
+    'OVER_TIME_ONE_TIME',
+    'PER_PIECE',
+    'INTERIM_AND_ADVANCE_PAYMENT'
+);
+
+Note: WITH_ELECTRICITY_INVOICE is not stored as separate enum value but 
+      as a combination flag with FOR_VOLUMES.
+
+2.3. Price Component Application Model Type
+--------------------------------------------
+Location: phoenix-core-lib/src/main/java/bg/energo/phoenix/model/enums/product/price/priceComponent/applicationModel/ApplicationModelType.java
+
+public enum ApplicationModelType {
+    PRICE_AM_FOR_VOLUMES,    // Maps to FOR_VOLUMES billing type
+    PRICE_AM_OVERTIME,        // Maps to OVER_TIME billing types
+    PRICE_AM_PER_PIECE       // Maps to PER_PIECE billing type
+}
+
+Schema: price_component
+Type: price_component.am_model_type
+
+CREATE TYPE price_component.am_model_type AS ENUM (
+    'PRICE_AM_FOR_VOLUMES',
+    'PRICE_AM_OVERTIME',
+    'PRICE_AM_PER_PIECE'
+);
+
+================================================================================
+3. ARCHITECTURE AND DESIGN
+================================================================================
+
+3.1. Component Architecture
+----------------------------
+FOR_VOLUMES processing involves multiple layers:
+
+┌─────────────────────────────────────────────────────────────┐
+│                    Billing Run Controller                   │
+│              (BillingRunController)                         │
+└───────────────────────┬─────────────────────────────────────┘
+                        │
+┌───────────────────────▼─────────────────────────────────────┐
+│              Billing Run Service Layer                      │
+│         (BillingRunService)                                 │
+└───────────────────────┬─────────────────────────────────────┘
+                        │
+┌───────────────────────▼─────────────────────────────────────┐
+│         Standard Preparation State Handler                  │
+│    (BillingRunStandardPreparationStateHandler)              │
+└───────────────────────┬─────────────────────────────────────┘
+                        │
+        ┌───────────────┴───────────────┐
+        │                               │
+┌───────▼────────┐          ┌───────────▼──────────┐
+│  Preparation  │          │  Invoice Generation  │
+│    Service     │          │     Processor        │
+└───────┬────────┘          └───────────┬──────────┘
+        │                               │
+        │              ┌────────────────┼────────────────┐
+        │              │                │                │
+┌───────▼──────┐ ┌─────▼─────┐ ┌──────▼──────┐ ┌──────▼──────┐
+│  Settlement  │ │  Scales   │ │Restrictions │ │  Discounts  │
+│   Service     │ │  Service  │ │   Service   │ │   Service   │
+└──────────────┘ └────────────┘ └─────────────┘ └─────────────┘
+
+3.2. Key Services
+-----------------
+1. BillingRunStandardPreparationStateHandler
+   - Orchestrates the billing process
+   - Determines which application models to process
+   - Manages state transitions
+
+2. BillingRunStandardPreparationService
+   - Calls stored procedures for data preparation
+   - Handles standard and correction data preparation
+
+3. BillingRunProcessSettlementService
+   - Processes settlement period-based calculations
+   - Evaluates profile-based consumption
+   - Groups by contract versions
+
+4. BillingRunProcessScaleCalculationService
+   - Processes scale-based calculations
+   - Splits periods by scales
+   - Handles meter reading calculations
+
+5. BillingRunStandardInvoiceGenerationProcessor
+   - Main processor for invoice generation
+   - Coordinates settlement and scale processing
+   - Applies restrictions and discounts
+   - Generates final invoice details
+
+3.3. Processing Flow
+--------------------
+1. Billing Run Creation
+   ↓
+2. Data Preparation (Stored Procedure)
+   ↓
+3. Settlement Period Processing
+   ↓
+4. Scale Processing
+   ↓
+5. Restrictions Application
+   ↓
+6. Discounts Application
+   ↓
+7. Invoice Generation
+   ↓
+8. Finalization
+
+================================================================================
+4. PROCESS FLOW AND STAGES
+================================================================================
+
+4.1. Stage 1: Billing Run Creation
+------------------------------------
+Location: BillingRunService.mapStandardBillingParameters()
+
+Input Parameters:
+- applicationModelType: List<ApplicationModelType> (must include FOR_VOLUMES)
+- billingCriteria: BillingCriteria enum
+- billingApplicationLevel: BillingApplicationLevel enum (optional)
+- maxEndDate: LocalDate (required for STANDARD periodicity)
+- periodicMaxEndDate: BillingEndDate enum (required for PERIODIC)
+- periodicMaxEndDateValue: Integer (required for PERIODIC)
+- customersContractOrPODConditions: String (optional)
+- listOfCustomersContractsOrPOD: String (optional)
+
+Validations:
+- FOR_VOLUMES requires maxEndDate for STANDARD periodicity
+- FOR_VOLUMES requires periodicMaxEndDate and periodicMaxEndDateValue for PERIODIC
+- WITH_ELECTRICITY_INVOICE requires FOR_VOLUMES to be selected
+- Billing criteria validation based on selected criteria type
+
+4.2. Stage 2: Data Preparation
+--------------------------------
+Location: BillingRunStandardPreparationService
+
+Stored Procedure: billing_run.run_standard_billing_main_data_preparation(?)
+Parameter: billing_run.id (Long)
+
+This procedure:
+1. Identifies all contracts matching billing criteria
+2. Filters by application model type (FOR_VOLUMES)
+3. Creates billing run contract records
+4. Prepares settlement period data (BillingRunSettlementPeriod)
+5. Prepares scale split data (BillingRunBdbsSplitsIoData)
+6. Links billing data by profiles and scales
+7. Sets up invoice slot groupings
+
+Output Tables:
+- billing_run.billing_run_contracts
+- billing_run.billing_run_settlement_periods
+- billing_run.billing_run_bdbs_splits_io_data
+- billing_run.billing_run_bdbs_splits_io_data_scales
+- billing_run.billing_run_bdbs_splits_io_data_profiles
+
+4.3. Stage 3: Settlement Period Processing
+-------------------------------------------
+Location: BillingRunProcessSettlementService.evaluateSettlement()
+
+Input:
+- BillingRunContracts: Contract being processed
+- failedSlots: HashSet<Long> - Slots that failed processing
+- xValueMap: Formula variable values
+- mainCurrencyId: Long - Main currency ID
+- currencyHashMap: HashMap<Long, Currency> - Currency cache
+- priceComponentHashMap: HashMap<Long, PriceComponent> - Price component cache
+
+Process:
+1. Retrieve all BillingRunSettlementPeriod records for contract
+2. For each settlement period:
+   a. Load price component
+   b. Get formula X values (variables)
+   c. Parse profile values from JSON (ProfileValue[])
+   d. For each profile value:
+      - Calculate price using formula evaluation
+      - Apply percentage if not 100%
+      - Convert currency if needed
+      - Accumulate consumption and price
+   e. Handle combined contract adjustments (scaleValueForCombined)
+   f. Set runTotalConsumption and runTotalPrice
+3. Group by contract version (SettlementContractVersionGrouping)
+4. Aggregate totals per group
+5. Create BillingRunInvoiceDetailBaseModel with type SETTLEMENT
+
+Output:
+- Map<SlotGrouping, List<BillingRunInvoiceDetailBaseModel>>
+- Each model has:
+  - type: InvoiceStandardDetailType.SETTLEMENT
+  - calculatedVolumes: BigDecimal (total consumption)
+  - calculatedPrice: BigDecimal (total price)
+  - kwhPrice: BigDecimal (unit price = totalPrice / totalConsumption)
+  - dateFrom: LocalDate
+  - dateTo: LocalDateTime
+  - billingDataProfileIds: Long[] (linked profile IDs)
+
+Key Calculations:
+- consumptionAfterPercent = profileValue.getV() * (percent / 100)
+- calculatedPrice = consumptionAfterPercent * price
+- kwhPrice = totalPrice / totalConsumption (if consumption > 0)
+
+4.4. Stage 4: Scale Processing
+--------------------------------
+Location: BillingRunProcessScaleCalculationService.splitAndEvaluateScales()
+
+Input:
+- BillingRunContracts: Contract being processed
+- failedSlots: HashSet<Long>
+- xValueMap: Formula variable values
+- mainCurrencyId: Long
+- currencyHashMap: HashMap<Long, Currency>
+- priceComponentHashMap: HashMap<Long, PriceComponent>
+
+Process:
+1. Retrieve initial splits from billing_run_bdbs_splits_io_data
+2. Process each split:
+   a. Check if price formula contains $PRICE_PROFILE$ or $N$ patterns
+   b. If same month: processNoSplit()
+   c. If different months: processSplit() - split by month boundaries
+   d. Extract price parameters and profile prices
+   e. Evaluate price formula
+   f. Calculate total price = price * volume
+3. Handle meter reading calculations for non-tariff scales:
+   - Split corrections and deductions proportionally
+   - Calculate differences
+   - Calculate old/new meter readings
+4. Round and adjust values to eliminate rounding errors
+5. Create BillingRunInvoiceDetailBaseModel with type SCALE
+
+Output:
+- Map<SlotGrouping, List<BillingRunInvoiceDetailBaseModel>>
+- Each model has:
+  - type: InvoiceStandardDetailType.SCALE
+  - calculatedVolumes: BigDecimal
+  - calculatedPrice: BigDecimal
+  - kwhPrice: BigDecimal
+  - oldMeterReading: BigDecimal (for non-tariff)
+  - newMeterReading: BigDecimal (for non-tariff)
+  - correction: BigDecimal
+  - deducted: BigDecimal
+  - difference: BigDecimal
+  - billingDataScaleIds: Long[] (linked scale IDs)
+
+Key Algorithms:
+
+A. Month Splitting Algorithm:
+   - If period spans multiple months and formula uses time-dependent variables
+   - Split at month boundaries
+   - Recalculate price for each month segment
+   - Distribute volumes proportionally by days
+
+B. Rounding and Adjustment Algorithm:
+   - Calculate total rounded values
+   - Find difference from actual total
+   - Sort by 9th decimal digit
+   - Adjust values by 0.00000001 increments until difference is zero
+
+C. Meter Reading Calculation:
+   - difference = (value - correction + deduction) / multiplier
+   - newMeterReading = oldMeterReading + difference
+   - For splits: distribute proportionally by days
+
+4.5. Stage 5: Restrictions Application
+----------------------------------------
+Location: BillingRunStandardInvoiceGenerationProcessor.calculateRestrictions()
+
+Types of Restrictions:
+
+A. Percent Restrictions:
+   - Applied to: Settlement periods and Scales
+   - Source: restriction_of_application_based_on_volume_percent
+   - Calculation: totalVolumes * (percent / 100)
+   - Service: BillingRunRestrictionPercentService
+
+B. KWH Restrictions:
+   - Applied to: Settlement periods and Scales
+   - Source: am_for_volumes_by_*_kwh_restriction_ranges tables
+   - Multiple ranges supported
+   - Calculation: Check if volumes fall within range
+   - Service: BillingRunRestrictionKwhService
+
+C. CCY Restrictions:
+   - Applied to: Settlement periods and Scales
+   - Source: am_for_volumes_by_*_ccy_restriction_ranges tables
+   - Multiple ranges with different currencies
+   - Calculation: Convert to main currency, check range
+   - Service: BillingRunRestrictionCcyService
+
+Restriction Application Logic:
+1. Sort details by dateFrom
+2. Apply percent restriction if exists
+3. Apply KWH restrictions if exist
+4. Apply CCY restrictions if exist
+5. Find smallest restriction volume (most restrictive)
+6. Apply final restriction to all details
+7. Set finalRestrictionVolume and finalRestrictionAmount
+8. Remove details with zero restriction volume
+
+Restriction Queries:
+- getSettlementRestrictionByCcy(pcId)
+- getSettlementRestrictionByKwh(pcId)
+- getSettlementRestrictionPercent(pcId)
+- getScaleRestrictionByCcy(pcId)
+- getScaleRestrictionByKwh(pcId)
+- getScaleRestrictionPercent(pcId)
+
+4.6. Stage 6: Discounts Application
+-------------------------------------
+Location: BillingRunDiscountService
+
+Process:
+1. Check if price component has discount enabled
+2. Process discounts for settlement periods: processDiscount()
+3. Process discounts for scales: processDiscountScale()
+4. Create discount detail lines
+5. Add to invoice detail list
+
+Discount Types:
+- Volume-based discounts
+- Value-based discounts
+- Time-based discounts
+
+4.7. Stage 7: Invoice Generation
+----------------------------------
+Location: BillingRunStandardInvoiceGenerationProcessor.generateInvoice()
+
+Process:
+1. Group invoice details by invoice slot
+2. Calculate totals:
+   - Total volumes
+   - Total amount without VAT
+   - Total VAT amount
+   - Total amount with VAT
+3. Apply VAT rates (global or per price component)
+4. Handle currency conversion
+5. Create invoice standard detailed data records
+6. Create invoice summary data records
+7. Link to billing run
+
+Output Tables:
+- invoice.invoices
+- invoice.invoice_standard_detailed_data
+- invoice.invoice_summary_data
+
+================================================================================
+5. DATA MODELS AND ENTITIES
+================================================================================
+
+5.1. Request Models
+-------------------
+
+A. StandardBillingParameters
+   Location: phoenix-core-lib/src/main/java/bg/energo/phoenix/model/request/billing/billingRun/StandardBillingParameters.java
+
+   Fields:
+   - applicationModelType: List<ApplicationModelType> (required, not empty)
+   - billingCriteria: BillingCriteria (required)
+   - billingApplicationLevel: BillingApplicationLevel (optional)
+   - customersContractOrPODConditions: String (optional)
+   - listOfCustomersContractsOrPOD: String (optional)
+   - maxEndDate: LocalDate (required for FOR_VOLUMES + STANDARD)
+   - periodicMaxEndDate: BillingEndDate (required for FOR_VOLUMES + PERIODIC)
+   - periodicMaxEndDateValue: Integer (required for FOR_VOLUMES + PERIODIC)
+
+B. BillingRunForVolumesModel
+   Location: phoenix-core-lib/src/main/java/bg/energo/phoenix/service/billing/runs/models/BillingRunForVolumesModel.java
+
+   Fields:
+   - contractId: Long
+   - contractDetailId: Long
+   - contractType: ContractType
+   - status: ContractDetailsStatus
+   - terminationDate: LocalDate
+   - billingGroupId: Long
+   - billingGroupNumber: String
+   - issueSeparateInvoice: Boolean
+   - podId: Long
+   - podDetailId: Long
+   - podMeasurementType: PODMeasurementType
+   - podIdentifier: String
+   - podActivationDate: LocalDate
+   - podDeactivationDate: LocalDate
+
+5.2. Entity Models
+------------------
+
+A. VolumesByScale
+   Location: phoenix-core-lib/src/main/java/bg/energo/phoenix/model/entity/product/price/priceComponent/applicationModel/VolumesByScale.java
+   Table: price_component.am_for_volumes_by_scales
+
+   Fields:
+   - id: Long (PK, sequence)
+   - restrictionOfApplicationOnVolume: Boolean
+   - restrictionOfApplicationOnValues: Boolean
+   - yearRound: Boolean
+   - status: VolumesByScaleStatus
+   - applicationModel: ApplicationModel (FK)
+   - volumeRestrictionPercent: BigDecimal
+
+   Related Entities:
+   - VolumesByScaleScales (one-to-many)
+   - VolumesByScaleKwhRestriction (one-to-many)
+   - VolumesByScaleCcyRestriction (one-to-many)
+   - VolumesByScaleIssuingPeriods (one-to-many)
+
+B. VolumesBySettlementPeriod
+   Location: phoenix-core-lib/src/main/java/bg/energo/phoenix/model/entity/product/price/priceComponent/applicationModel/VolumesBySettlementPeriod.java
+   Table: price_component.am_for_volumes_by_settlement_periods
+
+   Fields:
+   - id: Long (PK, sequence)
+   - isRestrictedBasedOnVolume: Boolean
+   - isRestrictedBasedOnValue: Boolean
+   - volumeRestrictionPercent: BigDecimal
+   - status: ApplicationModelSubObjectStatus
+   - applicationModel: ApplicationModel (FK)
+
+   Related Entities:
+   - SettlementPeriodsProfiles (one-to-many)
+   - SettlementPeriodsKwhRestrictions (one-to-many)
+   - SettlementPeriodsCcyRestrictions (one-to-many)
+   - SettlementPeriodsDateOfMonths (one-to-many)
+
+C. SettlementPeriodsProfiles
+   Location: phoenix-core-lib/src/main/java/bg/energo/phoenix/model/entity/product/price/priceComponent/applicationModel/SettlementPeriodsProfiles.java
+   Table: price_component.am_for_volumes_by_settlement_period_profiles
+
+   Fields:
+   - id: Long (PK, sequence)
+   - percentage: Double
+   - profileId: Long (FK to profile)
+   - status: ApplicationModelSubObjectStatus
+   - volumesBySettlementPeriod: VolumesBySettlementPeriod (FK)
+
+D. BillingRunSettlementPeriod
+   Location: phoenix-core-lib/src/main/java/bg/energo/phoenix/billingRun/model/entity/BillingRunSettlementPeriod.java
+   Table: billing_run.billing_run_settlement_periods
+
+   Fields:
+   - id: Long (PK)
+   - runContractId: Long (FK)
+   - bgInvoiceSlotId: Long
+   - priceComponentId: Long
+   - contractDetailId: Long
+   - podId: Long
+   - dateFrom: LocalDateTime
+   - dateTo: LocalDateTime
+   - percent: BigDecimal
+   - dataJson: String (JSON with ProfileValue[])
+   - priceFormula: String
+   - runTotalConsumption: BigDecimal (calculated)
+   - runTotalPrice: BigDecimal (calculated)
+   - billingDataProfileIds: Long[]
+   - scaleValueForCombined: BigDecimal (optional)
+   - profileTotalForCombined: BigDecimal (optional)
+
+E. BillingRunBdbsSplitsIoData
+   Location: phoenix-core-lib/src/main/java/bg/energo/phoenix/billingRun/model/entity/BillingRunBdbsSplitsIoData.java
+   Table: billing_run.billing_run_bdbs_splits_io_data
+
+   Fields:
+   - bdsSplitIoId: Long (PK)
+   - runContractId: Long (FK)
+   - bgInvoiceSlotId: Long
+   - pcId: Long
+   - podId: Long
+   - contractDetailId: Long
+   - calcPeriodFrom: LocalDate
+   - calcPeriodTo: LocalDate
+   - calcVolume: BigDecimal
+   - value: BigDecimal
+   - priceFormula: String
+   - runKwhPrice: BigDecimal (calculated)
+   - runTotalValue: BigDecimal (calculated)
+   - runTotalPrice: BigDecimal (calculated)
+   - billingDataScaleIds: Long[]
+   - isTariff: Boolean
+   - meterId: Long
+   - calcOldMeterReading: BigDecimal
+   - calcNewMeterReadings: BigDecimal
+   - calcCorrection: BigDecimal
+   - calcDeduction: BigDecimal
+   - calcDifference: BigDecimal
+   - multiplier: BigDecimal
+   - hasCorrection: Boolean
+
+F. BillingRunInvoiceDetailBaseModel
+   Location: phoenix-core-lib/src/main/java/bg/energo/phoenix/billingRun/model/BillingRunInvoiceDetailBaseModel.java
+
+   Fields:
+   - type: InvoiceStandardDetailType (SETTLEMENT or SCALE)
+   - calculatedVolumes: BigDecimal
+   - calculatedPrice: BigDecimal
+   - kwhPrice: BigDecimal
+   - dateFrom: LocalDate
+   - dateTo: LocalDateTime
+   - pcId: Long
+   - podId: Long
+   - bgInvoiceSlotId: Long
+   - finalRestrictionVolume: BigDecimal (after restrictions)
+   - finalRestrictionAmount: BigDecimal (after restrictions)
+   - volumesOfPercentageRestriction: BigDecimal
+   - volumesOfKwhRestriction: BigDecimal
+   - volumesOfCcyRestriction: BigDecimal
+   - billingDataProfileIds: Long[] (for SETTLEMENT)
+   - billingDataScaleIds: Long[] (for SCALE)
+   - oldMeterReading: BigDecimal (for SCALE, non-tariff)
+   - newMeterReading: BigDecimal (for SCALE, non-tariff)
+   - correction: BigDecimal
+   - deducted: BigDecimal
+   - difference: BigDecimal
+
+5.3. Response Models
+--------------------
+
+A. StandardBillingRunParametersResponse
+   Location: phoenix-core-lib/src/main/java/bg/energo/phoenix/model/response/billing/billingRun/StandardBillingRunParametersResponse.java
+
+   Fields:
+   - applicationModelType: List<ApplicationModelType>
+   - billingCriteria: BillingCriteria
+   - billingApplicationLevel: BillingApplicationLevel
+   - customersContractOrPODConditions: String
+   - listOfCustomersContractsOrPOD: String
+   - maxEndDate: LocalDate
+   - periodicMaxEndDate: BillingEndDate
+   - periodicMaxEndDateValue: Integer
+
+================================================================================
+6. CALCULATIONS AND ALGORITHMS
+================================================================================
+
+6.1. Settlement Period Calculations
+-------------------------------------
+
+Formula: consumptionAfterPercent = profileValue.getV() * (percent / 100)
+Formula: calculatedPrice = consumptionAfterPercent * price
+Formula: kwhPrice = totalPrice / totalConsumption (if consumption > 0)
+
+Code Location: BillingRunProcessSettlementService.evaluateSettlement()
+
+Step-by-step:
+1. For each BillingRunSettlementPeriod:
+   a. Parse ProfileValue[] from dataJson
+   b. Get formula X values (variables)
+   c. For each ProfileValue:
+      - Build variables context
+      - Evaluate price formula: price = evaluateExpression(formula, context)
+      - Apply number type (NEGATIVE if needed)
+      - Convert currency if needed
+      - Apply percentage: consumptionAfterPercent = v * (percent / 100)
+      - Calculate: calculatedPrice = consumptionAfterPercent * price
+      - Accumulate: totalConsumption += consumptionAfterPercent
+      - Accumulate: totalPrice += calculatedPrice
+
+2. Handle combined contracts:
+   If scaleValueForCombined != profileTotalForCombined:
+      totalConsumptionCombine = (totalConsumptionBeforePercent / profileTotalForCombined) 
+                                * scaleValueForCombined 
+                                * (percent / 100)
+      avgPrice = totalPrice / totalConsumption
+      totalPrice = totalConsumptionCombine * avgPrice
+      totalConsumption = totalConsumptionCombine
+
+3. Group by contract version and aggregate
+
+Rounding:
+- Consumption: 8 decimal places (RoundingMode.HALF_UP)
+- Price: 12 decimal places (RoundingMode.HALF_UP)
+- Unit price: 12 decimal places (RoundingMode.HALF_UP)
+
+6.2. Scale Calculations
+------------------------
+
+Formula: totalPrice = volume * kwhPrice
+Formula: difference = (value - correction + deduction) / multiplier
+Formula: newMeterReading = oldMeterReading + difference
+
+Code Location: BillingRunProcessScaleCalculationService
+
+A. Price Calculation:
+   1. Extract price parameters from formula ($N$ patterns)
+   2. Extract profile price if $PRICE_PROFILE$ in formula
+   3. Evaluate formula: price = evaluateExpression(formula, context)
+   4. Apply number type (NEGATIVE if needed)
+   5. Convert currency if needed
+   6. Calculate: totalPrice = price * volume
+
+B. Month Splitting (if needed):
+   1. Check if period spans multiple months
+   2. Check if formula uses time-dependent variables
+   3. Split at month boundaries
+   4. For each month segment:
+      - Recalculate price
+      - Distribute volume: volume = (totalVolume / totalDays) * segmentDays
+      - Distribute correction: correction = (totalCorrection / totalDays) * segmentDays
+      - Distribute deduction: deduction = (totalDeduction / totalDays) * segmentDays
+   5. Round and adjust to eliminate rounding errors
+
+C. Meter Reading Calculation (non-tariff):
+   1. Calculate difference: difference = (value - correction + deduction) / multiplier
+   2. For first split: oldMeterReading = original old reading
+   3. For subsequent splits: oldMeterReading = previous split's newMeterReading
+   4. Calculate: newMeterReading = oldMeterReading + difference
+
+D. Rounding and Adjustment Algorithm:
+   1. Calculate total rounded values
+   2. Find difference: diff = actualTotal - roundedTotal
+   3. Sort by 9th decimal digit (ascending if diff > 0, descending if diff < 0)
+   4. Adjust values by 0.00000001 increments until diff = 0
+
+6.3. Restriction Calculations
+------------------------------
+
+A. Percent Restriction:
+   Formula: restrictedVolume = totalVolumes * (percent / 100)
+   
+   Code Location: BillingRunRestrictionPercentService.calculate()
+   
+   Process:
+   1. Calculate total volumes from all details
+   2. Calculate restricted volume: restrictedVolume = total * (percent / 100)
+   3. Distribute proportionally to each detail
+   4. Set volumesOfPercentageRestriction for each detail
+
+B. KWH Restriction:
+   Code Location: BillingRunRestrictionKwhService.calculate()
+   
+   Process:
+   1. Get KWH restriction ranges for price component
+   2. For each detail:
+      - Check which range the volume falls into
+      - Set volumesOfKwhRestriction = min(volume, range.max)
+   3. Accumulate total restricted volumes
+
+C. CCY Restriction:
+   Code Location: BillingRunRestrictionCcyService.calculate()
+   
+   Process:
+   1. Get CCY restriction ranges for price component
+   2. For each detail:
+      - Convert calculatedPrice to restriction currency
+      - Check which range the value falls into
+      - Convert restricted value back to main currency
+      - Calculate restricted volume: restrictedVolume = restrictedValue / kwhPrice
+   3. Accumulate total restricted volumes
+
+D. Final Restriction Application:
+   Code Location: BillingRunStandardInvoiceGenerationProcessor.calculateRestrictions()
+   
+   Process:
+   1. Calculate all three restriction types
+   2. Find smallest restriction volume (most restrictive)
+   3. Apply final restriction:
+      - finalRestrictionVolume = min(percentRestriction, kwhRestriction, ccyRestriction)
+      - finalRestrictionAmount = finalRestrictionVolume * kwhPrice
+   4. Remove details with finalRestrictionVolume = 0
+
+6.4. Discount Calculations
+---------------------------
+Code Location: BillingRunDiscountService
+
+Process:
+1. Check if price component has discount enabled
+2. Group details by discount criteria
+3. Calculate discount amounts based on discount rules
+4. Create discount detail lines
+5. Add to invoice detail list
+
+================================================================================
+7. VALIDATIONS AND BUSINESS RULES
+================================================================================
+
+7.1. Request Validations
+-------------------------
+
+A. StandardBillingRunConditionValidator
+   Location: phoenix-core-lib/src/main/java/bg/energo/phoenix/model/request/billing/billingRun/StandardBillingRunConditionValidator.java
+
+   Validations:
+   1. WITH_ELECTRICITY_INVOICE requires FOR_VOLUMES:
+      if (applicationModelType.contains(WITH_ELECTRICITY_INVOICE) 
+          && !applicationModelType.contains(FOR_VOLUMES))
+      Error: "For Volumes should be checked with With Electricity Invoice"
+
+   2. Billing Criteria validations:
+      - CUSTOMERS_CONTRACTS_OR_POD_CONDITIONS:
+        * customersContractOrPODConditions must not be empty
+        * billingApplicationLevel must not be null
+        * listOfCustomersContractsOrPOD must be empty
+      
+      - LIST_OF_CUSTOMERS_CONTRACTS_OR_PODS:
+        * listOfCustomersContractsOrPOD must not be empty
+        * billingApplicationLevel must not be null
+        * customersContractOrPODConditions must be empty
+      
+      - ALL_CUSTOMERS:
+        * billingApplicationLevel must be null
+        * customersContractOrPODConditions must be empty
+        * listOfCustomersContractsOrPOD must be empty
+
+B. BillingRunBaseRequestValidator
+   Location: phoenix-core-lib/src/main/java/bg/energo/phoenix/model/customAnotations/billing/billingRun/BillingRunBaseRequestValidator.java
+
+   Validations for FOR_VOLUMES:
+
+   1. STANDARD Periodicity:
+      if (periodicity == STANDARD && applicationModelType.contains(FOR_VOLUMES))
+        - maxEndDate must not be null
+        Error: "Max End Date must be provided when application model type is 'For Volumes'"
+      
+      if (periodicity == STANDARD && !applicationModelType.contains(FOR_VOLUMES))
+        - maxEndDate must be null
+        Error: "Max End Date must not be provided"
+      
+      - periodicMaxEndDate must be null
+      - periodicMaxEndDateValue must be null
+      - accountingPeriodId must not be null
+      - taxEventDate must not be null
+      - invoiceDate must not be null
+
+   2. PERIODIC Periodicity:
+      if (periodicity == PERIODIC && applicationModelType.contains(FOR_VOLUMES))
+        - maxEndDate must be null
+        - periodicMaxEndDate must not be null
+        Error: "Periodic max end date must be provided when application model type is 'For Volumes'"
+        - periodicMaxEndDateValue must not be null
+        Error: "Periodic max end date value must be provided when application model type is 'For Volumes'"
+      
+      if (periodicity == PERIODIC && !applicationModelType.contains(FOR_VOLUMES))
+        - periodicMaxEndDate must be null
+        - periodicMaxEndDateValue must be null
+
+C. BillingRunEditBaseRequestValidator
+   Location: phoenix-core-lib/src/main/java/bg/energo/phoenix/model/customAnotations/billing/billingRun/BillingRunEditBaseRequestValidator.java
+
+   Similar validations as BillingRunBaseRequestValidator for edit operations.
+
+7.2. Business Rule Validations
+-------------------------------
+
+A. Contract Type Validation:
+   - FOR_VOLUMES only processes PRODUCT_CONTRACT type contracts
+   - SERVICE_CONTRACT contracts are skipped
+   Code: if (!runContract.getContractType().equals(ContractType.PRODUCT_CONTRACT)) continue;
+
+B. Date Range Validation:
+   - maxEndDate must be >= invoiceDate
+   - maxEndDate must be within accounting period
+   - Date range validation: 1990-01-01 to 2090-12-31
+
+C. Profile Percentage Validation:
+   - Sum of all profile percentages should equal 100%
+   - Validated in stored procedure
+
+D. Scale Range Validation:
+   - Scale ranges must not have gaps
+   - Scale ranges must be continuous
+   - Validated in application model creation
+
+7.3. Data Validation
+---------------------
+
+A. Settlement Period Data:
+   - dataJson must contain valid ProfileValue[] JSON
+   - priceFormula must be valid OGNL expression
+   - percent must be between 0 and 100
+
+B. Scale Data:
+   - calcVolume must be >= 0
+   - multiplier must be > 0
+   - Date ranges must be valid (dateFrom <= dateTo)
+
+C. Restriction Validation:
+   - Restriction ranges must not overlap incorrectly
+   - Percent restriction must be between 0 and 100
+   - KWH ranges must be valid (valueFrom <= valueTo)
+   - CCY ranges must be valid (valueFrom <= valueTo)
+
+================================================================================
+8. RESTRICTIONS SYSTEM
+================================================================================
+
+8.1. Restriction Types
+-----------------------
+
+A. Percent Restriction (Volume-Based)
+   Table: price_component.am_for_volumes_by_scales.restriction_of_application_based_on_volume_percent
+   Table: price_component.am_for_volumes_by_settlement_periods.restriction_of_application_based_on_volume_percent
+   
+   Type: BigDecimal (0-100)
+   Applies to: Total volumes
+   Calculation: restrictedVolume = totalVolumes * (percent / 100)
+
+B. KWH Restriction (Volume Range-Based)
+   Table: price_component.am_for_volumes_by_scale_kwh_restriction_ranges
+   Table: price_component.am_for_volumes_by_settlement_period_kwh_restriction_ranges
+   
+   Fields:
+   - valueFrom: BigDecimal (default: 0)
+   - valueTo: BigDecimal (default: 2147483647)
+   
+   Multiple ranges supported
+   Applies to: Individual detail volumes
+   Calculation: restrictedVolume = min(volume, range.max)
+
+C. CCY Restriction (Value-Based)
+   Table: price_component.am_for_volumes_by_scale_ccy_restriction_ranges
+   Table: price_component.am_for_volumes_by_settlement_period_ccy_restriction_ranges
+   
+   Fields:
+   - valueFrom: BigDecimal
+   - valueTo: BigDecimal
+   - currencyId: Long (FK to currencies)
+   
+   Multiple ranges with different currencies supported
+   Applies to: Calculated price values
+   Calculation: 
+     - Convert price to restriction currency
+     - Check range
+     - Convert restricted value back to main currency
+     - restrictedVolume = restrictedValue / kwhPrice
+
+8.2. Restriction Application Logic
+------------------------------------
+
+Code Location: BillingRunStandardInvoiceGenerationProcessor.calculateRestrictions()
+
+Process:
+1. Sort details by dateFrom (chronological order)
+2. Apply percent restriction if exists
+3. Apply KWH restrictions if exist
+4. Apply CCY restrictions if exist
+5. For each detail, find minimum restriction volume:
+   minRestriction = min(
+       volumesOfPercentageRestriction,
+       volumesOfKwhRestriction,
+       volumesOfCcyRestriction
+   )
+6. Set finalRestrictionVolume = minRestriction
+7. Set finalRestrictionAmount = finalRestrictionVolume * kwhPrice
+8. Remove details where finalRestrictionVolume = 0
+
+8.3. Restriction Queries
+-------------------------
+
+A. Settlement Restrictions:
+   - getSettlementRestrictionByCcy(pcId)
+     Query: SELECT value_from, value_to, currency_id 
+            FROM price_component.am_for_volumes_by_settlement_period_ccy_restriction_ranges
+            WHERE am_for_volumes_by_settlement_period_id IN (
+                SELECT id FROM price_component.am_for_volumes_by_settlement_periods
+                WHERE application_model_id IN (
+                    SELECT id FROM price_component.application_models
+                    WHERE price_component_id = ?
+                )
+            )
+   
+   - getSettlementRestrictionByKwh(pcId)
+     Query: SELECT COALESCE(value_from, 0), COALESCE(value_to, 2147483647)
+            FROM price_component.am_for_volumes_by_settlement_period_kwh_restriction_ranges
+            WHERE am_for_volumes_by_settlement_period_id IN (...)
+   
+   - getSettlementRestrictionPercent(pcId)
+     Query: SELECT restriction_of_application_based_on_volume_percent
+            FROM price_component.am_for_volumes_by_settlement_periods
+            WHERE application_model_id IN (...)
+
+B. Scale Restrictions:
+   - getScaleRestrictionByCcy(pcId)
+   - getScaleRestrictionByKwh(pcId)
+   - getScaleRestrictionPercent(pcId)
+   
+   Similar queries but for scales tables.
+
+8.4. Restriction Services
+--------------------------
+
+A. BillingRunRestrictionPercentService
+   Method: calculate(List<BillingRunInvoiceDetailBaseModel> values, BigDecimal percentRestriction)
+   - Calculates percent restriction for all values
+   - Distributes proportionally
+
+B. BillingRunRestrictionKwhService
+   Method: calculate(List<BillingRunInvoiceDetailBaseModel> values, List<KwhRestrictions> kwhRestrictions)
+   - Applies KWH range restrictions
+   - Handles multiple ranges
+
+C. BillingRunRestrictionCcyService
+   Method: calculate(List<CcyRestrictions> ccyRestrictions, List<BillingRunInvoiceDetailBaseModel> values, ...)
+   - Applies CCY restrictions
+   - Handles currency conversion
+   - Supports multiple currencies
+
+================================================================================
+9. DISCOUNTS SYSTEM
+================================================================================
+
+9.1. Discount Processing
+-------------------------
+
+Code Location: BillingRunDiscountService
+
+A. Settlement Discounts:
+   Method: processDiscount(Map.Entry<SlotGrouping, List<BillingRunInvoiceDetailBaseModel>> row, ...)
+   - Processes discounts for settlement period details
+   - Groups by discount criteria
+   - Calculates discount amounts
+   - Creates discount detail lines
+
+B. Scale Discounts:
+   Method: processDiscountScale(Map.Entry<SlotGrouping, List<BillingRunInvoiceDetailBaseModel>> row, ...)
+   - Processes discounts for scale details
+   - Similar logic to settlement discounts
+
+9.2. Discount Application
+--------------------------
+
+Process:
+1. Check if price component has discount enabled (priceComponent.getDiscount())
+2. If enabled, process discounts
+3. Create discount detail lines with negative amounts
+4. Add to invoice detail list
+5. Discounts appear as separate lines in invoice
+
+================================================================================
+10. OBJECT RELATIONSHIPS AND DEPENDENCIES
+================================================================================
+
+10.1. Entity Relationships
+---------------------------
+
+ApplicationModel (Price Component)
+    ├── VolumesByScale (BY_SCALES type)
+    │   ├── VolumesByScaleScales (scale definitions)
+    │   ├── VolumesByScaleKwhRestriction (KWH restrictions)
+    │   ├── VolumesByScaleCcyRestriction (CCY restrictions)
+    │   └── VolumesByScaleIssuingPeriods (issuing periods)
+    │
+    └── VolumesBySettlementPeriod (BY_SETTLEMENT_PERIODS type)
+        ├── SettlementPeriodsProfiles (profile percentages)
+        ├── SettlementPeriodsKwhRestrictions (KWH restrictions)
+        ├── SettlementPeriodsCcyRestrictions (CCY restrictions)
+        └── SettlementPeriodsDateOfMonths (date of months)
+
+BillingRun
+    └── BillingRunContracts
+        ├── BillingRunSettlementPeriod (for settlement processing)
+        └── BillingRunBdbsSplitsIoData (for scale processing)
+
+Invoice
+    └── InvoiceStandardDetailedData
+        ├── detail_type = 'SETTLEMENT' (from settlement periods)
+        └── detail_type = 'SCALE' (from scales)
+
+10.2. Service Dependencies
+---------------------------
+
+BillingRunStandardInvoiceGenerationProcessor
+    ├── BillingRunProcessSettlementService
+    ├── BillingRunProcessScaleCalculationService
+    ├── BillingRunRestrictionPercentService
+    ├── BillingRunRestrictionKwhService
+    ├── BillingRunRestrictionCcyService
+    ├── BillingRunDiscountService
+    ├── BillingRunPriceComponentEvaluationService
+    ├── BillingRunCurrencyService
+    └── PriceComponentRepository
+
+BillingRunProcessSettlementService
+    ├── BillingRunSettlementPeriodRepository
+    ├── BillingRunContractsRepository
+    ├── BillingRunPriceComponentEvaluationService
+    ├── BillingRunCurrencyService
+    └── PriceComponentRepository
+
+BillingRunProcessScaleCalculationService
+    ├── BillingRunBdbsSplitsIoDataRepository
+    ├── BillingRunContractsRepository
+    ├── PriceParameterDetailInfoRepository
+    ├── BillingDataByProfileRepository
+    ├── BillingRunPriceComponentEvaluationService
+    ├── BillingRunCurrencyService
+    └── PriceComponentRepository
+
+10.3. Repository Dependencies
+------------------------------
+
+BillingRunSettlementPeriodRepository
+    - findAllByRunContractId(Long runContractId)
+
+BillingRunBdbsSplitsIoDataRepository
+    - findAllByRunContractId(Long runContractId)
+
+BillingRunContractsRepository
+    - getSettlementRestrictionByCcy(Long pcId)
+    - getSettlementRestrictionByKwh(Long pcId)
+    - getSettlementRestrictionPercent(Long pcId)
+    - getScaleRestrictionByCcy(Long pcId)
+    - getScaleRestrictionByKwh(Long pcId)
+    - getScaleRestrictionPercent(Long pcId)
+    - updateBgInvoiceSlotStatus(Long slotId, String status, String message)
+
+================================================================================
+11. DATABASE SCHEMA AND STORED PROCEDURES
+================================================================================
+
+11.1. Key Tables
+-----------------
+
+A. billing.billings
+   - Main billing run table
+   - Fields: id, type, status, application_model_type (array), max_end_date, etc.
+
+B. billing_run.billing_run_contracts
+   - Contracts processed in billing run
+   - Links to billing run and contracts
+
+C. billing_run.billing_run_settlement_periods
+   - Settlement period data prepared for processing
+   - Contains profile data JSON, formulas, dates
+
+D. billing_run.billing_run_bdbs_splits_io_data
+   - Scale split data prepared for processing
+   - Contains volumes, dates, formulas
+
+E. price_component.am_for_volumes_by_scales
+   - Scale application model configuration
+   - Contains restriction settings
+
+F. price_component.am_for_volumes_by_settlement_periods
+   - Settlement period application model configuration
+   - Contains restriction settings
+
+G. price_component.am_for_volumes_by_settlement_period_profiles
+   - Profile percentages for settlement periods
+   - Links profiles to settlement periods
+
+11.2. Stored Procedures
+------------------------
+
+A. billing_run.run_standard_billing_main_data_preparation(?)
+   Parameter: billing_run.id (Long)
+   
+   Purpose: Prepares billing data for standard billing run
+   
+   Process:
+   1. Identifies contracts matching billing criteria
+   2. Filters by application model type (FOR_VOLUMES)
+   3. Creates billing_run_contracts records
+   4. Prepares settlement period data:
+      - Reads profile data from billing_data_by_profile
+      - Groups by settlement periods
+      - Creates billing_run_settlement_periods records
+   5. Prepares scale split data:
+      - Reads scale data from billing_data_by_scales
+      - Splits by scale ranges
+      - Creates billing_run_bdbs_splits_io_data records
+   6. Links billing data IDs to records
+   
+   Output:
+   - billing_run_contracts records
+   - billing_run_settlement_periods records
+   - billing_run_bdbs_splits_io_data records
+
+B. billing_run.run_standard_billing_main_data_preparation_correction(?)
+   Parameter: billing_run.id (Long)
+   
+   Purpose: Prepares billing data for invoice correction
+   
+   Similar to main preparation but:
+   - Uses existing invoice data as base
+   - Applies correction logic
+   - Handles reversals
+
+C. billing_run.run_standard_billing_interim_data_preparation(?)
+   Parameter: billing_run.id (Long)
+   
+   Purpose: Prepares interim and advance payment data
+   
+   Used when INTERIM_AND_ADVANCE_PAYMENT is selected with FOR_VOLUMES
+
+11.3. Database Queries
+-----------------------
+
+A. Settlement Restriction Queries:
+   - getSettlementRestrictionByCcy: Queries ccy_restriction_ranges
+   - getSettlementRestrictionByKwh: Queries kwh_restriction_ranges
+   - getSettlementRestrictionPercent: Queries settlement_periods table
+
+B. Scale Restriction Queries:
+   - getScaleRestrictionByCcy: Queries scale ccy_restriction_ranges
+   - getScaleRestrictionByKwh: Queries scale kwh_restriction_ranges
+   - getScaleRestrictionPercent: Queries scales table
+
+================================================================================
+12. API AND SERVICE LAYER
+================================================================================
+
+12.1. REST API Endpoints
+-------------------------
+
+A. Create Billing Run
+   POST /api/billing-runs
+   Request Body: BillingRunCreateRequest
+   - Contains StandardBillingParameters with FOR_VOLUMES
+   Response: BillingRunResponse
+
+B. Get Billing Run
+   GET /api/billing-runs/{id}
+   Response: BillingRunResponse
+   - Contains StandardBillingRunParametersResponse
+
+C. Update Billing Run
+   PUT /api/billing-runs/{id}
+   Request Body: BillingRunEditRequest
+   - Contains StandardBillingParameters with FOR_VOLUMES
+   Response: BillingRunResponse
+
+D. List Billing Runs
+   GET /api/billing-runs
+   Query Parameters: filters, pagination
+   Response: Page<BillingRunListingResponse>
+
+E. Start Billing
+   POST /api/billing-runs/{id}/start-billing
+   Triggers: BillingRunStandardPreparationStateHandler.startStandardBillingProcessing()
+
+12.2. Service Methods
+---------------------
+
+A. BillingRunService
+   - mapStandardBillingParameters(): Maps request to entity
+   - getBasicParameters(): Retrieves standard billing parameters
+   - updateBasicParametersForEdit(): Updates parameters
+   - standardList(): Lists standard billing runs
+
+B. BillingRunStandardPreparationStateHandler
+   - startStandardBillingProcessing(): Starts billing process
+   - finishStandardBillingProcessing(): Finalizes billing process
+   - resumeNonFinishedProcesses(): Resumes failed processes
+
+C. BillingRunStandardPreparationService
+   - startMainDataPreparation(): Calls stored procedure
+   - startMainDataPreparationCorrection(): Calls correction procedure
+   - startInterimAdvancePaymentPreparation(): Calls interim procedure
+
+D. BillingRunProcessSettlementService
+   - evaluateSettlement(): Processes settlement periods
+
+E. BillingRunProcessScaleCalculationService
+   - splitAndEvaluateScales(): Processes scales
+   - processScaleFinalSplits(): Handles month splitting
+   - roundAndAdjustValues(): Adjusts rounding errors
+
+F. BillingRunStandardInvoiceGenerationProcessor
+   - process(): Main processing method
+   - calculateRestrictions(): Applies restrictions
+   - generateInvoice(): Generates invoice records
+
+================================================================================
+13. TEST CASES AND SCENARIOS
+================================================================================
+
+13.1. Unit Test Cases
+----------------------
+
+A. ApplicationModelUnitTest
+   Location: phoenix-core/src/test/java/bg/energo/phoenix/service/product/priceComponent/ApplicationModelUnitTest.java
+   
+   Test Cases:
+   1. Test FOR_VOLUMES application model creation with BY_SCALES
+   2. Test FOR_VOLUMES application model creation with BY_SETTLEMENT_PERIODS
+   3. Test validation of FOR_VOLUMES application model
+   4. Test restriction configuration for FOR_VOLUMES
+
+B. BillingRunService Tests
+   Test Cases:
+   1. Test FOR_VOLUMES parameter mapping
+   2. Test FOR_VOLUMES validation
+   3. Test maxEndDate requirement for FOR_VOLUMES
+   4. Test periodicMaxEndDate requirement for FOR_VOLUMES
+
+13.2. Integration Test Cases
+------------------------------
+
+A. BillingRunControllerIT
+   Location: phoenix-core/src/test/java/bg/energo/phoenix/controller/billing/BillingRunControllerIT.java
+   
+   Test Cases:
+   1. Create billing run with FOR_VOLUMES
+   2. Create billing run with FOR_VOLUMES + WITH_ELECTRICITY_INVOICE
+   3. Create billing run with FOR_VOLUMES + INTERIM_AND_ADVANCE_PAYMENT
+   4. Validate maxEndDate requirement
+   5. Validate periodicMaxEndDate requirement
+   6. Test invoice generation with FOR_VOLUMES
+
+B. ProcessPeriodicity Tests
+   Test Cases:
+   1. Test FOR_VOLUMES with STANDARD periodicity
+   2. Test FOR_VOLUMES with PERIODIC periodicity
+   3. Test date validations
+
+13.3. Test Scenarios
+--------------------
+
+A. Scenario 1: Simple Settlement Period Billing
+   Setup:
+   - Contract with FOR_VOLUMES application model
+   - Settlement period configuration with profiles
+   - Profile data for billing period
+   
+   Expected:
+   - Settlement periods processed correctly
+   - Consumption calculated from profiles
+   - Price calculated using formula
+   - Invoice details created with SETTLEMENT type
+
+B. Scenario 2: Scale-Based Billing
+   Setup:
+   - Contract with FOR_VOLUMES application model
+   - Scale configuration with multiple tiers
+   - Scale data for billing period
+   
+   Expected:
+   - Scales processed correctly
+   - Volumes split by scale ranges
+   - Prices calculated per scale
+   - Invoice details created with SCALE type
+
+C. Scenario 3: Combined Settlement and Scales
+   Setup:
+   - Contract with both settlement and scale price components
+   - Both types of data available
+   
+   Expected:
+   - Both settlement and scale processing executed
+   - Separate invoice details for each type
+   - Totals aggregated correctly
+
+D. Scenario 4: Restrictions Application
+   Setup:
+   - Price component with percent restriction (50%)
+   - Price component with KWH restrictions
+   - Price component with CCY restrictions
+   
+   Expected:
+   - Restrictions applied correctly
+   - Final restriction volume is minimum of all
+   - Details with zero restriction removed
+
+E. Scenario 5: Month Splitting
+   Setup:
+   - Scale period spanning multiple months
+   - Price formula with time-dependent variables
+   
+   Expected:
+   - Period split at month boundaries
+   - Price recalculated for each month
+   - Volumes distributed proportionally
+
+F. Scenario 6: Meter Reading Calculation
+   Setup:
+   - Non-tariff scale with meter readings
+   - Corrections and deductions
+   
+   Expected:
+   - Meter readings calculated correctly
+   - Differences calculated
+   - Old/new readings set properly
+
+G. Scenario 7: Invoice Correction
+   Setup:
+   - Existing invoice with FOR_VOLUMES details
+   - Correction billing run created
+   
+   Expected:
+   - Original invoice details retrieved
+   - Correction process executed
+   - New invoice with corrections created
+
+================================================================================
+14. ERROR HANDLING AND EDGE CASES
+================================================================================
+
+14.1. Error Handling
+---------------------
+
+A. Data Preparation Errors:
+   - Stored procedure failures logged
+   - Billing run status set to FAILED
+   - Error message stored in billing run
+
+B. Processing Errors:
+   - Individual slot errors logged
+   - Slot status set to ERROR
+   - Error message stored in slot
+   - Failed slots added to failedSlots set
+   - Processing continues for other slots
+
+C. Calculation Errors:
+   - Formula evaluation errors caught
+   - Currency conversion errors handled
+   - Division by zero prevented
+   - Null values handled gracefully
+
+14.2. Edge Cases
+----------------
+
+A. Zero Consumption:
+   - Handled in settlement calculation
+   - kwhPrice set to 0 if consumption = 0
+   - Prevents division by zero
+
+B. Empty Profile Data:
+   - Validated in stored procedure
+   - Error if no profile data found
+
+C. Missing Price Components:
+   - Validated before processing
+   - Error if price component not found
+
+D. Invalid Date Ranges:
+   - Validated in request validation
+   - Error if dateFrom > dateTo
+
+E. Overlapping Restrictions:
+   - Handled by finding minimum restriction
+   - Most restrictive applied
+
+F. Rounding Errors:
+   - Adjusted using roundAndAdjustValues algorithm
+   - Ensures totals match exactly
+
+G. Currency Conversion:
+   - Handled in BillingRunCurrencyService
+   - Exchange rates cached
+   - Errors logged and handled
+
+14.3. Exception Handling
+-------------------------
+
+A. Try-Catch Blocks:
+   - Settlement processing: catches exceptions, logs, marks slot as error
+   - Scale processing: catches exceptions, logs, marks slot as error
+   - Restriction calculation: catches exceptions, logs, marks slot as error
+   - Discount calculation: catches exceptions, logs, marks slot as error
+
+B. Error Messages:
+   - Stored in billing_run_contracts.error_message
+   - Stored in bg_invoice_slots.status and error_message
+   - Logged with context (slot ID, PC ID, POD ID)
+
+================================================================================
+15. PERFORMANCE CONSIDERATIONS
+================================================================================
+
+15.1. Optimization Strategies
+------------------------------
+
+A. Caching:
+   - Price components cached in HashMap
+   - Currencies cached in HashMap
+   - Formula X values cached
+   - Price parameters cached per month
+
+B. Batch Processing:
+   - Contracts processed in parallel (16 threads)
+   - Slots processed sequentially per contract
+   - Invoice generation batched
+
+C. Database Queries:
+   - Bulk queries for restrictions
+   - Pre-fetching of related data
+   - Indexed queries on foreign keys
+
+15.2. Performance Metrics
+--------------------------
+
+A. Data Preparation:
+   - Stored procedure execution time
+   - Number of contracts processed
+   - Number of settlement periods created
+   - Number of scale splits created
+
+B. Processing:
+   - Settlement processing time per contract
+   - Scale processing time per contract
+   - Restriction calculation time
+   - Discount calculation time
+
+C. Invoice Generation:
+   - Invoice creation time
+   - Detail record creation time
+   - Total processing time
+
+15.3. Scalability
+-----------------
+
+A. Horizontal Scaling:
+   - Multiple application instances
+   - Load balancing
+   - Database connection pooling
+
+B. Vertical Scaling:
+   - Increased thread pool size
+   - Increased memory allocation
+   - Database optimization
+
+================================================================================
+16. INTEGRATION POINTS
+================================================================================
+
+16.1. External Systems
+----------------------
+
+A. Meter Reading System:
+   - Provides consumption data
+   - Used for scale calculations
+   - Meter readings for non-tariff scales
+
+B. Profile System:
+   - Provides load profiles
+   - Used for settlement period calculations
+   - Profile percentages configured in application model
+
+C. Currency System:
+   - Provides exchange rates
+   - Used for currency conversion
+   - Main and alternative currencies
+
+16.2. Internal Systems
+----------------------
+
+A. Contract Management:
+   - Provides contract data
+   - Contract details and versions
+   - POD associations
+
+B. Price Component System:
+   - Provides price component configurations
+   - Application models
+   - Formulas and restrictions
+
+C. Invoice System:
+   - Receives generated invoice data
+   - Stores invoice records
+   - Generates PDF documents
+
+================================================================================
+17. CONFIGURATION AND SETTINGS
+================================================================================
+
+17.1. Application Configuration
+---------------------------------
+
+A. Thread Pool Size:
+   - Default: 16 threads for parallel processing
+   - Configurable via application properties
+
+B. Scheduler Delay:
+   - Default: 1 minute delay between checks
+   - Configurable via application properties
+
+C. Rounding Precision:
+   - Consumption: 8 decimal places
+   - Price: 12 decimal places
+   - Unit price: 12 decimal places
+
+17.2. Database Configuration
+-----------------------------
+
+A. Connection Pool:
+   - Configured in application properties
+   - Size based on load
+
+B. Transaction Management:
+   - REQUIRES_NEW for critical operations
+   - Transaction boundaries per contract
+
+================================================================================
+18. TROUBLESHOOTING GUIDE
+================================================================================
+
+18.1. Common Issues
+-------------------
+
+A. Issue: Billing run fails with "Max End Date must be provided"
+   Solution: Ensure FOR_VOLUMES is selected and maxEndDate is set for STANDARD periodicity
+
+B. Issue: Settlement periods not processed
+   Solution: Check if profile data exists for the period
+            Check if application model has settlement period configuration
+            Check stored procedure logs
+
+C. Issue: Scales not processed
+   Solution: Check if scale data exists for the period
+            Check if application model has scale configuration
+            Check scale range definitions
+
+D. Issue: Restrictions not applied
+   Solution: Check if restrictions are configured in application model
+            Check restriction queries return data
+            Check restriction calculation logs
+
+E. Issue: Invoice details missing
+   Solution: Check if details were removed due to zero restriction
+            Check failed slots for errors
+            Check processing logs
+
+18.2. Debugging Steps
+---------------------
+
+A. Check Billing Run Status:
+   - Query billing.billings table
+   - Check status and error_message fields
+
+B. Check Contract Processing:
+   - Query billing_run.billing_run_contracts
+   - Check processing_status and error_message
+
+C. Check Slot Status:
+   - Query bg_invoice_slots
+   - Check status and error_message fields
+
+D. Check Data Preparation:
+   - Query billing_run_settlement_periods
+   - Query billing_run_bdbs_splits_io_data
+   - Verify data exists
+
+E. Check Calculations:
+   - Enable debug logging
+   - Check calculation results in logs
+   - Verify formula evaluations
+
+18.3. Log Analysis
+------------------
+
+A. Key Log Messages:
+   - "Started scheduler for billing data generation"
+   - "Exception in billing run settlement evaluation"
+   - "Exception in billing run scale evaluation"
+   - "Exception in billing run restriction calculation"
+   - "Exception in billing run discount calculation"
+
+B. Log Levels:
+   - DEBUG: Detailed processing information
+   - INFO: General processing information
+   - ERROR: Exception and error information
+
+================================================================================
+APPENDIX A: CONFLUENCE DOCUMENTATION REFERENCES
+================================================================================
+
+A.1. Process Diagrams
+---------------------
+- Page ID: 155320458
+- Title: "Billing run - For volumes process"
+- URL: https://app.diagrams.net/#G1xc70otQ45B7LNo6-39Ai5jofGlsrSN9e
+
+A.2. User Stories
+------------------
+- Page ID: 30474456
+- Title: "Standard Billing Run - Create"
+- Contains: Acceptance criteria, field definitions, validation rules
+
+A.3. Technical Documentation
+-----------------------------
+- Page ID: 145522778
+- Title: "Billing technical documentation"
+- Contains: Technical implementation details
+
+================================================================================
+APPENDIX B: CODE REFERENCES
+================================================================================
+
+B.1. Key Classes
+----------------
+- ApplicationModelType.java
+- StandardBillingParameters.java
+- BillingRunStandardPreparationStateHandler.java
+- BillingRunProcessSettlementService.java
+- BillingRunProcessScaleCalculationService.java
+- BillingRunStandardInvoiceGenerationProcessor.java
+- StandardBillingRunConditionValidator.java
+- BillingRunBaseRequestValidator.java
+
+B.2. Key Repositories
+---------------------
+- BillingRunRepository.java
+- BillingRunSettlementPeriodRepository.java
+- BillingRunBdbsSplitsIoDataRepository.java
+- BillingRunContractsRepository.java
+
+B.3. Key Services
+-----------------
+- BillingRunService.java
+- BillingRunStandardPreparationService.java
+- BillingRunProcessSettlementService.java
+- BillingRunProcessScaleCalculationService.java
+- BillingRunRestrictionPercentService.java
+- BillingRunRestrictionKwhService.java
+- BillingRunRestrictionCcyService.java
+- BillingRunDiscountService.java
+
+================================================================================
+END OF DOCUMENTATION
+================================================================================
+
+Document Version: 1.0
+Last Updated: [Current Date]
+Author: Phoenix Development Team
+Status: Complete
