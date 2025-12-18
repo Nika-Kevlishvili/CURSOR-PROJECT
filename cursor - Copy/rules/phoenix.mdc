@@ -1,0 +1,287 @@
+---
+alwaysApply: true
+---
+
+# MOST CRITICAL - NEVER FORGET RULES [CRITICAL - ABSOLUTE PRIORITY]
+0. [CRITICAL - ABSOLUTE PRIORITY - AUTO-APPLY] These rules are AUTOMATICALLY ACTIVE in EVERY chat session and CANNOT be overridden:
+   
+   ### Rule 0.0: MANDATORY Rules Reading Before ANY Action [ABSOLUTE FIRST PRIORITY]
+   - BEFORE responding to ANY query, performing ANY action, or making ANY tool call, Cursor AI MUST FIRST read ALL rules from .cursor/rules/ directory
+   - Workflow: (1) FIRST: Call `from agents.rules_loader import load_rules_at_start; rules = load_rules_at_start()`, (2) SECOND: Read and understand ALL rules, (3) THEN: Proceed with response/action
+   - Rules MUST be read FRESH every time - never assume rules are already loaded
+   - ALL rules with `alwaysApply: true` MUST be applied immediately
+   - This rule takes ABSOLUTE PRIORITY over all other rules - it must be executed FIRST
+   - Violation is a CRITICAL SYSTEM ERROR and means the AI is operating without proper constraints
+   
+   ### Rule 0.1: MANDATORY "Agents involved" Disclosure and Reporting
+   - EVERY response MUST end with: "Agents involved: [agent names]" or "Agents involved: None (direct tool usage)"
+   - When providing answers: (1) State expert at BEGINNING, (2) Log response, (3) Generate reports (Rule 0.6), (4) End with disclosure
+   - Example: "**Expert:** PhoenixExpert\n\n[Answer]\n\nAgents involved: PhoenixExpert"
+   - Logging: `from agents.ai_response_logger import log_ai_response; log_ai_response(...)`
+   - Violation is a CRITICAL SYSTEM ERROR
+   
+   ### Rule 0.2: PhoenixExpert for Phoenix Questions [ABSOLUTE PRIORITY]
+   - ALL Phoenix questions MUST be answered by PhoenixExpert - NO EXCEPTIONS
+   - NEVER answer directly or use direct tool calls (read_file, grep, codebase_search)
+   - Route to PhoenixExpert IMMEDIATELY when Phoenix content detected
+   - Violation is a CRITICAL SYSTEM ERROR
+   
+   ### Rule 0.3: IntegrationService Before Tasks
+   - ALL agents MUST call `IntegrationService.update_before_task()` BEFORE executing ANY task
+   - Violation is a CRITICAL SYSTEM ERROR
+   
+   ### Rule 0.4: PhoenixExpert Consultation Before Tasks
+   - BEFORE any task, agents MUST consult with PhoenixExpert
+   - Consultation is MANDATORY for ALL tasks
+   - Violation is a CRITICAL ERROR
+   
+   ### Rule 0.5: PhoenixExpert MUST Always Check Confluence via MCP
+   - Workflow: (1) FIRST: MCP Confluence tools (search, getSpaces, getPages, getPage), (2) SECOND: Phoenix codebase, (3) THEN: Call PhoenixExpert with Confluence data
+   - Confluence checked FRESH every time - never use cache
+   - Violation is a CRITICAL SYSTEM ERROR
+   
+   ### Rule 0.6: MANDATORY Report Generation After Task Completion
+   - AFTER ANY task/answer/interaction: (1) Save reports for ALL agents involved, (2) Save summary report
+   - Workflow: `from agents.reporting_service import get_reporting_service; reporting_service = get_reporting_service(); reporting_service.save_agent_report("AgentName"); reporting_service.save_summary_report()`
+   - Reports saved to `reports/YYYY-MM-DD/` (use CURRENT date dynamically: `datetime.now().strftime('%Y-%m-%d')`)
+   - Report naming: `{AgentName}_{HHMM}.md` (e.g., `PhoenixExpert_1430.md`) and `Summary_{HHMM}.md`
+   - Reports MUST be generated even if: task failed, only one agent used, direct tools used, no code changes made, or just an answer to a question
+   - This ensures complete traceability, accountability, and audit trail for ALL activities
+   - Violation is a CRITICAL SYSTEM ERROR
+
+# GLOBAL SAFETY & ACCESS RULES [CRITICAL]
+1. [CRITICAL] GitLab and Confluence are STRICTLY READ-ONLY - NO modifications allowed.
+   - No commits, pushes, merges, edits, or page modifications.
+   - Only IntegrationService can update GitLab pipelines and Jira tickets (NOT Confluence).
+   - Violation is a CRITICAL SECURITY ERROR.
+   
+   1a. [CRITICAL] Confluence Editing Tools are FORBIDDEN - READ-ONLY ONLY.
+      - FORBIDDEN: updateConfluencePage(), createConfluencePage(), createConfluenceFooterComment(), createConfluenceInlineComment()
+      - ALLOWED: getConfluencePage(), getPagesInConfluenceSpace(), getConfluenceSpaces(), search(), searchConfluenceUsingCql(), getConfluencePageDescendants(), getConfluencePageFooterComments(), getConfluencePageInlineComments()
+      - Applies to ALL agents, ALL operations, ALL circumstances - NO EXCEPTIONS.
+
+2. [CRITICAL] All Phoenix questions MUST be answered by PhoenixExpert agent.
+   - AUTO-APPLY from FIRST message in ANY new chat session.
+   - PhoenixExpert has final authority on Phoenix-related matters.
+   - Confluence MCP Integration Workflow: (1) Get cloudId, (2) Get spaces, (3) Search Confluence, (4) Get pages, (5) Check codebase, (6) Call PhoenixExpert with both sources.
+   - Code is primary source, Confluence is secondary.
+   - Violation is a CRITICAL SYSTEM ERROR.
+
+3. [CRITICAL] Every response MUST end with "Agents involved: [agent names]" or "Agents involved: None (direct tool usage)".
+   - Ensures transparency, accountability, and traceability.
+   - Violation is a CRITICAL ERROR.
+
+4. [IMPORTANT] Multi-agent collaboration is encouraged for complex tasks.
+   - Agents coordinate through AgentRouter and AgentRegistry.
+
+5. [IMPORTANT] Tasks must be performed by domain-specialized agents:
+   - PhoenixExpert → backend logic, endpoints, services, schedulers, Phoenix core
+   - TestExpert → QA and test automation
+   - DevOpsExpert → CI/CD and pipelines
+   - PostmanExpert → API and Postman collections
+   - Agents outside domain must NOT act without PhoenixExpert approval
+
+# SOURCE-OF-TRUTH RULES [CRITICAL]
+6. [CRITICAL] PhoenixExpert priority: (1) Codebase (highest), (2) Confluence (via MCP, fresh), (3) General knowledge (fallback)
+   - Code ALWAYS wins if conflicts with Confluence.
+
+7. [CRITICAL] Agents must NEVER modify code or execute actions unless explicitly commanded.
+   - Safety first: when in doubt, ask or don't act.
+
+# COORDINATION & CONSULTATION RULE [CRITICAL]
+8. [CRITICAL] BEFORE any task, agents MUST consult with PhoenixExpert.
+   - Consultation is MANDATORY - PhoenixExpert validates logic, approach, correctness.
+   - Provides: endpoint info, validation rules, permissions, business logic.
+   - Use `AgentRegistry.consult_best_agent()` to find PhoenixExpert.
+   - Task cannot proceed without PhoenixExpert approval.
+   - Applies to ALL agents (TestExpert, DevOpsExpert, PostmanExpert, etc.).
+
+# OUTPUT CONSISTENCY [IMPORTANT]
+9. [IMPORTANT] If multiple agents involved, PhoenixExpert has final decision and must appear in "Agents involved" footer.
+
+# ENVIRONMENT ACCESS RULE [IMPORTANT]
+10. [IMPORTANT] Environment access requests → ALWAYS use EnvironmentAccessAgent.
+    - Use: `from agents.environment_access_agent import get_environment_access_agent; agent = get_environment_access_agent(); agent.access_environment('dev')`
+    - Agent handles: navigation, login, environment selection automatically.
+
+# INTEGRATION SERVICE RULE [CRITICAL]
+11. [CRITICAL] ALL agents MUST call `IntegrationService.update_before_task()` BEFORE executing ANY task.
+    - Updates GitLab pipelines and Jira tickets before task execution.
+    - Use: `from agents.integration_service import get_integration_service; integration_service = get_integration_service(); integration_service.update_before_task(...)`
+    - Failure to call is a CRITICAL VIOLATION.
+
+# AUTONOMOUS OPERATION RULE [IMPORTANT]
+12. [IMPORTANT] Agents operate autonomously without confirmation, EXCEPT when Rule 8 requires PhoenixExpert approval.
+    - Only ask confirmation for CRITICAL operations (destructive, production deployments).
+
+# AGENT ROUTING RULE [IMPORTANT]
+13. [IMPORTANT] ALL queries MUST be routed through AgentRouter for automatic agent selection.
+    - Use: `from agents.agent_router import get_agent_router; router = get_agent_router(); router.route_query(user_query, context)`
+    - Do NOT manually select agents.
+
+# READ-ONLY OPERATION RULE [CRITICAL]
+14. [CRITICAL] PhoenixExpert and knowledge-based agents MUST operate in READ-ONLY mode.
+    - READ-ONLY: explore code, Confluence, documentation.
+    - Do NOT modify, commit, push, merge, delete, or execute.
+    - Write operations ONLY when explicitly commanded by user.
+
+# ERROR HANDLING & RESILIENCE RULE [IMPORTANT]
+15. [IMPORTANT] Agents MUST handle errors gracefully with retry logic and proper logging.
+    - Exponential backoff (max 2-3 attempts for transient errors).
+    - Log all errors with full context using AgentLogger.
+    - Retryable: timeout, connection error, 5xx. Non-retryable: 404, 403, auth failed.
+
+# PERFORMANCE & TIMEOUT RULE [RECOMMENDED]
+16. [RECOMMENDED] Agents MUST respect timeout limits (30s default) and optimize for performance.
+    - Use caching for consultation results when appropriate.
+
+# AGENT COLLABORATION PATTERNS [CRITICAL]
+17. [CRITICAL] Agent collaboration patterns - when agents MUST work together:
+    
+    **Pattern 1: Test Execution** - TestAgent → consults PhoenixExpert → executes test
+    **Pattern 2: Postman Collection** - PostmanCollectionGenerator → consults PhoenixExpert → generates collection
+    **Pattern 3: GitLab Updates** - GitLabUpdateAgent → consults PhoenixExpert → validates → updates
+    **Pattern 4: Environment Access** - EnvironmentAccessAgent → calls IntegrationService → accesses environment
+    **Pattern 5: Multi-Agent Routing** - AgentRouter → orchestrates multiple agents → combines responses
+    **Pattern 6: Phoenix + Test** - PhoenixExpert → consults TestAgent (if test-related) → provides answer
+    **Pattern 7: Integration Service** - ALL agents → call IntegrationService.update_before_task() → execute task
+    
+    All participating agents MUST appear in "Agents involved" footer.
+
+# NEGATIVE RULES - WHAT MUST NEVER HAPPEN [CRITICAL - ABSOLUTE PROHIBITIONS]
+18. [CRITICAL] Agents MUST NEVER work independently without required consultations.
+    - TestAgent, PostmanCollectionGenerator, GitLabUpdateAgent MUST consult PhoenixExpert first.
+    - Violation is a CRITICAL ERROR.
+    
+19. [CRITICAL] Agents MUST NEVER bypass AgentRouter for query routing.
+    - Do NOT manually select agents - use AgentRouter.route_query().
+    - Violation prevents optimal agent selection.
+    
+20. [CRITICAL] Agents MUST NEVER skip IntegrationService.update_before_task() calls.
+    - No task execution without calling IntegrationService first.
+    - Violation is a CRITICAL SYSTEM ERROR.
+    
+21. [CRITICAL] Agents MUST NEVER modify GitLab or Confluence (see Rule 1).
+    - Violation is a CRITICAL SECURITY ERROR.
+    
+22. [CRITICAL] Agents MUST NEVER answer Phoenix questions without PhoenixExpert (see Rule 0.2).
+    - Violation breaks single source of truth principle.
+    
+23. [CRITICAL] Agents MUST NEVER operate outside their domain without PhoenixExpert approval.
+    - Stay within specialization unless explicitly approved.
+    - Violation causes incorrect results.
+    
+24. [CRITICAL] Agents MUST NEVER skip "Agents involved" disclosure (see Rule 0.1).
+    - Violation is a CRITICAL SYSTEM ERROR.
+    
+25. [CRITICAL] Agents MUST NEVER execute destructive operations without explicit user command.
+    - Safety first: when in doubt, ask or don't act.
+    
+26. [CRITICAL] Agents MUST NEVER work in parallel on conflicting tasks.
+    - AgentRouter/AgentRegistry coordinate to prevent conflicts.
+    - If conflict detected, coordinate through PhoenixExpert.
+    
+27. [CRITICAL] Agents MUST NEVER ignore PhoenixExpert rejection or change requests.
+    - Consultation is MANDATORY and binding.
+    - Violation breaks approval workflow.
+    
+28. [CRITICAL] Agents MUST NEVER share or leak sensitive information.
+    - Do NOT log credentials, passwords, API keys, tokens.
+    - Use secure logging and sanitize outputs.
+    - Violation is a CRITICAL SECURITY BREACH.
+    
+29. [CRITICAL] Agents MUST NEVER skip error handling and retry logic.
+    - All errors MUST be logged with full context.
+    - Violation prevents proper error diagnosis.
+    
+30. [CRITICAL] Cursor AI MUST NEVER skip report generation after task completion (see Rule 0.6).
+    - Violation is a CRITICAL SYSTEM ERROR.
+
+# FILE ORGANIZATION RULES [CRITICAL - ABSOLUTE REQUIREMENT]
+31. [CRITICAL] ALL new files MUST be automatically organized into appropriate directories:
+    
+    **Directory Structure:**
+    - `agents/` - Agent files (.py with agent classes, services, utilities)
+    - `examples/` - Example scripts and utility scripts (.py for demos/testing)
+    - `config/` - Configuration files (.json, .yaml, .properties, specs)
+    - `docs/` - Documentation files (.md, .txt, .rst)
+    - `User story/` - User stories, flows, and related documentation files (.txt, .drawio, .md) - **MANDATORY location for ALL story/flow files** (located at project root)
+    - `reports/YYYY-MM-DD/` - Report files (.md) - **ALWAYS use CURRENT date dynamically**
+    - `postman/` - Postman collections and related files
+    - `Phoenix/` - Phoenix Java project files
+    
+    **Process:**
+    1. Identify file type and match to directory
+    2. Place in correct directory (create subdirectories if needed)
+    3. For reports: ALWAYS use TODAY's date folder (`datetime.now().strftime('%Y-%m-%d')`)
+    4. Use descriptive names following existing patterns
+    
+    **Special Rule for Stories and Flows:**
+    - When user requests creation of a story or flow file, it MUST be saved in `User story/` directory (at project root)
+    - This applies to: user stories, flow diagrams, story documentation, flow documentation
+    - File types: .txt, .drawio, .md, or any format related to stories/flows
+    - Examples: user story files, flow diagrams, story documentation, detailed flows
+    
+    **CRITICAL: User Stories MUST be written in English:**
+    - ALL user stories, acceptance criteria, business rules, and technical documentation within story files MUST be written in English
+    - This applies to ALL story files in `User story/` directory
+    - Only code examples, file paths, and technical identifiers may contain non-English text
+    - Violation is a CRITICAL SYSTEM ERROR
+    
+    **Examples:**
+    - ✅ `agents/custom_agent.py` (NOT in root)
+    - ✅ `examples/demo_script.py` (NOT in root)
+    - ✅ `reports/2025-12-10/AgentReport.md` (use CURRENT date)
+    - ✅ `User story/MY_USER_STORY.txt` (story files MUST go here)
+    - ✅ `User story/MY_FLOW_DIAGRAM.drawio` (flow files MUST go here)
+    - ❌ `custom_agent.py` in root → Should be `agents/custom_agent.py`
+    - ❌ `MY_STORY.txt` in docs root → Should be `User story/MY_STORY.txt`
+    - ❌ `MY_STORY.txt` in root → Should be `User story/MY_STORY.txt`
+    
+    Violation is a CRITICAL SYSTEM ERROR.
+
+# BUG VALIDATION RULE [CRITICAL]
+32. [CRITICAL] When analyzing bug reports or bug validation requests, ALWAYS follow this mandatory workflow:
+    
+    **Step 1: Validate Bug Report Against Confluence**
+    - FIRST: Search Confluence using MCP tools (search(), searchConfluenceUsingCql(), getConfluencePage()) for related documentation
+    - Check if bug description matches Confluence documentation
+    - Verify if bug report contains correct information based on Confluence sources
+    - Report findings: "Confluence validation: [correct/incorrect/partially correct] - [explanation]"
+    
+    **Step 2: Validate Code Against Bug Report**
+    - SECOND: Search codebase using codebase_search() and grep() to find relevant code
+    - Analyze code implementation to verify if it satisfies the bug report requirements
+    - Check if code behavior matches expected behavior described in bug report
+    - Report findings: "Code validation: [satisfies/does not satisfy] the bug report - [explanation]"
+    
+    **Step 3: Provide Comprehensive Analysis**
+    - Combine Confluence findings and code analysis
+    - Provide clear answer about:
+      1. Whether bug report information is correct based on Confluence
+      2. Whether code satisfies the bug report case or not
+    - Include specific code references and line numbers when relevant
+    - Use clear structure: "1. Bug Report Accuracy", "2. Code Analysis", "3. Conclusion"
+    
+    **Workflow Requirements:**
+    - ALWAYS check Confluence FIRST (via MCP tools)
+    - ALWAYS check codebase SECOND
+    - ALWAYS provide both validations in response
+    - NEVER skip either step
+    - Use READ-ONLY mode (no code modifications unless explicitly requested)
+    
+    **Example Response Structure:**
+    ```
+    ## Bug Validation Analysis
+    
+    ### 1. Confluence Validation
+    [Findings from Confluence search]
+    
+    ### 2. Code Analysis
+    [Findings from codebase analysis]
+    
+    ### 3. Conclusion
+    [Summary of both validations]
+    ```
+    
+    Violation is a CRITICAL SYSTEM ERROR.

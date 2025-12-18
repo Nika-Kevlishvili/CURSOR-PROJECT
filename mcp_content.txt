@@ -1,0 +1,72 @@
+{
+  "mcpServers": {
+    "Confluence": {
+      "url": "https://mcp.atlassian.com/v1/sse"
+    },
+    "PostgreSQLTest": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-postgres-server"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://postgres:U%26Vd2Ge%40nyM1@10.236.20.24:5432/phoenix",
+        "MCP_SERVER_NAME": "PostgreSQLTest",
+        "POSTGRES_HOST": "10.236.20.24",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "U&Vd2Ge@nyM1"
+      }
+    },
+    "PostgreSQLDev2": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-postgres-server"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://postgres:uj6MfFgUkV1R@10.236.20.22:5432/phoenix",
+        "MCP_SERVER_NAME": "PostgreSQLDev2",
+        "POSTGRES_HOST": "10.236.20.22",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "uj6MfFgUkV1R"
+      }
+    },
+    "PostgreSQLPreProd": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-postgres-server"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://postgres:U&Vd2Ge@nyM1@10.236.20.76:5432/phoenix",
+        "MCP_SERVER_NAME": "PostgreSQLPreProd",
+        "POSTGRES_HOST": "10.236.20.76",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "U&Vd2Ge@nyM1"
+      }
+    },
+    "PostgreSQLDev": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-postgres-server"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://postgres:rakX5thB2qO3@10.236.20.21:5432/phoenix",
+        "MCP_SERVER_NAME": "PostgreSQLDev",
+        "POSTGRES_HOST": "10.236.20.21",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "rakX5thB2qO3"
+      }
+    }
+  }
+}
+

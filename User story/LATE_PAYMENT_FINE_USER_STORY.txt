@@ -1,0 +1,204 @@
+================================================================================
+                    USER STORY - LATE PAYMENT FINE
+                    Automatic Late Payment Fine Calculation and Documentation
+================================================================================
+
+USER STORY
+================================================================================
+
+As a system user
+I want the system to automatically calculate and create late payment fines
+for customers who have unpaid liabilities after the payment due date
+so that timely payment of liabilities is ensured and the company's financial interests are protected.
+
+================================================================================
+ACCEPTANCE CRITERIA
+================================================================================
+
+1. The system must automatically identify liabilities eligible for late payment fines:
+   a. Liability must be in ACTIVE status
+   b. Liability's current_amount = 0 (fully paid)
+   c. Liability's due_date < full_offset_date (payment due date has passed before payment date)
+   d. Liability must not have an associated active late payment fine
+   e. Liability must not be blocked for late payment calculation (blocked_for_calculation_of_late_payment = false)
+
+2. Late payment fine calculation must be performed using calculate_lfp_bulk_json function:
+   a. Calculation must be performed based on liability ID and date
+   b. Calculation must consider mass blocking operations (mass operation for blocking)
+   c. Calculation result must be in JSON format containing:
+      - calculatedInterest: calculated fine amount
+      - results: detailed calculation results (ResultItemDTO)
+
+3. Late payment fine creation must occur through LatePaymentFine entity creation:
+   a. latePaymentNumber: unique number (generated with prefix)
+   b. type: LATE_PAYMENT_FINE (enum: LatePaymentFineType)
+   c. amount: calculated fine amount (BigDecimal)
+   d. amountInOtherCcy: fine amount in other currency (if exists)
+   e. dueDate: fine payment due date
+   f. currencyId: currency ID
+   g. incomeAccountNumber: income account number
+   h. costCenterControllingOrder: cost center controlling order
+   i. customerId: customer ID
+   j. contractBillingGroupId: contract billing group ID (if exists)
+   k. issuer: issuer (from company details)
+   l. templateId: email template ID
+   m. documentTemplateId: document template ID
+   n. outDocType: outgoing document type (enum: LatePaymentFineOutDocType)
+      - LATE_PAYMENT_FINE_JOB: created by automatic job
+      - RESCHEDULING: created as result of rescheduling
+      - ONLINE_PAYMENT: created as result of online payment
+   o. logicalDate: logical date
+   p. parentLiabilityId: parent liability ID
+   q. reversed: false (for new fine)
+   r. reschedulingId: rescheduling ID (if exists)
+
+4. When creating a late payment fine, an associated CustomerLiability must be created:
+   a. Liability must be linked to the late payment fine
+   b. Liability's latePaymentFineId must be set
+
+5. Late payment fine invoice creation:
+   a. LatePaymentFineInvoice entity must be created
+   b. Invoice must be linked to the late payment fine and original invoice
+
+6. Document generation and email sending:
+   a. After late payment fine creation, a document must be generated
+   b. Document must be sent to customer's email
+   c. Email template must be set according to templateId
+   d. Document template must be set according to documentTemplateId
+
+7. Automatic Job execution:
+   a. LatePaymentFineJob.latePaymentFineJob() must run according to schedule
+   b. Job must execute two phases:
+      - latePaymentFineProcessJob(): late payment fine creation
+      - latePaymentFIneEmailSenderJob(): email sending
+   c. Process must be transactional (@Transactional)
+   d. In case of errors, processing must continue with next liability
+
+8. Late payment fine reversal (Reversal):
+   a. System must support late payment fine reversal
+   b. When creating reversal, type must be REVERSAL_OF_LATE_PAYMENT_FINE
+   c. Reversal must be linked to original fine (reversalLatePaymentId)
+   d. reversed flag must be true
+
+9. Late payment fine creation from other sources:
+   a. RESCHEDULING: during rescheduling process
+   b. ONLINE_PAYMENT: during online payment
+   c. LATE_PAYMENT_FINE_JOB: by automatic job
+
+10. Validations:
+    a. Calculated fine amount must be greater than 0
+    b. Liability must exist and be in ACTIVE status
+    c. Liability must not be blocked for late payment calculation
+
+================================================================================
+TECHNICAL IMPLEMENTATION DETAILS
+================================================================================
+
+Entity: LatePaymentFine
+- Table: receivable.late_payment_fines
+- Sequence: receivable.late_payment_fines_id_seq
+- Key Fields:
+  * id: Long (Primary Key)
+  * latePaymentNumber: String (Unique identifier)
+  * type: LatePaymentFineType (LATE_PAYMENT_FINE | REVERSAL_OF_LATE_PAYMENT_FINE)
+  * amount: BigDecimal
+  * amountInOtherCcy: BigDecimal
+  * dueDate: LocalDate
+  * currencyId: Long
+  * customerId: Long
+  * contractBillingGroupId: Long
+  * outDocType: LatePaymentFineOutDocType
+  * parentLiabilityId: Long
+  * reversed: boolean
+  * reversalLatePaymentId: Long
+
+Service: LatePaymentFineService
+- Method: createLatePaymentFineAndLiability()
+- Responsibilities:
+  * Create LatePaymentFine entity
+  * Create associated CustomerLiability
+  * Create LatePaymentFineInvoice
+  * Generate late payment number
+  * Set issuer from CompanyDetails
+  * Set template IDs from ContractTemplate
+
+Job: LatePaymentFineJob
+- Method: latePaymentFineJob()
+- Process Flow:
+  1. Get liabilities to fine (getLiabilitiesToFine())
+  2. For each liability:
+     a. Parse interest calculation JSON
+     b. Extract calculated amount and results
+     c. Process liability (processLiability())
+  3. After all fines created:
+     a. Get late payment fines by create date
+     b. Generate document and send email for each
+
+Repository Query: getLiabilitiesToFine()
+- SQL Function: receivable.calculate_lfp_bulk_json()
+- Conditions:
+  * cl.current_amount = 0
+  * cl.late_payment_fine_id is null
+  * cl.status = 'ACTIVE'
+  * cl.due_date < cl.full_offset_date
+  * (cl.child_late_payment_fine_id is null or lf.reversed)
+- Returns: List<Object[]> where Object[0] = liabilityId, Object[1] = JSON string
+
+Document Generation: LatePaymentFineDocumentCreationService
+- Method: generateDocumentAndSendEmail()
+- Process:
+  1. Get LatePaymentFine by ID
+  2. Generate document using template
+  3. Send email to customer
+
+================================================================================
+BUSINESS RULES
+================================================================================
+
+1. Late payment fine is calculated only for liabilities that:
+   - Are fully paid (current_amount = 0)
+   - Payment due date has passed before payment date
+   - Are not blocked for late payment calculation
+
+2. Calculation is performed using calculate_lfp_bulk_json function, which considers:
+   - Liability amount
+   - Payment due date
+   - Payment date
+   - Interest rate
+   - Mass blocking operations
+
+3. When creating a late payment fine:
+   - Associated CustomerLiability must be created
+   - LatePaymentFineInvoice must be created
+   - Unique number must be generated
+
+4. Document and email are sent automatically for fines created by job
+
+5. Late payment fine reversal is possible, which creates a new fine with REVERSAL_OF_LATE_PAYMENT_FINE type
+
+================================================================================
+RELATED CODE FILES
+================================================================================
+
+1. Entity:
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/model/entity/receivable/latePaymentFine/LatePaymentFine.java
+
+2. Enums:
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/model/enums/receivable/latePaymentFine/LatePaymentFineType.java
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/model/enums/receivable/latePaymentFine/LatePaymentFineOutDocType.java
+
+3. Services:
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/service/receivable/latePaymentFine/LatePaymentFineService.java
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/service/receivable/latePaymentFine/LatePaymentFineJob.java
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/service/receivable/latePaymentFine/LatePaymentProcessTransactionalService.java
+
+4. Repository:
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/repository/receivable/customerLiability/CustomerLiabilityRepository.java
+     * Method: getLiabilitiesToFine()
+
+5. Document Service:
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/service/document/LatePaymentFineDocumentCreationService.java
+
+================================================================================
+END OF USER STORY
+================================================================================

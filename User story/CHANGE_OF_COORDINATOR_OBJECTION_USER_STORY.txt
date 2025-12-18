@@ -1,0 +1,520 @@
+================================================================================
+                    USER STORY - CHANGE OF COORDINATOR OBJECTION
+                    Objection to Change of Balancing Group Coordinator
+================================================================================
+
+USER STORY
+================================================================================
+
+As a system user
+I want to be able to create and manage objections to change of balancing group coordinator
+So that I can send formal notifications to grid operators about objections to changes in balancing group coordinator
+and ensure proper regulatory compliance and customer protection during coordinator transitions.
+
+================================================================================
+ACCEPTANCE CRITERIA
+================================================================================
+
+1. Objection Creation:
+   a. System must allow creation of objection from listing page via "Plus" button
+   b. User must have permission: BALANCING_GROUP_OBJECTION_CREATE_DRAFT
+   c. Objection number must be auto-generated with format: "Objection-{id}" (e.g., "Objection-56")
+   d. Creation date must be automatically set to current date (format: DD.MM.YYYY)
+   e. Initial status must be DRAFT
+   f. Grid operator selection is mandatory (single select dropdown from nomenclature)
+   g. Date of change is mandatory (calendar date picker, format: DD.MM.YYYY, range: 1990-01-01 to 2090-12-31)
+
+2. POD File Upload and Processing:
+   a. System must accept XLSX file upload containing POD identifiers
+   b. File must contain POD identifiers in first column without header
+   c. System must validate file format (only .xlsx allowed)
+   d. System must filter PODs by grid operator:
+      - Only PODs matching selected grid operator are processed
+      - PODs with different grid operator are skipped
+   e. System must validate PODs exist and are in ACTIVE status
+   f. System must save uploaded file to FTP server with path: {ftpBasePath}/proxy_files/{currentDate}/
+   g. File must be stored with UUID prefix and sanitized filename
+
+3. Process Results Calculation:
+   a. After file upload, system must start background process to calculate process results
+   b. Process must calculate overdue amounts for each POD:
+      - overdueAmountForPod: Sum of overdue liabilities for POD's contract
+      - overdueAmountForContract: Sum of overdue liabilities for customer
+      - overdueAmountForBillingGroup: Sum of overdue liabilities for contract billing group
+   c. Calculation must exclude PODs already used in SENT objections with same change date
+   d. Process results must be saved with:
+      - customerId: Customer ID
+      - podId: POD ID
+      - overdueAmountForContract: BigDecimal
+      - overdueAmountForBillingGroup: BigDecimal
+      - overdueAmountForPod: BigDecimal
+      - isChecked: Boolean (default: false, set to true if overdueAmountForPod = 0)
+      - balancingGroupCoordinatorGround: Default from nomenclature
+      - groundForObjWithdrawalToChangeOfCbg: Default from nomenclature
+   e. During process execution:
+      - Object status changes to IN_PROGRESS
+      - Object must be locked for editing
+      - After process completion, status changes back to DRAFT
+      - Object unlocks for editing
+
+4. Template Management:
+   a. Document Templates:
+      - At least one document template must be selected (mandatory)
+      - Multiple templates can be selected
+      - Templates must have purpose: OBJECTION_CHANGE_COORD
+      - Templates must have type: DOCUMENT
+      - Templates must be in ACTIVE status
+      - Templates must support languages: BILINGUAL or BULGARIAN
+   b. Email Template:
+      - Exactly one email template must be selected (mandatory)
+      - Template must have purpose: OBJECTION_CHANGE_COORD
+      - Template must have type: EMAIL
+      - Template must be in ACTIVE status
+   c. Templates must be searchable by name or ID
+   d. Templates must be displayed in format: "Name (ID)"
+
+5. File Management:
+   a. System must support manual file upload (optional)
+   b. Files can be uploaded with metadata:
+      - Draft checkbox (optional)
+      - Signed checkbox (optional)
+   c. File display format:
+      - "Filename.pdf (Draft, Not signed)"
+      - "Filename.pdf (Draft, Signed)"
+      - "Filename.pdf (Not signed)"
+      - "Filename.pdf (Signed)"
+   d. On hover: Display upload date, time, and username (format: DD.MM.YYYY HH:mm Username)
+   e. System-generated documents must be displayed after clicking "Save" button
+   f. Manually uploaded files can be deleted
+   g. System-generated files cannot be deleted
+   h. Maximum file size: 50 MB
+   i. Files can be previewed by clicking on filename or arrow icon
+
+6. Task Management:
+   a. Tasks can be added to objection (optional)
+   b. User must have permission: Create Task for Objection to a change of a balancing group coordinator
+   c. Tasks are displayed in format: "{TaskNumber} - {Status} - {Date} - {TaskType}"
+      - Example: "841 - in progress – 26.02.2025 - YOLS-TEST"
+   d. Maximum 10 tasks displayed per page (pagination if more)
+   e. Tasks ordered descending by creation time
+   f. Task statuses: Open, In Progress, Terminated, Overdue, Completed
+   g. Tasks can be opened in new tab by clicking on task name or arrow
+
+7. Objection Editing:
+   a. Editing is only allowed when status is DRAFT
+   b. User must have permission: BALANCING_GROUP_OBJECTION_EDIT_DRAFT
+   c. Object must be locked before editing (entity lock validation)
+   d. Editable fields:
+      - Grid operator (if changed, PODs are removed and reprocessed)
+      - Date of change
+      - Email template
+      - Document templates
+      - Files (manual upload/delete)
+      - Process results (if not SENT status)
+   e. Process result editing:
+      - Can change balancingGroupCoordinatorGround
+      - Can change groundForObjectionWithdrawalToChangeOfCbg
+      - Can toggle isChecked flag
+      - Changes only allowed if isChecked = true for certain fields
+
+8. Save Draft Functionality:
+   a. "Save Draft" button must be enabled
+   b. On click:
+      - System starts background process
+      - Object status changes to IN_PROGRESS
+      - Object is locked for editing
+      - User navigates to listing page
+      - After process completion, status changes to DRAFT
+      - Object unlocks for editing
+   c. Process does not create new process object in processes table
+
+9. Save and Send Functionality:
+   a. "Save and Send" button must be enabled when status is DRAFT
+   b. User must have permission: BALANCING_GROUP_OBJECTION_SAVE_AND_SEND_DRAFT
+   c. On click:
+      - System validates grid operator has email address (objectionToChangeCBGEmail)
+      - System generates email document from email template
+      - System generates document attachments from document templates
+      - System sends email to grid operator's email address
+      - Email includes:
+        * Subject from email template
+        * Body parsed from DOCX email template
+        * Attachments: generated documents from document templates
+      - Object status changes to SEND
+      - Draft PODs and process results are cleaned up (deleted)
+      - Email is NOT stored in system, only sent directly
+
+10. Email Sending:
+    a. Email must be sent from default grid operator mailbox
+    b. Email recipient: Grid operator's objectionToChangeCBGEmail
+    c. Email generation:
+       - Email body generated from email template (DOCX parsed to plain text)
+       - Documents generated from document templates (PDF/DOCX/XLSX)
+       - Documents attached to email
+    d. Email must include template variables:
+       - Objection number
+       - Grid operator name
+       - Creation date
+       - Change date
+       - POD details with overdue amounts
+    e. Email sending must be transactional
+    f. If email sending fails, error must be logged
+
+11. Objection Withdrawal:
+    a. System must support creating withdrawal for SENT objections
+    b. Withdrawal can be created from objection detail page
+    c. Withdrawal has its own number and status
+    d. Withdrawal references original objection
+    e. Withdrawal has similar process for calculation and email sending
+
+12. Listing and Filtering:
+    a. System must provide listing page with pagination
+    b. Filtering options:
+       - Change status: DRAFT, IN_PROGRESS, SEND
+       - Grid operator IDs (multiple)
+       - Creation date range (from/to)
+       - Change date range (from/to)
+       - Entity status: ACTIVE, DELETED
+       - Search prompt (by number, grid operator, etc.)
+       - Number of PODs range (from/to)
+    c. Sorting options:
+       - By number (default)
+       - By creation date
+       - By change date
+       - Ascending/descending
+    d. User must have permission: BALANCING_GROUP_OBJECTION_VIEW or BALANCING_GROUP_OBJECTION_VIEW_DELETED
+
+13. Objection Deletion:
+    a. Deletion only allowed when status is DRAFT
+    b. User must have permission: BALANCING_GROUP_OBJECTION_DELETE
+    c. Object must not be locked
+    d. Deletion sets entity status to DELETED (soft delete)
+    e. Deleted objections can be viewed with appropriate permission
+
+14. Process Results View:
+    a. System must display process results for each objection
+    b. Process results show:
+       - Customer ID and number
+       - POD ID and identifier
+       - Overdue amount for contract
+       - Overdue amount for billing group
+       - Overdue amount for POD
+       - Checked status
+       - Balancing group coordinator ground
+       - Ground for objection withdrawal
+    c. Results ordered by ID ascending
+
+15. Document Generation:
+    a. Documents must be generated from templates
+    b. Document types: PDF, DOCX, XLSX
+    c. Documents include:
+       - Objection number
+       - Grid operator information
+       - Creation date
+       - Change date
+       - POD details with overdue amounts
+       - Customer information
+    d. Documents can be signed (electronic signature)
+    e. Signed documents have signedFileUrl
+    f. Documents are stored in system after generation
+
+================================================================================
+TECHNICAL IMPLEMENTATION DETAILS
+================================================================================
+
+Entity: ObjectionToChangeOfCbg
+- Table: receivable.objection_to_change_of_cbg
+- Sequence: receivable.objection_to_change_of_cbg_id_seq
+- Key Fields:
+  * id: Long (Primary Key)
+  * changeOfCbgNumber: String (Format: "Objection-{id}")
+  * gridOperatorId: Long (Foreign Key to GridOperator)
+  * changeDate: LocalDate (Date of coordinator change)
+  * changeOfCbgStatus: ChangeOfCbgStatus (DRAFT, IN_PROGRESS, SEND)
+  * status: EntityStatus (ACTIVE, DELETED)
+  * emailTemplateId: Long (Foreign Key to ContractTemplate)
+  * createDate: LocalDateTime
+  * updateDate: LocalDateTime
+
+Entity: ObjectionToChangeOfCbgPods
+- Table: receivable.objection_to_change_of_cbg_pods
+- Purpose: Links PODs to objections
+- Key Fields:
+  * id: Long (Primary Key)
+  * changeOfCbgId: Long (Foreign Key to ObjectionToChangeOfCbg)
+  * podId: Long (Foreign Key to PointOfDelivery)
+
+Entity: ObjectionToChangeOfCbgProcessResult
+- Table: receivable.objection_to_change_of_cbg_process_results
+- Purpose: Stores calculated process results for each POD
+- Key Fields:
+  * id: Long (Primary Key)
+  * changeOfCbgId: Long (Foreign Key to ObjectionToChangeOfCbg)
+  * customerId: Long (Foreign Key to Customer)
+  * podId: Long (Foreign Key to PointOfDelivery)
+  * overdueAmountForContract: BigDecimal
+  * overdueAmountForBillingGroup: BigDecimal
+  * overdueAmountForPod: BigDecimal
+  * isChecked: Boolean
+  * balancingGroupCoordinatorGround: Long (Foreign Key to BalancingGroupCoordinatorGround)
+  * groundForObjWithdrawalToChangeOfCbg: Long (Foreign Key to GroundForObjectionWithdrawalToChangeOfACbg)
+
+Entity: ObjectionToChangeOfCbgFile
+- Table: receivable.objection_to_change_of_cbg_files
+- Purpose: Stores uploaded POD file
+- Key Fields:
+  * id: Long (Primary Key)
+  * name: String (Filename)
+  * fileUrl: String (FTP path)
+  * changeOfCbgId: Long (Foreign Key to ObjectionToChangeOfCbg)
+  * status: EntityStatus
+
+Entity: ObjectionToChangeOfCbgTemplates
+- Table: receivable.objection_to_change_of_cbg_templates
+- Purpose: Links document templates to objections
+- Key Fields:
+  * id: Long (Primary Key)
+  * templateId: Long (Foreign Key to ContractTemplate)
+  * changeOfCbgId: Long (Foreign Key to ObjectionToChangeOfCbg)
+  * status: EntityStatus
+
+Service: ObjectionToChangeOfCbgService
+- Method: create(BalancingGroupCoordinatorObjectionRequest)
+  * Creates objection entity
+  * Validates grid operator exists
+  * Saves templates
+  * Validates files
+  * Downloads and processes POD file
+  * Filters PODs by grid operator
+  * Saves PODs to objection
+  * Starts process calculation
+  * Returns objection ID
+
+- Method: update(Long, BalancingGroupCoordinatorObjectionEditRequest)
+  * Updates objection (only if DRAFT)
+  * Validates entity lock
+  * Updates templates
+  * Updates files
+  * Reprocesses PODs if file changed
+  * Updates process results if edited
+  * Sends email if saveAs = SAVE_AND_SEND
+
+- Method: send(ChangeOfCbgCreateStatus, ObjectionToChangeOfCbg)
+  * Validates grid operator email exists
+  * Generates email document
+  * Generates document attachments
+  * Sends email via EmailSenderService
+  * Updates status to SEND
+  * Cleans up draft PODs and process results
+
+- Method: view(Long)
+  * Retrieves objection by ID
+  * Checks permissions (ACTIVE/DELETED)
+  * Loads templates
+  * Loads files
+  * Loads tasks
+  * Loads grid operator
+  * Loads withdrawal (if exists)
+  * Returns ObjectionToChangeOfCbgResponse
+
+- Method: list(BalancingGroupCoordinatorObjectionListingRequest)
+  * Filters objections by criteria
+  * Applies pagination and sorting
+  * Checks permissions
+  * Returns Page<ObjectionToChangeOfCbgListingResponse>
+
+- Method: delete(Long)
+  * Validates status is DRAFT
+  * Sets entity status to DELETED
+  * Returns objection ID
+
+Service: ObjectionToChangeOfCbgProcessService
+- Method: uploadProxyFile(MultipartFile)
+  * Validates file format (.xlsx)
+  * Generates unique filename with UUID
+  * Uploads to FTP: {ftpBasePath}/proxy_files/{currentDate}/
+  * Saves file metadata
+  * Returns ProxyFileResponse
+
+- Method: downloadProxyFile(Long)
+  * Retrieves file from FTP
+  * Returns FileContent
+
+- Method: readFile(byte[])
+  * Parses XLSX file
+  * Extracts POD identifiers from first column
+  * Returns Set<String> of POD identifiers
+
+- Method: savePodsForObjectionCreate(Set<String>, Long)
+  * Validates PODs exist and are ACTIVE
+  * Filters PODs by grid operator
+  * Saves PODs to objection
+
+- Method: startProcess(Long)
+  * Calls repository calculate() method
+  * Creates process results from calculation
+  * Saves process results
+
+Repository: ObjectionToChangeOfCbgProcessResultRepository
+- Query: calculate(Long changeOfCbgId)
+  * Native SQL query
+  * Joins objection, PODs, contracts, customers
+  * Calculates overdue amounts:
+     - overdueAmountForPod: Sum of overdue liabilities for POD's contract
+     - overdueAmountForContract: Sum of overdue liabilities for customer
+     - overdueAmountForBillingGroup: Sum of overdue liabilities for billing group
+  * Excludes PODs already in SENT objections with same change date
+  * Returns List<ProcessMiddleResult>
+
+Service: ObjectionOfCbgDocumentCreationService
+- Method: generateDocument(Long, DocumentGenerationType)
+  * Generates email or document from template
+  * Uses template variables:
+     - Objection number
+     - Grid operator name
+     - Creation date
+     - Change date
+     - POD details with overdue amounts
+  * For documents: Signs if required
+  * Returns ObjectionDocumentGenerationResponse
+
+Service: EmailSenderService
+- Method: sendEmailFrom(String, Long, String, String, List<Attachment>)
+  * Sends email via mass communication service
+  * Includes email body and attachments
+  * Returns SendEmailResponse
+
+================================================================================
+BUSINESS RULES
+================================================================================
+
+1. Objection Creation:
+   - Objection can only be created with DRAFT status
+   - Grid operator and date of change are mandatory
+   - At least one document template and one email template must be selected
+   - POD file upload is mandatory for creation
+
+2. POD Processing:
+   - Only PODs matching selected grid operator are processed
+   - PODs must exist and be in ACTIVE status
+   - PODs already used in SENT objections with same change date are excluded
+   - PODs are linked to active contracts
+
+3. Process Results:
+   - Calculated for each POD in the objection
+   - Overdue amounts calculated based on:
+     * Liabilities with due_date < current_date
+     * Liabilities with status = ACTIVE
+     * Liabilities with current_amount > 0
+   - isChecked automatically set to true if overdueAmountForPod = 0
+   - Default grounds assigned from nomenclature
+
+4. Status Workflow:
+   - DRAFT → IN_PROGRESS (when process starts)
+   - IN_PROGRESS → DRAFT (when process completes)
+   - DRAFT → SEND (when Save and Send clicked)
+   - SEND is final status (cannot be edited)
+
+5. Email Sending:
+   - Only allowed when status is DRAFT
+   - Grid operator must have email address configured
+   - Email is sent directly, not stored
+   - Documents are generated and attached
+   - After sending, draft PODs and process results are cleaned up
+
+6. Editing:
+   - Only allowed when status is DRAFT
+   - Object must be locked before editing
+   - Changing grid operator removes existing PODs
+   - Changing file triggers reprocessing
+   - Process results can be edited if not SENT
+
+7. Deletion:
+   - Only allowed when status is DRAFT
+   - Soft delete (status = DELETED)
+   - Deleted objections can be viewed with permission
+
+8. Withdrawal:
+   - Can be created for SENT objections
+   - Has separate numbering and status
+   - References original objection
+   - Similar process for calculation and sending
+
+================================================================================
+PERMISSIONS
+================================================================================
+
+1. BALANCING_GROUP_OBJECTION_CREATE_DRAFT
+   - Allows creation of new objections
+
+2. BALANCING_GROUP_OBJECTION_EDIT_DRAFT
+   - Allows editing of DRAFT objections
+
+3. BALANCING_GROUP_OBJECTION_SAVE_AND_SEND_DRAFT
+   - Allows sending objections to grid operators
+
+4. BALANCING_GROUP_OBJECTION_VIEW
+   - Allows viewing ACTIVE objections
+
+5. BALANCING_GROUP_OBJECTION_VIEW_DELETED
+   - Allows viewing DELETED objections
+
+6. BALANCING_GROUP_OBJECTION_DELETE
+   - Allows deletion of DRAFT objections
+
+7. Create Task for Objection to a change of a balancing group coordinator
+   - Allows creating tasks from objection
+
+================================================================================
+RELATED CODE FILES
+================================================================================
+
+1. Entity:
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/model/entity/receivable/balancingGroupCoordinatorObjection/ObjectionToChangeOfCbg.java
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/model/entity/receivable/balancingGroupCoordinatorObjection/ObjectionToChangeOfCbgPods.java
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/model/entity/receivable/balancingGroupCoordinatorObjection/ObjectionToChangeOfCbgProcessResult.java
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/model/entity/receivable/balancingGroupCoordinatorObjection/ObjectionToChangeOfCbgFile.java
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/model/entity/receivable/balancingGroupCoordinatorObjection/ObjectionToChangeOfCbgTemplates.java
+
+2. Enums:
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/model/enums/receivable/balancingGroupCoordinatorObjection/ChangeOfCbgStatus.java
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/model/enums/receivable/balancingGroupCoordinatorObjection/ChangeOfCbgCreateStatus.java
+
+3. Services:
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/service/receivable/balancingGroupCoordinatorObjection/ObjectionToChangeOfCbgService.java
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/service/receivable/balancingGroupCoordinatorObjection/ObjectionToChangeOfCbgProcessService.java
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/service/receivable/balancingGroupCoordinatorObjection/ObjectionOfCbgDocumentCreationService.java
+
+4. Repository:
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/repository/receivable/balancingGroupCoordinatorObjection/ObjectionToChangeOfCbgRepository.java
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/repository/receivable/balancingGroupCoordinatorObjection/ObjectionToChangeOfCbgProcessResultRepository.java
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/repository/receivable/balancingGroupCoordinatorObjection/ObjectionToChangeOfCbgPodsRepository.java
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/repository/receivable/balancingGroupCoordinatorObjection/ObjectionToChangeOfCbgFileRepository.java
+
+5. Controller:
+   - Phoenix/phoenix-core/src/main/java/bg/energo/phoenix/controller/receivable/balancingGroupCoordinatorObjection/BalancingGroupCoordinatorObjectionController.java
+
+6. Request/Response Models:
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/model/request/receivable/balancingGroupCoordinatorObjection/BalancingGroupCoordinatorObjectionRequest.java
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/model/request/receivable/balancingGroupCoordinatorObjection/BalancingGroupCoordinatorObjectionEditRequest.java
+   - Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/model/response/receivable/balancingGroupCoordinatorObjection/ObjectionToChangeOfCbgResponse.java
+
+================================================================================
+CONFLUENCE REFERENCES
+================================================================================
+
+1. Create Objection to a change of a balancing group coordinator
+   - https://asterbit.atlassian.net/wiki/spaces/Phoenix/pages/69140487
+
+2. Edit Objection to a change of a balancing group coordinator
+   - https://asterbit.atlassian.net/wiki/spaces/Phoenix/pages/69337112
+
+3. Objection to change of balancing group coordinator draft
+   - https://asterbit.atlassian.net/wiki/spaces/Phoenix/pages/216072195
+
+4. Generate objection Templates
+   - https://asterbit.atlassian.net/wiki/spaces/Phoenix/pages/218988574
+
+================================================================================
+END OF USER STORY
+================================================================================

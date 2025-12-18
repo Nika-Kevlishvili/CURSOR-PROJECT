@@ -1,0 +1,302 @@
+================================================================================
+                    USER STORY - FOR_VOLUMES APPLICATION MODEL TYPE
+                    Standard Billing Run - Volume-Based Billing
+================================================================================
+
+USER STORY
+================================================================================
+
+As a system user
+I want to be able to create and execute a Standard Billing Run with FOR_VOLUMES 
+application model type
+So that I can generate accurate invoices for customers based on their electricity 
+consumption volumes (kWh/kVArh) measured at Points of Delivery (PODs) for Product 
+Contracts, supporting complex tariff structures, settlement period calculations, 
+restrictions, and discounts.
+
+================================================================================
+ACCEPTANCE CRITERIA
+================================================================================
+
+1. Creating a Standard Billing Run with FOR_VOLUMES application model type is 
+   possible from Billing Run's listing page by clicking on a 'Plus' button.
+
+2. Clicking on a Plus button will open Standard Billing Run's creation page.
+
+3. Check system user permissions to be able to create a new Standard Billing Run 
+   with FOR_VOLUMES:
+   a. Permission - Create a Standard Billing Run
+   b. Enable Plus button when user has permission
+   c. Disable Plus button when user doesn't have permission
+
+4. On the Standard Billing Run creation page, the Application Model Type field 
+   contains checkboxes with multiple options:
+   a. "For Volumes" checkbox is available and can be selected
+   b. "For Volumes" can be selected together with other application model types 
+      (Over time periodical, Over time one time, Per piece, Interim and advance 
+      payment)
+   c. If "With Electricity Invoice" is selected, "For Volumes" must also be 
+      selected (validation error if not)
+   d. At least one application model type must be selected
+
+5. When "For Volumes" is selected and Billing Run periodicity is "STANDARD":
+   a. Max End Date field becomes mandatory and enabled
+   b. Max End Date must be within valid date range (1990-01-01 to 2090-12-31)
+   c. Max End Date must be within an open accounting period
+   d. Periodic Max End Date and Periodic Max End Date Value fields are disabled 
+      and must be empty
+   e. If Max End Date is not provided, system displays error message: 
+      "Max End Date must be provided when application model type is 'For Volumes'"
+
+6. When "For Volumes" is selected and Billing Run periodicity is "PERIODIC":
+   a. Max End Date field is disabled and must be empty
+   b. Periodic Max End Date field becomes mandatory and enabled
+   c. Periodic Max End Date Value field becomes mandatory and enabled
+   d. If Periodic Max End Date is not provided, system displays error message: 
+      "Periodic max end date must be provided when application model type is 
+      'For Volumes'"
+   e. If Periodic Max End Date Value is not provided, system displays error 
+      message: "Periodic max end date value must be provided when application 
+      model type is 'For Volumes'"
+
+7. Clicking on "Save" button will check all validations (frontend and backend):
+   a. If all validations are successful, the system should create a new billing 
+      run record and display it in the listing
+   b. If frontend validations are not successful, system should display an error 
+      message with proper field highlighted in red
+   c. If an error happens in backend, system should display an error message 
+      retrieved from the backend
+
+8. After clicking on "Start Billing" button (or if execution type is "IMMEDIATELY"), 
+   the system should:
+   a. Update billing run status to "IN_PROGRESS_DRAFT"
+   b. Call stored procedure: billing_run.run_standard_billing_main_data_preparation(billing_run_id)
+   c. The stored procedure should:
+      - Identify all contracts matching billing criteria
+      - Filter contracts by FOR_VOLUMES application model type
+      - Process only PRODUCT_CONTRACT type contracts (skip SERVICE_CONTRACT)
+      - Create billing_run_contracts records
+      - Prepare settlement period data (BillingRunSettlementPeriod) for contracts 
+        with settlement period application models
+      - Prepare scale split data (BillingRunBdbsSplitsIoData) for contracts with 
+        scale application models
+      - Link billing data profile IDs and scale IDs to records
+
+9. After data preparation is completed, the system should process each contract 
+   (in parallel, up to 16 threads):
+   a. For each contract, check if it contains FOR_VOLUMES application model type
+   b. If yes, process settlement periods (if applicable):
+      - Retrieve BillingRunSettlementPeriod records
+      - Parse ProfileValue[] from JSON data
+      - Get formula X values (variables)
+      - For each ProfileValue:
+        * Build variables context
+        * Evaluate price formula using OGNL expression engine
+        * Apply percentage if not 100%
+        * Convert currency if price component uses different currency
+        * Calculate consumption: consumptionAfterPercent = profileValue * (percent / 100)
+        * Calculate price: calculatedPrice = consumptionAfterPercent * price
+        * Accumulate total consumption and total price
+      - Handle combined contracts with scaleValueForCombined adjustments
+      - Group results by contract version
+      - Calculate unit price: kwhPrice = totalPrice / totalConsumption (if > 0)
+      - Create InvoiceStandardDetailBaseModel with type SETTLEMENT
+      - Link billing data profile IDs to invoice details
+   c. If yes, process scales (if applicable):
+      - Retrieve BillingRunBdbsSplitsIoData records
+      - Check if price formula contains time-dependent variables ($PRICE_PROFILE$ 
+        or $N$ patterns)
+      - If period spans multiple months and formula is time-dependent, split by 
+        month boundaries
+      - Extract price parameters from formula ($N$ patterns)
+      - Extract profile prices if $PRICE_PROFILE$ in formula
+      - Evaluate price formula for each split
+      - Calculate total price: totalPrice = price * volume
+      - Handle meter reading calculations for non-tariff scales:
+        * Calculate difference: difference = (value - correction + deduction) / multiplier
+        * For first split: oldMeterReading = original old reading
+        * For subsequent splits: oldMeterReading = previous split's newMeterReading
+        * Calculate: newMeterReading = oldMeterReading + difference
+        * Distribute corrections and deductions proportionally for splits
+      - Round and adjust values to eliminate rounding errors
+      - Create InvoiceStandardDetailBaseModel with type SCALE
+      - Link billing data scale IDs to invoice details
+
+10. After settlement and scale processing, the system should apply restrictions 
+    (if configured):
+    a. For settlement period details:
+       - Retrieve percent restriction from application model configuration
+       - Retrieve KWH restrictions from am_for_volumes_by_settlement_period_kwh_restriction_ranges
+       - Retrieve CCY restrictions from am_for_volumes_by_settlement_period_ccy_restriction_ranges
+       - Calculate percent restriction: restrictedVolume = totalVolumes * (percent / 100)
+       - Calculate KWH restrictions: check if volumes fall within defined ranges
+       - Calculate CCY restrictions: convert to restriction currency, check range, 
+         convert back to main currency
+       - Find minimum restriction volume (most restrictive)
+       - Apply final restriction: finalRestrictionVolume = minRestriction
+       - Calculate: finalRestrictionAmount = finalRestrictionVolume * kwhPrice
+       - Remove details where finalRestrictionVolume = 0
+    b. For scale details:
+       - Same process as settlement periods but using scale restriction tables
+       - Retrieve from am_for_volumes_by_scale_*_restriction_ranges tables
+
+11. After restrictions are applied, the system should apply discounts (if enabled):
+    a. Check if price component has discount enabled
+    b. Process discounts for settlement periods
+    c. Process discounts for scales
+    d. Create discount detail lines with negative amounts
+    e. Add discount details to invoice detail list
+
+12. After discounts are applied, the system should generate invoices:
+    a. Group invoice details by invoice slot
+    b. Calculate totals:
+       - Total volumes (sum of all detail volumes)
+       - Total amount without VAT (sum of all detail amounts)
+       - Total VAT amount (calculated based on VAT rates)
+       - Total amount with VAT (total without VAT + VAT amount)
+    c. Apply VAT rates (global VAT rate or per price component VAT rate)
+    d. Handle currency conversion if needed
+    e. Create invoice records in invoice.invoices table
+    f. Create invoice standard detailed data records in invoice.invoice_standard_detailed_data 
+       table with detail_type = 'SETTLEMENT' or 'SCALE'
+    g. Create invoice summary data records in invoice.invoice_summary_data table
+    h. Link invoices to billing run
+
+13. After invoice generation is completed:
+    a. Update billing run status to "DRAFT"
+    b. Generate Excel file with draft invoices
+    c. Display draft invoices in the "Draft Invoices" tab
+    d. Draft invoices are listed with following columns:
+       - Number (with FP-D prefix)
+       - Document type (Invoice, Credit note, Debit note)
+       - Date of invoice
+       - Customer
+       - Accounting period
+       - Billing run
+       - Basis for issuing
+       - Meter reading period from
+       - Meter reading period to
+       - Total amount (in default currency)
+       - Action (Edit icon)
+
+14. Error handling:
+    a. If data preparation stored procedure fails:
+       - Log error with detailed message
+       - Set billing run status to "FAILED"
+       - Store error message in billing run record
+       - Display error message to user
+    b. If individual contract processing fails:
+       - Log error with context (slot ID, PC ID, POD ID)
+       - Set slot status to "ERROR"
+       - Store error message in slot record
+       - Continue processing other contracts
+       - Failed slots are added to failedSlots set
+    c. If calculation error occurs:
+       - Catch exception
+       - Log error with formula and variable values
+       - Mark slot as failed
+       - Continue with other slots
+    d. All errors should be visible in billing errors protocol (Excel file)
+
+15. System should support resuming failed processes:
+    a. If billing run status is "IN_PROGRESS_DRAFT" and process was interrupted
+    b. System should be able to resume processing from where it stopped
+    c. Already processed contracts should not be reprocessed
+    d. Only failed or unprocessed contracts should be processed
+
+16. Performance requirements:
+    a. Data preparation stored procedure should complete within 5 minutes for 
+       1000 contracts
+    b. Settlement processing should complete within 2 minutes per contract
+    c. Scale processing should complete within 3 minutes per contract
+    d. Total billing run processing should complete within 30 minutes for standard 
+       monthly billing with up to 1000 contracts
+    e. System should support parallel processing of up to 16 contracts simultaneously
+
+17. Data validation:
+    a. Profile percentages should sum to 100% (validated in stored procedure)
+    b. Scale ranges must not have gaps and must be continuous (validated in 
+       application model creation)
+    c. Date ranges must be valid (dateFrom <= dateTo)
+    d. Consumption volumes must be >= 0
+    e. Prices must be valid numbers
+    f. Formulas must be valid OGNL expressions
+
+18. Integration requirements:
+    a. System must integrate with meter reading system to get consumption data
+    b. System must integrate with profile system to get load profiles for settlement 
+       periods
+    c. System must integrate with currency system to get exchange rates
+    d. System must integrate with contract management system to get contract data
+    e. System must integrate with price component system to get price configurations
+
+================================================================================
+BUSINESS RULES
+================================================================================
+
+BR-1: FOR_VOLUMES applies ONLY to PRODUCT_CONTRACT type contracts. SERVICE_CONTRACT 
+      contracts are automatically excluded from processing.
+
+BR-2: WITH_ELECTRICITY_INVOICE requires FOR_VOLUMES to be selected together. If 
+      WITH_ELECTRICITY_INVOICE is selected without FOR_VOLUMES, validation error 
+      should be displayed.
+
+BR-3: For STANDARD periodicity billing runs, maxEndDate is mandatory when FOR_VOLUMES 
+      is selected. This date defines the maximum end date for billing period 
+      calculation.
+
+BR-4: For PERIODIC periodicity billing runs, periodicMaxEndDate and 
+      periodicMaxEndDateValue are mandatory when FOR_VOLUMES is selected.
+
+BR-5: Settlement periods are processed using load profiles. Each profile has a 
+      percentage that determines how much of the total consumption is allocated 
+      to that profile.
+
+BR-6: Scales are processed using tariff tiers. Consumption is split by scale ranges, 
+      and different prices apply to different consumption levels.
+
+BR-7: Restrictions are applied in the following order: Percent, KWH, CCY. The most 
+      restrictive (minimum volume) is applied as the final restriction.
+
+BR-8: Discounts are applied after restrictions. Discounts appear as separate lines 
+      in the invoice with negative amounts.
+
+BR-9: Invoice details are grouped by invoice slot (combination of billing group, 
+      POD, and price component).
+
+BR-10: VAT is applied based on global VAT rate or per price component VAT rate, 
+       as configured in the system.
+
+================================================================================
+NOTES
+================================================================================
+
+- FOR_VOLUMES is one of the most complex application model types in the system
+- Requires careful testing of all calculation scenarios
+- Performance optimization is critical for large billing runs
+- Error handling must be robust to prevent data corruption
+- Documentation should be kept up-to-date with code changes
+- System should support both settlement period-based and scale-based billing, 
+  as well as combined scenarios
+
+================================================================================
+RELATED USER STORIES
+================================================================================
+
+- US-1234: Standard Billing Run - Create (General)
+- US-1235: Settlement Period Processing
+- US-1236: Scale Processing
+- US-1237: Restrictions System
+- US-1238: Discounts System
+- US-1239: Invoice Generation
+
+================================================================================
+ESTIMATION
+================================================================================
+
+Story Points: 21 (Large)
+Complexity: High
+Dependencies: Multiple (Price Components, Contracts, Profiles, Scales, etc.)
+
+================================================================================
+

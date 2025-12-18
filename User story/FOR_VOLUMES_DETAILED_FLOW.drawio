@@ -1,0 +1,496 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36" version="29.2.1">
+  <diagram id="FOR_VOLUMES_DETAILED" name="FOR_VOLUMES Detailed Flow">
+    <mxGraphModel dx="1665" dy="785" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="10000" pageHeight="4000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="start" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=16;" value="START" vertex="1">
+          <mxGeometry height="70" width="120" x="40" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="create" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;align=left;verticalAlign=top;" value="Create Billing Run&#xa;Select FOR_VOLUMES" vertex="1">
+          <mxGeometry height="60" width="180" x="200" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="valSection" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1" value="VALIDATION" vertex="1">
+          <mxGeometry height="30" width="200" x="420" y="1950" as="geometry" />
+        </mxCell>
+        <mxCell id="val1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;" value="Validate Application Model" vertex="1">
+          <mxGeometry height="50" width="180" x="420" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="dec1" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" value="FOR_VOLUMES&#xa;selected?" vertex="1">
+          <mxGeometry height="80" width="140" x="640" y="1995" as="geometry" />
+        </mxCell>
+        <mxCell id="err1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;align=left;" value="Error: FOR_VOLUMES&#xa;must be selected" vertex="1">
+          <mxGeometry height="60" width="160" x="640" y="1600" as="geometry" />
+        </mxCell>
+        <mxCell id="val2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;" value="Validate WITH_ELECTRICITY_INVOICE" vertex="1">
+          <mxGeometry height="50" width="220" x="820" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="dec2" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" value="WITH_ELECTRICITY_INVOICE&#xa;selected?" vertex="1">
+          <mxGeometry height="80" width="160" x="1080" y="1995" as="geometry" />
+        </mxCell>
+        <mxCell id="err2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;align=left;" value="Error: FOR_VOLUMES&#xa;required with&#xa;WITH_ELECTRICITY_INVOICE" vertex="1">
+          <mxGeometry height="60" width="160" x="1080" y="1600" as="geometry" />
+        </mxCell>
+        <mxCell id="val3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;" value="Validate Periodicity" vertex="1">
+          <mxGeometry height="50" width="180" x="1280" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="dec3" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="Periodicity&#xa;Type?" vertex="1">
+          <mxGeometry height="80" width="140" x="1500" y="1995" as="geometry" />
+        </mxCell>
+        <mxCell id="valStandard" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;align=left;verticalAlign=top;" value="STANDARD Periodicity&#xa;• Validate dates and periods&#xa;• Check required fields" vertex="1">
+          <mxGeometry height="80" width="200" x="1500" y="1700" as="geometry" />
+        </mxCell>
+        <mxCell id="valPeriodic" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;align=left;verticalAlign=top;" value="PERIODIC Periodicity&#xa;• Validate periodic dates&#xa;• Check required fields" vertex="1">
+          <mxGeometry height="80" width="200" x="1500" y="2300" as="geometry" />
+        </mxCell>
+        <mxCell id="val4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;" value="Validate Billing Criteria" vertex="1">
+          <mxGeometry height="50" width="180" x="1720" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="dec4" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" value="Billing Criteria&#xa;Type?" vertex="1">
+          <mxGeometry height="80" width="140" x="1980" y="1985" as="geometry" />
+        </mxCell>
+        <mxCell id="criteria1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=9;align=left;verticalAlign=top;" value="ALL_CUSTOMERS&#xa;• All customers included" vertex="1">
+          <mxGeometry height="60" width="180" x="1940" y="1700" as="geometry" />
+        </mxCell>
+        <mxCell id="criteria2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=9;align=left;verticalAlign=top;" value="CUSTOMERS_CONTRACTS_OR_POD_CONDITIONS&#xa;• Filter by conditions" vertex="1">
+          <mxGeometry height="60" width="240" x="1940" y="2300" as="geometry" />
+        </mxCell>
+        <mxCell id="criteria3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=9;align=left;verticalAlign=top;" value="LIST_OF_CUSTOMERS_CONTRACTS_OR_PODS&#xa;• Filter by specific list" vertex="1">
+          <mxGeometry height="60" width="240" x="1940" y="2600" as="geometry" />
+        </mxCell>
+        <mxCell id="save" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;" value="Save Billing Run&#xa;Status: INITIAL" vertex="1">
+          <mxGeometry height="60" width="180" x="2230" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="startBilling" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;" value="Start Billing&#xa;(Manual/Auto)" vertex="1">
+          <mxGeometry height="60" width="180" x="2440" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="status1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;" value="Status:&#xa;IN_PROGRESS_DRAFT" vertex="1">
+          <mxGeometry height="60" width="160" x="2660" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="dataPrepSection" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1" value="DATA PREPARATION" vertex="1">
+          <mxGeometry height="30" width="200" x="2860" y="1950" as="geometry" />
+        </mxCell>
+        <mxCell id="dataPrepSteps" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;verticalAlign=top;" value="Prepare Billing Data&#xa;• Identify matching contracts&#xa;• Filter by FOR_VOLUMES&#xa;• Prepare settlement periods&#xa;• Prepare scale data" vertex="1">
+          <mxGeometry height="100" width="200" x="2860" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="status2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;" value="Status:&#xa;PREPARATION FINISHED" vertex="1">
+          <mxGeometry height="60" width="160" x="3100" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="processSection" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1" value="PROCESSING" vertex="1">
+          <mxGeometry height="30" width="200" x="3300" y="1950" as="geometry" />
+        </mxCell>
+        <mxCell id="processContract" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;align=left;" value="Process Each Contract" vertex="1">
+          <mxGeometry height="60" width="180" x="3300" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="dec5" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" value="Contains&#xa;FOR_VOLUMES?" vertex="1">
+          <mxGeometry height="80" width="140" x="3520" y="1995" as="geometry" />
+        </mxCell>
+        <mxCell id="skip" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" value="Skip Contract" vertex="1">
+          <mxGeometry height="60" width="140" x="3520" y="1600" as="geometry" />
+        </mxCell>
+        <mxCell id="decVolumeTypes" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" value="Which Volume&#xa;Types Exist?" vertex="1">
+          <mxGeometry height="80" width="140" x="3700" y="1995" as="geometry" />
+        </mxCell>
+        <mxCell id="settlementOnly" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;align=left;" value="SETTLEMENT ONLY" vertex="1">
+          <mxGeometry height="50" width="160" x="3700" y="1700" as="geometry" />
+        </mxCell>
+        <mxCell id="scalesOnly" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;align=left;" value="SCALES ONLY" vertex="1">
+          <mxGeometry height="50" width="160" x="3700" y="2300" as="geometry" />
+        </mxCell>
+        <mxCell id="both" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;align=left;" value="BOTH" vertex="1">
+          <mxGeometry height="50" width="160" x="3900" y="1995" as="geometry" />
+        </mxCell>
+        <mxCell id="checkSettlement" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" value="Settlement Periods&#xa;(SLP) Exist?" vertex="1">
+          <mxGeometry height="80" width="140" x="4100" y="1700" as="geometry" />
+        </mxCell>
+        <mxCell id="processSettlement" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;align=left;verticalAlign=top;" value="Process Settlement Periods (SLP)&#xa;• Evaluate price formula per profile&#xa;• Apply percentage adjustments&#xa;• Calculate consumption and prices&#xa;• Group by contract version" vertex="1">
+          <mxGeometry height="100" width="240" x="4280" y="1680" as="geometry" />
+        </mxCell>
+        <mxCell id="checkCombined" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;" value="Combined&#xa;Contract?" vertex="1">
+          <mxGeometry height="70" width="120" x="4580" y="1520" as="geometry" />
+        </mxCell>
+        <mxCell id="handleCombined" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;align=left;verticalAlign=top;" value="Handle Combined Contract&#xa;• Adjust consumption if&#xa;  scaleValue ≠ profileTotal&#xa;• Recalculate totals" vertex="1">
+          <mxGeometry height="80" width="200" x="4740" y="1590" as="geometry" />
+        </mxCell>
+        <mxCell id="calcKwhPrice" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;align=left;" value="Calculate kWh Price&#xa;totalPrice / totalConsumption" vertex="1">
+          <mxGeometry height="60" width="200" x="4940" y="1740" as="geometry" />
+        </mxCell>
+        <mxCell id="checkScales" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" value="Scales&#xa;Exist?" vertex="1">
+          <mxGeometry height="80" width="140" x="4100" y="2300" as="geometry" />
+        </mxCell>
+        <mxCell id="checkPriceChange" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;" value="Price changes&#xa;within period?" vertex="1">
+          <mxGeometry height="70" width="140" x="4450" y="2150" as="geometry" />
+        </mxCell>
+        <mxCell id="scaleSplit" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;align=left;verticalAlign=top;" value="Scale Splitting&#xa;• Split by month boundaries&#xa;• Recalculate price per month&#xa;• Distribute volumes proportionally" vertex="1">
+          <mxGeometry height="80" width="200" x="4370" y="2295" as="geometry" />
+        </mxCell>
+        <mxCell id="processScales" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;align=left;verticalAlign=top;" value="Process Scales&#xa;• Evaluate price formula&#xa;• Calculate prices and volumes&#xa;• Handle meter readings (non-tariff)&#xa;• Apply rounding adjustments" vertex="1">
+          <mxGeometry height="100" width="240" x="4700" y="2280" as="geometry" />
+        </mxCell>
+        <mxCell id="restrictSection" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1" value="RESTRICTIONS" vertex="1">
+          <mxGeometry height="30" width="200" x="5540" y="1950" as="geometry" />
+        </mxCell>
+        <mxCell id="applyRestrictions" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;align=left;" value="Apply Restrictions" vertex="1">
+          <mxGeometry height="60" width="180" x="5540" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="checkPercent" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;" value="Percent Restriction&#xa;Exists?" vertex="1">
+          <mxGeometry height="70" width="140" x="5760" y="1700" as="geometry" />
+        </mxCell>
+        <mxCell id="applyPercent" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;align=left;verticalAlign=top;" value="Apply Percent Restriction&#xa;• Calculate restricted volume" vertex="1">
+          <mxGeometry height="60" width="180" x="5940" y="1700" as="geometry" />
+        </mxCell>
+        <mxCell id="checkKwh" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;" value="KWH Restriction&#xa;Exists?" vertex="1">
+          <mxGeometry height="70" width="140" x="5760" y="2030" as="geometry" />
+        </mxCell>
+        <mxCell id="applyKwh" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;align=left;verticalAlign=top;" value="Apply KWH Restriction&#xa;• Check volume against ranges" vertex="1">
+          <mxGeometry height="60" width="180" x="5940" y="2030" as="geometry" />
+        </mxCell>
+        <mxCell id="checkCcy" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;" value="CCY Restriction&#xa;Exists?" vertex="1">
+          <mxGeometry height="70" width="140" x="5760" y="2300" as="geometry" />
+        </mxCell>
+        <mxCell id="applyCcy" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;align=left;verticalAlign=top;" value="Apply CCY Restriction&#xa;• Convert and check ranges" vertex="1">
+          <mxGeometry height="60" width="180" x="5940" y="2300" as="geometry" />
+        </mxCell>
+        <mxCell id="findMin" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;align=left;verticalAlign=top;" value="Find Minimum Restriction&#xa;Apply most restrictive limit" vertex="1">
+          <mxGeometry height="60" width="200" x="6160" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="applyFinal" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;align=left;verticalAlign=top;" value="Apply Final Restriction&#xa;• Set final volumes and amounts" vertex="1">
+          <mxGeometry height="60" width="200" x="6400" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="discountSection" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1" value="DISCOUNTS" vertex="1">
+          <mxGeometry height="30" width="200" x="6640" y="1950" as="geometry" />
+        </mxCell>
+        <mxCell id="checkDiscount" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" value="Discount&#xa;Enabled?" vertex="1">
+          <mxGeometry height="80" width="140" x="6640" y="1995" as="geometry" />
+        </mxCell>
+        <mxCell id="skipDiscount" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" value="Skip Discounts" vertex="1">
+          <mxGeometry height="60" width="140" x="6640" y="1600" as="geometry" />
+        </mxCell>
+        <mxCell id="processDiscounts" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=left;verticalAlign=top;" value="Process Discounts&#xa;• Apply settlement discounts&#xa;• Apply scale discounts" vertex="1">
+          <mxGeometry height="80" width="180" x="6820" y="1995" as="geometry" />
+        </mxCell>
+        <mxCell id="invoiceSection" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1" value="INVOICE GENERATION" vertex="1">
+          <mxGeometry height="30" width="200" x="7040" y="1950" as="geometry" />
+        </mxCell>
+        <mxCell id="groupSlot" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;align=left;" value="Group Details by Invoice Slot" vertex="1">
+          <mxGeometry height="50" width="200" x="7040" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="generateInvoice" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;align=left;verticalAlign=top;" value="Generate Invoice&#xa;• Calculate totals&#xa;• Apply VAT rates&#xa;• Handle currency conversion&#xa;• Create invoice records" vertex="1">
+          <mxGeometry height="100" width="200" x="7280" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="status3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;" value="Status: DRAFT" vertex="1">
+          <mxGeometry height="60" width="160" x="7520" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="excel" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;" value="Generate Excel&#xa;(Draft Invoices)" vertex="1">
+          <mxGeometry height="60" width="180" x="7720" y="2000" as="geometry" />
+        </mxCell>
+        <mxCell id="end" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=16;" value="END - DRAFT" vertex="1">
+          <mxGeometry height="70" width="120" x="7940" y="1995" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" edge="1" parent="1" source="start" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="create" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" edge="1" parent="1" source="create" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="val1" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a3" edge="1" parent="1" source="val1" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="dec1" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a4" edge="1" parent="1" source="dec1" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="err1" value="NO">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a5" edge="1" parent="1" source="dec1" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="val2" value="YES">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a6" edge="1" parent="1" source="val2" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="dec2" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a7" edge="1" parent="1" source="dec2" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="err2" value="YES">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a8" edge="1" parent="1" source="dec2" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="val3" value="NO">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a9" edge="1" parent="1" source="val3" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="dec3" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a10" edge="1" parent="1" source="dec3" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="valStandard" value="STANDARD">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a11" edge="1" parent="1" source="dec3" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="valPeriodic" value="PERIODIC">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a12" edge="1" parent="1" source="valStandard" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="val4" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="1700" y="1740" />
+              <mxPoint x="1810" y="1740" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a13" edge="1" parent="1" source="valPeriodic" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="val4" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="1700" y="2340" />
+              <mxPoint x="1810" y="2340" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a14" edge="1" parent="1" source="val4" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="dec4" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a15" edge="1" parent="1" source="dec4" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="criteria1" value="ALL_CUSTOMERS">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a16" edge="1" parent="1" source="dec4" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="criteria2" value="CONDITIONS">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a17" edge="1" parent="1" source="dec4" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="criteria3" value="LIST">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a18" edge="1" parent="1" source="criteria1" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="save" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="2120" y="1730" />
+              <mxPoint x="2310" y="1730" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a19" edge="1" parent="1" source="criteria2" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="save" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="2180" y="2330" />
+              <mxPoint x="2310" y="2330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a20" edge="1" parent="1" source="criteria3" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="save" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="2180" y="2630" />
+              <mxPoint x="2310" y="2630" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a21" edge="1" parent="1" source="save" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="startBilling" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a22" edge="1" parent="1" source="startBilling" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="status1" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a23" edge="1" parent="1" source="status1" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="dataPrepSteps" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a25" edge="1" parent="1" source="dataPrepSteps" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="status2" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a26" edge="1" parent="1" source="status2" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="processContract" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a27" edge="1" parent="1" source="processContract" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="dec5" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a28" edge="1" parent="1" source="dec5" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="skip" value="NO">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a29" edge="1" parent="1" source="dec5" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="decVolumeTypes" value="YES">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a30" edge="1" parent="1" source="decVolumeTypes" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="settlementOnly" value="SETTLEMENT">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a31" edge="1" parent="1" source="decVolumeTypes" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="scalesOnly" value="SCALES">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a32" edge="1" parent="1" source="decVolumeTypes" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="both" value="BOTH">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a33" edge="1" parent="1" source="settlementOnly" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="checkSettlement" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a34" edge="1" parent="1" source="scalesOnly" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="checkScales" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a35" edge="1" parent="1" source="both" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="checkSettlement" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="4060" y="1995" />
+              <mxPoint x="4060" y="1740" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a36" edge="1" parent="1" source="both" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="checkScales" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="4060" y="1995" />
+              <mxPoint x="4060" y="2340" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a37" edge="1" parent="1" source="checkSettlement" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="processSettlement" value="YES">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a38" edge="1" parent="1" source="checkSettlement" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="applyRestrictions" value="NO">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="4170" y="1780" />
+              <mxPoint x="4170" y="1970" />
+              <mxPoint x="5630" y="1970" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a39" edge="1" parent="1" source="processSettlement" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="checkCombined" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a40" edge="1" parent="1" source="checkCombined" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="handleCombined" value="YES">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a41" edge="1" parent="1" source="checkCombined" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="calcKwhPrice" value="NO">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="4620" y="1715" />
+              <mxPoint x="5060" y="1715" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a42" edge="1" parent="1" source="handleCombined" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="calcKwhPrice" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a43" edge="1" parent="1" source="calcKwhPrice" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="applyRestrictions" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="5160" y="1725" />
+              <mxPoint x="5160" y="1970" />
+              <mxPoint x="5630" y="1970" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a44" edge="1" parent="1" source="checkScales" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="checkPriceChange" value="YES">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a45" edge="1" parent="1" source="checkScales" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="applyRestrictions" value="NO">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="4170" y="2340" />
+              <mxPoint x="4170" y="1970" />
+              <mxPoint x="5630" y="1970" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a46" edge="1" parent="1" source="checkPriceChange" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="scaleSplit" value="YES">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a47" edge="1" parent="1" source="checkPriceChange" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="processScales" value="NO">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a48" edge="1" parent="1" source="scaleSplit" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="processScales" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a50" edge="1" parent="1" source="processScales" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="applyRestrictions" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="4940" y="2330" />
+              <mxPoint x="4940" y="1970" />
+              <mxPoint x="5630" y="1970" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a52" edge="1" parent="1" source="applyRestrictions" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="checkPercent" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="5720" y="2000" />
+              <mxPoint x="5720" y="1735" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a53" edge="1" parent="1" source="applyRestrictions" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="checkKwh" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="5720" y="2000" />
+              <mxPoint x="5720" y="2065" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a54" edge="1" parent="1" source="applyRestrictions" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="checkCcy" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="5720" y="2000" />
+              <mxPoint x="5720" y="2335" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a55" edge="1" parent="1" source="checkPercent" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="applyPercent" value="YES">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a56" edge="1" parent="1" source="checkKwh" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="applyKwh" value="YES">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a57" edge="1" parent="1" source="checkCcy" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="applyCcy" value="YES">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a58" edge="1" parent="1" source="applyPercent" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="findMin" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="6120" y="1730" />
+              <mxPoint x="6120" y="1970" />
+              <mxPoint x="6160" y="1970" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a59" edge="1" parent="1" source="applyKwh" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="findMin" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="6120" y="2060" />
+              <mxPoint x="6120" y="2000" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a60" edge="1" parent="1" source="applyCcy" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="findMin" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="6120" y="2330" />
+              <mxPoint x="6120" y="1970" />
+              <mxPoint x="6160" y="1970" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a61" edge="1" parent="1" source="findMin" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="applyFinal" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a62" edge="1" parent="1" source="applyFinal" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="checkDiscount" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a63" edge="1" parent="1" source="checkDiscount" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="skipDiscount" value="NO">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a64" edge="1" parent="1" source="checkDiscount" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="processDiscounts" value="YES">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a65" edge="1" parent="1" source="skipDiscount" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="groupSlot" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="6780" y="1630" />
+              <mxPoint x="6780" y="1970" />
+              <mxPoint x="7040" y="1970" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a66" edge="1" parent="1" source="processDiscounts" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="groupSlot" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a67" edge="1" parent="1" source="groupSlot" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="generateInvoice" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a70" edge="1" parent="1" source="generateInvoice" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="status3" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a71" edge="1" parent="1" source="status3" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="excel" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a72" edge="1" parent="1" source="excel" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="end" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
