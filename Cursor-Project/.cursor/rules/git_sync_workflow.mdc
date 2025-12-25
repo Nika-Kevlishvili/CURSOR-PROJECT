@@ -1,5 +1,5 @@
 ---
-description: Standalone Git sync workflow rule with readonly token. Apply when user requests to fetch projects, update branches (dev, dev2, dev-fix, test), or checkout branches using trigger keywords `!sync`, `!update`, or `!checkout <branch>`. Handles stash/unstash of local changes automatically. Uses readonly Personal Access Token for authentication. Supports all Phoenix projects in Phoenix/ directory. IMPORTANT: This rule performs LOCAL operations only (fetch, checkout, local merge) - NO push, commit, or remote modifications. Fully compatible with safety rules.
+description: Standalone Git sync workflow rule with readonly token. Apply when user requests to fetch projects, update branches (dev, dev2, dev-fix, test), or checkout branches using trigger keywords `!sync`, `!update`, or `!checkout <branch>`. Handles stash/unstash of local changes automatically. Uses readonly Personal Access Token for authentication. Supports all Phoenix projects in Phoenix/ directory. IMPORTANT: This rule performs LOCAL operations only (fetch, checkout, local merge) - NO push, commit, or remote modifications. Fully compatible with safety rules. Supports both PowerShell (Windows) and Bash (Git Bash/Linux/macOS) - automatically detects shell environment.
 alwaysApply: false
 ---
 
@@ -137,6 +137,11 @@ GIT_READONLY_TOKEN="glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
 
 ## Step-by-Step Process
 
+**⚠️ IMPORTANT: Shell Detection**
+- **On Windows PowerShell:** Use PowerShell syntax (variables with `$`, `Test-Path`, `Get-Location`, etc.)
+- **On Git Bash/Linux/macOS:** Use bash syntax (variables with `$VAR`, `[ -d ]`, `$(pwd)`, etc.)
+- **Auto-detect:** Check `$PSVersionTable` (PowerShell) or `$SHELL` (bash) to determine the shell environment
+
 ### Step 1: Initial Fetch (All Projects)
 
 **Trigger:** `!sync` (without branch specification)
@@ -173,6 +178,86 @@ GIT_READONLY_TOKEN="glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
    - Report: "All projects fetched successfully."
 
 **Implementation with Token (Cross-Platform Compatible):**
+
+**IMPORTANT:** Detect the shell environment first. On Windows PowerShell, use PowerShell syntax. On Git Bash/Linux/macOS, use bash syntax.
+
+**For PowerShell (Windows):**
+```powershell
+# Set readonly token
+$env:GIT_READONLY_TOKEN = "glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
+
+# Detect workspace root
+if ($env:WORKSPACE_ROOT) {
+    $WORKSPACE_DIR = $env:WORKSPACE_ROOT
+} else {
+    # Try to detect from current directory
+    if (Test-Path "Phoenix") {
+        $WORKSPACE_DIR = (Get-Location).Path
+    } elseif (Test-Path "../Phoenix") {
+        $WORKSPACE_DIR = (Get-Location).Parent.FullName
+    } else {
+        # Try to find Phoenix directory
+        $WORKSPACE_DIR = (Get-Location).Path
+        while ($WORKSPACE_DIR -ne (Split-Path $WORKSPACE_DIR -Qualifier) -and -not (Test-Path (Join-Path $WORKSPACE_DIR "Phoenix"))) {
+            $WORKSPACE_DIR = Split-Path $WORKSPACE_DIR -Parent
+        }
+    }
+}
+
+Set-Location $WORKSPACE_DIR
+
+# Configure git credential helper with token
+if ($env:GIT_READONLY_TOKEN) {
+    git config --global credential.helper store
+    # Detect git host from first repository found
+    if (Test-Path "Phoenix\phoenix-core-lib") {
+        Push-Location "Phoenix\phoenix-core-lib"
+        $remoteUrl = git remote get-url origin 2>$null
+        if ($remoteUrl) {
+            $GIT_HOST = $remoteUrl -replace 'https?://([^/]+).*', '$1' -replace '.*@', ''
+        }
+        Pop-Location
+    }
+    # Store credentials (works for GitLab, GitHub, etc.)
+    if ($GIT_HOST) {
+        $CREDENTIALS_FILE = if ($env:USERPROFILE) { "$env:USERPROFILE\.git-credentials" } else { "$HOME\.git-credentials" }
+        "https://oauth2:$($env:GIT_READONLY_TOKEN)@$GIT_HOST" | Out-File -FilePath $CREDENTIALS_FILE -Encoding ASCII -NoNewline
+    }
+}
+
+# Discover and process all Phoenix projects
+if (Test-Path "Phoenix") {
+    Push-Location "Phoenix"
+    $repos = Get-ChildItem -Directory | Where-Object { Test-Path (Join-Path $_.FullName ".git") }
+    foreach ($repo in $repos) {
+        Write-Host "Processing: Phoenix\$($repo.Name)"
+        Push-Location $repo.FullName
+        
+        # Stash uncommitted changes
+        $hasChanges = git status --porcelain 2>$null
+        if ($hasChanges) {
+            git stash push -m "Stashed before fetch - preserving local changes"
+            $STASHED = $true
+        } else {
+            $STASHED = $false
+        }
+        
+        # Fetch from remote
+        git fetch origin --all
+        git fetch origin --prune
+        
+        # Unstash if needed
+        if ($STASHED) {
+            git stash pop 2>$null
+        }
+        
+        Pop-Location
+    }
+    Pop-Location
+}
+```
+
+**For Bash (Git Bash/Linux/macOS):**
 ```bash
 # Set readonly token
 GIT_READONLY_TOKEN="glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
@@ -289,6 +374,116 @@ fi
    - If merge conflicts occurred, keep stashed and inform user
 
 **Implementation with Token (Cross-Platform Compatible):**
+
+**For PowerShell (Windows):**
+```powershell
+$BRANCH = "dev"  # or dev2, dev-fix, test, main, master
+$env:GIT_READONLY_TOKEN = "glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
+
+# Detect workspace root and configure token (same as Step 1)
+if ($env:WORKSPACE_ROOT) {
+    $WORKSPACE_DIR = $env:WORKSPACE_ROOT
+} else {
+    if (Test-Path "Phoenix") {
+        $WORKSPACE_DIR = (Get-Location).Path
+    } elseif (Test-Path "../Phoenix") {
+        $WORKSPACE_DIR = (Get-Location).Parent.FullName
+    } else {
+        $WORKSPACE_DIR = (Get-Location).Path
+        while ($WORKSPACE_DIR -ne (Split-Path $WORKSPACE_DIR -Qualifier) -and -not (Test-Path (Join-Path $WORKSPACE_DIR "Phoenix"))) {
+            $WORKSPACE_DIR = Split-Path $WORKSPACE_DIR -Parent
+        }
+    }
+}
+
+Set-Location $WORKSPACE_DIR
+
+# Configure git credential helper with token (same as Step 1)
+if ($env:GIT_READONLY_TOKEN) {
+    git config --global credential.helper store
+    if (Test-Path "Phoenix\phoenix-core-lib") {
+        Push-Location "Phoenix\phoenix-core-lib"
+        $remoteUrl = git remote get-url origin 2>$null
+        if ($remoteUrl) {
+            $GIT_HOST = $remoteUrl -replace 'https?://([^/]+).*', '$1' -replace '.*@', ''
+        }
+        Pop-Location
+    }
+    if ($GIT_HOST) {
+        $CREDENTIALS_FILE = if ($env:USERPROFILE) { "$env:USERPROFILE\.git-credentials" } else { "$HOME\.git-credentials" }
+        "https://oauth2:$($env:GIT_READONLY_TOKEN)@$GIT_HOST" | Out-File -FilePath $CREDENTIALS_FILE -Encoding ASCII -NoNewline
+    }
+}
+
+# Process all Phoenix projects
+if (Test-Path "Phoenix") {
+    Push-Location "Phoenix"
+    $repos = Get-ChildItem -Directory | Where-Object { Test-Path (Join-Path $_.FullName ".git") }
+    foreach ($repo in $repos) {
+        Write-Host "Updating branch $BRANCH in: Phoenix\$($repo.Name)"
+        Push-Location $repo.FullName
+        
+        # Stash uncommitted changes
+        $hasChanges = git status --porcelain 2>$null
+        if ($hasChanges) {
+            git stash push -m "Stashed before branch update - preserving local changes"
+            $STASHED = $true
+        } else {
+            $STASHED = $false
+        }
+        
+        # Checkout branch if needed
+        $CURRENT_BRANCH = git branch --show-current 2>$null
+        if ($CURRENT_BRANCH -ne $BRANCH) {
+            $branchExists = git show-ref --verify --quiet "refs/heads/$BRANCH" 2>$null
+            if ($LASTEXITCODE -eq 0) {
+                git checkout $BRANCH
+            } else {
+                git fetch origin
+                $remoteBranch = git ls-remote --heads origin $BRANCH 2>$null
+                if ($remoteBranch) {
+                    git checkout -b $BRANCH "origin/$BRANCH"
+                } else {
+                    Write-Host "Branch $BRANCH does not exist on remote for $($repo.Name)"
+                    if ($STASHED) { git stash pop 2>$null }
+                    Pop-Location
+                    continue
+                }
+            }
+        }
+        
+        # Fetch and check status
+        git fetch origin
+        $BEHIND = git rev-list --count "HEAD..origin/$BRANCH" 2>$null
+        if (-not $BEHIND) { $BEHIND = 0 }
+        $AHEAD = git rev-list --count "origin/$BRANCH..HEAD" 2>$null
+        if (-not $AHEAD) { $AHEAD = 0 }
+        
+        if ($AHEAD -ne 0 -and $BEHIND -ne 0) {
+            Write-Host "Branch $BRANCH has diverged in $($repo.Name)!"
+            if ($STASHED) { git stash pop 2>$null }
+            Pop-Location
+            continue
+        }
+        
+        if ($BEHIND -ne 0) {
+            git merge "origin/$BRANCH"
+        } else {
+            Write-Host "Branch $BRANCH is up to date in $($repo.Name)"
+        }
+        
+        # Unstash if needed
+        if ($STASHED) {
+            git stash pop 2>$null
+        }
+        
+        Pop-Location
+    }
+    Pop-Location
+}
+```
+
+**For Bash (Git Bash/Linux/macOS):**
 ```bash
 BRANCH="dev"  # or dev2, dev-fix, test, main, master
 GIT_READONLY_TOKEN="glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
@@ -420,6 +615,94 @@ fi
    - **After successful checkout:** Automatically unstash: `git stash pop`
 
 **Implementation with Token (Cross-Platform Compatible):**
+
+**For PowerShell (Windows):**
+```powershell
+$BRANCH = "dev"  # or dev2, dev-fix, test, main, master
+$env:GIT_READONLY_TOKEN = "glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
+
+# Detect workspace root and configure token (same as Step 1)
+if ($env:WORKSPACE_ROOT) {
+    $WORKSPACE_DIR = $env:WORKSPACE_ROOT
+} else {
+    if (Test-Path "Phoenix") {
+        $WORKSPACE_DIR = (Get-Location).Path
+    } elseif (Test-Path "../Phoenix") {
+        $WORKSPACE_DIR = (Get-Location).Parent.FullName
+    } else {
+        $WORKSPACE_DIR = (Get-Location).Path
+        while ($WORKSPACE_DIR -ne (Split-Path $WORKSPACE_DIR -Qualifier) -and -not (Test-Path (Join-Path $WORKSPACE_DIR "Phoenix"))) {
+            $WORKSPACE_DIR = Split-Path $WORKSPACE_DIR -Parent
+        }
+    }
+}
+
+Set-Location $WORKSPACE_DIR
+
+# Configure git credential helper with token (same as Step 1)
+if ($env:GIT_READONLY_TOKEN) {
+    git config --global credential.helper store
+    if (Test-Path "Phoenix\phoenix-core-lib") {
+        Push-Location "Phoenix\phoenix-core-lib"
+        $remoteUrl = git remote get-url origin 2>$null
+        if ($remoteUrl) {
+            $GIT_HOST = $remoteUrl -replace 'https?://([^/]+).*', '$1' -replace '.*@', ''
+        }
+        Pop-Location
+    }
+    if ($GIT_HOST) {
+        $CREDENTIALS_FILE = if ($env:USERPROFILE) { "$env:USERPROFILE\.git-credentials" } else { "$HOME\.git-credentials" }
+        "https://oauth2:$($env:GIT_READONLY_TOKEN)@$GIT_HOST" | Out-File -FilePath $CREDENTIALS_FILE -Encoding ASCII -NoNewline
+    }
+}
+
+# Process all Phoenix projects
+if (Test-Path "Phoenix") {
+    Push-Location "Phoenix"
+    $repos = Get-ChildItem -Directory | Where-Object { Test-Path (Join-Path $_.FullName ".git") }
+    foreach ($repo in $repos) {
+        Write-Host "Checking out branch $BRANCH in: Phoenix\$($repo.Name)"
+        Push-Location $repo.FullName
+        
+        # Stash uncommitted changes
+        $hasChanges = git status --porcelain 2>$null
+        if ($hasChanges) {
+            git stash push -m "Stashed before checkout - preserving local changes"
+            $STASHED = $true
+        } else {
+            $STASHED = $false
+        }
+        
+        # Fetch and checkout
+        git fetch origin
+        
+        $remoteBranch = git ls-remote --heads origin $BRANCH 2>$null
+        if ($remoteBranch) {
+            $branchExists = git show-ref --verify --quiet "refs/heads/$BRANCH" 2>$null
+            if ($LASTEXITCODE -eq 0) {
+                git checkout $BRANCH
+            } else {
+                git checkout -b $BRANCH "origin/$BRANCH"
+            }
+        } else {
+            Write-Host "Branch $BRANCH does not exist on remote for $($repo.Name)"
+            if ($STASHED) { git stash pop 2>$null }
+            Pop-Location
+            continue
+        }
+        
+        # Unstash if needed
+        if ($STASHED) {
+            git stash pop 2>$null
+        }
+        
+        Pop-Location
+    }
+    Pop-Location
+}
+```
+
+**For Bash (Git Bash/Linux/macOS):**
 ```bash
 BRANCH="dev"  # or dev2, dev-fix, test, main, master
 GIT_READONLY_TOKEN="glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
@@ -722,9 +1005,29 @@ git fetch origin --dry-run
 **Error:** Cannot find Phoenix directory
 
 **Solution:**
-1. Set `WORKSPACE_ROOT` environment variable: `export WORKSPACE_ROOT=/path/to/workspace`
+1. Set `WORKSPACE_ROOT` environment variable: 
+   - **PowerShell:** `$env:WORKSPACE_ROOT = "C:\path\to\workspace"`
+   - **Bash:** `export WORKSPACE_ROOT=/path/to/workspace`
 2. Or run the command from the workspace root directory
 3. Verify `Phoenix/` directory exists and contains Git repositories
+
+### Windows PowerShell Compatibility Issues
+
+**Error:** Script fails with syntax errors on Windows PowerShell
+
+**Solution:**
+1. **Detect Shell Environment:** The rule should automatically detect PowerShell vs Bash
+   - **PowerShell:** Check for `$PSVersionTable` variable
+   - **Bash:** Check for `$SHELL` variable or bash-specific commands
+2. **Use PowerShell Syntax:** On Windows PowerShell, use:
+   - `$env:VAR` instead of `$VAR` for environment variables
+   - `Test-Path` instead of `[ -d ]`
+   - `Get-Location` instead of `$(pwd)`
+   - `Set-Location` instead of `cd`
+   - `Push-Location`/`Pop-Location` instead of `cd` with manual tracking
+3. **Path Separators:** Use backslash `\` in PowerShell paths, forward slash `/` in Bash
+4. **If bash script is executed in PowerShell:** The rule should detect this and use PowerShell implementation instead
+5. **Alternative:** Use Git Bash on Windows instead of PowerShell if bash scripts are preferred
 
 ---
 
