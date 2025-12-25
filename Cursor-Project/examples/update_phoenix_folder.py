@@ -1,7 +1,7 @@
 """
 Phoenix Folder Update Script
 
-ეს სკრიპტი განაახლებს Phoenix ფოლდერს GitLab-ის ახალი ვერსიით.
+This script updates the Phoenix folder with the latest version from GitLab.
 """
 
 import os
@@ -38,7 +38,7 @@ def load_env_file():
 
 
 def update_phoenix_folder():
-    """განაახლოს Phoenix ფოლდერი GitLab-ის ახალი ვერსიით"""
+    """Update Phoenix folder with latest version from GitLab"""
     
     print("\n" + "="*70)
     print("Phoenix Folder Update from GitLab")

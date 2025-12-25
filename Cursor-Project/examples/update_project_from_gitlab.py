@@ -132,7 +132,7 @@ def example_consult():
     
     agent = get_gitlab_update_agent(config)
     
-    query = "განაახლე პროექტი group/phoenix-core-lib GitLab-იდან"
+    query = "Update project group/phoenix-core-lib from GitLab"
     
     context = {
         'project_path': 'group/phoenix-core-lib',

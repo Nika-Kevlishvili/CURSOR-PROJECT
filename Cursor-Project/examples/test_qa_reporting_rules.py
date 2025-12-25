@@ -16,7 +16,7 @@ from agents.reporting_service import get_reporting_service
 from agents.agent_router import get_agent_router
 
 def main():
-    question = "როგორ მუშაობს customer creation?"
+    question = "How does customer creation work?"
     
     print("=== Testing Q&A Mode, Reporting, and Rules ===")
     print(f"Question: {question}\n")

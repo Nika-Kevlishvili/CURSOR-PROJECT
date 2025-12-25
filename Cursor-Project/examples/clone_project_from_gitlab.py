@@ -1,6 +1,6 @@
 """
 Clone Project from GitLab - Fresh Clone Script
-ეს სკრიპტი ახლიდან აკლონებს პროექტს GitLab-იდან GitLabUpdateAgent-ის გამოყენებით
+This script clones a project fresh from GitLab using GitLabUpdateAgent
 
 Usage:
     python examples/clone_project_from_gitlab.py --project-path "group/phoenix-core-lib" --branch "main"

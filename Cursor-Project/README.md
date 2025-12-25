@@ -1,10 +1,8 @@
 # Cursor Project
 
-მრავალფუნქციური პროექტი Python agents, Java/Gradle libraries, Postman ინტეგრაცია და migration tools-ით.
-
 Multi-functional project with Python agents, Java/Gradle libraries, Postman integration, and migration tools.
 
-## 📁 პროექტის სტრუქტურა / Project Structure
+## 📁 Project Structure
 
 ```
 ├── .cursor/             # Cursor IDE configuration (MCP config, extensions, rules)
@@ -19,11 +17,9 @@ Multi-functional project with Python agents, Java/Gradle libraries, Postman inte
 └── requirements.txt     # Python dependencies
 ```
 
-## 🚀 სწრაფი დაწყება / Quick Start
+## 🚀 Quick Start
 
-### Cursor IDE Setup / კურსორის IDE დაყენება
-
-**Important**: ახალ კომპიუტერზე პროექტის გადატანის შემდეგ, დააყენეთ Cursor IDE კონფიგურაცია.
+### Cursor IDE Setup
 
 **Important**: After transferring the project to a new computer, set up Cursor IDE configuration.
 
@@ -33,10 +29,10 @@ Multi-functional project with Python agents, Java/Gradle libraries, Postman inte
 .\setup-cursor-config.ps1
 ```
 
-ეს სკრიპტი ავტომატურად:
-- ✅ გადაიტანს MCP კონფიგურაციას Cursor-ის settings-ში
-- ✅ ითხოვს sensitive values (passwords, tokens)
-- ✅ აჩვენებს რეკომენდებული ექსთენშენების სიას
+This script automatically:
+- ✅ Transfers MCP configuration to Cursor settings
+- ✅ Prompts for sensitive values (passwords, tokens)
+- ✅ Shows recommended extensions list
 
 **Manual Setup**: See [`.cursor/README.md`](.cursor/README.md) for detailed instructions.
 
@@ -55,7 +51,7 @@ source venv/bin/activate  # Linux/Mac
 
 # Install dependencies
 pip install -r requirements.txt
-# ან (თუ requirements.txt არ არსებობს)
+# Or (if requirements.txt doesn't exist)
 pip install -r config/requirements_test_agent.txt
 ```
 
@@ -70,7 +66,7 @@ cd phoenix-core-lib
 ./gradlew build
 ```
 
-## 📚 დოკუმენტაცია / Documentation
+## 📚 Documentation
 
 - [Architecture Knowledge Base](docs/ARCHITECTURE_KNOWLEDGE_BASE.md)
 - [Postman Collection Generator](docs/POSTMAN_COLLECTION_GENERATOR.md)
@@ -78,18 +74,16 @@ cd phoenix-core-lib
 - [GitLab Update Agent](docs/GITLAB_UPDATE_AGENT.md)
 - [Phoenix Project Analysis](docs/PHOENIX_PROJECT_ANALYSIS.md)
 
-## 🔧 ტექნოლოგიები / Technologies
+## 🔧 Technologies
 
 - **Python** - Agents, automation scripts
 - **Java/Gradle** - Phoenix Core Library
 - **Postman** - API testing and collections
 
-## ⚠️ მნიშვნელოვანი შენიშვნები / Important Notes
+## ⚠️ Important Notes
 
 1. **Secrets**: 
-   - API keys, tokens, passwords უნდა იყოს environment variables-ში
    - API keys, tokens, passwords should be in environment variables
-   - არ დაკომიტოთ `.env` ფაილი Git-ში
    - Do NOT commit `.env` file to Git
 
 ## 📝 License
@@ -98,5 +92,5 @@ cd phoenix-core-lib
 
 ---
 
-**ბოლო განახლება / Last Updated**: 2025-01-14
+**Last Updated**: 2025-01-14
 

@@ -257,35 +257,35 @@ class ReportingService:
             Markdown formatted report
         """
         report_lines = []
-        report_lines.append(f"# რეპორტი: {agent_name}")
+        report_lines.append(f"# Report: {agent_name}")
         report_lines.append("")
-        report_lines.append(f"**დრო:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        report_lines.append(f"**Time:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         report_lines.append("")
         
         # Agent activities summary
         agent_activities = [a for a in self.activities if a.agent_name == agent_name]
-        report_lines.append(f"## მთლიანი აქტივობები: {len(agent_activities)}")
+        report_lines.append(f"## Total Activities: {len(agent_activities)}")
         report_lines.append("")
         
         # Task executions
         if agent_name in self.task_executions:
             tasks = self.task_executions[agent_name]
-            report_lines.append(f"### შესრულებული დავალებები ({len(tasks)})")
+            report_lines.append(f"### Completed Tasks ({len(tasks)})")
             report_lines.append("")
             for i, task in enumerate(tasks, 1):
                 status_icon = "✓" if task['success'] else "✗"
                 report_lines.append(f"{i}. **{status_icon} {task['task_type']}**")
-                report_lines.append(f"   - დავალება: {task['task']}")
-                report_lines.append(f"   - დრო: {task['timestamp']}")
-                report_lines.append(f"   - ხანგრძლივობა: {task['duration_ms']:.2f}ms")
+                report_lines.append(f"   - Task: {task['task']}")
+                report_lines.append(f"   - Time: {task['timestamp']}")
+                report_lines.append(f"   - Duration: {task['duration_ms']:.2f}ms")
                 if task.get('result_summary'):
-                    report_lines.append(f"   - შედეგი: {task['result_summary']}")
+                    report_lines.append(f"   - Result: {task['result_summary']}")
                 report_lines.append("")
         
         # Inter-agent communications
         if agent_name in self.agent_communications:
             communications = self.agent_communications[agent_name]
-            report_lines.append(f"### კომუნიკაცია სხვა აგენტებთან ({len(communications)})")
+            report_lines.append(f"### Communication with Other Agents ({len(communications)})")
             report_lines.append("")
             
             # Group by agent
@@ -294,21 +294,21 @@ class ReportingService:
                 by_agent[comm['to_agent']].append(comm)
             
             for consulted_agent, comms in by_agent.items():
-                report_lines.append(f"#### {consulted_agent} ({len(comms)} კონსულტაცია)")
+                report_lines.append(f"#### {consulted_agent} ({len(comms)} consultations)")
                 report_lines.append("")
                 for i, comm in enumerate(comms, 1):
                     status_icon = "✓" if comm['success'] else "✗"
                     report_lines.append(f"{i}. **{status_icon} {comm['timestamp']}**")
-                    report_lines.append(f"   - შეკითხვა: {comm['query']}")
-                    report_lines.append(f"   - ხანგრძლივობა: {comm['duration_ms']:.2f}ms")
+                    report_lines.append(f"   - Query: {comm['query']}")
+                    report_lines.append(f"   - Duration: {comm['duration_ms']:.2f}ms")
                     if comm.get('response_summary'):
-                        report_lines.append(f"   - პასუხი: {comm['response_summary']}")
+                        report_lines.append(f"   - Response: {comm['response_summary']}")
                     report_lines.append("")
         
         # Information sources
         if agent_name in self.information_sources:
             sources = self.information_sources[agent_name]
-            report_lines.append(f"### ინფორმაციის წყაროები ({len(sources)})")
+            report_lines.append(f"### Information Sources ({len(sources)})")
             report_lines.append("")
             
             # Group by source type
@@ -321,15 +321,15 @@ class ReportingService:
                 report_lines.append("")
                 for i, source in enumerate(type_sources, 1):
                     report_lines.append(f"{i}. **{source['timestamp']}**")
-                    report_lines.append(f"   - აღწერა: {source['source_description']}")
+                    report_lines.append(f"   - Description: {source['source_description']}")
                     if source.get('information_summary'):
-                        report_lines.append(f"   - ინფორმაცია: {source['information_summary']}")
+                        report_lines.append(f"   - Information: {source['information_summary']}")
                     report_lines.append("")
         
         # Recent activities
         recent_activities = [a for a in agent_activities[-10:]]  # Last 10 activities
         if recent_activities:
-            report_lines.append("### ბოლო აქტივობები")
+            report_lines.append("### Recent Activities")
             report_lines.append("")
             for activity in recent_activities:
                 report_lines.append(f"- **{activity.timestamp}** [{activity.activity_type}] {activity.description}")
@@ -345,9 +345,9 @@ class ReportingService:
             Markdown formatted summary report
         """
         report_lines = []
-        report_lines.append("# რეპორტი: ყველა აგენტის მიმოხილვა")
+        report_lines.append("# Report: All Agents Overview")
         report_lines.append("")
-        report_lines.append(f"**დრო:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        report_lines.append(f"**Time:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         report_lines.append("")
         
         # Get all unique agent names
@@ -358,10 +358,10 @@ class ReportingService:
         all_agents.update([a.agent_name for a in self.activities])
         
         if not all_agents:
-            report_lines.append("ჯერ არ არის აქტივობები.")
+            report_lines.append("No activities yet.")
             return "\n".join(report_lines)
         
-        report_lines.append(f"## აგენტების რაოდენობა: {len(all_agents)}")
+        report_lines.append(f"## Number of Agents: {len(all_agents)}")
         report_lines.append("")
         
         # Summary for each agent
@@ -375,17 +375,17 @@ class ReportingService:
             sources_count = len(self.information_sources.get(agent_name, []))
             activities_count = len([a for a in self.activities if a.agent_name == agent_name])
             
-            report_lines.append(f"- **დავალებები:** {tasks_count}")
-            report_lines.append(f"- **კომუნიკაციები:** {comms_count}")
-            report_lines.append(f"- **ინფორმაციის წყაროები:** {sources_count}")
-            report_lines.append(f"- **მთლიანი აქტივობები:** {activities_count}")
+            report_lines.append(f"- **Tasks:** {tasks_count}")
+            report_lines.append(f"- **Communications:** {comms_count}")
+            report_lines.append(f"- **Information Sources:** {sources_count}")
+            report_lines.append(f"- **Total Activities:** {activities_count}")
             report_lines.append("")
             
             # List consulted agents
             if agent_name in self.agent_communications:
                 consulted_agents = set(comm['to_agent'] for comm in self.agent_communications[agent_name])
                 if consulted_agents:
-                    report_lines.append(f"  კომუნიკაცია აგენტებთან: {', '.join(sorted(consulted_agents))}")
+                    report_lines.append(f"  Communication with agents: {', '.join(sorted(consulted_agents))}")
                     report_lines.append("")
         
         return "\n".join(report_lines)

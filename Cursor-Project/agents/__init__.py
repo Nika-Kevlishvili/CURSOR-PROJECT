@@ -22,7 +22,8 @@ Structure:
 from .Main import (
     get_phoenix_expert, PhoenixExpert,
     get_test_agent, TestAgent, TestType, TestStatus,
-    get_bug_finder_agent, BugFinderAgent
+    get_bug_finder_agent, BugFinderAgent,
+    get_test_case_generator_agent, TestCaseGeneratorAgent
 )
 
 # Support Agents
@@ -43,7 +44,8 @@ from .Core import (
 from .Adapters import (
     PhoenixExpertAdapter,
     TestAgentAdapter,
-    EnvironmentAccessAdapter
+    EnvironmentAccessAdapter,
+    TestCaseGeneratorAdapter
 )
 
 # Services
@@ -66,6 +68,8 @@ __all__ = [
     'TestStatus',
     'get_bug_finder_agent',
     'BugFinderAgent',
+    'get_test_case_generator_agent',
+    'TestCaseGeneratorAgent',
     'get_gitlab_update_agent',
     'GitLabUpdateAgent',
     'get_agent_registry',
@@ -73,6 +77,7 @@ __all__ = [
     'Agent',
     'PhoenixExpertAdapter',
     'TestAgentAdapter',
+    'TestCaseGeneratorAdapter',
     'get_integration_service',
     'IntegrationService',
     'get_postman_collection_generator',

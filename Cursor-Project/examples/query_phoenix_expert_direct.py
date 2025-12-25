@@ -27,7 +27,7 @@ except ImportError as e:
     get_phoenix_expert = phoenix_expert_module.get_phoenix_expert
 
 def main():
-    question = "ფენიქსის პროექტის მოკლე ბიზნეს იდეა"
+    question = "Brief business idea of Phoenix project"
     
     print("=== Querying PhoenixExpert ===")
     print(f"Question: {question}\n")

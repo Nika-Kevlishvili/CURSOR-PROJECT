@@ -15,7 +15,7 @@ from agents.ai_response_logger import log_ai_response
 from agents.reporting_service import get_reporting_service
 
 def main():
-    question = "ფენიქსის პროექტის მოკლე ბიზნეს იდეა"
+    question = "Brief business idea of Phoenix project"
     
     print("=== Querying PhoenixExpert ===")
     print(f"Question: {question}\n")

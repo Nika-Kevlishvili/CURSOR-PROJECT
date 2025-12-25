@@ -1,10 +1,10 @@
 """
 Phoenix Projects Update by Environment
 
-ეს სკრიპტი:
-1. აღმოაჩენს Phoenix პროექტებს GitLab-იდან
-2. შეამოწმებს თითოეული პროექტის ბრენჩებს (dev, test, main/prod, release/*, feature/*)
-3. განაახლებს პროექტებს გარემოების მიხედვით ორგანიზებულად
+This script:
+1. Discovers Phoenix projects from GitLab
+2. Checks each project's branches (dev, test, main/prod, release/*, feature/*)
+3. Updates projects organized by environment
 """
 
 import os
@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from agents import get_gitlab_update_agent
 
 
-# გარემოების განსაზღვრა ბრენჩების მიხედვით
+# Environment definition based on branches
 ENVIRONMENT_BRANCHES = {
     'dev': ['dev'],
     'test': ['test'],
@@ -30,13 +30,13 @@ ENVIRONMENT_BRANCHES = {
 
 def categorize_branches(branches: List[str]) -> Dict[str, List[str]]:
     """
-    კატეგორიზაცია ბრენჩების გარემოების მიხედვით.
+    Categorize branches by environment.
     
     Args:
-        branches: ბრენჩების სია
+        branches: List of branches
     
     Returns:
-        Dictionary გარემოების მიხედვით
+        Dictionary organized by environment
     """
     categorized = {
         'dev': [],
@@ -64,30 +64,30 @@ def categorize_branches(branches: List[str]) -> Dict[str, List[str]]:
 
 
 def update_phoenix_by_environment():
-    """განაახლოს Phoenix პროექტები გარემოების მიხედვით"""
+    """Update Phoenix projects by environment"""
     
     print("\n" + "="*70)
     print("Phoenix Projects Update by Environment")
     print("="*70)
     
-    # კონფიგურაცია
+    # Configuration
     config = {
         'gitlab_url': os.getenv('GITLAB_URL', 'https://git.domain.internal'),
         'gitlab_token': os.getenv('GITLAB_TOKEN', ''),
         'gitlab_username': os.getenv('GITLAB_USERNAME', ''),
         'gitlab_password': os.getenv('GITLAB_PASSWORD', ''),
-        'base_dir': Path(__file__).parent.parent / 'Phoenix'  # Phoenix დირექტორია
+        'base_dir': Path(__file__).parent.parent / 'Phoenix'  # Phoenix directory
     }
     
-    # თუ username/password არის, გამოვიყენოთ
+    # If username/password is available, use it
     if not config['gitlab_token'] and config['gitlab_username']:
         print("⚠️  GitLab token not found, will use username/password authentication")
     
-    # ინიციალიზაცია
+    # Initialization
     print("\nInitializing GitLabUpdateAgent...")
     agent = get_gitlab_update_agent(config)
     
-    # ავტენტიფიკაცია
+    # Authentication
     if config['gitlab_username'] and config['gitlab_password']:
         print("\nAuthenticating with GitLab...")
         auth_result = agent.authenticate_with_credentials()
@@ -96,7 +96,7 @@ def update_phoenix_by_environment():
             return {'success': False, 'error': 'Authentication failed'}
         print(f"✅ Authenticated as: {auth_result.get('user', 'user')}")
     
-    # პროექტების აღმოჩენა
+    # Project discovery
     print("\nDiscovering Phoenix projects from GitLab...")
     print("="*70)
     projects = agent.discover_phoenix_projects(search_term="phoenix")
@@ -107,7 +107,7 @@ def update_phoenix_by_environment():
     
     print(f"\n✅ Found {len(projects)} Phoenix projects")
     
-    # შედეგების სტრუქტურა
+    # Results structure
     results = {
         'success': True,
         'total_projects': len(projects),
@@ -121,7 +121,7 @@ def update_phoenix_by_environment():
         'projects': []
     }
     
-    # თითოეული პროექტის დამუშავება
+    # Process each project
     for i, project in enumerate(projects, 1):
         project_path = project['path']
         project_name = project_path.split('/')[-1]
@@ -130,7 +130,7 @@ def update_phoenix_by_environment():
         print(f"[{i}/{len(projects)}] Processing: {project_path}")
         print(f"{'='*70}")
         
-        # ბრენჩების მიღება
+        # Get branches
         print(f"Fetching branches for {project_path}...")
         branches = agent.list_project_branches(project_path)
         
@@ -140,7 +140,7 @@ def update_phoenix_by_environment():
         
         print(f"✅ Found {len(branches)} branches: {', '.join(branches[:10])}{'...' if len(branches) > 10 else ''}")
         
-        # ბრენჩების კატეგორიზაცია
+        # Categorize branches
         categorized = categorize_branches(branches)
         
         project_result = {
@@ -151,7 +151,7 @@ def update_phoenix_by_environment():
             'updates': []
         }
         
-        # თითოეული გარემოსთვის განახლება
+        # Update for each environment
         for env_name, env_branches in categorized.items():
             if not env_branches:
                 continue
@@ -159,18 +159,18 @@ def update_phoenix_by_environment():
             print(f"\n--- {env_name.upper()} Environment ---")
             
             for branch in env_branches:
-                # განსაზღვროს target directory გარემოს მიხედვით
+                # Determine target directory based on environment
                 env_dir = config['base_dir'] / env_name
                 env_dir.mkdir(parents=True, exist_ok=True)
                 
-                # პროექტის დირექტორია გარემოს მიხედვით
+                # Project directory based on environment
                 target_dir = env_dir / project_name
                 
                 print(f"\nUpdating {project_name} ({branch}) -> {target_dir}")
                 print("-" * 70)
                 
                 try:
-                    # პროექტის განახლება
+                    # Update project
                     update_result = agent.update_project(
                         project_path=project_path,
                         branch=branch,
@@ -209,7 +209,7 @@ def update_phoenix_by_environment():
                     project_result['updates'].append(update_info)
                     print(f"❌ {project_name} ({branch}) error: {e}")
             
-            # დამატება გარემოს სიაში
+            # Add to environment list
             if any(u['success'] for u in project_result['updates'] if u['environment'] == env_name):
                 results['environments'][env_name]['projects'].append({
                     'project_path': project_path,
@@ -219,7 +219,7 @@ def update_phoenix_by_environment():
         
         results['projects'].append(project_result)
     
-    # შეჯამება
+    # Summary
     print("\n" + "="*70)
     print("Update Summary")
     print("="*70)
@@ -236,7 +236,7 @@ def update_phoenix_by_environment():
                 for proj in env_data['projects']:
                     print(f"    - {proj['project_name']} ({', '.join(proj['branches'])})")
     
-    # დეტალური ინფორმაცია
+    # Detailed information
     print("\n" + "="*70)
     print("Detailed Results")
     print("="*70)

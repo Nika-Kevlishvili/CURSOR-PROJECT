@@ -1,19 +1,19 @@
-# რეპორტების ფოლდერი
+# Reports Folder
 
-ეს ფოლდერი შეიცავს ყველა აგენტის აქტივობების რეპორტებს.
+This folder contains activity reports for all agents.
 
-## რეპორტების სტრუქტურა
+## Report Structure
 
-რეპორტები ინახება დღეების მიხედვით ცალკე ფოლდერებში:
-- **ფოლდერის ფორმატი:** `YYYY-MM-DD` (მაგ: `2025-12-09`)
-- **ფაილის ფორმატი:** `{ექსპერტის_სახელი}_{საათი}{წუთები}.md` (მაგ: `PhoenixExpert_1830.md`)
+Reports are stored in separate folders by date:
+- **Folder format:** `YYYY-MM-DD` (e.g., `2025-12-09`)
+- **File format:** `{agent_name}_{hour}{minutes}.md` (e.g., `PhoenixExpert_1830.md`)
 
-## რეპორტების ტიპები
+## Report Types
 
-1. **Summary Report** (`Summary_{HHMM}.md`) - ყველა აგენტის მიმოხილვა
-2. **Agent Reports** (`{agent_name}_{HHMM}.md`) - კონკრეტული აგენტის დეტალური რეპორტი
+1. **Summary Report** (`Summary_{HHMM}.md`) - Overview of all agents
+2. **Agent Reports** (`{agent_name}_{HHMM}.md`) - Detailed report for a specific agent
 
-### მაგალითი სტრუქტურა:
+### Example Structure:
 ```
 reports/
 ├── 2025-12-09/
@@ -26,65 +26,65 @@ reports/
     └── Summary_0915.md
 ```
 
-## რეპორტებში შედის
+## What's Included in Reports
 
-- **შესრულებული დავალებები** - რა დავალებები შეასრულა აგენტმა
-- **კომუნიკაცია სხვა აგენტებთან** - რომელ აგენტებთან კომუნიკაცია ჰქონდა
-- **ინფორმაციის წყაროები** - საიდან წამოიღო ინფორმაცია
-- **ბოლო აქტივობები** - ბოლო 10 აქტივობა
+- **Completed Tasks** - What tasks the agent completed
+- **Communication with Other Agents** - Which agents it communicated with
+- **Information Sources** - Where it retrieved information from
+- **Recent Activities** - Last 10 activities
 
-## AI Assistant-ის პასუხების რეპორტირება
+## AI Assistant Response Reporting
 
-როდესაც AI assistant პასუხობს მომხმარებლის კითხვებს, ავტომატურად იწერება რეპორტი:
+When AI assistant responds to user questions, a report is automatically written:
 
 ```python
 from agents.ai_response_logger import log_ai_response
 
-# ერთი ექსპერტის გამოყენებისას
+# When using one expert
 log_ai_response(
-    user_query="როგორ მუშაობს customer endpoint?",
+    user_query="How does customer endpoint work?",
     expert_name="PhoenixExpert",
-    response_summary="ახსნილია customer endpoint-ის მუშაობა"
+    response_summary="Explained customer endpoint functionality"
 )
 
-# რამდენიმე აგენტის გამოყენებისას
+# When using multiple agents
 log_ai_response(
-    user_query="ტესტის შესრულება",
+    user_query="Test execution",
     agents_used=["TestAgent", "PhoenixExpert"],
-    response_summary="ტესტი შესრულებულია"
+    response_summary="Test completed"
 )
 ```
 
-## რეპორტების გენერირება
+## Generating Reports
 
-რეპორტების გენერირებისთვის გამოიყენეთ:
+To generate reports, use:
 
 ```python
 from agents.reporting_service import get_reporting_service
 
-# მიღება რეპორტინგ სერვისის
+# Get reporting service
 reporting_service = get_reporting_service()
 
-# ყველა აგენტის რეპორტების შენახვა
+# Save reports for all agents
 reporting_service.save_all_reports()
 
-# კონკრეტული აგენტის რეპორტის შენახვა
+# Save report for a specific agent
 reporting_service.save_agent_report("PhoenixExpert")
 
-# მხოლოდ მიმოხილვის რეპორტის შენახვა
+# Save only summary report
 reporting_service.save_summary_report()
 ```
 
-## აგენტებისთვის რეპორტინგი
+## Reporting for Agents
 
-აგენტებს შეუძლიათ დაარეპორტონ თავიანთი აქტივობები:
+Agents can report their activities:
 
 ```python
 from agents.reporting_service import get_reporting_service
 
 reporting_service = get_reporting_service()
 
-# დავალების შესრულების რეპორტირება
+# Report task execution
 reporting_service.log_task_execution(
     agent_name="MyAgent",
     task="Test execution",
@@ -93,7 +93,7 @@ reporting_service.log_task_execution(
     duration_ms=1234.5
 )
 
-# ინფორმაციის წყაროს რეპორტირება
+# Report information source
 reporting_service.log_information_source(
     agent_name="MyAgent",
     source_type="file",
@@ -101,8 +101,8 @@ reporting_service.log_information_source(
     information="Configuration loaded"
 )
 
-# კომუნიკაციის რეპორტირება (ავტომატურად ხდება AgentRegistry-ის მეშვეობით)
-# მაგრამ შეგიძლიათ ხელითაც:
+# Report communication (automatically done via AgentRegistry)
+# But you can also do it manually:
 reporting_service.log_consultation(
     from_agent="MyAgent",
     to_agent="PhoenixExpert",

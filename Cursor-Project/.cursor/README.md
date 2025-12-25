@@ -10,6 +10,7 @@ This folder contains Cursor IDE configuration required for full functionality of
 - **`mcp-config.json`** - MCP (Model Context Protocol) სერვერების კონფიგურაცია
 - **`extensions.json`** - რეკომენდებული ექსთენშენების სია
 - **`rules/phoenix.mdc`** - პროექტის rules და guidelines
+- **`rules/git_sync_workflow.mdc`** - Git sync workflow rule for GitLab projects (`!sync`, `!update`, `!checkout`)
 - **`commands/phoenix.md`** - Custom commands
 
 ## 🚀 ახალ კომპიუტერზე დაყენება / Setup on New Computer

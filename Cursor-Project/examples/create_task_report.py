@@ -22,7 +22,7 @@ def main():
         # Log task execution
         service.log_task_execution(
             agent_name="RuleComplianceAnalysis",
-            task="რულების დაცვის შემოწმება და აგენტების შეფასება",
+            task="Rule compliance check and agent assessment",
             task_type="analysis",
             success=True,
             duration_ms=0,
@@ -43,13 +43,13 @@ def main():
         service.log_activity(
             agent_name="RuleComplianceAnalysis",
             activity_type="code_analysis",
-            description="შემოწმებულია რულების დაცვა და აგენტების კოდი"
+            description="Checked rule compliance and agent code"
         )
         
         service.log_activity(
             agent_name="RuleComplianceAnalysis",
             activity_type="code_modification",
-            description="შეცვლილია ყველა აგენტი რომ იყენებდეს reporting_service-ს"
+            description="Modified all agents to use reporting_service"
         )
         
         # Log information sources
@@ -57,35 +57,35 @@ def main():
             agent_name="RuleComplianceAnalysis",
             source_type="file",
             source_description="agents/test_agent.py",
-            information="TestAgent კოდის ანალიზი და reporting_service-ის დამატება"
+            information="TestAgent code analysis and reporting_service addition"
         )
         
         service.log_information_source(
             agent_name="RuleComplianceAnalysis",
             source_type="file",
             source_description="agents/phoenix_expert.py",
-            information="PhoenixExpert კოდის ანალიზი და reporting_service-ის დამატება"
+            information="PhoenixExpert code analysis and reporting_service addition"
         )
         
         service.log_information_source(
             agent_name="RuleComplianceAnalysis",
             source_type="file",
             source_description="agents/postman_collection_generator.py",
-            information="PostmanCollectionGenerator კოდის ანალიზი და reporting_service-ის დამატება"
+            information="PostmanCollectionGenerator code analysis and reporting_service addition"
         )
         
         service.log_information_source(
             agent_name="RuleComplianceAnalysis",
             source_type="file",
             source_description="agents/gitlab_update_agent.py",
-            information="GitLabUpdateAgent კოდის ანალიზი და reporting_service-ის დამატება"
+            information="GitLabUpdateAgent code analysis and reporting_service addition"
         )
         
         service.log_information_source(
             agent_name="RuleComplianceAnalysis",
             source_type="file",
             source_description=".cursor/rules/phoenix.mdc",
-            information="რულების ანალიზი და დაცვის შემოწმება"
+            information="Rules analysis and compliance check"
         )
         
         # Save report

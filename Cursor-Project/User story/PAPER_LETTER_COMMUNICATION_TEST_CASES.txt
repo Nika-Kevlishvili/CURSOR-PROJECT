@@ -1,0 +1,635 @@
+# Test Cases: Paper Letter Communication for Customers Without Phone/Email
+
+## Test Case 1: SMS/Email object is creating with correct status
+**Description:** SMS / Email object will be created with status 'Not sent' when customer does not have any communication data (phone number or email address)
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create customer without communication data (without phone number, Email)
+2. Trigger any automatic process which would create SMS or Email objects (reminder, billing run, etc.)
+3. Check created objects (SMS, Email) and check their statuses
+
+**Expected Result:** If customer does not have SMS / Email in communication data automatic created objects should have status 'Not sent'
+
+**Notes:** This case can not be fully tested yet, because automatic creation of these objects with correct statuses are not done yet.
+
+---
+
+## Test Case 2: Contract creation with only physical address
+**Description:** Verify that a contract can be created with communication data that includes only physical address, without phone number and email address
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Navigate to contract creation page
+2. Fill in all required contract fields
+3. Add communication data with only physical address (no phone number, no email address)
+4. Save the contract
+
+**Expected Result:** Contract should be created successfully with communication data containing only physical address. System should not require phone number or email address to be present.
+
+**Notes:** This is a change from the current process where at least one phone number and email address were required.
+
+---
+
+## Test Case 3: SMS object creation during reminder process
+**Description:** Verify that SMS object is created with 'Not sent' status when reminder process is triggered for customer without phone number
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create customer with communication data containing only email address and physical address (no phone number)
+2. Trigger reminder process for this customer
+3. Navigate to Customer Communication page > SMS tab
+4. Check if SMS object was created
+5. Verify the status of the created SMS object
+
+**Expected Result:** SMS object should be created with status 'Not sent'. The object should be visible in Customer Communication page > SMS tab.
+
+---
+
+## Test Case 4: Email object creation during reminder process
+**Description:** Verify that Email object is created with 'Not sent' status when reminder process is triggered for customer without email address
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create customer with communication data containing only phone number and physical address (no email address)
+2. Trigger reminder process for this customer
+3. Navigate to Customer Communication page > Email tab
+4. Check if Email object was created
+5. Verify the status of the created Email object
+
+**Expected Result:** Email object should be created with status 'Not sent'. The object should be visible in Customer Communication page > Email tab.
+
+---
+
+## Test Case 5: SMS object creation during billing run
+**Description:** Verify that SMS object is created with 'Not sent' status when billing run is triggered for customer without phone number
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create customer with communication data containing only email address and physical address (no phone number)
+2. Trigger billing run process for this customer
+3. Navigate to Customer Communication page > SMS tab
+4. Check if SMS object was created
+5. Verify the status of the created SMS object
+
+**Expected Result:** SMS object should be created with status 'Not sent'. The object should be visible in Customer Communication page > SMS tab.
+
+---
+
+## Test Case 6: Email object creation during billing run
+**Description:** Verify that Email object is created with 'Not sent' status when billing run is triggered for customer without email address
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create customer with communication data containing only phone number and physical address (no email address)
+2. Trigger billing run process for this customer
+3. Navigate to Customer Communication page > Email tab
+4. Check if Email object was created
+5. Verify the status of the created Email object
+
+**Expected Result:** Email object should be created with status 'Not sent'. The object should be visible in Customer Communication page > Email tab.
+
+---
+
+## Test Case 7: SMS object visibility in Customer Relationship tab
+**Description:** Verify that SMS object with 'Not sent' status is visible in Customer > Customer Relationship tab
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create customer without phone number
+2. Trigger automatic process that creates SMS object
+3. Navigate to Customer > Customer Relationship tab
+4. Check if SMS object is displayed
+5. Verify the status column shows 'Not sent'
+
+**Expected Result:** SMS object should be visible in Customer > Customer Relationship tab with status 'Not sent'.
+
+---
+
+## Test Case 8: Email object visibility in Customer Relationship tab
+**Description:** Verify that Email object with 'Not sent' status is visible in Customer > Customer Relationship tab
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create customer without email address
+2. Trigger automatic process that creates Email object
+3. Navigate to Customer > Customer Relationship tab
+4. Check if Email object is displayed
+5. Verify the status column shows 'Not sent'
+
+**Expected Result:** Email object should be visible in Customer > Customer Relationship tab with status 'Not sent'.
+
+---
+
+## Test Case 9: Status parameter values in Customer Communication page
+**Description:** Verify that two new status values 'Not sent' and 'Sent manually' are available in status parameter on Customer Communication pages
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Navigate to Customer Communication page (SMS or Email tab)
+2. Check the status filter/dropdown options
+3. Verify available status values
+
+**Expected Result:** Status parameter should include two new values: 'Not sent' and 'Sent manually' in addition to existing status values.
+
+---
+
+## Test Case 10: Status parameter values in Customer Relationship tab
+**Description:** Verify that two new status values 'Not sent' and 'Sent manually' are available in status parameter on Customer > Customer Relationship tab
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Navigate to Customer > Customer Relationship tab
+2. Check the status filter/dropdown options for communication objects
+3. Verify available status values
+
+**Expected Result:** Status parameter should include two new values: 'Not sent' and 'Sent manually' in addition to existing status values.
+
+---
+
+## Test Case 11: Status field visibility in edit mode for 'Not sent' SMS
+**Description:** Verify that status field is visible and editable in single SMS object edit mode when status is 'Not sent'
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create SMS object with status 'Not sent'
+2. Navigate to single SMS object edit mode
+3. Check if status field is displayed
+4. Verify that status field is a dropdown with single select option
+5. Check available status options in the dropdown
+
+**Expected Result:** Status field should be visible in edit mode. Dropdown should allow selection of 'Sent manually' status. No other status changes should be allowed.
+
+---
+
+## Test Case 12: Status field visibility in edit mode for 'Not sent' Email
+**Description:** Verify that status field is visible and editable in single Email object edit mode when status is 'Not sent'
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create Email object with status 'Not sent'
+2. Navigate to single Email object edit mode
+3. Check if status field is displayed
+4. Verify that status field is a dropdown with single select option
+5. Check available status options in the dropdown
+
+**Expected Result:** Status field should be visible in edit mode. Dropdown should allow selection of 'Sent manually' status. No other status changes should be allowed.
+
+---
+
+## Test Case 13: Status field visibility in preview mode for 'Not sent' SMS
+**Description:** Verify that status field is visible in single SMS object preview mode when status is 'Not sent'
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create SMS object with status 'Not sent'
+2. Navigate to single SMS object preview mode
+3. Check if status field is displayed
+4. Verify that status field shows current status 'Not sent'
+
+**Expected Result:** Status field should be visible in preview mode displaying 'Not sent' status.
+
+---
+
+## Test Case 14: Status field visibility in preview mode for 'Not sent' Email
+**Description:** Verify that status field is visible in single Email object preview mode when status is 'Not sent'
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create Email object with status 'Not sent'
+2. Navigate to single Email object preview mode
+3. Check if status field is displayed
+4. Verify that status field shows current status 'Not sent'
+
+**Expected Result:** Status field should be visible in preview mode displaying 'Not sent' status.
+
+---
+
+## Test Case 15: Edit mode enabled for 'Not sent' SMS object
+**Description:** Verify that edit mode is enabled for SMS object with status 'Not sent'
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create SMS object with status 'Not sent'
+2. Navigate to single SMS object preview mode
+3. Check if edit button/mode is available
+4. Click on edit mode
+5. Verify that edit mode is accessible
+
+**Expected Result:** Edit mode should be enabled and accessible for SMS objects with status 'Not sent'.
+
+---
+
+## Test Case 16: Edit mode enabled for 'Not sent' Email object
+**Description:** Verify that edit mode is enabled for Email object with status 'Not sent'
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create Email object with status 'Not sent'
+2. Navigate to single Email object preview mode
+3. Check if edit button/mode is available
+4. Click on edit mode
+5. Verify that edit mode is accessible
+
+**Expected Result:** Edit mode should be enabled and accessible for Email objects with status 'Not sent'.
+
+---
+
+## Test Case 17: Status change from 'Not sent' to 'Sent manually' - SMS
+**Description:** Verify that user with permission can change SMS status from 'Not sent' to 'Sent manually'
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Login as user with 'update communication object status' permission
+2. Create SMS object with status 'Not sent'
+3. Navigate to single SMS object edit mode
+4. Change status from 'Not sent' to 'Sent manually'
+5. Save the changes
+6. Verify the status change
+
+**Expected Result:** Status should be successfully changed from 'Not sent' to 'Sent manually'. Changes should be saved and reflected in the system.
+
+---
+
+## Test Case 18: Status change from 'Not sent' to 'Sent manually' - Email
+**Description:** Verify that user with permission can change Email status from 'Not sent' to 'Sent manually'
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Login as user with 'update communication object status' permission
+2. Create Email object with status 'Not sent'
+3. Navigate to single Email object edit mode
+4. Change status from 'Not sent' to 'Sent manually'
+5. Save the changes
+6. Verify the status change
+
+**Expected Result:** Status should be successfully changed from 'Not sent' to 'Sent manually'. Changes should be saved and reflected in the system.
+
+---
+
+## Test Case 19: Status change restriction - other statuses cannot be changed manually
+**Description:** Verify that statuses other than 'Not sent' cannot be manually changed to another status
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create SMS object with status 'Sent' (or any other status except 'Not sent')
+2. Navigate to single SMS object edit mode
+3. Try to change the status to another status
+4. Verify if status change is allowed
+
+**Expected Result:** Status change should not be allowed for objects with status other than 'Not sent'. Status field should be disabled or not allow changes.
+
+---
+
+## Test Case 20: Resend button disabled for 'Not sent' SMS
+**Description:** Verify that 'Resend' button is disabled in preview mode for SMS object with status 'Not sent'
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create SMS object with status 'Not sent'
+2. Navigate to single SMS object preview mode
+3. Check if 'Resend' button is present
+4. Verify that 'Resend' button is disabled
+
+**Expected Result:** 'Resend' button should be disabled (not clickable) for SMS objects with status 'Not sent'.
+
+---
+
+## Test Case 21: Resend button disabled for 'Not sent' Email
+**Description:** Verify that 'Resend' button is disabled in preview mode for Email object with status 'Not sent'
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create Email object with status 'Not sent'
+2. Navigate to single Email object preview mode
+3. Check if 'Resend' button is present
+4. Verify that 'Resend' button is disabled
+
+**Expected Result:** 'Resend' button should be disabled (not clickable) for Email objects with status 'Not sent'.
+
+---
+
+## Test Case 22: Resend button disabled for 'Sent manually' SMS
+**Description:** Verify that 'Resend' button is disabled in preview mode for SMS object with status 'Sent manually'
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create SMS object with status 'Not sent'
+2. Change status to 'Sent manually'
+3. Navigate to single SMS object preview mode
+4. Check if 'Resend' button is present
+5. Verify that 'Resend' button is disabled
+
+**Expected Result:** 'Resend' button should be disabled (not clickable) for SMS objects with status 'Sent manually'.
+
+---
+
+## Test Case 23: Resend button disabled for 'Sent manually' Email
+**Description:** Verify that 'Resend' button is disabled in preview mode for Email object with status 'Sent manually'
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create Email object with status 'Not sent'
+2. Change status to 'Sent manually'
+3. Navigate to single Email object preview mode
+4. Check if 'Resend' button is present
+5. Verify that 'Resend' button is disabled
+
+**Expected Result:** 'Resend' button should be disabled (not clickable) for Email objects with status 'Sent manually'.
+
+---
+
+## Test Case 24: Status display with timestamp in Customer Communication page
+**Description:** Verify that status column shows 'Sent manually' status with timestamp in format DD.MM.YY HH:MM on Customer Communication page
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create SMS/Email object with status 'Not sent'
+2. Change status to 'Sent manually' (note the time)
+3. Navigate to Customer Communication page (SMS or Email tab)
+4. Check the status column for the object
+5. Verify the format of status display
+
+**Expected Result:** Status column should display 'Sent manually DD.MM.YY HH:MM' format (e.g., 'Sent manually 12.01.25 14:30').
+
+---
+
+## Test Case 25: Status display with timestamp in Customer Relationship tab
+**Description:** Verify that status column shows 'Sent manually' status with timestamp in format DD.MM.YY HH:MM on Customer > Customer Relationship tab
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create SMS/Email object with status 'Not sent'
+2. Change status to 'Sent manually' (note the time)
+3. Navigate to Customer > Customer Relationship tab
+4. Check the status column for the object
+5. Verify the format of status display
+
+**Expected Result:** Status column should display 'Sent manually DD.MM.YY HH:MM' format (e.g., 'Sent manually 12.01.25 14:30').
+
+---
+
+## Test Case 26: Permission check - update communication object status
+**Description:** Verify that only users with 'update communication object status' permission can change status from 'Not sent' to 'Sent manually'
+
+**Test Type:** Security/Authorization
+
+**Test Steps:**
+1. Login as user without 'update communication object status' permission
+2. Create SMS object with status 'Not sent'
+3. Navigate to single SMS object edit mode
+4. Try to change status from 'Not sent' to 'Sent manually'
+5. Verify if status change is allowed
+
+**Expected Result:** User without permission should not be able to change the status. Status field should be disabled or user should receive permission error.
+
+---
+
+## Test Case 27: Permission check - view not sent SMS communication
+**Description:** Verify that users with 'view not sent communication' permission in SMS communication permission group can view SMS objects with 'Not sent' status
+
+**Test Type:** Security/Authorization
+
+**Test Steps:**
+1. Login as user with 'view not sent communication' permission in SMS communication permission group
+2. Create SMS object with status 'Not sent'
+3. Navigate to Customer Communication page > SMS tab
+4. Filter by status 'Not sent'
+5. Verify that SMS objects with 'Not sent' status are visible
+
+**Expected Result:** User with permission should be able to view SMS objects with 'Not sent' status.
+
+---
+
+## Test Case 28: Permission check - view not sent Email communication
+**Description:** Verify that users with 'view not sent communication' permission in Email communication permission group can view Email objects with 'Not sent' status
+
+**Test Type:** Security/Authorization
+
+**Test Steps:**
+1. Login as user with 'view not sent communication' permission in Email communication permission group
+2. Create Email object with status 'Not sent'
+3. Navigate to Customer Communication page > Email tab
+4. Filter by status 'Not sent'
+5. Verify that Email objects with 'Not sent' status are visible
+
+**Expected Result:** User with permission should be able to view Email objects with 'Not sent' status.
+
+---
+
+## Test Case 29: Permission check - view sent manually SMS communication
+**Description:** Verify that users with 'view sent manually communication' permission in SMS communication permission group can view SMS objects with 'Sent manually' status
+
+**Test Type:** Security/Authorization
+
+**Test Steps:**
+1. Login as user with 'view sent manually communication' permission in SMS communication permission group
+2. Create SMS object with status 'Not sent'
+3. Change status to 'Sent manually'
+4. Navigate to Customer Communication page > SMS tab
+5. Filter by status 'Sent manually'
+6. Verify that SMS objects with 'Sent manually' status are visible
+
+**Expected Result:** User with permission should be able to view SMS objects with 'Sent manually' status.
+
+---
+
+## Test Case 30: Permission check - view sent manually Email communication
+**Description:** Verify that users with 'view sent manually communication' permission in Email communication permission group can view Email objects with 'Sent manually' status
+
+**Test Type:** Security/Authorization
+
+**Test Steps:**
+1. Login as user with 'view sent manually communication' permission in Email communication permission group
+2. Create Email object with status 'Not sent'
+3. Change status to 'Sent manually'
+4. Navigate to Customer Communication page > Email tab
+5. Filter by status 'Sent manually'
+6. Verify that Email objects with 'Sent manually' status are visible
+
+**Expected Result:** User with permission should be able to view Email objects with 'Sent manually' status.
+
+---
+
+## Test Case 31: Multiple automatic processes creating multiple objects
+**Description:** Verify that multiple automatic processes can create multiple SMS/Email objects with 'Not sent' status for the same customer
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create customer without phone number and email address
+2. Trigger reminder process
+3. Trigger billing run process
+4. Navigate to Customer Communication page
+5. Check SMS and Email tabs
+6. Verify all created objects and their statuses
+
+**Expected Result:** Multiple SMS/Email objects should be created, each with status 'Not sent'. All objects should be visible in respective tabs.
+
+---
+
+## Test Case 32: Customer with partial communication data - SMS only
+**Description:** Verify that Email object is created with 'Not sent' status when customer has phone number but no email address
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create customer with communication data containing phone number and physical address (no email address)
+2. Trigger automatic process that would send both SMS and Email
+3. Navigate to Customer Communication page
+4. Check SMS tab - verify SMS was sent successfully
+5. Check Email tab - verify Email object was created with 'Not sent' status
+
+**Expected Result:** SMS should be sent successfully (if phone number is valid). Email object should be created with status 'Not sent'.
+
+---
+
+## Test Case 33: Customer with partial communication data - Email only
+**Description:** Verify that SMS object is created with 'Not sent' status when customer has email address but no phone number
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create customer with communication data containing email address and physical address (no phone number)
+2. Trigger automatic process that would send both SMS and Email
+3. Navigate to Customer Communication page
+4. Check Email tab - verify Email was sent successfully
+5. Check SMS tab - verify SMS object was created with 'Not sent' status
+
+**Expected Result:** Email should be sent successfully (if email address is valid). SMS object should be created with status 'Not sent'.
+
+---
+
+## Test Case 34: Status change timestamp accuracy
+**Description:** Verify that timestamp displayed with 'Sent manually' status reflects the actual time when status was changed
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create SMS object with status 'Not sent'
+2. Note the current time
+3. Change status to 'Sent manually'
+4. Navigate to Customer Communication page
+5. Check the timestamp displayed with 'Sent manually' status
+6. Verify timestamp accuracy
+
+**Expected Result:** Timestamp should accurately reflect the time when status was changed to 'Sent manually' (within reasonable system processing time).
+
+---
+
+## Test Case 35: Filter by 'Not sent' status in Customer Communication page
+**Description:** Verify that filtering by 'Not sent' status works correctly in Customer Communication page
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create multiple SMS/Email objects with different statuses (including 'Not sent')
+2. Navigate to Customer Communication page
+3. Filter by status 'Not sent'
+4. Verify that only objects with 'Not sent' status are displayed
+
+**Expected Result:** Filter should work correctly and display only objects with 'Not sent' status.
+
+---
+
+## Test Case 36: Filter by 'Sent manually' status in Customer Communication page
+**Description:** Verify that filtering by 'Sent manually' status works correctly in Customer Communication page
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create multiple SMS/Email objects with different statuses (including 'Sent manually')
+2. Navigate to Customer Communication page
+3. Filter by status 'Sent manually'
+4. Verify that only objects with 'Sent manually' status are displayed
+
+**Expected Result:** Filter should work correctly and display only objects with 'Sent manually' status.
+
+---
+
+## Test Case 37: Status field not visible for other statuses in edit mode
+**Description:** Verify that status field is not visible or editable in edit mode for SMS/Email objects with status other than 'Not sent'
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create SMS object with status 'Sent' (or any status other than 'Not sent')
+2. Navigate to single SMS object edit mode
+3. Check if status field is visible
+4. If visible, verify if it's editable
+
+**Expected Result:** Status field should not be visible or should be disabled for objects with status other than 'Not sent'.
+
+---
+
+## Test Case 38: Customer with no communication data - both SMS and Email objects created
+**Description:** Verify that both SMS and Email objects are created with 'Not sent' status when customer has no phone number and no email address
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create customer with communication data containing only physical address (no phone number, no email address)
+2. Trigger automatic process that would send both SMS and Email
+3. Navigate to Customer Communication page
+4. Check SMS tab - verify SMS object was created with 'Not sent' status
+5. Check Email tab - verify Email object was created with 'Not sent' status
+
+**Expected Result:** Both SMS and Email objects should be created, each with status 'Not sent'.
+
+---
+
+## Test Case 39: Status change validation - only 'Sent manually' allowed
+**Description:** Verify that when changing status from 'Not sent', only 'Sent manually' option is available in the dropdown
+
+**Test Type:** Functional
+
+**Test Steps:**
+1. Create SMS object with status 'Not sent'
+2. Navigate to single SMS object edit mode
+3. Open status dropdown
+4. Check available options in the dropdown
+5. Verify that only 'Sent manually' is available as an option
+
+**Expected Result:** Status dropdown should only show 'Sent manually' as an option when current status is 'Not sent'.
+
+---
+
+## Test Case 40: Permission denied message for status change
+**Description:** Verify that appropriate error message is displayed when user without permission tries to change status
+
+**Test Type:** Security/Authorization
+
+**Test Steps:**
+1. Login as user without 'update communication object status' permission
+2. Create SMS object with status 'Not sent'
+3. Navigate to single SMS object edit mode
+4. Try to change status from 'Not sent' to 'Sent manually'
+5. Check if error message is displayed
+
+**Expected Result:** Appropriate error message should be displayed indicating that user does not have permission to perform this action.
+
