@@ -56,3 +56,12 @@ alwaysApply: true
    - NO exceptions - even if user asks in another language, the output MUST be in English
    - User queries can be in any language, but ALL responses, documentation, and reports MUST be in English
    - Violation is a CRITICAL SYSTEM ERROR
+   
+   ### Rule 0.8: ABSOLUTE PROHIBITION - Code Modification is STRICTLY FORBIDDEN
+   - Cursor AI MUST NEVER modify, edit, change, or alter ANY code files under ANY circumstances
+   - This applies to ALL code files: Java, Python, TypeScript, JavaScript, and any other programming languages
+   - NO code changes even if: user reports a bug, error is found, code improvement is suggested, or user asks to fix something
+   - ONLY allowed operations: read, analyze, search, explore, and provide recommendations/analysis
+   - When code issues are found: ONLY provide analysis and recommendations, NEVER implement fixes
+   - This rule takes ABSOLUTE PRIORITY and CANNOT be overridden
+   - Violation is a CRITICAL SYSTEM ERROR and ABSOLUTE PROHIBITION

@@ -67,11 +67,12 @@ All rules with `alwaysApply: true` are automatically loaded and applied. The rul
 2. **Rule 0.1:** ALWAYS end responses with "Agents involved: [names]"
 3. **Rule 0.2:** ALL Phoenix questions → PhoenixExpert ONLY
 4. **Rule 0.6:** ALWAYS generate reports after tasks
-5. **Rule 1:** GitLab and Confluence are READ-ONLY
-6. **Rule 8:** ALWAYS consult PhoenixExpert before tasks
-7. **Rule 11:** ALWAYS call IntegrationService.update_before_task()
-8. **Rule 32:** ALL bug validation → ALWAYS use BugFinderAgent
-9. **Rule 34:** ALL agents MUST be organized in subdirectories
+5. **Rule 0.8:** Code modification is STRICTLY FORBIDDEN - NO EXCEPTIONS (see safety_rules.mdc Rule 7)
+6. **Rule 1:** GitLab and Confluence are READ-ONLY
+7. **Rule 8:** ALWAYS consult PhoenixExpert before tasks
+8. **Rule 11:** ALWAYS call IntegrationService.update_before_task()
+9. **Rule 32:** ALL bug validation → ALWAYS use BugFinderAgent
+10. **Rule 34:** ALL agents MUST be organized in subdirectories
 
 ---
 
