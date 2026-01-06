@@ -18,6 +18,14 @@ alwaysApply: true
     - BugFinderAgent automatically follows Rule 32 workflow and integrates with all required services
     - This ensures consistent, structured bug validation with proper reporting
     
+    **CRITICAL: READ-ONLY MODE - NO CODE MODIFICATIONS**
+    - When validating bugs, you MUST work in READ-ONLY mode
+    - NEVER modify code during bug validation
+    - NEVER attempt to fix bugs during validation
+    - ONLY analyze, document, and report findings
+    - Code modifications are ONLY allowed if user explicitly requests bug fixing AFTER validation is complete
+    - Violation of this rule is a CRITICAL SYSTEM ERROR
+    
     **BugFinderAgent Workflow (Rule 32):**
     
     **Step 1: Validate Bug Report Against Confluence**
@@ -25,29 +33,42 @@ alwaysApply: true
     - Check if bug description matches Confluence documentation
     - Verify if bug report contains correct information based on Confluence sources
     - Report findings: "Confluence validation: [correct/incorrect/partially correct] - [explanation]"
+    - Document all Confluence sources found (page IDs, titles, URLs)
     
     **Step 2: Validate Code Against Bug Report**
     - SECOND: Search codebase using codebase_search() and grep() to find relevant code
     - Analyze code implementation to verify if it satisfies the bug report requirements
     - Check if code behavior matches expected behavior described in bug report
     - Report findings: "Code validation: [satisfies/does not satisfy] the bug report - [explanation]"
+    - Include specific file paths, line numbers, and code snippets
+    - Identify exact location of bug in code
     
     **Step 3: Provide Comprehensive Analysis**
     - Combine Confluence findings and code analysis
     - Provide clear answer about:
       1. Whether bug report information is correct based on Confluence
       2. Whether code satisfies the bug report case or not
+      3. Whether bug is VALID or NOT VALID
     - Include specific code references and line numbers when relevant
-    - Use clear structure: "1. Bug Report Accuracy", "2. Code Analysis", "3. Conclusion"
+    - Use clear structure: "1. Confluence Validation", "2. Code Analysis", "3. Conclusion"
     - Format report using: `bug_finder.format_validation_report(result)`
+    
+    **Step 4: Generate Report File**
+    - Create markdown report file in `reports/YYYY-MM-DD/BugValidation_[BugName].md`
+    - Include all findings from Confluence and Code analysis
+    - Include bug validity conclusion
+    - Include code references with file paths and line numbers
+    - Include suggested fix (if applicable) but DO NOT implement it
     
     **Workflow Requirements:**
     - ALWAYS use BugFinderAgent for bug validation
     - ALWAYS check Confluence FIRST (via MCP tools)
     - ALWAYS check codebase SECOND
     - ALWAYS provide both validations in response
+    - ALWAYS create report file in reports/ directory
     - NEVER skip either step
-    - Use READ-ONLY mode (no code modifications unless explicitly requested)
+    - NEVER modify code during validation (READ-ONLY mode)
+    - NEVER attempt to fix bugs unless explicitly requested AFTER validation
     - BugFinderAgent automatically handles: IntegrationService calls, PhoenixExpert consultation, and report generation
     
     **Example Usage:**
@@ -68,14 +89,29 @@ alwaysApply: true
     ## Bug Validation Analysis
     
     ### 1. Confluence Validation
-    [Findings from Confluence search]
+    **Status:** [correct/incorrect/partially correct]
+    **Explanation:** [Detailed explanation]
+    **Sources:** [List of Confluence pages found]
     
     ### 2. Code Analysis
-    [Findings from codebase analysis]
+    **Status:** [satisfies/does not satisfy]
+    **Explanation:** [Detailed explanation]
+    **Code References:**
+    - File: [path/to/file.java]
+    - Lines: [123-145]
+    - Issue: [Description of bug]
     
     ### 3. Conclusion
-    [Summary of both validations]
+    **Bug Valid:** [YES/NO]
+    **Summary:** [Brief summary]
+    **Details:** [Detailed analysis]
     ```
+    
+    **Important Notes:**
+    - Report file MUST be saved to `reports/YYYY-MM-DD/BugValidation_[DescriptiveName].md`
+    - Report MUST include all code references with file paths and line numbers
+    - Report MUST NOT include code modifications - only analysis and documentation
+    - If user wants to fix the bug, they will request it separately AFTER validation
     
     **Why BugFinderAgent:**
     - Ensures consistent bug validation workflow

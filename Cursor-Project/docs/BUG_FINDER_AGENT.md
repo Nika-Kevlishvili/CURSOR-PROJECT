@@ -6,22 +6,29 @@ BugFinderAgent is a specialized agent for validating bug reports by comparing th
 
 ## Workflow
 
-The agent follows a strict 3-step workflow (Rule 32):
+The agent follows a strict 4-step workflow (Rule 32):
 
 1. **Confluence Validation (FIRST)**
    - Search Confluence using MCP tools
    - Validate bug description against documentation
    - Check if bug report information is correct
+   - Document all sources found
 
 2. **Code Validation (SECOND)**
    - Search codebase using semantic and text search
    - Analyze code implementation
    - Check if code satisfies bug report requirements
+   - Identify exact bug location (file, lines, code snippets)
 
 3. **Comprehensive Analysis**
    - Combine Confluence and code findings
    - Determine if bug is valid (code differs from description)
-   - Provide detailed report
+   - Provide detailed analysis with conclusions
+
+4. **Report Generation**
+   - Create markdown report file in `reports/YYYY-MM-DD/BugValidation_[BugName].md`
+   - Include all findings, code references, and conclusions
+   - **CRITICAL: READ-ONLY mode - NO code modifications during validation**
 
 ## Usage
 
@@ -113,6 +120,19 @@ BugFinderAgent follows all critical rules:
 - **Rule 0.6**: Generates reports via ReportingService
 - **Rule 32**: Follows mandatory bug validation workflow
 - **Rule 0.1**: Ends with "Agents involved" disclosure
+
+## CRITICAL: READ-ONLY Mode
+
+**When validating bugs, BugFinderAgent MUST work in READ-ONLY mode:**
+
+- ✅ **DO**: Analyze code, search Confluence, search codebase
+- ✅ **DO**: Document findings, create reports, identify bug locations
+- ✅ **DO**: Provide analysis and conclusions
+- ❌ **DO NOT**: Modify code during validation
+- ❌ **DO NOT**: Attempt to fix bugs during validation
+- ❌ **DO NOT**: Make any code changes unless user explicitly requests bug fixing AFTER validation is complete
+
+**Code modifications are ONLY allowed if user explicitly requests bug fixing AFTER validation is complete.**
 
 ## Output Format
 
