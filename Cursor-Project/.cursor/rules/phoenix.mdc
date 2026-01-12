@@ -47,6 +47,17 @@ All rules are organized into the following thematic files:
    - Query patterns
    - Best practices
 
+7. **git_sync_workflow.mdc** - Git sync workflow rules
+   - Git operations (fetch, update, checkout)
+   - Readonly token configuration
+   - Cross-platform compatibility
+
+8. **autonomous_rules.md** - Additional autonomous operation rules (config/cursorrules/)
+   - GitHub operations permissions
+   - Automatic agent routing
+   - File organization rules
+   - TestAgent consultation requirements
+
 ## 🔄 Rules Loading
 
 All rules with `alwaysApply: true` are automatically loaded and applied. The rules loader reads ALL `.mdc` files from `.cursor/rules/` directory.
@@ -59,7 +70,8 @@ All rules with `alwaysApply: true` are automatically loaded and applied. The rul
 - **Agent Behavior:** See `agent_rules.mdc`
 - **Security:** See `safety_rules.mdc`
 - **File Organization:** See `file_organization_rules.mdc`
-- **Workflows:** See `workflow_rules.mdc` and `database_workflow.mdc`
+- **Workflows:** See `workflow_rules.mdc`, `database_workflow.mdc`, and `git_sync_workflow.mdc`
+- **Autonomous Operations:** See `config/cursorrules/autonomous_rules.md`
 
 ## ⚠️ CRITICAL REMINDERS
 

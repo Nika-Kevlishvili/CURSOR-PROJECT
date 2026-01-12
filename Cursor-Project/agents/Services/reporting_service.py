@@ -74,7 +74,11 @@ class ReportingService:
         """
         if reports_dir is None:
             # Default to reports/ folder in project root
-            project_root = Path(__file__).parent.parent
+            # __file__ is agents/Services/reporting_service.py
+            # .parent = agents/Services/
+            # .parent.parent = agents/
+            # .parent.parent.parent = project root (Cursor-Project/)
+            project_root = Path(__file__).parent.parent.parent
             reports_dir = project_root / "reports"
         
         self.reports_dir = Path(reports_dir)
@@ -569,4 +573,37 @@ def get_reporting_service(reports_dir: Optional[Path] = None) -> ReportingServic
     if _reporting_service is None:
         _reporting_service = ReportingService(reports_dir)
     return _reporting_service
+
+
+def get_report_path(filename: str, reports_dir: Optional[Path] = None) -> Path:
+    """
+    Get the correct path for a report file using current date.
+    
+    This utility function ensures reports are always saved to the correct
+    date-based folder (YYYY-MM-DD) in the reports directory.
+    
+    Args:
+        filename: Name of the report file (e.g., "MyReport.md")
+        reports_dir: Optional reports directory (defaults to project root/reports)
+        
+    Returns:
+        Path to the report file in the current date folder
+        
+    Example:
+        >>> path = get_report_path("Analysis.md")
+        >>> # Returns: Path("reports/2025-01-27/Analysis.md")
+    """
+    if reports_dir is None:
+        # Use same logic as ReportingService to find project root
+        project_root = Path(__file__).parent.parent.parent
+        reports_dir = project_root / "reports"
+    else:
+        reports_dir = Path(reports_dir)
+    
+    # Get current date folder (YYYY-MM-DD)
+    date_folder = datetime.now().strftime('%Y-%m-%d')
+    date_dir = reports_dir / date_folder
+    date_dir.mkdir(parents=True, exist_ok=True)
+    
+    return date_dir / filename
 

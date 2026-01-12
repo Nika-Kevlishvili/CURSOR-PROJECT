@@ -20,11 +20,8 @@ alwaysApply: true
    - Code ALWAYS wins if conflicts with Confluence.
 
 7. [CRITICAL - ABSOLUTE PROHIBITION] Code modification is STRICTLY FORBIDDEN - NO EXCEPTIONS.
-   - Cursor AI MUST NEVER modify, edit, change, or alter ANY code files under ANY circumstances.
-   - This applies to ALL code files: Java, Python, TypeScript, JavaScript, and any other programming languages.
-   - NO code changes even if: user reports a bug, error is found, code improvement is suggested, or user asks to fix something.
-   - ONLY allowed operations: read, analyze, search, explore, and provide recommendations/analysis.
-   - When code issues are found: ONLY provide analysis and recommendations, NEVER implement fixes.
+   - See Rule 0.8 (core_rules.mdc) for complete definition.
+   - This rule references Rule 0.8 which contains the full prohibition details.
    - Violation is a CRITICAL SYSTEM ERROR and ABSOLUTE PROHIBITION.
 
 # READ-ONLY OPERATION RULE [CRITICAL]
@@ -97,8 +94,6 @@ alwaysApply: true
     - Violation is a CRITICAL SYSTEM ERROR.
     
 31. [CRITICAL - ABSOLUTE PROHIBITION] Cursor AI MUST NEVER modify ANY code files.
-    - Code modification is STRICTLY FORBIDDEN under ALL circumstances - NO EXCEPTIONS.
-    - This includes: editing, changing, fixing, updating, refactoring, or any other code modifications.
-    - Applies to ALL programming languages and ALL code files in the project.
-    - When bugs or issues are found: ONLY provide analysis, recommendations, and explanations - NEVER implement fixes.
+    - See Rule 0.8 (core_rules.mdc) for complete definition.
+    - This rule references Rule 0.8 which contains the full prohibition details.
     - Violation is a CRITICAL SYSTEM ERROR and ABSOLUTE PROHIBITION.
