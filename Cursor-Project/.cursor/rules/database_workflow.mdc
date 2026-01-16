@@ -4,6 +4,58 @@ alwaysApply: true
 
 # DATABASE WORKFLOW RULES [CRITICAL - MANDATORY]
 
+## Rule DB.0: MANDATORY Database Selection and MCP Configuration Check [CRITICAL - ABSOLUTE PRIORITY]
+
+**CRITICAL RULE - MUST BE FOLLOWED BEFORE ANY DATABASE OPERATION:**
+
+### Before ANY Database Query:
+1. **NEVER assume default database connection**
+2. **ALWAYS check MCP configuration** (`mcp.json` or MCP server settings) to see current connection parameters
+3. **ALWAYS verify database name and environment** (Test, Dev, Dev2, PreProd, Prod) from MCP configuration
+4. **ALWAYS ask user which database/environment to use** if not explicitly specified in the conversation
+5. **ALWAYS use the environment specified at the beginning of the conversation** for that entire chat session
+
+### Workflow:
+1. **Check MCP Configuration First:**
+   - Review MCP server configuration to see available databases
+   - Identify which environment each database belongs to (Test, Dev, Dev2, PreProd, Prod)
+   - Note the exact connection parameters (host, port, database name, user, password)
+
+2. **Verify User Intent:**
+   - If user mentions environment at conversation start (e.g., "dev გარემოზე", "Test environment"), use that environment for entire session
+   - If no environment specified, **MUST ASK**: "Which database/environment should I use? (Test, Dev, Dev2, PreProd, Prod)"
+   - **NEVER assume or use default connection**
+
+3. **Connection Process:**
+   - Use the correct MCP server based on environment:
+     - PostgreSQLTest for Test
+     - PostgreSQLDev for Dev
+     - PostgreSQLDev2 for Dev2
+     - PostgreSQLPreProd for PreProd
+     - PostgreSQLProd for Prod
+   - Use connection details from MCP configuration, NOT from rules (rules may be outdated)
+   - Always connect explicitly before queries
+
+4. **Session Consistency:**
+   - Once environment is determined at conversation start, use it consistently throughout the session
+   - If user changes environment mid-conversation, acknowledge and switch
+
+### Example:
+```
+User: "dev გარემოზე მაქვს პრობლემა..."
+AI: [Checks MCP config for Dev environment connection details]
+    [Uses PostgreSQLDev MCP server with correct parameters]
+    [Uses Dev environment for entire session]
+```
+
+### Violation Consequences:
+- Using wrong database/environment is a **CRITICAL SYSTEM ERROR**
+- Never assume default connection
+- Always verify from MCP configuration
+- Always ask if uncertain
+
+**This rule takes ABSOLUTE PRIORITY over all other database rules.**
+
 ## Rule DB.1: PostgreSQL MCP Connection for Test Environment [CRITICAL]
 
 **MANDATORY workflow for ALL database queries in Test environment:**
