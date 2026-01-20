@@ -103,24 +103,29 @@ GIT_READONLY_TOKEN="glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
 
 ### Workspace Root Detection
 
-**The rule automatically detects the workspace root using one of these methods:**
-1. **Environment Variable:** `$WORKSPACE_ROOT` (if set)
-2. **Current Directory:** Uses `pwd` to detect workspace root
-3. **Relative Paths:** Works from any directory within the workspace
+**CRITICAL: The Phoenix projects are located in `Cursor-Project/Phoenix/` subdirectory, NOT in root `Phoenix/`.**
 
-**Repository Paths (Relative to Workspace Root):**
-- All Phoenix projects are in `Phoenix/` subdirectory
-- **phoenix-core-lib:** `Phoenix/phoenix-core-lib/` (relative path)
-- **phoenix-core:** `Phoenix/phoenix-core/` (relative path)
-- **phoenix-billing-run:** `Phoenix/phoenix-billing-run/` (relative path)
+**The rule automatically detects the workspace root using these methods:**
+1. **Environment Variable:** `$WORKSPACE_ROOT` (if set)
+2. **Cursor-Project Detection:** Look for `Cursor-Project/Phoenix/` first (this is the correct path)
+3. **Current Directory:** If already in `Cursor-Project/`, use `Phoenix/` subdirectory
+4. **Fallback:** Navigate up to find `Cursor-Project/Phoenix/`
+
+**Repository Paths (Relative to Cursor-Project/):**
+- All Phoenix projects are in `Cursor-Project/Phoenix/` subdirectory
+- **phoenix-core-lib:** `Cursor-Project/Phoenix/phoenix-core-lib/` (from workspace root)
+- **phoenix-core:** `Cursor-Project/Phoenix/phoenix-core/` (from workspace root)
+- **phoenix-billing-run:** `Cursor-Project/Phoenix/phoenix-billing-run/` (from workspace root)
 - And other projects as they exist
 
 **How It Works:**
-- The rule navigates to workspace root first
-- Then uses relative paths to access repositories in `Phoenix/` directory
+- The rule first looks for `Cursor-Project/` directory
+- If `Phoenix/` doesn't exist inside `Cursor-Project/`, it will be created automatically
+- Then clones all Phoenix projects from GitLab into `Cursor-Project/Phoenix/`
 - Works on Windows (Git Bash/PowerShell), Linux, and macOS
-- No hardcoded absolute paths required
-- Automatically discovers all Git repositories in `Phoenix/` directory
+- Automatically discovers all Git repositories in `Cursor-Project/Phoenix/` directory
+
+**IMPORTANT:** Phoenix projects are ALWAYS cloned into `Cursor-Project/Phoenix/`, never into workspace root.
 
 ### Repository Remote URLs
 
@@ -201,25 +206,49 @@ GIT_READONLY_TOKEN="glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
 # Set readonly token
 $env:GIT_READONLY_TOKEN = "glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
 
-# Detect workspace root
+# Detect workspace root - find Cursor-Project directory, create Phoenix/ if needed
 if ($env:WORKSPACE_ROOT) {
     $WORKSPACE_DIR = $env:WORKSPACE_ROOT
 } else {
-    # Try to detect from current directory
-    if (Test-Path "Phoenix") {
-        $WORKSPACE_DIR = (Get-Location).Path
-    } elseif (Test-Path "../Phoenix") {
-        $WORKSPACE_DIR = (Get-Location).Parent.FullName
-    } else {
-        # Try to find Phoenix directory
-        $WORKSPACE_DIR = (Get-Location).Path
-        while ($WORKSPACE_DIR -ne (Split-Path $WORKSPACE_DIR -Qualifier) -and -not (Test-Path (Join-Path $WORKSPACE_DIR "Phoenix"))) {
-            $WORKSPACE_DIR = Split-Path $WORKSPACE_DIR -Parent
+    $currentDir = (Get-Location).Path
+    
+    # Check if we're already in Cursor-Project directory
+    if ((Split-Path $currentDir -Leaf) -eq "Cursor-Project") {
+        $WORKSPACE_DIR = $currentDir
+    }
+    # Check if Cursor-Project exists from current directory
+    elseif (Test-Path "Cursor-Project") {
+        $WORKSPACE_DIR = Join-Path $currentDir "Cursor-Project"
+    }
+    # Check if we're inside Cursor-Project somewhere
+    elseif ($currentDir -match "Cursor-Project") {
+        $WORKSPACE_DIR = $currentDir -replace "(.*Cursor-Project).*", '$1'
+    }
+    # Navigate up to find Cursor-Project
+    else {
+        $searchDir = $currentDir
+        while ($searchDir -ne (Split-Path $searchDir -Qualifier)) {
+            if (Test-Path (Join-Path $searchDir "Cursor-Project")) {
+                $WORKSPACE_DIR = Join-Path $searchDir "Cursor-Project"
+                break
+            }
+            $searchDir = Split-Path $searchDir -Parent
+        }
+        if (-not $WORKSPACE_DIR) {
+            Write-Error "Cannot find Cursor-Project directory. Please navigate to the correct workspace."
+            exit 1
         }
     }
 }
 
 Set-Location $WORKSPACE_DIR
+Write-Host "Workspace: $WORKSPACE_DIR"
+
+# Create Phoenix directory if it doesn't exist
+if (-not (Test-Path "Phoenix")) {
+    New-Item -ItemType Directory -Path "Phoenix" | Out-Null
+    Write-Host "Created Phoenix directory in Cursor-Project"
+}
 
 # Configure git credential helper with token
 if ($env:GIT_READONLY_TOKEN) {
@@ -315,25 +344,46 @@ if (Test-Path "Phoenix") {
 # Set readonly token
 GIT_READONLY_TOKEN="glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
 
-# Detect workspace root
+# Detect workspace root - find Cursor-Project directory, create Phoenix/ if needed
 if [ -n "$WORKSPACE_ROOT" ]; then
     WORKSPACE_DIR="$WORKSPACE_ROOT"
 else
-    # Try to detect from current directory
-    if [ -d "Phoenix" ]; then
-        WORKSPACE_DIR="$(pwd)"
-    elif [ -d "../Phoenix" ]; then
-        WORKSPACE_DIR="$(cd .. && pwd)"
+    CURRENT_DIR="$(pwd)"
+    
+    # Check if we're already in Cursor-Project directory
+    if [ "$(basename "$CURRENT_DIR")" = "Cursor-Project" ]; then
+        WORKSPACE_DIR="$CURRENT_DIR"
+    # Check if Cursor-Project exists from current directory
+    elif [ -d "Cursor-Project" ]; then
+        WORKSPACE_DIR="$CURRENT_DIR/Cursor-Project"
+    # Check if we're inside Cursor-Project somewhere
+    elif echo "$CURRENT_DIR" | grep -q "Cursor-Project"; then
+        WORKSPACE_DIR="${CURRENT_DIR%%Cursor-Project*}Cursor-Project"
+    # Navigate up to find Cursor-Project
     else
-        # Try to find Phoenix directory
-        WORKSPACE_DIR="$(pwd)"
-        while [ "$WORKSPACE_DIR" != "/" ] && [ ! -d "$WORKSPACE_DIR/Phoenix" ]; do
-            WORKSPACE_DIR="$(dirname "$WORKSPACE_DIR")"
+        SEARCH_DIR="$CURRENT_DIR"
+        while [ "$SEARCH_DIR" != "/" ]; do
+            if [ -d "$SEARCH_DIR/Cursor-Project" ]; then
+                WORKSPACE_DIR="$SEARCH_DIR/Cursor-Project"
+                break
+            fi
+            SEARCH_DIR="$(dirname "$SEARCH_DIR")"
         done
+        if [ -z "$WORKSPACE_DIR" ]; then
+            echo "ERROR: Cannot find Cursor-Project directory. Please navigate to the correct workspace."
+            exit 1
+        fi
     fi
 fi
 
 cd "$WORKSPACE_DIR" || exit 1
+echo "Workspace: $WORKSPACE_DIR"
+
+# Create Phoenix directory if it doesn't exist
+if [ ! -d "Phoenix" ]; then
+    mkdir -p Phoenix
+    echo "Created Phoenix directory in Cursor-Project"
+fi
 
 # Configure git credential helper with token
 if [ -n "$GIT_READONLY_TOKEN" ]; then
@@ -469,23 +519,31 @@ fi
 $BRANCH = "dev"  # or dev2, dev-fix, test, main, master
 $env:GIT_READONLY_TOKEN = "glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
 
-# Detect workspace root and configure token (same as Step 1)
+# Detect workspace root - find Cursor-Project directory (same as Step 1)
 if ($env:WORKSPACE_ROOT) {
     $WORKSPACE_DIR = $env:WORKSPACE_ROOT
 } else {
-    if (Test-Path "Phoenix") {
-        $WORKSPACE_DIR = (Get-Location).Path
-    } elseif (Test-Path "../Phoenix") {
-        $WORKSPACE_DIR = (Get-Location).Parent.FullName
+    $currentDir = (Get-Location).Path
+    if ((Split-Path $currentDir -Leaf) -eq "Cursor-Project") {
+        $WORKSPACE_DIR = $currentDir
+    } elseif (Test-Path "Cursor-Project") {
+        $WORKSPACE_DIR = Join-Path $currentDir "Cursor-Project"
+    } elseif ($currentDir -match "Cursor-Project") {
+        $WORKSPACE_DIR = $currentDir -replace "(.*Cursor-Project).*", '$1'
     } else {
-        $WORKSPACE_DIR = (Get-Location).Path
-        while ($WORKSPACE_DIR -ne (Split-Path $WORKSPACE_DIR -Qualifier) -and -not (Test-Path (Join-Path $WORKSPACE_DIR "Phoenix"))) {
-            $WORKSPACE_DIR = Split-Path $WORKSPACE_DIR -Parent
+        $searchDir = $currentDir
+        while ($searchDir -ne (Split-Path $searchDir -Qualifier)) {
+            if (Test-Path (Join-Path $searchDir "Cursor-Project")) {
+                $WORKSPACE_DIR = Join-Path $searchDir "Cursor-Project"
+                break
+            }
+            $searchDir = Split-Path $searchDir -Parent
         }
     }
 }
 
 Set-Location $WORKSPACE_DIR
+if (-not (Test-Path "Phoenix")) { New-Item -ItemType Directory -Path "Phoenix" | Out-Null }
 
 # Configure git credential helper with token (same as Step 1)
 if ($env:GIT_READONLY_TOKEN) {
@@ -577,23 +635,31 @@ if (Test-Path "Phoenix") {
 BRANCH="dev"  # or dev2, dev-fix, test, main, master
 GIT_READONLY_TOKEN="glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
 
-# Detect workspace root and configure token (same as Step 1)
+# Detect workspace root - MUST find Cursor-Project/Phoenix/ (same as Step 1)
 if [ -n "$WORKSPACE_ROOT" ]; then
     WORKSPACE_DIR="$WORKSPACE_ROOT"
 else
-    if [ -d "Phoenix" ]; then
-        WORKSPACE_DIR="$(pwd)"
-    elif [ -d "../Phoenix" ]; then
-        WORKSPACE_DIR="$(cd .. && pwd)"
+    CURRENT_DIR="$(pwd)"
+    if [ "$(basename "$CURRENT_DIR")" = "Cursor-Project" ]; then
+        WORKSPACE_DIR="$CURRENT_DIR"
+    elif [ -d "Cursor-Project" ]; then
+        WORKSPACE_DIR="$CURRENT_DIR/Cursor-Project"
+    elif echo "$CURRENT_DIR" | grep -q "Cursor-Project"; then
+        WORKSPACE_DIR="${CURRENT_DIR%%Cursor-Project*}Cursor-Project"
     else
-        WORKSPACE_DIR="$(pwd)"
-        while [ "$WORKSPACE_DIR" != "/" ] && [ ! -d "$WORKSPACE_DIR/Phoenix" ]; do
-            WORKSPACE_DIR="$(dirname "$WORKSPACE_DIR")"
+        SEARCH_DIR="$CURRENT_DIR"
+        while [ "$SEARCH_DIR" != "/" ]; do
+            if [ -d "$SEARCH_DIR/Cursor-Project" ]; then
+                WORKSPACE_DIR="$SEARCH_DIR/Cursor-Project"
+                break
+            fi
+            SEARCH_DIR="$(dirname "$SEARCH_DIR")"
         done
     fi
 fi
 
 cd "$WORKSPACE_DIR" || exit 1
+[ ! -d "Phoenix" ] && mkdir -p Phoenix
 
 # Configure git credential helper with token (same as Step 1)
 if [ -n "$GIT_READONLY_TOKEN" ]; then
@@ -710,23 +776,31 @@ fi
 $BRANCH = "dev"  # or dev2, dev-fix, test, main, master
 $env:GIT_READONLY_TOKEN = "glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
 
-# Detect workspace root and configure token (same as Step 1)
+# Detect workspace root - find Cursor-Project directory (same as Step 1)
 if ($env:WORKSPACE_ROOT) {
     $WORKSPACE_DIR = $env:WORKSPACE_ROOT
 } else {
-    if (Test-Path "Phoenix") {
-        $WORKSPACE_DIR = (Get-Location).Path
-    } elseif (Test-Path "../Phoenix") {
-        $WORKSPACE_DIR = (Get-Location).Parent.FullName
+    $currentDir = (Get-Location).Path
+    if ((Split-Path $currentDir -Leaf) -eq "Cursor-Project") {
+        $WORKSPACE_DIR = $currentDir
+    } elseif (Test-Path "Cursor-Project") {
+        $WORKSPACE_DIR = Join-Path $currentDir "Cursor-Project"
+    } elseif ($currentDir -match "Cursor-Project") {
+        $WORKSPACE_DIR = $currentDir -replace "(.*Cursor-Project).*", '$1'
     } else {
-        $WORKSPACE_DIR = (Get-Location).Path
-        while ($WORKSPACE_DIR -ne (Split-Path $WORKSPACE_DIR -Qualifier) -and -not (Test-Path (Join-Path $WORKSPACE_DIR "Phoenix"))) {
-            $WORKSPACE_DIR = Split-Path $WORKSPACE_DIR -Parent
+        $searchDir = $currentDir
+        while ($searchDir -ne (Split-Path $searchDir -Qualifier)) {
+            if (Test-Path (Join-Path $searchDir "Cursor-Project")) {
+                $WORKSPACE_DIR = Join-Path $searchDir "Cursor-Project"
+                break
+            }
+            $searchDir = Split-Path $searchDir -Parent
         }
     }
 }
 
 Set-Location $WORKSPACE_DIR
+if (-not (Test-Path "Phoenix")) { New-Item -ItemType Directory -Path "Phoenix" | Out-Null }
 
 # Configure git credential helper with token (same as Step 1)
 if ($env:GIT_READONLY_TOKEN) {
@@ -796,23 +870,31 @@ if (Test-Path "Phoenix") {
 BRANCH="dev"  # or dev2, dev-fix, test, main, master
 GIT_READONLY_TOKEN="glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
 
-# Detect workspace root and configure token (same as Step 1)
+# Detect workspace root - MUST find Cursor-Project/Phoenix/ (same as Step 1)
 if [ -n "$WORKSPACE_ROOT" ]; then
     WORKSPACE_DIR="$WORKSPACE_ROOT"
 else
-    if [ -d "Phoenix" ]; then
-        WORKSPACE_DIR="$(pwd)"
-    elif [ -d "../Phoenix" ]; then
-        WORKSPACE_DIR="$(cd .. && pwd)"
+    CURRENT_DIR="$(pwd)"
+    if [ "$(basename "$CURRENT_DIR")" = "Cursor-Project" ] && [ -d "Phoenix" ]; then
+        WORKSPACE_DIR="$CURRENT_DIR"
+    elif [ -d "Cursor-Project" ]; then
+        WORKSPACE_DIR="$CURRENT_DIR/Cursor-Project"
+    elif echo "$CURRENT_DIR" | grep -q "Cursor-Project"; then
+        WORKSPACE_DIR="${CURRENT_DIR%%Cursor-Project*}Cursor-Project"
     else
-        WORKSPACE_DIR="$(pwd)"
-        while [ "$WORKSPACE_DIR" != "/" ] && [ ! -d "$WORKSPACE_DIR/Phoenix" ]; do
-            WORKSPACE_DIR="$(dirname "$WORKSPACE_DIR")"
+        SEARCH_DIR="$CURRENT_DIR"
+        while [ "$SEARCH_DIR" != "/" ]; do
+            if [ -d "$SEARCH_DIR/Cursor-Project" ]; then
+                WORKSPACE_DIR="$SEARCH_DIR/Cursor-Project"
+                break
+            fi
+            SEARCH_DIR="$(dirname "$SEARCH_DIR")"
         done
     fi
 fi
 
 cd "$WORKSPACE_DIR" || exit 1
+[ ! -d "Phoenix" ] && mkdir -p Phoenix
 
 # Configure git credential helper with token (same as Step 1)
 if [ -n "$GIT_READONLY_TOKEN" ]; then
