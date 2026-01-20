@@ -4,47 +4,80 @@ alwaysApply: true
 
 # DATABASE WORKFLOW RULES [CRITICAL - MANDATORY]
 
-## Rule DB.1: PostgreSQL MCP Connection for Test Environment [CRITICAL]
+## Rule DB.0: Environment Selection [CRITICAL - ABSOLUTE PRIORITY]
 
-**MANDATORY workflow for ALL database queries in Test environment:**
+**ALWAYS use the EXACT environment that the user requests. NEVER switch to a different environment.**
 
-### Connection Process:
-1. **ALWAYS use PostgreSQLTest MCP server** for Test environment database access
-2. **Connection details:**
-   - Host: `10.236.20.24`
-   - Port: `5432`
-   - Database: `phoenix`
-   - User: `postgres`
-   - Password: `U&Vd2Ge@nyM1`
+- If user says "Dev" → Use PostgreSQLDev (10.236.20.21)
+- If user says "Dev2" → Use PostgreSQLDev2 (10.236.20.22)
+- If user says "Test" → Use PostgreSQLTest (10.236.20.24)
+- If user says "PreProd" → Use PostgreSQLPreProd (10.236.20.76)
+- If user says "Prod" → Use PostgreSQLProd (10.236.20.78:5000, readonly_user)
 
-3. **Connection steps:**
-   ```python
-   # Step 1: Connect to database
-   mcp_PostgreSQLTest_connect_db(
-       host="10.236.20.24",
-       port=5432,
-       user="postgres",
-       password="U&Vd2Ge@nyM1",
-       database="phoenix"
-   )
-   
-   # Step 2: Execute queries
-   mcp_PostgreSQLTest_query(sql="SELECT ...")
-   ```
+## Rule DB.1: PostgreSQL MCP Connection Details [CRITICAL]
+
+### PostgreSQLDev - Dev Environment
+- **Host:** `10.236.20.21`
+- **Port:** `5432`
+- **Database:** `phoenix`
+- **User:** `postgres`
+- **Password:** `rakX5thB2qO3`
+
+### PostgreSQLDev2 - Dev2 Environment
+- **Host:** `10.236.20.22`
+- **Port:** `5432`
+- **Database:** `phoenix`
+- **User:** `postgres`
+- **Password:** `uj6MfFgUkV1R`
+
+### PostgreSQLTest - Test Environment
+- **Host:** `10.236.20.24`
+- **Port:** `5432`
+- **Database:** `phoenix`
+- **User:** `postgres`
+- **Password:** `U&Vd2Ge@nyM1`
+
+### PostgreSQLPreProd - PreProd Environment
+- **Host:** `10.236.20.76`
+- **Port:** `5432`
+- **Database:** `phoenix`
+- **User:** `postgres`
+- **Password:** `U&Vd2Ge@nyM1`
+
+### PostgreSQLProd - Production Environment (READ-ONLY)
+- **Host:** `10.236.20.78`
+- **Port:** `5000`
+- **Database:** `phoenix`
+- **User:** `readonly_user`
+- **Password:** `U$CM)*qr&Zb4JfU@`
+
+### Connection Steps:
+```python
+# Example for Dev environment
+mcp_PostgreSQLDev_connect_db(
+    host="10.236.20.21",
+    port=5432,
+    user="postgres",
+    password="rakX5thB2qO3",
+    database="phoenix"
+)
+
+# Then execute queries
+mcp_PostgreSQLDev_query(sql="SELECT ...")
+```
 
 ### Query Execution:
-- **ALWAYS connect first** using `mcp_PostgreSQLTest_connect_db()` before executing queries
-- Use `mcp_PostgreSQLTest_query()` for SELECT queries
-- Use `mcp_PostgreSQLTest_execute()` for INSERT/UPDATE/DELETE operations (if needed)
+- **ALWAYS connect first** using the appropriate `mcp_PostgreSQL{Env}_connect_db()` before executing queries
+- Use `mcp_PostgreSQL{Env}_query()` for SELECT queries
+- Use `mcp_PostgreSQL{Env}_execute()` for INSERT/UPDATE/DELETE operations (if needed)
 - Connection persists for the session, but reconnect if connection errors occur
 
 ### Available MCP Servers:
+- **PostgreSQLDev** - Dev environment (10.236.20.21:5432/phoenix)
+- **PostgreSQLDev2** - Dev2 environment (10.236.20.22:5432/phoenix)
 - **PostgreSQLTest** - Test environment (10.236.20.24:5432/phoenix)
-- **PostgreSQLDev** - Dev environment
-- **PostgreSQLDev2** - Dev2 environment  
-- **PostgreSQLPreProd** - PreProd environment
-
-**For Test environment, ALWAYS use PostgreSQLTest MCP server.**
+- **PostgreSQLPreProd** - PreProd environment (10.236.20.76:5432/phoenix)
+- **PostgreSQLProd** - Production environment (10.236.20.78:5000/phoenix, READ-ONLY)
 
 ## Rule DB.2: Standard Query Patterns [IMPORTANT]
 
