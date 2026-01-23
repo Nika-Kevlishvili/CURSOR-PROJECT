@@ -207,7 +207,7 @@
 ---
 
 **Report Generated:** 2025-12-25  
-**Script:** `agents/analyze_billing_lock_dates.py`  
+**Script:** `examples/analyze_billing_lock_dates.py`  
 **Analysis Period:** November 6 - December 24, 2025
 
 

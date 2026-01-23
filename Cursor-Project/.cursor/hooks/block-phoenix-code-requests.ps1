@@ -17,16 +17,29 @@ try {
     
     $promptLower = $prompt.ToLower()
     
-    # Keywords that indicate code modification requests
+    # Keywords that indicate code modification requests - ENHANCED
     $modificationKeywords = @(
         "modify", "change", "edit", "update", "fix", "refactor", 
         "optimize", "improve", "rewrite", "alter", "replace",
         "delete code", "remove code", "add code", "implement",
-        "create file", "write file", "edit file"
+        "create file", "write file", "edit file", "correct",
+        "repair", "debug", "patch", "adjust", "tweak",
+        "make changes", "do changes", "apply changes"
     )
     
-    # Phoenix-related keywords
-    $phoenixKeywords = @("phoenix", "billingruncommonservice", "cursor-project/phoenix")
+    # Phoenix-related keywords - ENHANCED
+    $phoenixKeywords = @(
+        "phoenix", 
+        "billingruncommonservice", 
+        "cursor-project/phoenix",
+        "phoenix-core",
+        "phoenix-core-lib",
+        "phoenix-billing-run",
+        "phoenix-api-gateway",
+        "phoenix-migration",
+        "phoenix-payment-api",
+        "phoenix-ui"
+    )
     
     $hasModificationKeyword = $false
     $hasPhoenixKeyword = $false

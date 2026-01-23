@@ -13,11 +13,28 @@ try {
     $normalizedPath = $filePath -replace '\\', '/'  # Normalize separators
     $normalizedPathLower = $normalizedPath.ToLower()
     
-    # Protected paths (case-insensitive matching)
-    $protectedPaths = @("cursor-project", "phoenix")
+    # Protected paths (case-insensitive matching) - ENHANCED
+    $protectedPaths = @(
+        "cursor-project", 
+        "phoenix",
+        "phoenix-core-lib",
+        "phoenix-core",
+        "phoenix-billing-run",
+        "phoenix-api-gateway",
+        "phoenix-migration",
+        "phoenix-payment-api",
+        "phoenix-ui",
+        "phoenix-mass-import",
+        "phoenix-scheduler"
+    )
     
-    # Code file extensions
-    $codeExtensions = @(".java", ".ts", ".js", ".tsx", ".jsx", ".py", ".html", ".css", ".xml", ".yaml", ".yml", ".properties", ".sql", ".kt", ".scala", ".groovy")
+    # Code file extensions - ENHANCED
+    $codeExtensions = @(
+        ".java", ".ts", ".js", ".tsx", ".jsx", ".py", 
+        ".html", ".css", ".xml", ".yaml", ".yml", 
+        ".properties", ".sql", ".kt", ".scala", 
+        ".groovy", ".scss", ".less", ".json", ".md"
+    )
     
     $isProtectedPath = $false
     $isCodeFile = $false

@@ -250,8 +250,8 @@ ORDER BY b.id DESC
 ---
 
 **Report Generated:** 2025-12-25  
-**Script:** `agents/check_completed_billing_locks.py`  
-**Date Analysis Script:** `agents/analyze_billing_lock_dates.py`  
+**Script:** `examples/check_completed_billing_locks.py`  
+**Date Analysis Script:** `examples/analyze_billing_lock_dates.py`  
 **Total Issues Found:** 184 COMPLETED billing runs with remaining locks  
 **Date Range:** November 6, 2025 - December 24, 2025
 
