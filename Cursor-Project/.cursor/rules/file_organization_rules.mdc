@@ -12,7 +12,7 @@ alwaysApply: true
     - `config/` - Configuration files (.json, .yaml, .properties, specs)
     - `docs/` - Documentation files (.md, .txt, .rst)
     - `User story/` - User stories, flows, and related documentation files (.txt, .drawio, .md) - **MANDATORY location for ALL story/flow files** (located at project root)
-    - `reports/YYYY-MM-DD/` - Report files (.md) - **ALWAYS use CURRENT date dynamically**
+    - `reports/YYYY-MM-DD/` - Report files (.md) - **ALWAYS use CURRENT date dynamically** (located at project root: `Cursor-Project/reports/YYYY-MM-DD/`)
     - `postman/` - Postman collections and related files
     - `Phoenix/` - Phoenix Java project files
     
@@ -37,7 +37,8 @@ alwaysApply: true
     **Examples:**
     - ✅ `agents/custom_agent.py` (NOT in root)
     - ✅ `examples/demo_script.py` (NOT in root)
-    - ✅ `reports/2025-12-10/AgentReport.md` (use CURRENT date)
+    - ✅ `Cursor-Project/reports/2025-12-10/AgentReport.md` (use CURRENT date, MUST be in project root)
+    - ❌ `reports/2025-12-10/AgentReport.md` in workspace root → Should be `Cursor-Project/reports/2025-12-10/AgentReport.md`
     - ✅ `User story/MY_USER_STORY.txt` (story files MUST go here)
     - ✅ `User story/MY_FLOW_DIAGRAM.drawio` (flow files MUST go here)
     - ❌ `custom_agent.py` in root → Should be `agents/custom_agent.py`
