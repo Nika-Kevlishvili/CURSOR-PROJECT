@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeSubmitPrompt": [
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/block-phoenix-code-requests.ps1" }
+    ],
+    "afterFileEdit": [
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/warn-phoenix-code-edit.ps1" }
+    ],
+    "beforeMCPExecution": [
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/block-confluence-write.ps1" },
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/control-database-write.ps1" }
+    ],
+    "beforeShellExecution": [
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/control-git-push.ps1" }
+    ]
+  }
+}

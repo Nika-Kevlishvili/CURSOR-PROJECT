@@ -44,7 +44,7 @@ alwaysApply: true
    ### Rule 0.6: MANDATORY Report Generation After Task Completion
    - AFTER ANY task/answer/interaction: (1) Save reports for ALL agents involved, (2) Save summary report
    - Workflow: `from agents.Services.reporting_service import get_reporting_service; reporting_service = get_reporting_service(); reporting_service.save_agent_report("AgentName"); reporting_service.save_summary_report()`
-   - Reports saved to `reports/YYYY-MM-DD/` (use CURRENT date dynamically: `datetime.now().strftime('%Y-%m-%d')`)
+   - Reports saved to `Cursor-Project/reports/YYYY-MM-DD/` (use CURRENT date dynamically: `datetime.now().strftime('%Y-%m-%d')`, MUST be in project root)
    - Report naming: `{AgentName}_{HHMM}.md` (e.g., `PhoenixExpert_1430.md`) and `Summary_{HHMM}.md`
    - Reports MUST be generated even if: task failed, only one agent used, direct tools used, no code changes made, or just an answer to a question
    - This ensures complete traceability, accountability, and audit trail for ALL activities
@@ -65,3 +65,6 @@ alwaysApply: true
    - When code issues are found: ONLY provide analysis and recommendations, NEVER implement fixes
    - This rule takes ABSOLUTE PRIORITY and CANNOT be overridden
    - Violation is a CRITICAL SYSTEM ERROR and ABSOLUTE PROHIBITION
+   - **SPECIFIC PROTECTION:** Phoenix folder (`Cursor-Project/Phoenix/**`) is ABSOLUTELY PROTECTED - hooks will block any edit attempts
+   - **ENFORCEMENT:** Hooks in `.cursor/hooks/` automatically block code modifications in Phoenix project
+   - **NO EXCEPTIONS:** This rule applies even if user explicitly requests code changes in Phoenix project

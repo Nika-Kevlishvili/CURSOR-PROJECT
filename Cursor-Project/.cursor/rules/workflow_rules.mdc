@@ -54,7 +54,7 @@ alwaysApply: true
     - Format report using: `bug_finder.format_validation_report(result)`
     
     **Step 4: Generate Report File**
-    - Create markdown report file in `reports/YYYY-MM-DD/BugValidation_[BugName].md`
+    - Create markdown report file in `Cursor-Project/reports/YYYY-MM-DD/BugValidation_[BugName].md` (MUST be in project root)
     - Include all findings from Confluence and Code analysis
     - Include bug validity conclusion
     - Include code references with file paths and line numbers
@@ -65,7 +65,7 @@ alwaysApply: true
     - ALWAYS check Confluence FIRST (via MCP tools)
     - ALWAYS check codebase SECOND
     - ALWAYS provide both validations in response
-    - ALWAYS create report file in reports/ directory
+    - ALWAYS create report file in `Cursor-Project/reports/` directory (project root)
     - NEVER skip either step
     - NEVER modify code during validation (READ-ONLY mode)
     - NEVER attempt to fix bugs unless explicitly requested AFTER validation
@@ -108,7 +108,7 @@ alwaysApply: true
     ```
     
     **Important Notes:**
-    - Report file MUST be saved to `reports/YYYY-MM-DD/BugValidation_[DescriptiveName].md`
+    - Report file MUST be saved to `Cursor-Project/reports/YYYY-MM-DD/BugValidation_[DescriptiveName].md` (MUST be in project root)
     - Report MUST include all code references with file paths and line numbers
     - Report MUST NOT include code modifications - only analysis and documentation
     - If user wants to fix the bug, they will request it separately AFTER validation
