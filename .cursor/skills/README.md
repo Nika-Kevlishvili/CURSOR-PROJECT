@@ -12,8 +12,9 @@ Skills teach the Cursor agent how to follow this project's agents, rules, and co
 | **phoenix-bug-validation** | BugFinderAgent workflow (Rule 32): Confluence → codebase → analysis → report |
 | **phoenix-file-organization** | Where to put files: agents, docs, User story, reports/YYYY-MM-DD, config, postman |
 | **phoenix-reporting** | Report generation (Rule 0.6): agent reports + summary, path and naming |
-| **phoenix-commands** | When to use which command: Phoenix, consult, report, bug-validate, sync |
+| **phoenix-commands** | When to use which command: Phoenix, consult, report, bug-validate, production-data-reader, sync |
 | **phoenix-database** | PostgreSQL MCP: environment (Dev/Test/Prod), connect first, contract/POD query patterns, no credentials in logs |
+| **production-data-reader** | ProductionDataReaderAgent workflow (Rule PDR.0): read production data → analyze offsets → explain step-by-step creation |
 | **phoenix-safety-readonly** | GitLab/Confluence read-only, code modification forbidden, Confluence edit tools forbidden, no credentials in logs |
 
 ## Source

@@ -21,6 +21,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 | Before doing a task (validation, approval) | **Consult** → PhoenixExpert consultation (Rule 8) | consult.md |
 | After any task | **Report** → Save agent + summary reports (Rule 0.6) | report.md |
 | Validate a bug report | **Bug-validate** → BugFinderAgent (Rule 32) | bug-validate.md |
+| Production data analysis (liability offsets, receivable history) | **Production-data-reader** → ProductionDataReaderAgent (Rule PDR.0) | production-data-reader.md, production_data_reader.mdc |
 | Fetch/update/checkout Phoenix repos from GitLab | **Sync** → git_sync_workflow (read-only) | sync.md, git_sync_workflow.mdc |
 
 ## Phoenix (phoenix.md)
@@ -47,6 +48,12 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 - **Flow:** IntegrationService → BugFinderAgent → Confluence → Codebase → analysis → report file.
 - **Output:** Structured Bug Validation Analysis; "Agents involved: BugFinderAgent, PhoenixExpert".
 
+## Production-data-reader (production-data-reader.md)
+
+- **When:** User asks about production database data, liability offsets, receivable history, or "როგორ შეიქმნა" (how was created).
+- **Flow:** IntegrationService → Connect to PostgreSQLProd → Parse entity → Analyze → Generate step-by-step explanation.
+- **Output:** Detailed analysis with offset sequence and creation process; "Agents involved: ProductionDataReaderAgent".
+
 ## Sync (sync.md)
 
 - **When:** User wants to fetch/update/checkout Phoenix projects from GitLab.
@@ -59,6 +66,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 - Before task → Consult + PhoenixExpert approval.
 - After task → Report (agent + summary).
 - Bug check → Bug-validate + BugFinderAgent.
+- Production data → Production-data-reader + ProductionDataReaderAgent.
 - Git sync → Sync command + git_sync_workflow.mdc.
 
 All commands assume rules are loaded first (Rule 0.0) from `Cursor-Project/.cursor/rules/`.
