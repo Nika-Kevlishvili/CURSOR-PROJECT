@@ -19,6 +19,7 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 | **Test Runner** | `test-runner.md` | TestAgent (Rule 8, 17) | Run tests; consult PhoenixExpert first; report results. |
 | **Report Generator** | `report-generator.md` | ReportingService (Rule 0.6) | Save agent report + summary to `Cursor-Project/reports/YYYY-MM-DD/`. |
 | **Database Query** | `database-query.md` | database_workflow.mdc | Run PostgreSQL MCP queries; correct env (Dev/Test/Prod); connect first; contract/POD patterns. |
+| **Production Data Reader** | `production-data-reader.md` | ProductionDataReaderAgent (Rule PDR.0) | Read production database data; analyze liability offsets, receivable history; explain step-by-step creation process. READ-ONLY. |
 | **Git Sync** | `git-sync.md` | GitLabUpdateAgent / git_sync_workflow.mdc | Sync/update/checkout Phoenix repos from GitLab; READ-ONLY (fetch/checkout/merge only). |
 | **Environment Access** | `environment-access.md` | EnvironmentAccessAgent (Rule 10) | Access Dev or Dev2; navigation, login, environment selection. |
 | **Postman Collection** | `postman-collection.md` | PostmanCollectionGenerator (Rule 8, 17) | Generate Postman collections; consult PhoenixExpert first. |

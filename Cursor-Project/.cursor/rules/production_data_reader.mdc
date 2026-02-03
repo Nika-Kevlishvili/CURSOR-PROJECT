@@ -1,0 +1,117 @@
+---
+alwaysApply: true
+---
+
+# PRODUCTION DATA READER RULE [CRITICAL]
+
+## Rule PDR.0: ProductionDataReaderAgent Usage [CRITICAL]
+
+**ALWAYS use ProductionDataReaderAgent when user asks about production database data.**
+
+- User asks about ANY production data (liability, receivable, payment, deposit, invoice, contract, customer, etc.)
+- User asks "როგორ შეიქმნა" (how was created) for ANY production entity
+- User asks about data relationships, dependencies, or traceability
+- User asks about offset sequence, reversal history, or data flow
+- User mentions "Prod გარემო" (Prod environment) with data questions
+- User wants to query or analyze ANY production database table
+
+## When to Apply
+
+- User asks: "როგორ შეიქმნა X?" (How was X created?) - for ANY entity type
+- User asks: "რითია დაოფსეტებული X?" (What is X offset with?)
+- User asks: "რა თანმიმდევრობით არის ოფსეტები?" (What is the sequence of offsets?)
+- User asks about production database data analysis for ANY entity
+- User asks about data relationships, dependencies, or traceability
+- User asks to query or analyze ANY production database table
+- User asks about reversed entities or offsets
+- User asks: "რა დატა აქვს X?" (What data does X have?)
+
+## Workflow
+
+1. **Route to ProductionDataReaderAgent:**
+   - Use: `from agents.Main import get_production_data_reader_agent; agent = get_production_data_reader_agent()`
+   - Or use AgentRouter: `from agents.Core import get_agent_router; router = get_agent_router(); router.route_query(query, context)`
+
+2. **Connect to Production Database:**
+   - Use PostgreSQLProd MCP server
+   - Connect: `mcp_PostgreSQLProd_connect_db(host="10.236.20.78", port=5000, user="readonly_user", password="U$CM)*qr&Zb4JfU@", database="phoenix")`
+   - ALWAYS use readonly_user for safety
+
+3. **Query Production Data:**
+   - Query ANY entity type: liability, receivable, payment, deposit, invoice, contract, customer, etc.
+   - Query relationships: foreign keys, reverse relationships, dependencies
+   - Query offsetting tables: `customer_liabilitie_paid_by_*`, `customer_payment_*`, etc.
+   - Query ANY table: Use `query_table()` method for generic table queries
+   - Analyze relationships: Use `analyze_relationships()` for entity connections
+
+4. **Analyze and Explain:**
+   - Build chronological sequence of events
+   - Identify reversed entities (status = 'REVERSED')
+   - Analyze relationships and dependencies
+   - Explain step-by-step creation and modification process
+   - Provide detailed traceability for ANY entity type
+
+5. **Generate Report:**
+   - Format analysis as markdown report
+   - Include liability/receivable details
+   - Include offset sequence with dates and amounts
+   - Include step-by-step explanation
+   - Save report following Rule 0.6
+
+## Security [CRITICAL]
+
+- **READ-ONLY ONLY:** ProductionDataReaderAgent MUST use readonly_user credentials
+- **NO MODIFICATIONS:** Never modify production data
+- **NO WRITES:** Only SELECT queries allowed
+- **ENVIRONMENT:** Only use PostgreSQLProd MCP server for production queries
+
+## Integration with Other Agents
+
+- **PhoenixExpert Consultation:** May consult PhoenixExpert for business logic understanding
+- **IntegrationService:** Call `IntegrationService.update_before_task()` before analysis
+- **ReportingService:** Generate reports after analysis (Rule 0.6)
+
+## Example Usage
+
+```python
+from agents.Main import get_production_data_reader_agent
+
+agent = get_production_data_reader_agent()
+
+# Universal entity analysis
+analysis = agent.analyze_entity("liability", 45319)
+report = agent.format_analysis_report(analysis)
+
+# Analyze any entity type
+receivable_analysis = agent.analyze_entity("receivable", 11925)
+payment_analysis = agent.analyze_entity("payment", 30362)
+deposit_analysis = agent.analyze_entity("deposit", 12345)
+invoice_analysis = agent.analyze_entity("invoice", 67890)
+contract_analysis = agent.analyze_entity("contract", 11111)
+
+# Query any table
+data = agent.query_table("customer_liabilities", schema="receivable", filters={"id": 45319})
+
+# Analyze relationships
+relationships = agent.analyze_relationships("liability", 45319)
+```
+
+## Output Format
+
+ProductionDataReaderAgent provides for ANY entity type:
+- **Entity Details:** ID, number, amounts, dates, currency, status, etc.
+- **Relationships:** All related entities and their connections
+- **Event Sequence:** Chronological list of all events (offsets, reversals, modifications)
+- **Event Details:** Type, ID, amount, date, status (ACTIVE/REVERSED)
+- **Step-by-Step Explanation:** How entity was created, modified, and related to other entities
+- **Reversal History:** If any events were reversed, when and why
+- **Dependencies:** What entities depend on this entity
+- **Dependents:** What entities depend on this entity
+
+## Error Handling
+
+- If entity not found: Return clear error message
+- If database connection fails: Retry with exponential backoff
+- If query fails: Log error and provide partial results if available
+
+**Violation of production data reader rules is a CRITICAL SYSTEM ERROR.**
