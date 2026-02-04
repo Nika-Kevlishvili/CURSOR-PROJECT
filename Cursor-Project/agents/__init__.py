@@ -23,7 +23,8 @@ from .Main import (
     get_phoenix_expert, PhoenixExpert,
     get_test_agent, TestAgent, TestType, TestStatus,
     get_bug_finder_agent, BugFinderAgent,
-    get_test_case_generator_agent, TestCaseGeneratorAgent
+    get_test_case_generator_agent, TestCaseGeneratorAgent,
+    get_production_data_reader_agent, ProductionDataReaderAgent
 )
 
 # Support Agents
@@ -45,7 +46,8 @@ from .Adapters import (
     PhoenixExpertAdapter,
     TestAgentAdapter,
     EnvironmentAccessAdapter,
-    TestCaseGeneratorAdapter
+    TestCaseGeneratorAdapter,
+    ProductionDataReaderAdapter
 )
 
 # Services
@@ -70,6 +72,8 @@ __all__ = [
     'BugFinderAgent',
     'get_test_case_generator_agent',
     'TestCaseGeneratorAgent',
+    'get_production_data_reader_agent',
+    'ProductionDataReaderAgent',
     'get_gitlab_update_agent',
     'GitLabUpdateAgent',
     'get_agent_registry',
@@ -78,6 +82,7 @@ __all__ = [
     'PhoenixExpertAdapter',
     'TestAgentAdapter',
     'TestCaseGeneratorAdapter',
+    'ProductionDataReaderAdapter',
     'get_integration_service',
     'IntegrationService',
     'get_postman_collection_generator',

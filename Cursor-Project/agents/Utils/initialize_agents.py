@@ -7,7 +7,7 @@ so they can be discovered and used by AgentRouter.
 
 from typing import Dict, Any, Optional
 from agents.Core import get_agent_registry
-from agents.Adapters import PhoenixExpertAdapter, TestAgentAdapter, EnvironmentAccessAdapter, TestCaseGeneratorAdapter
+from agents.Adapters import PhoenixExpertAdapter, TestAgentAdapter, EnvironmentAccessAdapter, TestCaseGeneratorAdapter, ProductionDataReaderAdapter
 from agents.Support import get_gitlab_update_agent
 
 
@@ -66,6 +66,14 @@ def initialize_all_agents(config: Dict[str, Any] = None) -> None:
         print("✓ Registered TestCaseGeneratorAgent")
     except Exception as e:
         print(f"✗ Failed to register TestCaseGeneratorAgent: {e}")
+    
+    # Register ProductionDataReaderAgent
+    try:
+        production_data_reader_adapter = ProductionDataReaderAdapter()
+        registry.register_agent(production_data_reader_adapter)
+        print("✓ Registered ProductionDataReaderAgent")
+    except Exception as e:
+        print(f"✗ Failed to register ProductionDataReaderAgent: {e}")
     
     print("-"*70)
     print(f"Total agents registered: {len(registry.list_agents())}")

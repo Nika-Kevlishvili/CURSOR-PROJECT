@@ -52,7 +52,14 @@ All rules are organized into the following thematic files:
    - Readonly token configuration
    - Cross-platform compatibility
 
-8. **autonomous_rules.md** - Additional autonomous operation rules (config/cursorrules/)
+8. **production_data_reader.mdc** - Production data reader rules
+   - ProductionDataReaderAgent usage (Rule PDR.0)
+   - Production database reading workflow
+   - Liability offset analysis
+   - Receivable history analysis
+   - Step-by-step data creation explanation
+
+9. **autonomous_rules.md** - Additional autonomous operation rules (config/cursorrules/)
    - GitHub operations permissions
    - Automatic agent routing
    - File organization rules
@@ -70,7 +77,7 @@ All rules with `alwaysApply: true` are automatically loaded and applied. The rul
 - **Agent Behavior:** See `agent_rules.mdc`
 - **Security:** See `safety_rules.mdc`
 - **File Organization:** See `file_organization_rules.mdc`
-- **Workflows:** See `workflow_rules.mdc`, `database_workflow.mdc`, and `git_sync_workflow.mdc`
+- **Workflows:** See `workflow_rules.mdc`, `database_workflow.mdc`, `git_sync_workflow.mdc`, and `production_data_reader.mdc`
 - **Autonomous Operations:** See `config/cursorrules/autonomous_rules.md`
 
 ## ⚠️ CRITICAL REMINDERS
@@ -84,7 +91,8 @@ All rules with `alwaysApply: true` are automatically loaded and applied. The rul
 7. **Rule 8:** ALWAYS consult PhoenixExpert before tasks
 8. **Rule 11:** ALWAYS call IntegrationService.update_before_task()
 9. **Rule 32:** ALL bug validation → ALWAYS use BugFinderAgent
-10. **Rule 34:** ALL agents MUST be organized in subdirectories
+10. **Rule PDR.0:** Production data questions → ALWAYS use ProductionDataReaderAgent
+11. **Rule 34:** ALL agents MUST be organized in subdirectories
 
 ---
 
