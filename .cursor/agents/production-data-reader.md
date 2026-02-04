@@ -1,6 +1,6 @@
 ---
 name: production-data-reader
-description: Reads and analyzes ANY production database data and explains step-by-step how entities were created. Analyzes ANY entity type (liability, receivable, payment, deposit, invoice, contract, etc.), relationships, dependencies, and provides detailed traceability. Use when user asks about ANY production data, "როგორ შეიქმნა" (how was created) for ANY entity, or wants to query/analyze production database tables.
+description: Reads and analyzes ANY production database data and explains step-by-step how entities were created. Analyzes ANY entity type (liability, receivable, payment, deposit, invoice, contract, etc.), relationships, dependencies, and provides detailed traceability. Use when user asks about ANY production data, how an entity was created for ANY entity, or wants to query/analyze production database tables.
 ---
 
 # Production Data Reader Subagent
@@ -19,13 +19,13 @@ Specialized subagent for reading and analyzing production database data. Provide
 ## When to Use
 
 - User asks about ANY production database data (any entity type)
-- User asks "როგორ შეიქმნა" (how was created) for ANY production entity
+- User asks how an entity was created for ANY production entity
 - User asks about entity relationships, dependencies, or traceability
 - User asks about offsets and their sequence (for any entity type)
 - User asks about entity history or reversal history
-- User asks "რითია დაოფსეტებული" (what is offset with)
+- User asks what an entity is offset with
 - User asks to query or analyze ANY production database table
-- User mentions "Prod გარემო" (Prod environment) with data questions
+- User mentions Prod environment with data questions
 
 ## Workflow
 
@@ -67,15 +67,15 @@ Provide for ANY entity type:
 
 ## Example Queries
 
-- "Prod გარემოზე მაქვს ლაიაბილითი რომელიც დაოფსეტებულია და მინდა მითხრა რითია დაოფსეტებული და რა თანმიმდევრობით, ლაიაბილითის აიდია - 45319"
-- "როგორ შეიქმნა Receivable-11925?"
-- "როგორ შეიქმნა Payment-30362?"
-- "როგორ შეიქმნა Deposit-12345?"
-- "როგორ შეიქმნა Invoice-67890?"
-- "როგორ შეიქმნა Contract-11111?"
-- "რა თანმიმდევრობით არის ოფსეტები ლაიაბილითი 45319-ისთვის?"
-- "რა დატა აქვს Customer-123-ს?"
-- "რა კავშირები აქვს Invoice-67890-ს?"
+- "On Prod I have a liability that is offset and I want to know what it is offset with and in what sequence; liability id is 45319"
+- "How was Receivable-11925 created?"
+- "How was Payment-30362 created?"
+- "How was Deposit-12345 created?"
+- "How was Invoice-67890 created?"
+- "How was Contract-11111 created?"
+- "In what sequence are the offsets for liability 45319?"
+- "What data does Customer-123 have?"
+- "What relationships does Invoice-67890 have?"
 
 ## Response Requirements
 

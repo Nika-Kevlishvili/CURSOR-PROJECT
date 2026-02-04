@@ -140,17 +140,17 @@ class ProductionDataReaderAgent:
         """
         entity_type_lower = entity_type.lower()
         
-        if entity_type_lower in ['liability', 'ლაიაბილითი']:
+        if entity_type_lower == 'liability':
             return self.analyze_liability_offsets(entity_id)
-        elif entity_type_lower in ['receivable', 'რესივებლი']:
+        elif entity_type_lower == 'receivable':
             return self.analyze_receivable_history(entity_id)
-        elif entity_type_lower in ['payment', 'გადახდა']:
+        elif entity_type_lower == 'payment':
             return self.analyze_payment_history(entity_id)
-        elif entity_type_lower in ['deposit', 'დეპოზიტი']:
+        elif entity_type_lower == 'deposit':
             return self.analyze_deposit_history(entity_id)
-        elif entity_type_lower in ['invoice', 'ინვოისი']:
+        elif entity_type_lower == 'invoice':
             return self.analyze_invoice_history(entity_id)
-        elif entity_type_lower in ['contract', 'კონტრაქტი']:
+        elif entity_type_lower == 'contract':
             return self.analyze_contract_history(entity_id)
         else:
             # Generic analysis for unknown entity types

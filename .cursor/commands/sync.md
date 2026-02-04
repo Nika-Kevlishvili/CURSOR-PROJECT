@@ -74,7 +74,7 @@ Token is already configured in `git_sync_workflow.mdc`:
 ```
 /sync
 
-განაახლე Phoenix პროექტები GitLab-დან
+Update Phoenix projects from GitLab
 ```
 
 **Update dev branch:**

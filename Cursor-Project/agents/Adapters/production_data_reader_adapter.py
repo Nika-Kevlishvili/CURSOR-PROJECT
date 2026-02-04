@@ -53,9 +53,9 @@ class ProductionDataReaderAdapter(Agent):
             'how was created', 'step by step', 'data traceability',
             'reversed receivable', 'offset sequence', 'creation process',
             'analyze data', 'read data', 'query data', 'data analysis',
-            'prod გარემო', 'ლაიაბილითი', 'ოფსეტი', 'როგორ შეიქმნა',
-            'დატის ანალიზი', 'დატის წაკითხვა', 'რესივებლი', 'გადახდა',
-            'დეპოზიტი', 'ინვოისი', 'კონტრაქტი'
+            'prod environment', 'liability', 'offset', 'how was created',
+            'data analysis', 'read data', 'receivable', 'payment',
+            'deposit', 'invoice', 'contract'
         ]
         
         # Check if query contains relevant keywords
@@ -121,39 +121,39 @@ class ProductionDataReaderAdapter(Agent):
         query_lower = query.lower()
         
         # Try to find liability ID
-        liability_match = re.search(r'liability[:\s]+(\d+)|ლაიაბილითი[:\s]+(\d+)', query_lower)
+        liability_match = re.search(r'liability[:\s]+(\d+)', query_lower)
         if liability_match:
-            entity_id = int(liability_match.group(1) or liability_match.group(2))
+            entity_id = int(liability_match.group(1))
             return entity_id, "liability"
         
         # Try to find receivable ID
-        receivable_match = re.search(r'receivable[:\s]+(\d+)|რესივებლი[:\s]+(\d+)', query_lower)
+        receivable_match = re.search(r'receivable[:\s]+(\d+)', query_lower)
         if receivable_match:
-            entity_id = int(receivable_match.group(1) or receivable_match.group(2))
+            entity_id = int(receivable_match.group(1))
             return entity_id, "receivable"
         
         # Try to find payment ID
-        payment_match = re.search(r'payment[:\s]+(\d+)|გადახდა[:\s]+(\d+)', query_lower)
+        payment_match = re.search(r'payment[:\s]+(\d+)', query_lower)
         if payment_match:
-            entity_id = int(payment_match.group(1) or payment_match.group(2))
+            entity_id = int(payment_match.group(1))
             return entity_id, "payment"
         
         # Try to find deposit ID
-        deposit_match = re.search(r'deposit[:\s]+(\d+)|დეპოზიტი[:\s]+(\d+)', query_lower)
+        deposit_match = re.search(r'deposit[:\s]+(\d+)', query_lower)
         if deposit_match:
-            entity_id = int(deposit_match.group(1) or deposit_match.group(2))
+            entity_id = int(deposit_match.group(1))
             return entity_id, "deposit"
         
         # Try to find invoice ID
-        invoice_match = re.search(r'invoice[:\s]+(\d+)|ინვოისი[:\s]+(\d+)', query_lower)
+        invoice_match = re.search(r'invoice[:\s]+(\d+)', query_lower)
         if invoice_match:
-            entity_id = int(invoice_match.group(1) or invoice_match.group(2))
+            entity_id = int(invoice_match.group(1))
             return entity_id, "invoice"
         
         # Try to find contract ID
-        contract_match = re.search(r'contract[:\s]+(\d+)|კონტრაქტი[:\s]+(\d+)', query_lower)
+        contract_match = re.search(r'contract[:\s]+(\d+)', query_lower)
         if contract_match:
-            entity_id = int(contract_match.group(1) or contract_match.group(2))
+            entity_id = int(contract_match.group(1))
             return entity_id, "contract"
         
         # Try to find any number (fallback)
@@ -161,15 +161,15 @@ class ProductionDataReaderAdapter(Agent):
         if number_match:
             entity_id = int(number_match.group(1))
             # Try to infer type from context
-            if 'receivable' in query_lower or 'რესივებლი' in query_lower:
+            if 'receivable' in query_lower:
                 return entity_id, "receivable"
-            elif 'payment' in query_lower or 'გადახდა' in query_lower:
+            elif 'payment' in query_lower:
                 return entity_id, "payment"
-            elif 'deposit' in query_lower or 'დეპოზიტი' in query_lower:
+            elif 'deposit' in query_lower:
                 return entity_id, "deposit"
-            elif 'invoice' in query_lower or 'ინვოისი' in query_lower:
+            elif 'invoice' in query_lower:
                 return entity_id, "invoice"
-            elif 'contract' in query_lower or 'კონტრაქტი' in query_lower:
+            elif 'contract' in query_lower:
                 return entity_id, "contract"
             else:
                 return entity_id, "liability"  # Default to liability

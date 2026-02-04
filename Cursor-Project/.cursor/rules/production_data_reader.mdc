@@ -9,22 +9,22 @@ alwaysApply: true
 **ALWAYS use ProductionDataReaderAgent when user asks about production database data.**
 
 - User asks about ANY production data (liability, receivable, payment, deposit, invoice, contract, customer, etc.)
-- User asks "როგორ შეიქმნა" (how was created) for ANY production entity
+- User asks how an entity was created for ANY production entity
 - User asks about data relationships, dependencies, or traceability
 - User asks about offset sequence, reversal history, or data flow
-- User mentions "Prod გარემო" (Prod environment) with data questions
+- User mentions Prod environment with data questions
 - User wants to query or analyze ANY production database table
 
 ## When to Apply
 
-- User asks: "როგორ შეიქმნა X?" (How was X created?) - for ANY entity type
-- User asks: "რითია დაოფსეტებული X?" (What is X offset with?)
-- User asks: "რა თანმიმდევრობით არის ოფსეტები?" (What is the sequence of offsets?)
+- User asks: "How was X created?" - for ANY entity type
+- User asks: "What is X offset with?"
+- User asks: "What is the sequence of offsets?"
 - User asks about production database data analysis for ANY entity
 - User asks about data relationships, dependencies, or traceability
 - User asks to query or analyze ANY production database table
 - User asks about reversed entities or offsets
-- User asks: "რა დატა აქვს X?" (What data does X have?)
+- User asks: "What data does X have?"
 
 ## Workflow
 

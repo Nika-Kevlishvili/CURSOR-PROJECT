@@ -50,7 +50,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 
 ## Production-data-reader (production-data-reader.md)
 
-- **When:** User asks about production database data, liability offsets, receivable history, or "როგორ შეიქმნა" (how was created).
+- **When:** User asks about production database data, liability offsets, receivable history, or how an entity was created.
 - **Flow:** IntegrationService → Connect to PostgreSQLProd → Parse entity → Analyze → Generate step-by-step explanation.
 - **Output:** Detailed analysis with offset sequence and creation process; "Agents involved: ProductionDataReaderAgent".
 

@@ -43,12 +43,12 @@ Route ALL production database data questions to ProductionDataReaderAgent (Rule 
 
 ## Example Queries:
 
-- "Prod გარემოზე მაქვს ლაიაბილითი რომელიც დაოფსეტებულია და მინდა მითხრა რითია დაოფსეტებული და რა თანმიმდევრობით, ლაიაბილითის აიდია - 45319"
-- "როგორ შეიქმნა Receivable-11925?"
-- "როგორ შეიქმნა Payment-30362?"
-- "როგორ შეიქმნა Deposit-12345?"
-- "როგორ შეიქმნა Invoice-67890?"
-- "როგორ შეიქმნა Contract-11111?"
-- "რა თანმიმდევრობით არის ოფსეტები ლაიაბილითი 45319-ისთვის?"
-- "რა დატა აქვს Customer-123-ს?"
-- "რა კავშირები აქვს Invoice-67890-ს?"
+- "On Prod I have a liability that is offset and I want to know what it is offset with and in what sequence; liability id is 45319"
+- "How was Receivable-11925 created?"
+- "How was Payment-30362 created?"
+- "How was Deposit-12345 created?"
+- "How was Invoice-67890 created?"
+- "How was Contract-11111 created?"
+- "In what sequence are the offsets for liability 45319?"
+- "What data does Customer-123 have?"
+- "What relationships does Invoice-67890 have?"
