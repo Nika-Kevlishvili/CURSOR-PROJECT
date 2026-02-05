@@ -5,7 +5,7 @@ description: Maps user intent to Cursor commands and workflows (Phoenix query, c
 
 # Phoenix Commands and Workflows
 
-Helps choose the right command or workflow for Phoenix-related tasks. Commands live in `.cursor/commands/`; rules in `Cursor-Project/.cursor/rules/`.
+Helps choose the right command or workflow for Phoenix-related tasks. Commands live in `.cursor/commands/`; rules in `.cursor/rules/`.
 
 ## When to Apply
 
@@ -58,7 +58,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 
 - **When:** User wants to fetch/update/checkout Phoenix projects from GitLab.
 - **Triggers:** `!sync`, `!update <branch>`, `!checkout <branch>`.
-- **Rule:** Follow `Cursor-Project/.cursor/rules/git_sync_workflow.mdc` exactly; use git commands (no Python agent for sync). Read-only (fetch/checkout/merge only; no push).
+- **Rule:** Follow `.cursor/rules/git_sync_workflow.mdc` exactly; use git commands (no Python agent for sync). Read-only (fetch/checkout/merge only; no push).
 
 ## Summary
 
@@ -69,4 +69,4 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 - Production data → Production-data-reader + ProductionDataReaderAgent.
 - Git sync → Sync command + git_sync_workflow.mdc.
 
-All commands assume rules are loaded first (Rule 0.0) from `Cursor-Project/.cursor/rules/`.
+All commands assume rules are loaded first (Rule 0.0) from `.cursor/rules/`.

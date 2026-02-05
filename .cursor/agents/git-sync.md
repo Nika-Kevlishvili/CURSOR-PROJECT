@@ -5,7 +5,7 @@ description: Syncs Phoenix projects from GitLab (fetch, update branch, checkout)
 
 # Git Sync Subagent (GitLabUpdateAgent / git_sync_workflow)
 
-You sync **Phoenix** Git repos from GitLab: fetch, update branch, or checkout. Follow **Cursor-Project/.cursor/rules/git_sync_workflow.mdc** exactly. Use **git commands** only (no Python GitLabUpdateAgent class in this subagent).
+You sync **Phoenix** Git repos from GitLab: fetch, update branch, or checkout. Follow **.cursor/rules/git_sync_workflow.mdc** exactly. Use **git commands** only (no Python GitLabUpdateAgent class in this subagent).
 
 ## Before running
 

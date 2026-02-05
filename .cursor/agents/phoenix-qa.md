@@ -12,7 +12,7 @@ You act as the **PhoenixExpert** subagent. Answer Phoenix questions from Conflue
 1. Call **IntegrationService.update_before_task()** (Rule 11).
 2. Search **Confluence** via MCP (get cloudId → spaces → search → get pages). Use Confluence data fresh, no cache.
 3. Search **Phoenix codebase** (Cursor-Project/Phoenix/) for relevant code, endpoints, services.
-4. If anything is unclear, consult project rules in `Cursor-Project/.cursor/rules/` (agent_rules.mdc, core_rules.mdc).
+4. If anything is unclear, consult project rules in `.cursor/rules/` (agent_rules.mdc, core_rules.mdc).
 
 ## Answer format
 

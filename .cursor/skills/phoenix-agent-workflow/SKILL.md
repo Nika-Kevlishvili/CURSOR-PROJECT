@@ -74,4 +74,4 @@ Never place agent modules in `agents/` root. Use absolute imports: `from agents.
 
 ## Rules Source
 
-Full rules: `Cursor-Project/.cursor/rules/` (agent_rules.mdc, core_rules.mdc, phoenix.mdc). Rule 0.0 requires loading rules before any action.
+Full rules: `.cursor/rules/` (agent_rules.mdc, core_rules.mdc, phoenix.mdc). Rule 0.0 requires loading rules before any action.

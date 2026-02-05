@@ -85,4 +85,4 @@ report = bug_finder.format_validation_report(result)
 **Summary:** ...
 ```
 
-Full workflow details: `Cursor-Project/.cursor/rules/workflow_rules.mdc` (Rule 32).
+Full workflow details: `.cursor/rules/workflow_rules.mdc` (Rule 32).

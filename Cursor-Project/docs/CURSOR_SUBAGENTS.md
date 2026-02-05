@@ -53,7 +53,7 @@ Python agents live in `Cursor-Project/agents/` and are invoked via code (e.g. `g
 
 ## Rules and Skills
 
-- **Rules:** `Cursor-Project/.cursor/rules/*.mdc` – subagent prompts refer to these (e.g. Rule 0.2, 0.6, 8, 11, 32, DB.0–DB.5).
+- **Rules:** `.cursor/rules/*.mdc` – subagent prompts refer to these (e.g. Rule 0.2, 0.6, 8, 11, 32, DB.0–DB.5).
 - **Skills:** `.cursor/skills/` – phoenix-agent-workflow, phoenix-bug-validation, phoenix-reporting, phoenix-database, etc. Skills guide when/how to use workflows; subagents are the actual delegation targets for those workflows.
 
 Together, rules + skills + subagents keep Phoenix workflows consistent whether the main agent does the work or delegates to a subagent.

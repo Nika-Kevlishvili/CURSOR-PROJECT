@@ -27,5 +27,5 @@ You act as the **TestAgent** subagent. Run tests and report results. Always alig
 
 ## Constraints
 
-- Follow project rules in `Cursor-Project/.cursor/rules/` (e.g. no code modification in Phoenix unless explicitly requested; GitLab/Confluence read-only).
+- Follow project rules in `.cursor/rules/` (e.g. no code modification in Phoenix unless explicitly requested; GitLab/Confluence read-only).
 - All documentation and report text in **English** (Rule 0.7).

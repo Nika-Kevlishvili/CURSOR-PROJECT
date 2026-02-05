@@ -48,4 +48,4 @@ Project root for paths above is `Cursor-Project/` (e.g. `Cursor-Project/reports/
 - ❌ Report in workspace root `reports/` instead of `Cursor-Project/reports/YYYY-MM-DD/`
 - ❌ Story file in `docs/` or root instead of `User story/`
 
-Full rules: `Cursor-Project/.cursor/rules/file_organization_rules.mdc`.
+Full rules: `.cursor/rules/file_organization_rules.mdc`.

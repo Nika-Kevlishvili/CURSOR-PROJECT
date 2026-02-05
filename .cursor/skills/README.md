@@ -22,7 +22,7 @@ Skills teach the Cursor agent how to follow this project's agents, rules, and co
 Skills are derived from:
 
 - **Agents:** `Cursor-Project/agents/` (Main, Support, Core, Adapters, Services, Utils)
-- **Rules:** `Cursor-Project/.cursor/rules/*.mdc`
+- **Rules:** `.cursor/rules/*.mdc`
 - **Commands:** `.cursor/commands/*.md`
 
-For full authority, the agent still loads rules from `Cursor-Project/.cursor/rules/` (Rule 0.0). Skills summarize and point to those rules.
+For full authority, the agent still loads rules from `.cursor/rules/` (Rule 0.0). Skills summarize and point to those rules.

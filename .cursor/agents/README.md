@@ -24,7 +24,7 @@ Subagents delegate work to specialized contexts. Each subagent here maps to this
 
 ## Project rules and agents
 
-- **Rules:** `Cursor-Project/.cursor/rules/*.mdc` (agent_rules, core_rules, workflow_rules, database_workflow, safety_rules, etc.)
+- **Rules:** `.cursor/rules/*.mdc` (agent_rules, core_rules, workflow_rules, database_workflow, safety_rules, etc.)
 - **Python agents:** `Cursor-Project/agents/` (Main: PhoenixExpert, TestAgent, BugFinderAgent; Support: GitLabUpdateAgent, EnvironmentAccessAgent; Core: AgentRouter, IntegrationService; Services: ReportingService)
 - **Skills:** `.cursor/skills/` (phoenix-agent-workflow, phoenix-bug-validation, phoenix-reporting, phoenix-database, etc.)
 

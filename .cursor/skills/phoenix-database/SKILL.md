@@ -5,7 +5,7 @@ description: Runs PostgreSQL queries via MCP using the correct environment (Dev,
 
 # Phoenix Database Queries
 
-Ensures database access uses the right PostgreSQL MCP server, connect-before-query workflow, and standard patterns. Credentials and full connection details are in `Cursor-Project/.cursor/rules/database_workflow.mdc`; never embed or log passwords.
+Ensures database access uses the right PostgreSQL MCP server, connect-before-query workflow, and standard patterns. Credentials and full connection details are in `.cursor/rules/database_workflow.mdc`; never embed or log passwords.
 
 ## When to Apply
 
@@ -44,4 +44,4 @@ Use the **exact** environment the user asks for. Do not switch.
 
 ## Rules Source
 
-Full connection details, credentials, and SQL patterns: `Cursor-Project/.cursor/rules/database_workflow.mdc`. Rule 33: Test environment queries use PostgreSQLTest MCP.
+Full connection details, credentials, and SQL patterns: `.cursor/rules/database_workflow.mdc`. Rule 33: Test environment queries use PostgreSQLTest MCP.

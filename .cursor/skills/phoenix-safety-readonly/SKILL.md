@@ -47,4 +47,4 @@ Summarizes what must never happen and what is read-only. Prevents Confluence/Git
 - Never run destructive operations without explicit user command (Rule 25).
 - Never skip report generation after a task (Rule 30).
 
-Full list: `Cursor-Project/.cursor/rules/safety_rules.mdc` and `core_rules.mdc` (Rule 0.8).
+Full list: `.cursor/rules/safety_rules.mdc` and `core_rules.mdc` (Rule 0.8).
