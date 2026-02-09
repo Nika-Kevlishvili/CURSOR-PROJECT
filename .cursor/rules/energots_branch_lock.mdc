@@ -1,0 +1,242 @@
+---
+alwaysApply: true
+---
+
+# ENERGOTS BRANCH LOCK RULE [CRITICAL]
+
+## Rule ENERGOTS.0: EnergoTS Branch Restriction [CRITICAL - ABSOLUTE PROHIBITION]
+
+**CRITICAL:** Cursor AI MUST NEVER checkout, switch to, or use any branch other than `cursor` in the EnergoTS project directory.
+
+**CRITICAL:** Cursor AI MUST NEVER automatically update `cursor` branch from `main` branch. Updates from `main` are ONLY allowed when user EXPLICITLY requests them.
+
+### Scope
+
+**Applies to:** `Cursor-Project/EnergoTS/` directory and all subdirectories
+
+**Locked Branch:** `cursor` (ONLY allowed branch)
+
+**Prohibited Operations:**
+- `git checkout <branch>` where `<branch>` is NOT `cursor`
+- `git switch <branch>` where `<branch>` is NOT `cursor`
+- `git checkout -b <branch>` (creating new branches)
+- Any git command that would change the current branch away from `cursor`
+- Branch switching operations in EnergoTS directory
+
+**Allowed Operations:**
+- `git checkout cursor` (switching TO cursor branch)
+- `git switch cursor` (switching TO cursor branch)
+- `git fetch origin main` (fetching from main branch - allowed for syncing)
+- `git merge origin/main` (merging main into cursor branch - allowed for updating cursor)
+- `git pull origin main` (pulling from main into cursor branch - allowed for updating cursor)
+- `git rebase origin/main` (rebasing cursor onto main - allowed for updating cursor)
+- All other git operations (commit, push) while on `cursor` branch
+- Operations in other directories (Phoenix, etc.) are NOT restricted by this rule
+
+**Special Exception - Main Branch Sync (ONLY on Explicit Request):**
+- While staying on `cursor` branch, you CAN fetch and merge changes from `main` branch
+- **CRITICAL:** This is ONLY allowed when user EXPLICITLY requests it
+- **AUTOMATIC updates are FORBIDDEN** - Cursor AI MUST NOT automatically update cursor from main
+- **MUST wait for explicit user request** before performing any sync operations with main
+- Examples (ONLY when user explicitly requests):
+  - `git fetch origin main` ✅ (only if user requests)
+  - `git merge origin/main` ✅ (only if user requests)
+  - `git pull origin main` ✅ (only if user requests)
+  - `git rebase origin/main` ✅ (only if user requests)
+
+### Enforcement
+
+**BEFORE executing ANY git branch operation in EnergoTS:**
+
+1. **Check Directory:** Verify if the operation targets `Cursor-Project/EnergoTS/` or any subdirectory
+2. **Check Branch:** If operation involves branch switching, verify target branch is `cursor`
+3. **BLOCK if Invalid:** If target branch is NOT `cursor`, IMMEDIATELY BLOCK the operation
+4. **Report Error:** Inform user that EnergoTS is locked to `cursor` branch only
+
+**CRITICAL: Main Branch Sync Restriction:**
+- **NEVER automatically update cursor branch from main**
+- **ONLY perform sync operations when user EXPLICITLY requests it**
+- **DO NOT suggest or propose automatic updates**
+- **DO NOT perform fetch/merge/pull/rebase from main without explicit user command**
+- **Wait for user to explicitly request:** "update cursor from main", "sync with main", "merge main", etc.
+
+### Implementation
+
+**When user requests branch switch in EnergoTS:**
+
+```python
+# Pseudo-code for enforcement
+def check_energots_branch_operation(operation, target_path, target_branch):
+    energots_path = "Cursor-Project/EnergoTS"
+    
+    # Check if operation targets EnergoTS directory
+    if target_path.startswith(energots_path) or energots_path in target_path:
+        # Check if branch operation
+        if operation in ["checkout", "switch", "checkout -b"]:
+            # Only allow cursor branch
+            if target_branch != "cursor":
+                return {
+                    "allowed": False,
+                    "error": f"EnergoTS project is locked to 'cursor' branch only. Cannot switch to '{target_branch}'. Operation blocked."
+                }
+    
+    return {"allowed": True}
+```
+
+### Error Messages
+
+**When blocking branch switch:**
+
+```
+ERROR: EnergoTS Branch Lock Active
+
+The EnergoTS project (Cursor-Project/EnergoTS/) is locked to the 'cursor' branch only.
+
+Attempted operation: git checkout <branch>
+Target branch: <branch>
+Status: BLOCKED
+
+Reason: EnergoTS project must remain on 'cursor' branch. Branch switching is prohibited.
+
+Allowed operations:
+- git checkout cursor (if not already on cursor branch)
+- git switch cursor (if not already on cursor branch)
+- All other git operations while on cursor branch
+
+To work on a different branch, please use a different directory or contact the project administrator.
+```
+
+### Workflow
+
+**When Cursor AI needs to perform git operations in EnergoTS:**
+
+1. **Check Current Branch:**
+   - Run: `cd Cursor-Project/EnergoTS && git branch --show-current`
+   - Verify current branch is `cursor`
+
+2. **If Not on Cursor Branch:**
+   - Switch to cursor: `git checkout cursor` or `git switch cursor`
+   - This is the ONLY allowed branch switch
+
+3. **If User Requests Different Branch:**
+   - BLOCK the operation immediately
+   - Display error message explaining the restriction
+   - Suggest alternatives (work in different directory, use cursor branch)
+
+4. **Continue with Operations:**
+   - All other git operations (commit, push) proceed normally
+   - As long as current branch remains `cursor`
+   - **DO NOT automatically sync with main** - only when user explicitly requests
+
+5. **Main Branch Sync (ONLY on Explicit Request):**
+   - **NEVER automatically update cursor from main**
+   - **ONLY perform sync when user EXPLICITLY requests:**
+     - "Update cursor from main"
+     - "Sync cursor with main"
+     - "Merge main into cursor"
+     - "Pull from main"
+     - "Fetch and merge main"
+   - **DO NOT suggest automatic updates**
+   - **DO NOT perform sync operations proactively**
+
+### Exceptions
+
+**Exception 1: Main Branch Sync Operations (ONLY on Explicit Request)**
+- **ALLOWED:** Fetching, merging, pulling, or rebasing from `main` branch while on `cursor` branch
+- **CRITICAL RESTRICTION:** ONLY when user EXPLICITLY requests it
+- **AUTOMATIC updates are FORBIDDEN** - Cursor AI MUST NOT automatically sync cursor with main
+- **Purpose:** Allows updating `cursor` branch with latest changes from `main` when user wants it
+- **Operations (ONLY when user explicitly requests):**
+  - `git fetch origin main` ✅ (only if user requests)
+  - `git merge origin/main` ✅ (only if user requests)
+  - `git pull origin main` ✅ (only if user requests)
+  - `git rebase origin/main` ✅ (only if user requests)
+- **Restriction:** Must be on `cursor` branch when performing these operations
+- **Still Blocked:** `git checkout main` and `git switch main` remain blocked
+- **Still Blocked:** Automatic/proactive sync operations without user request
+
+**Note:** This rule ONLY applies to EnergoTS directory. Other projects (Phoenix, etc.) are NOT affected by this restriction.
+
+### Cursor AI Behavior Rules
+
+**MANDATORY Behavior for Cursor AI:**
+
+1. **NEVER automatically suggest updating cursor from main:**
+   - ❌ DO NOT say: "Would you like me to update cursor from main?"
+   - ❌ DO NOT say: "I can update cursor branch with latest changes from main"
+   - ❌ DO NOT proactively perform sync operations
+
+2. **ONLY perform sync operations when user explicitly requests:**
+   - ✅ User says: "Update cursor from main" → ALLOWED
+   - ✅ User says: "Sync cursor with main" → ALLOWED
+   - ✅ User says: "Merge main into cursor" → ALLOWED
+   - ✅ User says: "Pull from main" → ALLOWED
+   - ✅ User says: "Fetch and merge main" → ALLOWED
+
+3. **Wait for explicit user command:**
+   - If user asks about cursor branch status → Just report status, DO NOT suggest updates
+   - If user asks about main branch → Just report main status, DO NOT suggest syncing
+   - Only act when user explicitly requests sync operation
+
+### Integration with Other Rules
+
+- **Compatible with Rule 0.8:** This rule enforces branch restriction, not code modification
+- **Compatible with git_sync_workflow.mdc:** git_sync_workflow rules apply to Phoenix projects, not EnergoTS
+- **Compatible with safety_rules.mdc:** This is a safety restriction, not a modification operation
+
+### Hooks Implementation
+
+**Two hooks enforce this rule:**
+
+1. **`block-energots-branch-switch.ps1`** (Hook: `beforeShellExecution`)
+   - Blocks git checkout/switch commands in EnergoTS directory
+   - Checks working directory and command path
+   - Allows only `cursor` branch
+   - Blocks all other branch switching operations
+
+2. **`block-energots-branch-requests.ps1`** (Hook: `beforeSubmitPrompt`)
+   - Blocks prompts requesting branch switching in EnergoTS
+   - Detects branch operation keywords and EnergoTS mentions
+   - Prevents requests to switch to branches other than `cursor`
+
+**Hook Behavior:**
+- **Shell Commands:** Hook intercepts `git checkout <branch>` and `git switch <branch>` commands
+- **Prompts:** Hook intercepts user prompts requesting branch changes
+- **Detection:** Checks both working directory and command/prompt content
+- **Blocking:** Returns `continue = false` and `block = true` for forbidden operations
+- **Error Handling:** Fail-secure (denies on error for safety)
+- **Exceptions:** Allows `git fetch origin main`, `git merge origin/main`, `git pull origin main`, `git rebase origin/main` operations
+
+### Verification
+
+**To verify rule and hooks are active:**
+
+```bash
+# Check current branch (should be cursor)
+cd Cursor-Project/EnergoTS
+git branch --show-current
+
+# Attempt to switch (should be blocked by hook)
+# git checkout main  # This should be blocked by block-energots-branch-switch.ps1
+# git switch dev      # This should also be blocked
+
+# Allowed operations (updating cursor from main - ONLY when user explicitly requests)
+# ✅ These are allowed ONLY when user explicitly requests:
+git fetch origin main        # ✅ Allowed - ONLY if user requests "fetch from main"
+git merge origin/main        # ✅ Allowed - ONLY if user requests "merge main" or "update from main"
+git pull origin main         # ✅ Allowed - ONLY if user requests "pull from main" or "update cursor"
+git rebase origin/main       # ✅ Allowed - ONLY if user requests "rebase onto main"
+
+# ❌ These are FORBIDDEN (automatic/proactive operations):
+# Cursor AI MUST NOT automatically suggest or perform these operations
+# Cursor AI MUST NOT proactively update cursor from main
+# Cursor AI MUST wait for explicit user request
+
+# Attempt via prompt (should be blocked by hook)
+# "Switch EnergoTS to main branch"  # ❌ This should be blocked by block-energots-branch-requests.ps1
+# "Update cursor branch from main"   # ✅ This should be allowed (explicit request)
+# "Sync cursor with main"            # ✅ This should be allowed (explicit request)
+# "Merge main into cursor"           # ✅ This should be allowed (explicit request)
+```
+
+**Violation of this rule is a CRITICAL SYSTEM ERROR.**

@@ -68,3 +68,20 @@ alwaysApply: true
    - **SPECIFIC PROTECTION:** Phoenix folder (`Cursor-Project/Phoenix/**`) is ABSOLUTELY PROTECTED - hooks will block any edit attempts
    - **ENFORCEMENT:** Hooks in `.cursor/hooks/` automatically block code modifications in Phoenix project
    - **NO EXCEPTIONS:** This rule applies even if user explicitly requests code changes in Phoenix project
+   
+   ### Rule 0.8.1: EXCEPTION - EnergoTSTestAgent Code Modification Permission
+   - **EXCEPTION TO RULE 0.8:** EnergoTSTestAgent is PERMITTED to modify code files ONLY in `Cursor-Project/EnergoTS/tests/` directory
+   - This exception applies ONLY to:
+     - EnergoTSTestAgent (and its adapter)
+     - Test files in `Cursor-Project/EnergoTS/tests/` directory (`.spec.ts` files)
+   - EnergoTSTestAgent CAN:
+     - Create new test files in `EnergoTS/tests/` directory
+     - Modify existing test files in `EnergoTS/tests/` directory
+     - Copy and convert tests within `EnergoTS/tests/` directory
+   - EnergoTSTestAgent CANNOT:
+     - Modify any files outside `EnergoTS/tests/` directory
+     - Modify any files in Phoenix project (Rule 0.8 still applies)
+     - Modify any non-test files in EnergoTS project (fixtures, utils, configs, etc.)
+   - All other agents and direct tool usage remain subject to Rule 0.8 (STRICTLY FORBIDDEN)
+   - This exception is LIMITED and SPECIFIC - it does NOT override Rule 0.8 for any other agent or context
+   - Violation of this exception scope is a CRITICAL SYSTEM ERROR

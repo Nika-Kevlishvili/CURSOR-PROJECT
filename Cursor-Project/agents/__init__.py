@@ -24,7 +24,8 @@ from .Main import (
     get_test_agent, TestAgent, TestType, TestStatus,
     get_bug_finder_agent, BugFinderAgent,
     get_test_case_generator_agent, TestCaseGeneratorAgent,
-    get_production_data_reader_agent, ProductionDataReaderAgent
+    get_production_data_reader_agent, ProductionDataReaderAgent,
+    get_energo_ts_test_agent, EnergoTSTestAgent
 )
 
 # Support Agents
@@ -47,7 +48,8 @@ from .Adapters import (
     TestAgentAdapter,
     EnvironmentAccessAdapter,
     TestCaseGeneratorAdapter,
-    ProductionDataReaderAdapter
+    ProductionDataReaderAdapter,
+    EnergoTSTestAgentAdapter
 )
 
 # Services
@@ -74,6 +76,8 @@ __all__ = [
     'TestCaseGeneratorAgent',
     'get_production_data_reader_agent',
     'ProductionDataReaderAgent',
+    'get_energo_ts_test_agent',
+    'EnergoTSTestAgent',
     'get_gitlab_update_agent',
     'GitLabUpdateAgent',
     'get_agent_registry',
@@ -83,6 +87,7 @@ __all__ = [
     'TestAgentAdapter',
     'TestCaseGeneratorAdapter',
     'ProductionDataReaderAdapter',
+    'EnergoTSTestAgentAdapter',
     'get_integration_service',
     'IntegrationService',
     'get_postman_collection_generator',

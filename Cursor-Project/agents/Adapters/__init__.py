@@ -13,6 +13,7 @@ from .test_agent_adapter import TestAgentAdapter
 from .environment_access_adapter import EnvironmentAccessAdapter
 from .test_case_generator_adapter import TestCaseGeneratorAdapter
 from .production_data_reader_adapter import ProductionDataReaderAdapter
+from .energo_ts_test_agent_adapter import EnergoTSTestAgentAdapter
 
 __all__ = [
     'PhoenixExpertAdapter',
@@ -20,4 +21,5 @@ __all__ = [
     'EnvironmentAccessAdapter',
     'TestCaseGeneratorAdapter',
     'ProductionDataReaderAdapter',
+    'EnergoTSTestAgentAdapter',
 ]

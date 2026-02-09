@@ -19,6 +19,7 @@ Subagents delegate work to specialized contexts. Each subagent here maps to this
 | **environment-access.md** | EnvironmentAccessAgent (Rule 10)     | Access Dev or Dev2: navigation, login, environment selection. |
 | **postman-collection.md** | PostmanCollectionGenerator (Rule 8, 17) | Generate Postman collections; consult PhoenixExpert first; save to postman/. |
 | **test-case-generator.md** | TestCaseGeneratorAgent | Generate test cases from bug/task; Confluence (MCP) + codebase; save to test_cases/. |
+| **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8.1) | Manage EnergoTS Playwright tests: study, create, copy, convert tests in EnergoTS/tests/. CAN modify test files (Rule 0.8.1 exception). |
 
 ---
 
