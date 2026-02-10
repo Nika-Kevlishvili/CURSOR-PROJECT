@@ -25,7 +25,8 @@ from .Main import (
     get_bug_finder_agent, BugFinderAgent,
     get_test_case_generator_agent, TestCaseGeneratorAgent,
     get_production_data_reader_agent, ProductionDataReaderAgent,
-    get_energo_ts_test_agent, EnergoTSTestAgent
+    get_energo_ts_test_agent, EnergoTSTestAgent,
+    get_jira_description_writer_agent, JiraDescriptionWriterAgent
 )
 
 # Support Agents
@@ -49,7 +50,8 @@ from .Adapters import (
     EnvironmentAccessAdapter,
     TestCaseGeneratorAdapter,
     ProductionDataReaderAdapter,
-    EnergoTSTestAgentAdapter
+    EnergoTSTestAgentAdapter,
+    JiraDescriptionWriterAdapter
 )
 
 # Services
@@ -78,6 +80,8 @@ __all__ = [
     'ProductionDataReaderAgent',
     'get_energo_ts_test_agent',
     'EnergoTSTestAgent',
+    'get_jira_description_writer_agent',
+    'JiraDescriptionWriterAgent',
     'get_gitlab_update_agent',
     'GitLabUpdateAgent',
     'get_agent_registry',
@@ -88,6 +92,7 @@ __all__ = [
     'TestCaseGeneratorAdapter',
     'ProductionDataReaderAdapter',
     'EnergoTSTestAgentAdapter',
+    'JiraDescriptionWriterAdapter',
     'get_integration_service',
     'IntegrationService',
     'get_postman_collection_generator',

@@ -6,6 +6,7 @@ This package contains adapter classes that implement the Agent interface:
 - TestAgentAdapter: Adapter for TestAgent
 - EnvironmentAccessAdapter: Adapter for EnvironmentAccessAgent
 - TestCaseGeneratorAdapter: Adapter for TestCaseGeneratorAgent
+- JiraDescriptionWriterAdapter: Adapter for JiraDescriptionWriterAgent
 """
 
 from .phoenix_expert_adapter import PhoenixExpertAdapter
@@ -14,6 +15,7 @@ from .environment_access_adapter import EnvironmentAccessAdapter
 from .test_case_generator_adapter import TestCaseGeneratorAdapter
 from .production_data_reader_adapter import ProductionDataReaderAdapter
 from .energo_ts_test_agent_adapter import EnergoTSTestAgentAdapter
+from .jira_description_writer_adapter import JiraDescriptionWriterAdapter
 
 __all__ = [
     'PhoenixExpertAdapter',
@@ -22,4 +24,5 @@ __all__ = [
     'TestCaseGeneratorAdapter',
     'ProductionDataReaderAdapter',
     'EnergoTSTestAgentAdapter',
+    'JiraDescriptionWriterAdapter',
 ]
