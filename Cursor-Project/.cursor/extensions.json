@@ -1,12 +1,17 @@
 {
   "recommendations": [
+    "vscjava.vscode-java-debug",
+    "vscjava.vscode-java-pack",
+    "vscjava.vscode-gradle",
+    "redhat.java",
+    "vscjava.vscode-maven",
+    "vscjava.vscode-java-dependency",
+    "ms-playwright.playwright",
+    "custom.playwright-custom",
+    "ms-vscode.powershell",
     "ms-python.python",
     "ms-python.debugpy",
-    "anysphere.cursorpyright",
-    "vscjava.vscode-gradle",
-    "ms-vscode.powershell",
-    "ms-playwright.playwright",
-    "custom.playwright-custom"
+    "anysphere.cursorpyright"
   ],
   "installed": [
     {
@@ -36,6 +41,26 @@
     {
       "id": "custom.playwright-custom",
       "version": "1.1.17-custom"
+    },
+    {
+      "id": "vscjava.vscode-java-debug",
+      "version": "latest"
+    },
+    {
+      "id": "vscjava.vscode-java-pack",
+      "version": "latest"
+    },
+    {
+      "id": "redhat.java",
+      "version": "latest"
+    },
+    {
+      "id": "vscjava.vscode-maven",
+      "version": "latest"
+    },
+    {
+      "id": "vscjava.vscode-java-dependency",
+      "version": "latest"
     }
   ]
 }
