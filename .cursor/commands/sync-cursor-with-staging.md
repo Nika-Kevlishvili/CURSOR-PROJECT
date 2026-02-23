@@ -2,13 +2,18 @@
 
 ## Description
 
-Updates the `cursor` branch in EnergoTS project from `Backend-staging` branch, **automatically resolves all merge conflicts** (keeping cursor branch changes), and preserves all local uncommitted changes.
+Smart sync command that:
+- **If uncommitted changes exist**: Downloads the latest valid version of the `cursor` branch from remote and preserves uncommitted changes
+- **If no uncommitted changes**: Updates the `cursor` branch from `Backend-staging` branch with automatic conflict resolution
 
 ## Usage
 
 ```powershell
-# From workspace root or any directory
+# From workspace root or any directory (smart mode - downloads cursor if uncommitted changes exist)
 .cursor/commands/sync-cursor-with-staging.ps1
+
+# Force Backend-staging sync even with uncommitted changes
+.cursor/commands/sync-cursor-with-staging.ps1 -ForceSync
 
 # Or with full path
 & "C:\Users\N.kevlishvili\Cursor\.cursor\commands\sync-cursor-with-staging.ps1"
@@ -16,8 +21,16 @@ Updates the `cursor` branch in EnergoTS project from `Backend-staging` branch, *
 
 ## What It Does
 
+### Smart Mode (Default - when uncommitted changes exist):
 1. **Checks current branch** - Verifies you're on `cursor` branch
-2. **Stashes local changes** - Saves all uncommitted changes (including untracked files)
+2. **Detects uncommitted changes** - Checks for modified/untracked files
+3. **Downloads latest cursor branch** - Fetches `origin/cursor` from remote
+4. **Updates local cursor** - Resets local cursor to match remote cursor (if newer)
+5. **Preserves uncommitted changes** - Keeps all your local modifications
+
+### Backend-Staging Sync Mode (when no uncommitted changes OR -ForceSync):
+1. **Checks current branch** - Verifies you're on `cursor` branch
+2. **Stashes local changes** - Saves all uncommitted changes (if any)
 3. **Fetches from Backend-staging** - Downloads latest changes from `origin/Backend-staging`
 4. **Merges Backend-staging into cursor** - Merges `origin/Backend-staging` into `cursor` branch
 5. **Auto-resolves conflicts** - Automatically resolves all conflicts by keeping cursor branch versions
@@ -26,56 +39,63 @@ Updates the `cursor` branch in EnergoTS project from `Backend-staging` branch, *
 
 ## Key Features
 
-- ✅ **Automatic conflict resolution** - Keeps cursor branch changes for all conflicts
-- ✅ **Preserves all local changes** - Uses `git stash` to save your work
-- ✅ **Handles all conflict types**:
-  - Both modified → Keeps cursor version
-  - Deleted by us → Keeps deleted
-  - Deleted by them → Keeps file (cursor version)
-- ✅ **Automatic merge commit** - Completes merge automatically after resolving conflicts
+- ✅ **Smart behavior** - Downloads cursor branch if uncommitted changes exist, otherwise syncs with Backend-staging
+- ✅ **Preserves uncommitted changes** - Always keeps your local modifications
+- ✅ **Latest cursor version** - Downloads the most recent valid cursor branch from remote
+- ✅ **Automatic conflict resolution** - When syncing with Backend-staging, keeps cursor branch changes
+- ✅ **Flexible modes** - Use `-ForceSync` to force Backend-staging sync even with uncommitted changes
 - ✅ **Status reporting** - Shows what files were modified
 
 ## Example Output
 
+### Smart Mode (with uncommitted changes):
 ```
 === Syncing cursor branch with Backend-staging ===
 
 Current branch: cursor
 Source branch: Backend-staging
 
-Found uncommitted changes. Stashing to preserve them...
+Found uncommitted changes:
 Modified files:
   M fixtures/baseFixture.ts
   M tests/setup/global-setup.ts
-Changes stashed successfully.
 
-Fetching latest changes from Backend-staging branch...
-Fetch completed successfully.
+Downloading latest valid version of cursor branch...
+Your uncommitted changes will be preserved.
 
-Merging origin/Backend-staging into cursor branch...
-Merge conflicts detected. Auto-resolving by keeping cursor branch changes...
+Fetching latest cursor branch from remote...
+Remote cursor branch has newer commits. Updating local cursor branch...
+Restoring your uncommitted changes...
+Uncommitted changes restored successfully.
 
-  Keeping cursor version: .gitignore
-  Keeping cursor version: package.json
-  Keeping cursor version: playwright.config.ts
-  Keeping deleted: fixtures/Config_POD.ts
-  Keeping file: .github/workflows/main.yml
-
-All conflicts resolved. Completing merge...
-Merge completed successfully.
-
-Restoring your local changes...
-Local changes restored successfully.
-
-=== Sync completed ===
+=== Download completed ===
 
 Current status:
 M  fixtures/baseFixture.ts
 M  tests/setup/global-setup.ts
 
+Cursor branch updated to latest valid version from remote.
+Your uncommitted changes have been preserved.
+```
+
+### Backend-Staging Sync Mode (no uncommitted changes):
+```
+=== Syncing cursor branch with Backend-staging ===
+
+Current branch: cursor
+Source branch: Backend-staging
+
+No uncommitted changes found.
+
+Fetching latest changes from Backend-staging branch...
+Fetch completed successfully.
+
+Merging origin/Backend-staging into cursor branch...
+Merge completed successfully (no conflicts).
+
+=== Sync completed ===
+
 Cursor branch has been synced with Backend-staging.
-All conflicts resolved (kept cursor branch changes).
-Your local changes have been preserved.
 ```
 
 ## Conflict Resolution Strategy
@@ -99,9 +119,11 @@ This ensures your cursor branch changes are preserved while incorporating new ch
 
 - This command only works in EnergoTS directory
 - It requires you to be on `cursor` branch (switches automatically if needed)
-- All local changes are preserved using git stash
-- Untracked files are also stashed and restored
-- **All conflicts are resolved automatically** by keeping cursor branch versions
+- **Smart behavior**: If uncommitted changes exist, downloads latest cursor branch instead of syncing with Backend-staging
+- **Use `-ForceSync`** to force Backend-staging sync even with uncommitted changes
+- All local changes are always preserved
+- Untracked files are also preserved
+- **When syncing with Backend-staging**: All conflicts are resolved automatically by keeping cursor branch versions
 - **Specifically designed for Backend-staging branch** - Use `sync-cursor-with-main` for main branch
 
 ## Comparison with Other Commands

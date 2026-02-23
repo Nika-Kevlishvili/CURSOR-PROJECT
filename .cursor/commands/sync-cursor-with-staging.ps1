@@ -1,9 +1,9 @@
 # sync-cursor-with-staging.ps1
-# Command: Updates cursor branch from staging, auto-resolves conflicts (keeping cursor versions), and preserves local changes
+# Command: Downloads latest valid version of cursor branch if uncommitted changes exist, otherwise syncs with Backend-staging
 # Usage: .cursor/commands/sync-cursor-with-staging.ps1
 
 param(
-    [switch]$KeepCursorChanges = $true  # By default, keep cursor branch changes
+    [switch]$ForceSync = $false  # Force sync even with uncommitted changes
 )
 
 $ErrorActionPreference = "Stop"
@@ -47,11 +47,87 @@ try {
     
     if ($hasUncommittedChanges) {
         Write-Host ""
-        Write-Host "Found uncommitted changes. Stashing to preserve them..." -ForegroundColor Yellow
+        Write-Host "Found uncommitted changes:" -ForegroundColor Yellow
         Write-Host "Modified files:" -ForegroundColor Gray
         git status --short | ForEach-Object { Write-Host "  $_" -ForegroundColor Gray }
+        Write-Host ""
         
-        # Stash uncommitted changes (including untracked files)
+        if (-not $ForceSync) {
+            Write-Host "Downloading latest valid version of cursor branch..." -ForegroundColor Cyan
+            Write-Host "Your uncommitted changes will be preserved." -ForegroundColor Yellow
+            Write-Host ""
+            
+            # Fetch latest cursor branch from remote
+            Write-Host "Fetching latest cursor branch from remote..." -ForegroundColor Cyan
+            git fetch origin cursor
+            if ($LASTEXITCODE -ne 0) {
+                Write-Error "Failed to fetch cursor branch from remote"
+                exit 1
+            }
+            
+            # Check if remote cursor branch exists and is different
+            $remoteCursorExists = git show-ref --verify --quiet refs/remotes/origin/cursor
+            if ($LASTEXITCODE -eq 0) {
+                $localCursorCommit = git rev-parse cursor
+                $remoteCursorCommit = git rev-parse origin/cursor
+                
+                if ($localCursorCommit -ne $remoteCursorCommit) {
+                    Write-Host "Remote cursor branch has newer commits. Updating local cursor branch..." -ForegroundColor Cyan
+                    
+                    # Stash uncommitted changes temporarily
+                    git stash push -u -m "Temp stash before updating cursor - $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+                    if ($LASTEXITCODE -ne 0) {
+                        Write-Error "Failed to stash changes"
+                        exit 1
+                    }
+                    
+                    # Reset cursor branch to match remote cursor
+                    git reset --hard origin/cursor
+                    if ($LASTEXITCODE -ne 0) {
+                        Write-Error "Failed to reset cursor branch to remote version"
+                        git stash pop 2>&1 | Out-Null
+                        exit 1
+                    }
+                    
+                    # Restore uncommitted changes
+                    Write-Host "Restoring your uncommitted changes..." -ForegroundColor Cyan
+                    git stash pop
+                    if ($LASTEXITCODE -ne 0) {
+                        Write-Host ""
+                        Write-Host "Warning: Some conflicts occurred while restoring uncommitted changes." -ForegroundColor Yellow
+                        Write-Host "Please resolve them manually." -ForegroundColor Yellow
+                    } else {
+                        Write-Host "Uncommitted changes restored successfully." -ForegroundColor Green
+                    }
+                    
+                    Write-Host ""
+                    Write-Host "=== Download completed ===" -ForegroundColor Cyan
+                    Write-Host ""
+                    Write-Host "Current status:" -ForegroundColor Yellow
+                    git status --short
+                    Write-Host ""
+                    Write-Host "Cursor branch updated to latest valid version from remote." -ForegroundColor Green
+                    Write-Host "Your uncommitted changes have been preserved." -ForegroundColor Green
+                    
+                    return
+                } else {
+                    Write-Host "Local cursor branch is already up to date with remote." -ForegroundColor Green
+                    Write-Host ""
+                    Write-Host "Current status:" -ForegroundColor Yellow
+                    git status --short
+                    Write-Host ""
+                    Write-Host "No update needed. Your uncommitted changes are preserved." -ForegroundColor Green
+                    
+                    return
+                }
+            } else {
+                Write-Host "Remote cursor branch not found. Proceeding with Backend-staging sync..." -ForegroundColor Yellow
+            }
+        } else {
+            Write-Host "ForceSync enabled. Stashing changes and proceeding with Backend-staging sync..." -ForegroundColor Yellow
+        }
+        
+        # Stash uncommitted changes (for Backend-staging sync)
         git stash push -u -m "Stashed before syncing cursor with Backend-staging - $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
         if ($LASTEXITCODE -ne 0) {
             Write-Error "Failed to stash changes"
