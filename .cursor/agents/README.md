@@ -18,7 +18,8 @@ Subagents delegate work to specialized contexts. Each subagent here maps to this
 | **git-sync.md**        | GitLabUpdateAgent / git_sync_workflow.mdc | Sync/update/checkout Phoenix repos from GitLab; !sync, !update &lt;branch&gt;, !checkout &lt;branch&gt;; READ-ONLY (no push). |
 | **environment-access.md** | EnvironmentAccessAgent (Rule 10)     | Access Dev or Dev2: navigation, login, environment selection. |
 | **postman-collection.md** | PostmanCollectionGenerator (Rule 8, 17) | Generate Postman collections; consult PhoenixExpert first; save to postman/. |
-| **test-case-generator.md** | TestCaseGeneratorAgent | Generate test cases from bug/task; Confluence (MCP) + codebase; save to test_cases/. |
+| **test-case-generator.md** | TestCaseGeneratorAgent | Generate test cases from bug/task; Confluence (MCP) + codebase; optional cross_dependency_data for better coverage; save to test_cases/. |
+| **cross-dependency-finder.md** | CrossDependencyFinderAgent | Find cross-dependencies (modules, services, APIs, DB) for a scope; output shared with test-case-generator for more robust test cases. |
 | **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8.1) | Manage EnergoTS Playwright tests: study, create, copy, convert tests in EnergoTS/tests/. CAN modify test files (Rule 0.8.1 exception). |
 
 ---
@@ -30,6 +31,8 @@ Subagents delegate work to specialized contexts. Each subagent here maps to this
 - **Skills:** `.cursor/skills/` (phoenix-agent-workflow, phoenix-bug-validation, phoenix-reporting, phoenix-database, etc.)
 
 Subagent prompts reference these so delegated work follows the same IntegrationService, PhoenixExpert consultation, and reporting requirements.
+
+**Combined workflow for better test coverage:** Run **cross-dependency-finder** for a scope (bug/task), then run **test-case-generator** with `context['cross_dependency_data']` set to the finder's output so test cases cover integration points and dependencies.
 
 ---
 

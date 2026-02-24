@@ -1,5 +1,6 @@
 ---
 name: report-generator
+model: default
 description: Generates and saves agent reports and summary after a task (Rule 0.6). Maps to ReportingService. Use when the user or parent agent requests a report, or after any task that involved agents.
 ---
 

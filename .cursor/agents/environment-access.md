@@ -1,5 +1,6 @@
 ---
 name: environment-access
+model: default
 description: Handles access to Dev or Dev2 environments (navigation, login, environment selection). Maps to EnvironmentAccessAgent. Use when the user asks to open dev, access environment, login to portal, or switch to dev/dev2.
 ---
 

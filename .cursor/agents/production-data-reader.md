@@ -1,5 +1,6 @@
 ---
 name: production-data-reader
+model: default
 description: Reads and analyzes ANY production database data and explains step-by-step how entities were created. Analyzes ANY entity type (liability, receivable, payment, deposit, invoice, contract, etc.), relationships, dependencies, and provides detailed traceability. Use when user asks about ANY production data, how an entity was created for ANY entity, or wants to query/analyze production database tables.
 ---
 

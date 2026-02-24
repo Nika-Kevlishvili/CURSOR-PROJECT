@@ -1,6 +1,6 @@
 ---
 name: phoenix-commands
-description: Maps user intent to Cursor commands and workflows (Phoenix query, consult, report, bug-validate, sync). Use when the user asks how to run a workflow or which command to use for Phoenix, consultation, reports, bug validation, or Git sync.
+description: Maps user intent to Cursor commands and workflows (Phoenix query, consult, report, bug-validate, sync, cross-dependency-finder, test-case-generate). Use when the user asks how to run a workflow or which command to use for Phoenix, consultation, reports, bug validation, Git sync, cross-dependencies, or test case generation.
 ---
 
 # Phoenix Commands and Workflows
@@ -23,6 +23,8 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 | Validate a bug report | **Bug-validate** → BugFinderAgent (Rule 32) | bug-validate.md |
 | Production data analysis (liability offsets, receivable history) | **Production-data-reader** → ProductionDataReaderAgent (Rule PDR.0) | production-data-reader.md, production_data_reader.mdc |
 | Fetch/update/checkout Phoenix repos from GitLab | **Sync** → git_sync_workflow (read-only) | sync.md, git_sync_workflow.mdc |
+| Find cross-dependencies (what could break) | **Cross-dependency-finder** → CrossDependencyFinderAgent (Rule 35) | cross-dependency-finder.md |
+| Generate test cases from bug/task | **Test-case-generate** → cross-dependency-finder FIRST, then TestCaseGeneratorAgent (Rule 35) | test-case-generate.md |
 
 ## Phoenix (phoenix.md)
 
@@ -60,6 +62,18 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 - **Triggers:** `!sync`, `!update <branch>`, `!checkout <branch>`.
 - **Rule:** Follow `.cursor/rules/git_sync_workflow.mdc` exactly; use git commands (no Python agent for sync). Read-only (fetch/checkout/merge only; no push).
 
+## Cross-dependency-finder (cross-dependency-finder.md)
+
+- **When:** User asks for cross-dependencies, what could break, or dependency analysis for a scope (bug/task/feature). Also run automatically before test case generation (Rule 35).
+- **Flow:** IntegrationService → PhoenixExpert (if needed) → Define scope → Codebase + Confluence → Output (upstream, downstream, what_could_break) → optional JSON to `Cursor-Project/cross_dependencies/`.
+- **Output:** Structured report; "Agents involved: CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
+
+## Test-case-generate (test-case-generate.md)
+
+- **When:** User asks to generate test cases for a bug or task.
+- **Flow:** Rule 35: (1) Run **cross-dependency-finder** first → (2) Run **test-case-generator** with `context['cross_dependency_data']`. Save to `Cursor-Project/generated_test_cases/` in hierarchical format (Object/Flows tree).
+- **Output:** Test cases in human-readable hierarchy; "Agents involved: TestCaseGeneratorAgent, CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
+
 ## Summary
 
 - Phoenix questions → Phoenix command + PhoenixExpert.
@@ -68,5 +82,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 - Bug check → Bug-validate + BugFinderAgent.
 - Production data → Production-data-reader + ProductionDataReaderAgent.
 - Git sync → Sync command + git_sync_workflow.mdc.
+- Cross-dependencies → Cross-dependency-finder command + CrossDependencyFinderAgent.
+- Test cases → Test-case-generate command (cross-dependency-finder first, then TestCaseGeneratorAgent).
 
 All commands assume rules are loaded first (Rule 0.0) from `.cursor/rules/`.

@@ -1,5 +1,6 @@
 ---
 name: database-query
+model: default
 description: Runs PostgreSQL queries via MCP using the correct environment (Dev, Dev2, Test, PreProd, Prod). Maps to database_workflow rules. Use when the user asks about database, contracts, POD identifier, or a specific environment.
 ---
 

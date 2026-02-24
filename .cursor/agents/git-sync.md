@@ -1,5 +1,6 @@
 ---
 name: git-sync
+model: default
 description: Syncs Phoenix projects from GitLab (fetch, update branch, checkout). Maps to GitLabUpdateAgent / git_sync_workflow. Use when the user asks to sync, update, or checkout Phoenix repos from GitLab. READ-ONLY (no push).
 ---
 

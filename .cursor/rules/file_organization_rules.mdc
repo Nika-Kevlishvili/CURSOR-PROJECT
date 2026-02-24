@@ -13,6 +13,7 @@ alwaysApply: true
     - `docs/` - Documentation files (.md, .txt, .rst)
     - `User story/` - User stories, flows, and related documentation files (.txt, .drawio, .md) - **MANDATORY location for ALL story/flow files** (located at project root)
     - `reports/YYYY-MM-DD/` - Report files (.md) - **ALWAYS use CURRENT date dynamically** (located at project root: `Cursor-Project/reports/YYYY-MM-DD/`)
+    - `generated_test_cases/` - **Hierarchical test cases** (human-readable tree: Object/Flows → entity/flow → action/subflow → …); see TEST_CASE_GENERATOR_AGENT.md and test-case-generator agent (located at project root: `Cursor-Project/generated_test_cases/`)
     - `postman/` - Postman collections and related files
     - `Phoenix/` - Phoenix Java project files
     
@@ -44,5 +45,7 @@ alwaysApply: true
     - ❌ `custom_agent.py` in root → Should be `agents/custom_agent.py`
     - ❌ `MY_STORY.txt` in docs root → Should be `User story/MY_STORY.txt`
     - ❌ `MY_STORY.txt` in root → Should be `User story/MY_STORY.txt`
+    - ✅ `Cursor-Project/generated_test_cases/Object/customer/Create.md` (hierarchical test cases – human-readable tree)
+    - ✅ `Cursor-Project/generated_test_cases/Flows/Billing/Standard/For_volumes/Profile.md`
     
     Violation is a CRITICAL SYSTEM ERROR.

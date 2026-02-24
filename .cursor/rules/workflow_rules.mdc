@@ -130,3 +130,25 @@ alwaysApply: true
     - See `.cursor/rules/database_workflow.mdc` for complete workflow, query patterns, and best practices
     - ALWAYS connect before executing queries
     - Violation is a CRITICAL SYSTEM ERROR.
+
+# TEST CASE GENERATION WORKFLOW RULE [CRITICAL]
+
+35. [CRITICAL] When the user requests creation of test cases (for a bug, task, or feature), ALWAYS follow this mandatory workflow:
+    
+    **Step 1: Run Cross-Dependency Finder FIRST (MANDATORY)**
+    - Delegate to **cross-dependency-finder** subagent (or run CrossDependencyFinderAgent) for the same scope (bug/task/feature).
+    - Cross-dependency-finder MAY consult **PhoenixExpert** to study the project, scope, and dependencies (Rule 8).
+    - Cross-dependency-finder identifies: upstream/downstream dependencies, code references, and **what could break as a result of changes** (callers, consumers, contract usage, integration points).
+    - Obtain the structured output (scope, entry_points, upstream, downstream, impact_risk / what_could_break, integration_points, etc.).
+    
+    **Step 2: Pass result to Test Case Generator**
+    - Call **test-case-generator** (TestCaseGeneratorAgent) with the same prompt and with `context['cross_dependency_data']` set to the cross-dependency-finder output.
+    - Test-case-generator uses this data to produce test cases that cover integration points, regression risks, and anything that could break.
+    
+    **Workflow summary:**
+    1. User requests test cases → run **cross-dependency-finder** (consults PhoenixExpert when needed for project/scope understanding).
+    2. Cross-dependency-finder returns report (including "what could break") → pass to **test-case-generator**.
+    3. Test-case-generator generates test cases using prompt + Confluence + codebase + cross_dependency_data.
+    
+    - NEVER skip the cross-dependency-finder step when test case creation is requested.
+    - Violation is a CRITICAL SYSTEM ERROR.

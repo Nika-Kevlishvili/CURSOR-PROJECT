@@ -1,5 +1,6 @@
 ---
 name: postman-collection
+model: default
 description: Generates Postman collections for Phoenix APIs. Maps to PostmanCollectionGenerator. Consults PhoenixExpert first for endpoints and context. Use when the user asks to generate a Postman collection or export API tests.
 ---
 

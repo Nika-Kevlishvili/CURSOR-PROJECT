@@ -84,38 +84,51 @@ result = agent.generate_test_cases(
 - **Positive Test Cases:** Validation rules, boundary conditions, happy path
 - **Negative Test Cases:** Error handling, null checks, invalid inputs
 
-## Output Format
+## Output Format – Hierarchical and Human-Readable (MANDATORY)
 
-The agent generates test cases in text format, which includes:
+Generated test cases MUST be **maximally understandable for humans** and saved in a **hierarchical folder structure** under **Cursor-Project/generated_test_cases/**.
 
-1. **Confluence Documentation References** - Relevant Confluence pages
-2. **Codebase Analysis** - References found from the codebase
-3. **Test Cases Extracted from Code** - Test scenarios extracted from code
-4. **Standard Test Cases** - Standard test cases
+- **Object/** – Domain entities and actions (e.g. customer → Create, Edit, Delete, View; contract → …).
+- **Flows/** – Business/technical flows and variants (e.g. Billing → Standard → For_volumes → scale, Profile; interim; …).
+- **Leaf level:** One `.md` file per logical group (e.g. `Object/customer/Create.md`, `Flows/Billing/Standard/For_volumes/Profile.md`). Each file contains one or more test cases with clear title, steps, and expected result.
+- Full specification: **Cursor-Project/docs/TEST_CASES_HIERARCHY_FORMAT.md**.
 
-## Example Output Structure
+The agent output also includes:
+1. **Confluence Documentation References** – Relevant Confluence pages
+2. **Codebase Analysis** – References found from the codebase
+3. **Mapping** – Which test-case groups were written to which paths (e.g. Object/customer/Create.md, Flows/Billing/Standard/…)
+
+## Example folder tree
 
 ```
-# Test Cases for Bug Verification
+Cursor-Project/generated_test_cases/
+  Object/
+    customer/
+      Create.md
+      Edit.md
+      ...
+  Flows/
+    Billing/
+      Standard/
+        For_volumes/
+          scale.md
+          Profile.md
+        interim.md
+      ...
+```
 
-## Bug Description
-[bug description]
+## Example leaf file content (e.g. Object/customer/Create.md)
 
-## Confluence Documentation References
-[relevant Confluence pages]
+```markdown
+# Customer – Create
 
-## Codebase Analysis
-[code references]
+## TC-1: Create customer with valid identifier
+- **Steps:** 1. Open customer form. 2. Enter valid identifier. 3. Save.
+- **Expected:** Customer is created and visible in list.
 
-## Test Cases Extracted from Code
-### Positive Test Cases
-[validation, boundary conditions]
-### Negative Test Cases
-[error handling, null checks]
-
-## Test Cases
-### Test Case 1: Verify Bug Reproduction
-...
+## TC-2: Create customer – identifier too long
+- **Steps:** 1. Open customer form. 2. Enter identifier longer than max. 3. Save.
+- **Expected:** Validation error; customer not created.
 ```
 
 ## Integration with Other Agents
@@ -125,7 +138,8 @@ TestCaseGeneratorAgent is integrated into AgentRegistry and can be used by other
 ## Configuration
 
 The agent uses:
-- `test_cases/` directory to store test cases
+- **Cursor-Project/generated_test_cases/** – hierarchical test cases (Object/Flows tree; see TEST_CASES_HIERARCHY_FORMAT.md). Use this folder for the human-readable format.
+- Legacy flat output (if any) may still use `test_cases/`; prefer `generated_test_cases/` for new generation.
 - ReportingService for activity logging
 - IntegrationService for GitLab/Jira integration
 

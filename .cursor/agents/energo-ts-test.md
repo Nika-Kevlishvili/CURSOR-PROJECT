@@ -1,5 +1,6 @@
 ---
 name: energo-ts-test
+model: default
 description: Manages EnergoTS Playwright test automation. Studies, analyzes, copies, converts, and creates tests in EnergoTS project. Maps to EnergoTSTestAgent. Use when the user asks about EnergoTS tests, wants to create/modify tests, or needs test analysis.
 ---
 

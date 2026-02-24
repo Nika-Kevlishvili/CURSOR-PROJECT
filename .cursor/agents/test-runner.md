@@ -1,5 +1,6 @@
 ---
 name: test-runner
+model: default
 description: Runs tests and test-related tasks. Maps to TestAgent. Consults PhoenixExpert first for validation rules and context. Use when the user asks to run tests, execute test suite, or validate test coverage.
 ---
 
