@@ -70,12 +70,13 @@ try {
         Write-Host ""
     }
     
-    # Step 5: Check if branch is ahead of remote
-    git fetch origin experiments 2>&1 | Out-Null
-    $localCommit = git rev-parse experiments
-    $remoteCommit = git rev-parse origin/experiments 2>&1
+    # Step 5: Check if branch is ahead of remote (use cmd to avoid PowerShell treating git stderr as error)
+    $null = cmd /c "git fetch origin experiments 2>&1"
+    $remoteCommit = git rev-parse origin/experiments 2>$null
+    $hasRemoteRef = ($LASTEXITCODE -eq 0)
+    $localCommit = git rev-parse experiments 2>$null
     
-    if ($LASTEXITCODE -eq 0 -and $localCommit -ne $remoteCommit) {
+    if ($hasRemoteRef -and $localCommit -and $remoteCommit -and $localCommit -ne $remoteCommit) {
         # Step 6: Push to remote (with retry and optional token for non-interactive push)
         Write-Host "Pushing changes to origin/experiments..." -ForegroundColor Cyan
         $pushSuccess = $false
