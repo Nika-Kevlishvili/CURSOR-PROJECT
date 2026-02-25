@@ -85,7 +85,7 @@ try {
         $repoPath = if ($useToken) { $Matches[1] -replace '\.git$','' } else { $null }
         $pushTarget = if ($repoPath) { "https://$($env:GITHUB_TOKEN)@github.com/$repoPath.git" } else { "origin" }
         for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
-            $pushOut = & { $ErrorActionPreference = 'Continue'; git push $pushTarget experiments 2>&1 }
+            $pushOut = cmd /c "git push $pushTarget experiments 2>&1"
             $pushExit = $LASTEXITCODE
             if ($pushExit -eq 0) {
                 $pushSuccess = $true
