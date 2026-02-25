@@ -84,9 +84,13 @@ try {
         $useToken = $env:GITHUB_TOKEN -and $remoteUrl -match 'https?://(?:[^@]+@)?github\.com/([^/]+/[^/\s]+?)(?:\.git)?$'
         $repoPath = if ($useToken) { $Matches[1] -replace '\.git$','' } else { $null }
         $pushTarget = if ($repoPath) { "https://$($env:GITHUB_TOKEN)@github.com/$repoPath.git" } else { "origin" }
+        $prevErrorAction = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
         for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
             $pushOut = git push $pushTarget experiments 2>&1
-            if ($LASTEXITCODE -eq 0) {
+            $pushExit = $LASTEXITCODE
+            $ErrorActionPreference = $prevErrorAction
+            if ($pushExit -eq 0) {
                 $pushSuccess = $true
                 break
             }
@@ -102,10 +106,11 @@ try {
                     Write-Host "To enable push without manual run, set GITHUB_TOKEN (GitHub PAT with repo scope) in your environment." -ForegroundColor Yellow
                     Write-Host "Example (PowerShell): " -NoNewline; Write-Host '[System.Environment]::SetEnvironmentVariable("GITHUB_TOKEN", "ghp_...", "User")' -ForegroundColor Gray
                 }
-                Write-Error "Failed to push to origin/experiments after $maxAttempts attempts"
+                Pop-Location
                 exit 1
             }
         }
+        $ErrorActionPreference = $prevErrorAction
         if ($pushSuccess) {
             Write-Host "Changes pushed successfully." -ForegroundColor Green
             Write-Host ""
