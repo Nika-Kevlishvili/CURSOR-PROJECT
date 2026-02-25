@@ -84,12 +84,9 @@ try {
         $useToken = $env:GITHUB_TOKEN -and $remoteUrl -match 'https?://(?:[^@]+@)?github\.com/([^/]+/[^/\s]+?)(?:\.git)?$'
         $repoPath = if ($useToken) { $Matches[1] -replace '\.git$','' } else { $null }
         $pushTarget = if ($repoPath) { "https://$($env:GITHUB_TOKEN)@github.com/$repoPath.git" } else { "origin" }
-        $prevErrorAction = $ErrorActionPreference
-        $ErrorActionPreference = 'Continue'
         for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
-            $pushOut = git push $pushTarget experiments 2>&1
+            $pushOut = & { $ErrorActionPreference = 'Continue'; git push $pushTarget experiments 2>&1 }
             $pushExit = $LASTEXITCODE
-            $ErrorActionPreference = $prevErrorAction
             if ($pushExit -eq 0) {
                 $pushSuccess = $true
                 break
@@ -110,7 +107,6 @@ try {
                 exit 1
             }
         }
-        $ErrorActionPreference = $prevErrorAction
         if ($pushSuccess) {
             Write-Host "Changes pushed successfully." -ForegroundColor Green
             Write-Host ""
