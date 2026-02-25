@@ -2,7 +2,7 @@
 
 ## Description
 
-**Pull EnergoTS** fetches and updates the local EnergoTS repository to the **latest `cursor` branch from remote** (origin/cursor). Works **whether the EnergoTS folder is empty, missing, or already has content** — if the folder is missing or not a git repo, the script can clone the repository first (when a repo URL is provided).
+**Pull EnergoTS** only **downloads and syncs locally** with the remote: it fetches the latest `cursor` branch from remote (origin/cursor) and updates your local copy to match. **It never pushes** — it is read-only for the remote. Use **Push EnergoTS** when you want to update GitHub's EnergoTS cursor branch with your local version.
 
 ## Usage
 
@@ -41,9 +41,9 @@ $env:ENERGOTS_REPO_URL = "https://github.com/your-org/EnergoTS.git"
 
 ## Safety
 
+- **Download and local sync only; never pushes.** Use Push EnergoTS to update GitHub with local changes.
 - **EnergoTS branch lock:** Only the `cursor` branch is used; no switch to other branches.
 - Local uncommitted changes are stashed and then restored.
-- Read-only regarding remote: only fetch and local merge/reset; no push.
 
 ## Example Output
 
