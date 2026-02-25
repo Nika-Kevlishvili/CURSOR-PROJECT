@@ -76,15 +76,40 @@ try {
     $remoteCommit = git rev-parse origin/experiments 2>&1
     
     if ($LASTEXITCODE -eq 0 -and $localCommit -ne $remoteCommit) {
-        # Step 6: Push to remote
+        # Step 6: Push to remote (with retry and optional token for non-interactive push)
         Write-Host "Pushing changes to origin/experiments..." -ForegroundColor Cyan
-        git push origin experiments
-        if ($LASTEXITCODE -ne 0) {
-            Write-Error "Failed to push to origin/experiments"
-            exit 1
+        $pushSuccess = $false
+        $maxAttempts = 3
+        $remoteUrl = git remote get-url origin 2>$null
+        $useToken = $env:GITHUB_TOKEN -and $remoteUrl -match 'https?://(?:[^@]+@)?github\.com/([^/]+/[^/\s]+?)(?:\.git)?$'
+        $repoPath = if ($useToken) { $Matches[1] -replace '\.git$','' } else { $null }
+        $pushTarget = if ($repoPath) { "https://$($env:GITHUB_TOKEN)@github.com/$repoPath.git" } else { "origin" }
+        for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+            $pushOut = git push $pushTarget experiments 2>&1
+            if ($LASTEXITCODE -eq 0) {
+                $pushSuccess = $true
+                break
+            }
+            if ($attempt -lt $maxAttempts) {
+                Write-Host "  Push attempt $attempt failed, retrying in 2s..." -ForegroundColor Yellow
+                Start-Sleep -Seconds 2
+            } else {
+                Write-Host ""
+                Write-Host "Push failed. Output:" -ForegroundColor Red
+                $pushOut | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+                Write-Host ""
+                if (-not $env:GITHUB_TOKEN) {
+                    Write-Host "To enable push without manual run, set GITHUB_TOKEN (GitHub PAT with repo scope) in your environment." -ForegroundColor Yellow
+                    Write-Host "Example (PowerShell): " -NoNewline; Write-Host '[System.Environment]::SetEnvironmentVariable("GITHUB_TOKEN", "ghp_...", "User")' -ForegroundColor Gray
+                }
+                Write-Error "Failed to push to origin/experiments after $maxAttempts attempts"
+                exit 1
+            }
         }
-        Write-Host "Changes pushed successfully." -ForegroundColor Green
-        Write-Host ""
+        if ($pushSuccess) {
+            Write-Host "Changes pushed successfully." -ForegroundColor Green
+            Write-Host ""
+        }
     } else {
         Write-Host "Branch is already up to date with origin/experiments." -ForegroundColor Green
         Write-Host ""

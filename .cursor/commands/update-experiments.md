@@ -44,11 +44,23 @@ Use this command when you want to:
 .cursor/commands/update-experiments.ps1 -Message "Add new feature X"
 ```
 
+## One-time setup: push without manual run
+
+For push to succeed when you run the command (e.g. from Cursor) without typing credentials, set **GITHUB_TOKEN** once:
+
+1. Create a GitHub Personal Access Token (PAT): GitHub → Settings → Developer settings → Personal access tokens → Generate (scope: `repo`).
+2. Set it in your environment (PowerShell, persistent for your user):
+   ```powershell
+   [System.Environment]::SetEnvironmentVariable("GITHUB_TOKEN", "ghp_YourTokenHere", "User")
+   ```
+3. Restart Cursor (or any app that needs to see the new env var). After that, `update-experiments` will use this token for push and you won’t need to run `git push` manually.
+
 ## Notes
 
 - Automatically switches to experiments branch if needed
 - Preserves all local changes
 - Only pushes if branch is ahead of remote
+- Push is retried up to 3 times on failure
 - Shows status after completion
 
 ## Related Commands
