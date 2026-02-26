@@ -106,7 +106,7 @@ foreach ($repo in $repos) {
             continue
         }
         if ($behind -gt 0 -and $ahead -gt 0) {
-            Write-Host "  Branch: $currentBranch | Diverged (fetch OK; merge skipped — resolve manually)" -ForegroundColor Yellow
+            Write-Host "  Branch: $currentBranch | Diverged (fetch OK; merge skipped - resolve manually)" -ForegroundColor Yellow
             if ($stashed) { git stash pop 2>&1 | Out-Null }
             continue
         }
