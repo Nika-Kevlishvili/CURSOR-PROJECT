@@ -86,7 +86,7 @@ try {
         $repoPath = if ($useToken) { $Matches[1] -replace '\.git$','' } else { $null }
         $pushTarget = if ($repoPath) { "https://$($env:GITHUB_TOKEN)@github.com/$repoPath.git" } else { "origin" }
         for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
-            $pushOut = cmd /c "git push $pushTarget experiments 2>&1"
+            $pushResult = cmd /c "git push $pushTarget experiments 2>&1"
             $pushExit = $LASTEXITCODE
             if ($pushExit -eq 0) {
                 $pushSuccess = $true
@@ -98,7 +98,7 @@ try {
             } else {
                 Write-Host ""
                 Write-Host "Push failed. Output:" -ForegroundColor Red
-                $pushOut | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+                $pushResult | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
                 Write-Host ""
                 if (-not $env:GITHUB_TOKEN) {
                     Write-Host "To enable push without manual run, set GITHUB_TOKEN (GitHub PAT with repo scope) in your environment." -ForegroundColor Yellow
