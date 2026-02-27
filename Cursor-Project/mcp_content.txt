@@ -1,18 +1,10 @@
 {
   "mcpServers": {
     "Confluence": {
-      "url": "https://mcp.atlassian.com/v1/sse",
-      "env": {
-        "CONFLUENCE_API_TOKEN": "ATATT3xFfGF07YMedQjm-WEsVKYFyLcUWf5kVFVDmkO-33_mUQjkz7GODwV63pWDyZ1ae-_d_ZUcaPc_XJfGzQPpb-cK1iAxVTcEafx348Uay1OccQ2BAq0yff8G7JSqiGB74XTSkLfu0QYQZfXe1lsWksMcdyzZgfWebm3iGXfXAApjbYjIeEI=89A2E2B9",
-        "CONFLUENCE_EMAIL": "n.kevlishvili@asterbit.io"
-      }
+      "url": "https://mcp.atlassian.com/v1/sse"
     },
     "Jira": {
-      "url": "https://mcp.atlassian.com/v1/sse",
-      "env": {
-        "JIRA_API_TOKEN": "ATATT3xFfGF07YMedQjm-WEsVKYFyLcUWf5kVFVDmkO-33_mUQjkz7GODwV63pWDyZ1ae-_d_ZUcaPc_XJfGzQPpb-cK1iAxVTcEafx348Uay1OccQ2BAq0yff8G7JSqiGB74XTSkLfu0QYQZfXe1lsWksMcdyzZgfWebm3iGXfXAApjbYjIeEI=89A2E2B9",
-        "JIRA_EMAIL": "n.kevlishvili@asterbit.io"
-      }
+      "url": "https://mcp.atlassian.com/v1/sse"
     },
     "PostgreSQLTest": {
       "command": "npx",
@@ -96,3 +88,5 @@
     }
   }
 }
+
+
