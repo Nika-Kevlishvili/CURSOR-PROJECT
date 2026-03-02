@@ -13,7 +13,8 @@ alwaysApply: true
     - `docs/` - Documentation files (.md, .txt, .rst)
     - `User story/` - User stories, flows, and related documentation files (.txt, .drawio, .md) - **MANDATORY location for ALL story/flow files** (located at project root)
     - `reports/YYYY-MM-DD/` - Report files (.md) - **ALWAYS use CURRENT date dynamically** (located at project root: `Cursor-Project/reports/YYYY-MM-DD/`)
-    - `generated_test_cases/` - **Hierarchical test cases** (human-readable tree: Object/Flows → entity/flow → action/subflow → …); see TEST_CASE_GENERATOR_AGENT.md and test-case-generator agent (located at project root: `Cursor-Project/generated_test_cases/`)
+    - `test_cases/` - **Test cases (MANDATORY layout)** – thematic folders: **Objects/** (by entity: Product_contract, Service_contract, …) and **Flows/** (by flow: Contract_termination, Billing, …) as **siblings**; README in each folder. See `.cursor/rules/test_cases_structure.mdc`. Path: `Cursor-Project/test_cases/`
+    - `generated_test_cases/` - Legacy/alternative; when using test cases, prefer `test_cases/` with structure in test_cases_structure.mdc (located at project root: `Cursor-Project/test_cases/` or `Cursor-Project/generated_test_cases/`)
     - `postman/` - Postman collections and related files
     - `Phoenix/` - Phoenix Java project files
     
@@ -45,7 +46,8 @@ alwaysApply: true
     - ❌ `custom_agent.py` in root → Should be `agents/custom_agent.py`
     - ❌ `MY_STORY.txt` in docs root → Should be `User story/MY_STORY.txt`
     - ❌ `MY_STORY.txt` in root → Should be `User story/MY_STORY.txt`
-    - ✅ `Cursor-Project/generated_test_cases/Object/customer/Create.md` (hierarchical test cases – human-readable tree)
-    - ✅ `Cursor-Project/generated_test_cases/Flows/Billing/Standard/For_volumes/Profile.md`
+    - ✅ `Cursor-Project/test_cases/Objects/Product_contract/Create.md` (test cases – thematic: Objects = by entity, Flows = by flow; see test_cases_structure.mdc)
+    - ✅ `Cursor-Project/test_cases/Flows/Contract_termination/Multi_version_termination_date.md`
+    - ✅ `Cursor-Project/generated_test_cases/Object/customer/Create.md` (legacy hierarchical test cases)
     
     Violation is a CRITICAL SYSTEM ERROR.
