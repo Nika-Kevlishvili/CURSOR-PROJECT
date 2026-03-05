@@ -65,6 +65,10 @@ All rules are organized into the following thematic files:
    - File organization rules
    - TestAgent consultation requirements
 
+10. **jira_bug_agent.mdc** - Jira bug agent (Rule JIRA.0)
+   - Experiments board only; template (Summary, Description, Steps, Expected, Actual, Environment, Technical details, Example)
+   - PROHIBITED: creating bugs in Phoenix delivery
+
 ## 🔄 Rules Loading
 
 All rules with `alwaysApply: true` are automatically loaded and applied. The rules loader reads ALL `.mdc` files from `.cursor/rules/` directory.
@@ -91,8 +95,9 @@ All rules with `alwaysApply: true` are automatically loaded and applied. The rul
 7. **Rule 8:** ALWAYS consult PhoenixExpert before tasks
 8. **Rule 11:** ALWAYS call IntegrationService.update_before_task()
 9. **Rule 32:** ALL bug validation → ALWAYS use BugFinderAgent
-10. **Rule PDR.0:** Production data questions → ALWAYS use ProductionDataReaderAgent
-11. **Rule 34:** ALL agents MUST be organized in subdirectories
+10. **Rule JIRA.0:** Jira bug agent → Experiments board ONLY; NEVER create bugs in Phoenix delivery
+11. **Rule PDR.0:** Production data questions → ALWAYS use ProductionDataReaderAgent
+12. **Rule 34:** ALL agents MUST be organized in subdirectories
 
 ---
 

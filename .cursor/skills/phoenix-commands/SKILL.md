@@ -1,6 +1,6 @@
 ---
 name: phoenix-commands
-description: Maps user intent to Cursor commands and workflows (Phoenix query, consult, report, bug-validate, sync, cross-dependency-finder, test-case-generate). Use when the user asks how to run a workflow or which command to use for Phoenix, consultation, reports, bug validation, Git sync, cross-dependencies, or test case generation.
+description: Maps user intent to Cursor commands and workflows (Phoenix query, consult, report, bug-validate, jira-bug, sync, cross-dependency-finder, test-case-generate). Use when the user asks how to run a workflow or which command to use for Phoenix, consultation, reports, bug validation, Jira bug on Experiments board, Git sync, cross-dependencies, or test case generation.
 ---
 
 # Phoenix Commands and Workflows
@@ -21,6 +21,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 | Before doing a task (validation, approval) | **Consult** → PhoenixExpert consultation (Rule 8) | consult.md |
 | After any task | **Report** → Save agent + summary reports (Rule 0.6) | report.md |
 | Validate a bug report | **Bug-validate** → BugFinderAgent (Rule 32) | bug-validate.md |
+| Create/rewrite Jira bug (Experiments board only) | **Jira-bug** → jira-bug-template (Rule JIRA.0; NOT Phoenix delivery) | jira-bug.md |
 | Production data analysis (liability offsets, receivable history) | **Production-data-reader** → ProductionDataReaderAgent (Rule PDR.0) | production-data-reader.md, production_data_reader.mdc |
 | Fetch/update/checkout Phoenix repos from GitLab | **Sync** → git_sync_workflow (read-only) | sync.md, git_sync_workflow.mdc |
 | Find cross-dependencies (what could break) | **Cross-dependency-finder** → CrossDependencyFinderAgent (Rule 35) | cross-dependency-finder.md |
@@ -49,6 +50,13 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 - **When:** User wants to validate or verify a bug report.
 - **Flow:** IntegrationService → BugFinderAgent → Confluence → Codebase → analysis → report file.
 - **Output:** Structured Bug Validation Analysis; "Agents involved: BugFinderAgent, PhoenixExpert".
+
+## Jira-bug (jira-bug.md)
+
+- **When:** User wants to create a Jira bug or rewrite an existing one on the **Experiments** board. **Not for Phoenix delivery** (Rule JIRA.0).
+- **Triggers:** `!jira-bug`, "create Jira bug", "Experiments board bug".
+- **Flow:** Confirm Experiments board → extract/ask details → fill template (Summary, Description, Steps, Expected, Actual, Environment, Technical details, Example).
+- **Output:** Ready-to-paste Jira text; "Agents involved: jira-bug (Jira bug agent)".
 
 ## Production-data-reader (production-data-reader.md)
 
@@ -80,6 +88,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 - Before task → Consult + PhoenixExpert approval.
 - After task → Report (agent + summary).
 - Bug check → Bug-validate + BugFinderAgent.
+- Jira bug (Experiments only) → Jira-bug command + jira-bug-template; never Phoenix delivery.
 - Production data → Production-data-reader + ProductionDataReaderAgent.
 - Git sync → Sync command + git_sync_workflow.mdc.
 - Cross-dependencies → Cross-dependency-finder command + CrossDependencyFinderAgent.
