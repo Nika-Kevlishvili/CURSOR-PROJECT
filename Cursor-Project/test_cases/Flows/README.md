@@ -7,6 +7,6 @@ Each subfolder is one flow. The folder name tells you what type of tests are ins
 | Subfolder | Content |
 |-----------|--------|
 | **Contract_termination/** | Contract termination flow: multi-version termination date, POD-based vs term-based termination, scheduler overwrite, Basic Parameter display, audit trail, test endpoints. |
-| *(add more as needed)* | e.g. Billing, Payment, Registration, etc. |
+| **Billing/** | Billing flow: reversal billing run, credit note summary/detailed data (price components, total volumes), export, manual credit/debit note, regenerate-compensations. |
 
 Inside each flow folder: one or more `.md` files per **scenario or variant** (e.g. `Multi_version_termination_date.md`, regression tests).

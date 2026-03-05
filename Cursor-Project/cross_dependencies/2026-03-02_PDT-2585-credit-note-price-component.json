@@ -1,0 +1,77 @@
+{
+  "scope": "PDT-2585: Billing - No Price component in credit note; total volumes should be empty not 0 (reversal billing run, credit note summary)",
+  "bug_id": "PDT-2585",
+  "environment": "Test (testapps.energo-pro.bg)",
+  "test_data": {
+    "invoice_id": 39650,
+    "credit_note_id": 46045
+  },
+  "entry_points": [
+    "PATCH /billing-run/test-reversal/{id} (testReversal - dry run)",
+    "PATCH /billing-run/test-reversal-save/{id} (saveData - persist credit note)",
+    "GET /invoice/summary-data (listSummaryData - tab 2 summary)",
+    "GET /invoice/detailed-data (listDetailedData - tab 3 detailed)",
+    "GET /invoice (preview_5 - invoice/credit note preview)"
+  ],
+  "upstream": [
+    { "type": "api", "name": "billing-run-controller", "usage": "test-reversal and test-reversal-save create credit note from invoice" },
+    { "type": "api", "name": "invoice-controller", "usage": "summary-data and detailed-data return rows for invoice and credit note documents" },
+    { "type": "db", "name": "billing run documents / invoice credit note", "usage": "Credit note document (e.g. id=46045) and its summary/detailed rows" },
+    { "type": "service", "name": "BillingRunDocumentSummaryDataModel / price component models", "usage": "Summary and detailed row data; price component names from master data" },
+    { "type": "config", "name": "InvoiceReversalBillingRunParametersResponse", "usage": "Reversal run parameters (e.g. fileId)" }
+  ],
+  "downstream": [
+    { "type": "ui", "name": "Invoice/credit note detail page (tabs 2 and 3)", "usage": "Displays summary and detailed data; totalVolumes shown as 0 vs empty" },
+    { "type": "ui", "name": "Invoice/credit note preview", "usage": "GET /invoice with document id" },
+    { "type": "api", "name": "GET /invoice/generate-csv/{id}", "usage": "Export may use same summary/detailed data" },
+    { "type": "api", "name": "GET /invoice/download-document", "usage": "PDF download may rely on document summary/detailed structure" },
+    { "type": "api", "name": "GET /invoice/export/{billingId}", "usage": "Export uses same data" },
+    { "type": "api", "name": "PATCH /invoice/regenerate-compensations", "usage": "May depend on document summary/detailed structure" }
+  ],
+  "shared": [
+    "SummaryDataRowParameters / SummaryDataRowParametersResponse / SummaryDataRowParametersViewResponse",
+    "DetailedDataRowParameters / DetailedDataRowParametersResponse / DetailedDataRowParametersViewResponse",
+    "PageInvoiceSummaryDataResponse",
+    "PageInvoiceDetailedDataResponse",
+    "Manual credit or debit note flow (same summary/detailed tabs and DTOs)"
+  ],
+  "data_entities": [
+    "billing_run",
+    "billing_run_document (invoice / credit note)",
+    "invoice (id=39650)",
+    "credit_note (id=46045)",
+    "price_component (names for summary/detailed rows)",
+    "summary_rows (priceComponentOrPriceComponentGroupOrItem, totalVolumes)",
+    "detailed_rows (priceComponent, totalVolumes)"
+  ],
+  "integration_points": [
+    "PATCH /billing-run/test-reversal/{id} and test-reversal-save/{id} with run reversing invoice 39650 -> credit note 46045",
+    "GET /invoice/summary-data with credit note id 46045 (price component names present; totalVolumes empty not 0)",
+    "GET /invoice/detailed-data with credit note id 46045",
+    "GET /invoice with document id 46045 (preview)",
+    "Frontend-backend contract: SummaryDataRowParametersResponse totalVolumes empty vs 0 for credit notes",
+    "Manual credit/debit note flow using same summary/detailed APIs",
+    "Invoice correction and reversal flow (Confluence: reverse all connected debit/credit notes for PODs)"
+  ],
+  "what_could_break": [
+    { "item": "Credit note summary tab (frontend)", "location": "Invoice/credit note detail page tabs 2 and 3", "reason": "Displays price component and totalVolumes; fix may change empty vs 0 handling" },
+    { "item": "Credit note preview", "location": "GET /invoice consumer", "reason": "Same document model; preview must stay consistent with summary/detailed" },
+    { "item": "Backend summary/detailed builder", "location": "Services building SummaryDataRowParameters for invoice and credit note", "reason": "Shared builder for both document types; change for credit note totalVolumes or price component can affect invoices if not guarded" },
+    { "item": "Manual credit or debit note", "location": "Manual credit or debit note - Create (Confluence)", "reason": "Uses same billing run 2nd tab summary data and same DTOs" },
+    { "item": "Invoice correction flow", "location": "Reversal of invoice / correction process", "reason": "Reuses same summary/detailed models; reversal creates credit note from invoice" },
+    { "item": "CSV/PDF export and regenerate-compensations", "location": "GET /invoice/generate-csv, download-document, export; PATCH regenerate-compensations", "reason": "Depend on document summary/detailed structure" }
+  ],
+  "impact_risk": "Medium-High. Single API and DTO set used for both invoice and credit note; frontend and export flows depend on summary/detailed response. Changes to totalVolumes (empty vs 0) or price component names for credit notes must not break invoice display or manual credit/debit note.",
+  "confluence_sources": [
+    { "title": "Invoice details: 1,2,3 tabs", "pageId": "122978306", "relevance": "Total volumes: if price component group - always empty; summary/detailed from billing run tabs" },
+    { "title": "Phase 2 - Invoice correction - process", "pageId": "585730223", "relevance": "Reversal invoice = opposite document; for invoice create credit note" },
+    { "title": "Manual credit or debit note - Create", "pageId": "151945240", "relevance": "Three tabs: Basic, Summary data, Detailed data; Reversal of invoice type" },
+    { "title": "Service Order Invoice - preview", "pageId": "25526337", "relevance": "Summary Data tab: separate rows for each price component/group" },
+    { "title": "Product contract Invoice - Preview", "pageId": "24969696", "relevance": "Total volumes per price component; group of price component display rules" }
+  ],
+  "api_contract_notes": [
+    "SummaryDataRowParameters: priceComponentOrPriceComponentGroupOrItem (1-1024), totalVolumes (numeric), unitOfMeasuresForTotalVolumes, unitPrice, value.",
+    "DetailedDataRowParameters: priceComponent (1-1024), totalVolumes, pointOfDelivery, periodFrom/To.",
+    "For credit note summary: totalVolumes should be empty (null/omitted) not 0 per business rule; price component names must be present."
+  ]
+}
