@@ -179,3 +179,21 @@ alwaysApply: true
     **Summary:** First look up merges for the Jira key → if a merge exists, sync that branch so local code reflects it → then run cross-dependency analysis and include merge-derived technical details in the report. This applies in every chat when the user asks for cross-dependencies or test cases for a specific bug/task.
     
     - Violation is a CRITICAL SYSTEM ERROR.
+
+# ENERGOTS PLAYWRIGHT TEST RUN RULE [CRITICAL]
+
+36. [CRITICAL] When the user asks to **run** Playwright tests from EnergoTS (e.g. "run newly created test", "run test REG-123", "run test from GitHub"), ALWAYS follow the EnergoTS Playwright Test Run workflow and run tests **only from the `cursor` branch** (Rule ENERGOTS.0).
+    
+    **MANDATORY: Use energo-ts-run workflow**
+    - Route to the **energo-ts-run** agent/command (`.cursor/agents/energo-ts-run.md`, `.cursor/commands/energo-ts-run.md`).
+    - Resolve which test(s) to run from the user prompt (newly created, Jira key, file path, or domain).
+    - **Cursor branch only:** Before running, in `Cursor-Project/EnergoTS/` verify current branch; if not `cursor`, run `git checkout cursor`. Tests MUST run only from the `cursor` branch. Never run Playwright tests from main or any other branch in EnergoTS.
+    - Execute: `npx playwright test <target>` from `Cursor-Project/EnergoTS/`.
+    - No code modification; only run tests. Save report to `Cursor-Project/reports/YYYY-MM-DD/` (Rule 0.6).
+    
+    **When to apply**
+    - User asks to run a Playwright test, run the newly created test, run a specific test (by name/Jira key/file), or run tests from EnergoTS/GitHub.
+    
+    **Reference:** Rule ENERGOTS.0 (`.cursor/rules/energots_branch_lock.mdc`) – EnergoTS locked to `cursor` branch only.
+    
+    - Violation is a CRITICAL SYSTEM ERROR.

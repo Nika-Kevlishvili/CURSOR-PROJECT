@@ -21,6 +21,7 @@ Subagents delegate work to specialized contexts. Each subagent here maps to this
 | **test-case-generator.md** | TestCaseGeneratorAgent | Generate test cases from bug/task; Confluence (MCP) + codebase; optional cross_dependency_data for better coverage; save to test_cases/. |
 | **cross-dependency-finder.md** | CrossDependencyFinderAgent | Find cross-dependencies (modules, services, APIs, DB) for a scope; output shared with test-case-generator for more robust test cases. |
 | **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8.1) | Manage EnergoTS Playwright tests: study, create, copy, convert tests in EnergoTS/tests/. CAN modify test files (Rule 0.8.1 exception). |
+| **energo-ts-run.md** | EnergoTS Playwright Test Runner | Run specific Playwright tests from EnergoTS (local repo from GitHub) by prompt: newly created, Jira key, file path, or domain. Execute `npx playwright test`; no code modification. |
 | **jira-bug.md** | jira_bug_agent.mdc (Rule JIRA.0) | Create/rewrite Jira bugs using Experiments board template only. Must NOT create bugs in Phoenix delivery. |
 
 ---
