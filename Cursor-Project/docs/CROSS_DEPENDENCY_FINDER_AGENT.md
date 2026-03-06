@@ -17,6 +17,13 @@ The **Cross-Dependency Finder** agent discovers cross-dependencies (modules, ser
 
 ## Workflow
 
+### 0. Merge-first and conditional sync (Rule 35a) [MANDATORY when user gives a Jira/bug/task]
+
+- **First:** Use the **Jira key** (e.g. BUG-1234) or task/bug identifier from the user.
+- **Look up merge history** for that key: local git (commit/merge messages, branch names) and, where available, GitLab (MRs for that Jira, merged state, target branch). Identify which branch(es), commits/MRs, and files/modules changed.
+- **If a merge exists for this Jira** on a target branch (e.g. dev, dev2): run a **targeted sync** for that branch only (same safe read-only flow as `!sync` / `!update <branch>` per `.cursor/rules/git_sync_workflow.mdc`). If no merge found, skip sync.
+- **Technical details:** Add merge-derived info (MR/merge commit, changed files/modules, short summary) to the output as **technical_details** for the report and for test-case-generator.
+
 ### 1. Before running
 
 - Call **IntegrationService.update_before_task()** (Rule 11).
@@ -61,7 +68,8 @@ Structured payload that the test-case-generator can use:
   "integration_points": ["list of integration points to test"],
   "what_could_break": [
     { "item": "caller/consumer/contract/user", "location": "file or service", "reason": "why change could affect it" }
-  ]
+  ],
+  "technical_details": "merge/MR info when user provided Jira/bug/task (Rule 35a): which MR/merge, changed files/modules, short summary"
 }
 ```
 

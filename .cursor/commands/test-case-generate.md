@@ -14,9 +14,9 @@ Use this command when the user asks to:
 
 ### Step 1: Cross-Dependency Finder (MANDATORY – do not skip)
 
-1. Run **cross-dependency-finder** for the same scope (bug/task/feature).
+1. Run **cross-dependency-finder** for the same scope (bug/task/feature). It MUST follow **Rule 35a**: (a) look up **merge history** for the Jira/bug/task key (local git + GitLab); (b) if a merge exists for that Jira, run a **targeted sync** for that branch only; (c) include merge-derived **technical_details** in the output.
 2. Cross-dependency-finder may consult **PhoenixExpert** to study the project.
-3. Obtain the structured output (including **what_could_break**).
+3. Obtain the structured output (including **what_could_break** and **technical_details** from merges).
 4. Pass this output to the next step as `context['cross_dependency_data']`.
 
 ### Step 2: Test Case Generator

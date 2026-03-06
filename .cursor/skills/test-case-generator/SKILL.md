@@ -18,8 +18,8 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 
 **Do not skip:** When the user requests test case creation, run **cross-dependency-finder** first, then **test-case-generator** with the finder's output.
 
-1. **Step 1 – Cross-dependency-finder:** Same scope (bug/task/feature). Finder may consult PhoenixExpert. Obtain structured output (including what_could_break).
-2. **Step 2 – Test-case-generator:** Call with `context['cross_dependency_data'] = <finder output>`, plus Confluence data and codebase_findings.
+1. **Step 1 – Cross-dependency-finder:** Same scope (bug/task/feature). Finder MUST follow Rule 35a when user gives Jira/bug/task: merge lookup → conditional sync if merge exists → technical_details in output. Finder may consult PhoenixExpert. Obtain structured output (including what_could_break and technical_details).
+2. **Step 2 – Test-case-generator:** Call with `context['cross_dependency_data'] = <finder output>` (includes technical_details from merges when applicable), plus Confluence data and codebase_findings.
 
 ## Workflow (test-case-generator part)
 
@@ -28,7 +28,7 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 - Prompt (bug or task description).
 - prompt_type: 'bug' | 'task'.
 - confluence_data (from MCP Confluence search).
-- context: { codebase_findings, **cross_dependency_data** } (cross_dependency_data is mandatory when user requested test cases).
+- context: { codebase_findings, **cross_dependency_data** } (cross_dependency_data is mandatory when user requested test cases; may include technical_details from merge/MR for the Jira key per Rule 35a).
 
 ### 2. Confluence + codebase
 

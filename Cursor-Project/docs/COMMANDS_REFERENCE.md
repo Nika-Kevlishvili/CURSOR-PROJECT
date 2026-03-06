@@ -193,27 +193,28 @@ This document lists every Cursor command and what it can do in detail.
 
 ## 14. Cross-dependency finder
 
-**Trigger:** Dependency analysis, “what could break”, or before test case generation (Rule 35)
+**Trigger:** Dependency analysis, “what could break”, or before test case generation (Rule 35). **Rule 35a** applies when user gives a Jira/bug/task key.
 
 **What it can do:**
+- **Merge-first (Rule 35a):** When user provides a Jira/bug/task key: (1) Look up merge history for that key (local git + GitLab). (2) If a merge exists for that Jira on a target branch, run a targeted sync for that branch only (same as `!update <branch>`). (3) Add merge-derived **technical_details** (MR/merge, changed files/modules) to the output.
 - Call IntegrationService; consult PhoenixExpert if needed.
 - Define scope (bug/task/feature): entry points, modules, services.
 - Find cross-dependencies: code (imports, APIs, DB, callers, consumers) and Confluence.
-- Produce structured report: scope, entry_points, upstream, downstream, shared, data_entities, integration_points, **what_could_break**.
+- Produce structured report: scope, entry_points, upstream, downstream, shared, data_entities, integration_points, **what_could_break**, **technical_details** (from merges when Jira provided).
 - Optionally save to `Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope>.json`.
 - Output is passed to test-case-generator as `context['cross_dependency_data']`.
 - Read-only.
 
-**When to use:** “Find cross dependencies for…”, “What could break if we change…”, or before generating test cases.
+**When to use:** “Find cross dependencies for…”, “What could break if we change…”, “Cross dependencies for BUG-1234”, or before generating test cases.
 
 ---
 
 ## 15. Test case generate
 
-**Trigger:** “Generate test cases for this bug/task/feature” (Rule 35)
+**Trigger:** “Generate test cases for this bug/task/feature” (Rule 35). Cross-dependency-finder follows Rule 35a (merge lookup → conditional sync → technical_details).
 
 **What it can do:**
-- **Step 1 (mandatory):** Run cross-dependency-finder for the same scope; get report including what_could_break; pass as `context['cross_dependency_data']`.
+- **Step 1 (mandatory):** Run cross-dependency-finder for the same scope (including Rule 35a: merge lookup for Jira key, conditional sync if merge exists, technical_details); get report including what_could_break and technical_details; pass as `context['cross_dependency_data']`.
 - **Step 2:** Call IntegrationService; consult PhoenixExpert; search Confluence and codebase; call TestCaseGeneratorAgent with prompt, confluence_data, codebase_findings, cross_dependency_data.
 - Save test cases in hierarchical format under `Cursor-Project/generated_test_cases/`:
   - **Object/** – e.g. customer → Create, Edit.
