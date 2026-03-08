@@ -1,0 +1,80 @@
+---
+alwaysApply: true
+---
+
+# HandsOff – Lessons Learned (DO NOT repeat)
+
+These problems occurred in HandsOff runs and MUST NOT happen again. Apply whenever running HandsOff or generating Playwright/test-case reports.
+
+## 1. Test cases – MUST be in required folder and MUST exist on disk
+
+- **Problem:** Test cases were reported as "created" by a subagent but were **not** actually written to the workspace (folder or files missing).
+- **Rule:** Test cases for a flow (e.g. Invoice cancellation) MUST be saved under **`Cursor-Project/test_cases/Flows/<Flow_name>/`** (or `Objects/<Entity>/` for entity-based). Use thematic names with underscores (e.g. `Invoice_cancellation`).
+- **Rule:** After test case generation, **verify** that the folder and .md files exist (e.g. list or read the path). If missing, **write them directly** (create the folder, create each .md file with the content). Do not rely only on subagent output.
+- **Rule:** Update **`test_cases/Flows/README.md`** (or Objects/README.md) to include the new flow/entity in the table.
+
+Reference: `.cursor/rules/test_cases_structure.mdc`.
+
+---
+
+## 2. Playwright tests – MUST be created and visible (e.g. in tests/cursor)
+
+- **Problem:** User believed Playwright tests were "not created"; tests existed only in one path and were not obvious for cursor-branch runs.
+- **Rule:** Create Playwright spec for the Jira ticket in **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`** (e.g. `NT-1-invoice-cancellation.spec.ts`) so tests are clearly present and runnable on the **cursor** branch (e.g. `npx playwright test tests/cursor/NT-1-invoice-cancellation.spec.ts` or `--grep "NT-1"`).
+- **Rule:** After creating the spec, **verify** the file exists (read or list). If the orchestrator did not create it, **write the spec file directly** with at least: describe/title containing the Jira key, and tests that cover the ticket (e.g. invoice cancellation endpoint, payment cancel flow).
+- **Rule:** Do not assume "subagent created it" without checking the workspace.
+
+Reference: Rule ENERGOTS.0 (cursor branch only); `.cursor/commands/energo-ts-run.md`.
+
+---
+
+## 3. Report – ONLY Playwright test results (detailed per test)
+
+- **Problem:** Report contained cross-deps, artifacts, test case file lists, etc. User wanted **only** Playwright test results.
+- **Rule:** The HandsOff report saved as **`Cursor-Project/reports/YYYY-MM-DD/{JIRA_KEY}.md`** MUST be focused **only on Playwright test results**:
+  - **Per test:** (1) Test name/title, (2) **What is verified** (detailed: which endpoint, which assertions, which behaviour), (3) **Steps** (brief list), (4) **Result:** Passed / Failed / Not run, (5) **If failed:** reason (assertion message, status code, response body or error snippet).
+- **Rule:** Do not fill the report with cross-dependency output, test case file listings, or generic "artifacts" sections. Optional: one short line with spec file path and how to run (e.g. `npx playwright test --grep "NT-1"`).
+
+Reference: Rule 0.6 (report generation); `.cursor/commands/hands-off.md` Step 6.
+
+---
+
+## 4. Slack – Send FULL report (not a short summary)
+
+- **Problem:** The message sent to Slack was too brief; user wanted the **full report**.
+- **Rule:** When sending the HandsOff result to Slack (user-slack MCP), send the **full report content** (the same as in `reports/YYYY-MM-DD/{JIRA_KEY}.md`). If the message length limit applies (e.g. 5000 chars), send the full Playwright-results section at minimum (each test: what is verified, result, failure reason). Do not send only a one-paragraph summary.
+
+Reference: `.cursor/commands/hands-off.md` Step 7; user-slack MCP `slack_send_message`.
+
+---
+
+## 5. Running tests – GitHub / cursor branch
+
+- **Problem:** Tests were not run (e.g. missing token locally); user wanted runs via GitHub.
+- **Rule:** Document in the report how to run the tests (cursor branch, `npx playwright test --grep "<JIRA_KEY>"` or path to spec). If running locally is not possible (e.g. missing token), state clearly that tests must be run via GitHub/CI and ensure the spec is in a path that CI runs (e.g. `tests/cursor/`).
+
+Reference: Rule ENERGOTS.0; Rule 36 (energo-ts-run).
+
+---
+
+## 6. Fix "tests not run" (missing token.json / envVariables.json)
+
+- **Problem:** Playwright failed with `ENOENT: token.json` or `envVariables.json not found` because global setup had not run or .env was missing.
+- **Rule:** The project uses **.env** for portal auth. **Global-setup** reads .env, logs in, and **writes** `fixtures/token.json` and `fixtures/envVariables.json`. If **.env already exists** (e.g. for portal), only run:
+  1. Run global setup: `npx playwright test --project=setup` (creates token.json and envVariables.json).
+  2. Run tests: `npx playwright test --grep "<JIRA_KEY>"` or `npx playwright test tests/cursor/<file>.spec.ts`.
+- **Rule:** If .env does not exist, create it from `.env.example` (PORTAL_USER, PASSWORD, DEVAUTHAPI or TESTAUTHAPI, BASE_URL) then run steps 1–2.
+- **Rule:** **GitHub:** EnergoTS repo is connected to GitHub (origin). To run tests via GitHub: push the **cursor** branch; run the Playwright workflow if the repo has one (e.g. Actions tab), or run the same commands in CI. Use the existing GitHub connection; do not assume token/env are in the workspace when running in automation.
+
+Reference: `EnergoTS/.env.example`, `EnergoTS/fixtures/login.ts`, `EnergoTS/tests/setup/global-setup.ts`, `EnergoTS/playwright.config.ts`.
+
+---
+
+## Summary checklist (HandsOff)
+
+- [ ] Test cases: written to `test_cases/Flows/<Flow>/` (or Objects); folder and .md files verified on disk; Flows/README.md updated.
+- [ ] Playwright: spec created in `EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts` (or equivalent); file verified on disk.
+- [ ] Report: content is **only** Playwright test results (per test: what is verified, steps, result, failure reason).
+- [ ] Slack: full report (or full Playwright section) sent, not a short summary.
+
+Violation: repeat of the above problems is a workflow error; correct before considering HandsOff complete.

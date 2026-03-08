@@ -1,6 +1,6 @@
 ---
 name: phoenix-commands
-description: Maps user intent to Cursor commands and workflows (Phoenix query, consult, report, bug-validate, jira-bug, sync, cross-dependency-finder, test-case-generate, energo-ts-run). Use when the user asks how to run a workflow or which command to use for Phoenix, consultation, reports, bug validation, Jira bug on Experiments board, Git sync, cross-dependencies, test case generation, or running Playwright tests from EnergoTS/GitHub by prompt.
+description: Maps user intent to Cursor commands and workflows (Phoenix query, consult, report, bug-validate, jira-bug, sync, cross-dependency-finder, test-case-generate, energo-ts-run, hands-off). Use when the user asks how to run a workflow or which command to use for Phoenix, consultation, reports, bug validation, Jira bug on Experiments board, Git sync, cross-dependencies, test case generation, running Playwright tests from EnergoTS/GitHub by prompt, or full HandsOff flow (Jira ticket → cross-deps → test cases → Playwright → run → report + Slack).
 ---
 
 # Phoenix Commands and Workflows
@@ -27,6 +27,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 | Find cross-dependencies (what could break) | **Cross-dependency-finder** → CrossDependencyFinderAgent (Rule 35) | cross-dependency-finder.md |
 | Generate test cases from bug/task | **Test-case-generate** → cross-dependency-finder FIRST, then TestCaseGeneratorAgent (Rule 35) | test-case-generate.md |
 | Run Playwright test(s) from EnergoTS/GitHub (by prompt) | **Energo-ts-run** → Resolve test from prompt → run `npx playwright test` from local EnergoTS | energo-ts-run.md |
+| Full HandsOff flow (Jira ticket → cross-deps → test cases → Playwright → run → report + Slack) | **Hands-off** → hands-off.md; route to hands-off orchestrator | hands-off.md |
 
 ## Phoenix (phoenix.md)
 
@@ -90,6 +91,12 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 - **Output:** Test run summary (passed/failed); report to `Cursor-Project/reports/YYYY-MM-DD/`; "Agents involved: EnergoTS Playwright Test Runner".
 - **Note:** Tests run from local repo (synced from GitHub). Suggest `!sync` if user wants latest code first.
 
+## Hands-off (hands-off.md)
+
+- **When:** User provides a **Jira ticket** (link, key e.g. REG-123, or name) and types **/HandsOff** or **!HandsOff**.
+- **Flow:** Route to **hands-off** orchestrator. Full flow: (1) Get Jira ticket and description (Jira MCP); (2) Run cross-dependency-finder (Rule 35a); (3) Run test-case-generator with cross_dependency_data; (4) Create Playwright tests from test cases (bridge .md → spec → EnergoTSTestAgent); (5) Run Playwright tests (energo-ts-run, cursor branch); (6) Save report as `reports/YYYY-MM-DD/{JIRA_KEY}.md` with pass/fail and reasons; (7) Send report to Slack to the tester on the ticket (user-slack MCP).
+- **Output:** Summary of run; report file; Slack delivery. "Agents involved: HandsOff (orchestrator), CrossDependencyFinderAgent, TestCaseGeneratorAgent, EnergoTSTestAgent, EnergoTS Playwright Test Runner".
+
 ## Summary
 
 - Phoenix questions → Phoenix command + PhoenixExpert.
@@ -102,5 +109,6 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 - Cross-dependencies → Cross-dependency-finder command + CrossDependencyFinderAgent.
 - Test cases → Test-case-generate command (cross-dependency-finder first, then TestCaseGeneratorAgent).
 - Run Playwright tests from EnergoTS by prompt → Energo-ts-run command (resolve test, run locally).
+- Full HandsOff flow (Jira + /HandsOff or !HandsOff) → Hands-off command + hands-off orchestrator (Jira → cross-deps → test cases → Playwright → run → report + Slack).
 
 All commands assume rules are loaded first (Rule 0.0) from `.cursor/rules/`.

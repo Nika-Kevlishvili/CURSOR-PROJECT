@@ -1,0 +1,58 @@
+# NT-1 – Playwright test results
+
+**Jira:** NT-1  
+**Title:** Invoice cancellation - it is not possible to cancel an invoice if it's paid and the payment package is locked  
+**Date:** 2026-03-08  
+**Spec:** `EnergoTS/tests/cursor/NT-1-invoice-cancellation.spec.ts`  
+**Run:** `npx playwright test --grep "NT-1"` or `npx playwright test tests/cursor/NT-1-invoice-cancellation.spec.ts` (cursor branch)  
+**Assignee/Tester:** nika kevlishvili (n.kevlishvili@asterbit.io)
+
+---
+
+## Test 1: [NT-1] Invoice cancellation - create request
+
+**What is verified**
+- Endpoint `POST /invoice-cancellation` is called with body `{ invoiceNumbers: [] }`.
+- Response status is not server error: `expect(res.status()).toBeLessThan(500)` (4xx allowed; 5xx fails).
+- Invoice cancellation create API is reachable and does not return 5xx.
+
+**Steps**
+1. Create invoice cancellation request (POST /invoice-cancellation with payload).
+
+**Result:** Not run  
+**Reason:** Playwright run aborted before tests: `baseFixture.ts` is loaded at startup (via dependency chain) and requires `fixtures/token.json`. Global setup would create token.json but cannot run because the fixture loads first when any project runs. Error: `ENOENT: no such file or directory, open '.../EnergoTS/fixtures/token.json'`. To run: ensure token.json and envVariables.json exist in EnergoTS/fixtures (e.g. run global setup once in an environment where the fixture is not pre-loaded, or add token.json manually from a prior successful setup), then run `npx playwright test --grep "NT-1"`.
+
+---
+
+## Test 2: [NT-1] Payment cancel - happy path - package UNLOCKED
+
+**What is verified**
+- Customer created (POST customer) – response OK.
+- Collection channel created – response OK.
+- Payment package created (UNLOCKED by default) – response OK.
+- Payment created (initialAmount 100) – response OK.
+- Second customer created (for payment reverse payload).
+- Payment cancel (POST `/payment/cancel`) with created payment id and second customer id – response OK; reversal payment returned.
+- Regression for NT-1: when package is UNLOCKED, payment cancel must succeed (no "Payment package not found with id X and lock status in UNLOCKED" error).
+
+**Steps**
+1. Create customer  
+2. Create collection channel  
+3. Create payment package  
+4. Create payment  
+5. Create second customer (for reverse payload)  
+6. Payment cancel (package UNLOCKED – expect success)
+
+**Result:** Not run  
+**Reason:** Same as Test 1. Fixture load requires token.json before any test (including setup) runs.
+
+---
+
+## Run summary
+
+| Test | Result | Reason (if failed/not run) |
+|------|--------|----------------------------|
+| [NT-1] Invoice cancellation - create request | Not run | baseFixture loads at startup and requires token.json; setup cannot run first |
+| [NT-1] Payment cancel - happy path - package UNLOCKED | Not run | Same – token.json required at load time |
+
+**How to run successfully:** Ensure `EnergoTS/fixtures/token.json` and `EnergoTS/fixtures/envVariables.json` exist (e.g. from a previous successful global setup or CI that runs setup in isolation). Then from `EnergoTS/`: `npx playwright test --grep "NT-1"`. Via GitHub: push cursor branch and run the Playwright workflow if the repo has one (secrets for auth must be configured in CI).

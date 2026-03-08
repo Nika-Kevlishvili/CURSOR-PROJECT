@@ -42,6 +42,7 @@ All rules are organized into the following thematic files:
    - Database workflow
    - Response requirements
    - EnergoTS Playwright test run (Rule 36 - energo-ts-run, cursor branch only)
+   - HandsOff flow (Rule 37 - Jira ticket + /HandsOff or !HandsOff → full flow, report + Slack to tester)
 
 6. **database_workflow.mdc** - Database-specific workflow rules
    - PostgreSQLTest connection
@@ -98,9 +99,10 @@ All rules with `alwaysApply: true` are automatically loaded and applied. The rul
 9. **Rule 32:** ALL bug validation → ALWAYS use BugFinderAgent
 10. **Rule 35/35a:** Test cases → cross-dependency-finder FIRST; when user gives Jira/bug/task: merge lookup → conditional sync if merge exists → technical_details in output
 11. **Rule 36:** Run Playwright tests from EnergoTS → energo-ts-run workflow ONLY; run only from `cursor` branch (Rule ENERGOTS.0)
-12. **Rule JIRA.0:** Jira bug agent → Experiments board ONLY; NEVER create bugs in Phoenix delivery
-13. **Rule PDR.0:** Production data questions → ALWAYS use ProductionDataReaderAgent
-14. **Rule 34:** ALL agents MUST be organized in subdirectories
+12. **Rule 37:** Jira ticket + /HandsOff or !HandsOff → ALWAYS run full HandsOff flow (hands-off command/orchestrator); report named after Jira key + send to Slack to tester
+13. **Rule JIRA.0:** Jira bug agent → Experiments board ONLY; NEVER create bugs in Phoenix delivery
+14. **Rule PDR.0:** Production data questions → ALWAYS use ProductionDataReaderAgent
+15. **Rule 34:** ALL agents MUST be organized in subdirectories
 
 ---
 

@@ -244,6 +244,23 @@ This document lists every Cursor command and what it can do in detail.
 
 ---
 
+## 17. HandsOff (full automated flow)
+
+**Trigger:** User provides a **Jira ticket** (link, key e.g. REG-123, or name) and types **/HandsOff** or **!HandsOff**.
+
+**What it can do:**
+1. **Get Jira ticket** – Parse issue key; call Jira MCP getJiraIssue → description, summary, tester/assignee.
+2. **Cross-dependencies** – Run cross-dependency-finder for this Jira key (Rule 35a: merge lookup → conditional sync → technical_details); get cross_dependency_data.
+3. **Test cases** – Run test-case-generator with ticket description and cross_dependency_data; save to `Cursor-Project/generated_test_cases/` (Object/Flows).
+4. **Playwright tests** – Bridge: from generated test case .md derive test_specification; call EnergoTSTestAgent create_new_test; ensure EnergoTS on cursor branch.
+5. **Run tests** – Run Playwright tests (e.g. by Jira key or newly created file); capture pass/fail and failure reasons.
+6. **Report (Step 9)** – Save report as `Cursor-Project/reports/YYYY-MM-DD/{JIRA_KEY}.md` with: Jira key, title, tests run, per-test pass/fail and reason.
+7. **Slack** – Send report to the tester on the ticket (user-slack MCP); use assignee or custom “Tester” field; map to Slack user/channel.
+
+**When to use:** Run the full pipeline automatically for a Jira ticket: fetch → cross-deps → test cases → create Playwright tests → run → report (save + send to Slack). No user intervention after providing the ticket and /HandsOff.
+
+---
+
 ## Summary table
 
 | Command / trigger           | Main action |
@@ -264,6 +281,7 @@ This document lists every Cursor command and what it can do in detail.
 | **Cross-dependency finder** | Find dependencies and what could break; feed test-case-generator. |
 | **Test case generate**     | Generate test cases (after cross-dependency finder). |
 | **EnergoTS test**          | Create/edit EnergoTS tests in `EnergoTS/tests/` only. |
+| **HandsOff**               | Full flow: Jira → cross-deps → test cases → Playwright → run → report (save as Jira key + send to Slack to tester). |
 
 ---
 

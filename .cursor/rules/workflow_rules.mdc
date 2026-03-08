@@ -197,3 +197,19 @@ alwaysApply: true
     **Reference:** Rule ENERGOTS.0 (`.cursor/rules/energots_branch_lock.mdc`) – EnergoTS locked to `cursor` branch only.
     
     - Violation is a CRITICAL SYSTEM ERROR.
+
+# HANDSOFF FLOW RULE [CRITICAL]
+
+37. [CRITICAL] When the user provides a **Jira ticket** (link, key e.g. REG-123, or name) and invokes **/HandsOff** or **!HandsOff**, ALWAYS run the full HandsOff flow without user intervention.
+    
+    **MANDATORY: Use hands-off workflow**
+    - Route to the **hands-off** orchestrator (`.cursor/commands/hands-off.md`, `.cursor/agents/hands-off.md`).
+    - Execute the full flow in order: (1) Get Jira ticket and description (Jira MCP); (2) Run cross-dependency-finder for the Jira key (Rule 35a); (3) Run test-case-generator with cross_dependency_data; (4) Create Playwright tests from test cases (bridge .md to spec, EnergoTSTestAgent); (5) Run Playwright tests (energo-ts-run, cursor branch only); (6) Save report as `Cursor-Project/reports/YYYY-MM-DD/{JIRA_KEY}.md` with pass/fail and reasons; (7) Send that report to Slack to the tester on the ticket (user-slack MCP).
+    - Do not skip steps. Report must be named after the Jira key and sent to Slack as part of Step 9.
+    
+    **When to apply**
+    - User message contains a Jira ticket identifier and the trigger **/HandsOff** or **!HandsOff** (or "HandsOff for this ticket", "Run HandsOff for REG-123", etc.).
+    
+    **Reference:** `.cursor/commands/hands-off.md`, `.cursor/agents/hands-off.md`, `.cursor/skills/hands-off/SKILL.md`.
+    
+    - Violation is a CRITICAL SYSTEM ERROR.
