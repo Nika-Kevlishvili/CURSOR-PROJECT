@@ -135,6 +135,17 @@ result = agent.copy_and_convert_test(
 # File is automatically written to disk
 ```
 
+## When invoked from HandsOff (bridge: test cases → Playwright spec)
+
+You receive **test case .md paths** (e.g. from `test_cases/Flows/Invoice_cancellation/`) and **Jira key + ticket title**. You MUST:
+
+1. **Read** the .md file(s) and extract scenarios (TC-1, TC-2, …), steps, expected results, and endpoints.
+2. **Create** the spec using the **EnergoTS framework** (Request, Endpoints, baseFixture, project patterns). Do NOT write custom `getToken()`, `apiRequest()`, or other ad-hoc request helpers; use the project's fixtures and utilities.
+3. **Output** to **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**. One `test()` per main scenario from the .md; describe and test titles must include the Jira key.
+4. Use `create_new_test()` with a specification derived from the .md (endpoints, methods, scenario names). If the framework does not yet expose a "create from markdown" API, generate the spec content following the same structure and fixtures as existing EnergoTS tests.
+
+Reference: `.cursor/commands/energo-ts-test.md` (HandsOff bridge section); `.cursor/commands/hands-off.md` Step 4.
+
 ## EnergoTS Test Framework
 
 - **Framework**: Playwright API testing

@@ -1,38 +1,55 @@
 # HandsOff Report: NT-1
 
-**Jira:** NT-1 – Invoice cancellation - it is not possible to cancel an invoice if it's paid and the payment package is locked  
-**Spec file:** `Cursor-Project/EnergoTS/tests/cursor/NT-1-invoice-cancellation.spec.ts`  
-**How to run:** `npx playwright test --grep "NT-1"` or `npx playwright test tests/cursor/NT-1-invoice-cancellation.spec.ts` (from EnergoTS directory, cursor branch)
+**Jira:** NT-1  
+**Title:** Invoice cancellation - it is not possible to cancel an invoice if it's paid and the payment package is locked
+
+**Spec file:** `EnergoTS/tests/cursor/NT-1-invoice-cancellation.spec.ts`  
+**How to run:** From `Cursor-Project/EnergoTS/`: `npx playwright test tests/cursor/NT-1-invoice-cancellation.spec.ts` or `npx playwright test --grep "NT-1"` (cursor branch only). If token/env missing locally, run `npx playwright test --project=setup` first (requires .env with PORTAL_USER, PASSWORD, DEVAUTHAPI/TESTAUTHAPI, BASE_URL), or run via GitHub/CI.
 
 ---
 
 ## Playwright test results
 
-### 1. NT-1: POST /payment/cancel endpoint is reachable and returns 4xx for unknown payment_id
+### Test 1: [NT-1]: Unpaid invoice cancellation – baseline
 
-- **What is verified:** POST `/payment/cancel` is called with a non-existent payment ID (999999); response status is asserted to be one of 400, 404, 422.
-- **Steps:** Load token from fixtures; POST /payment/cancel with body `{ paymentId: 999999 }`; assert status in [400, 404, 422].
-- **Result:** **Failed**
-- **Reason:** Received status **401 Unauthorized** (expected 400, 404, or 422). Endpoint is reachable; 401 may be due to token/env (e.g. token for different environment or expired). For unknown payment_id the API may return 401 when auth fails before entity lookup.
-
-### 2. NT-1: POST /payment/cancel with UNLOCKED package succeeds
-
-- **What is verified:** POST `/payment/cancel` with a payment whose package is UNLOCKED; expects 200 and successful cancellation.
-- **Steps:** Skip unless env `NT1_PAYMENT_ID_UNLOCKED` is set; POST /payment/cancel with that payment ID; assert status 200.
-- **Result:** **Skipped**
-- **Reason:** `NT1_PAYMENT_ID_UNLOCKED` not set (no test data for payment with UNLOCKED package).
-
-### 3. NT-1: POST /payment/cancel with LOCKED package returns error about UNLOCKED
-
-- **What is verified:** POST `/payment/cancel` with a payment whose package is LOCKED; expects 400 or 404 and response body containing "payment package not found", "unlocked", or "lock".
-- **Steps:** Skip unless env `NT1_PAYMENT_ID_LOCKED` is set; POST /payment/cancel with that payment ID; assert status and body.
-- **Result:** **Skipped**
-- **Reason:** `NT1_PAYMENT_ID_LOCKED` not set (no test data for payment with LOCKED package).
+| Field | Content |
+|-------|--------|
+| **What is verified** | Unpaid invoice can be cancelled via POST /invoice-cancellation (baseline). Flow: create customer → collection channel + unlocked payment package → manual invoice → POST invoice-cancellation; response in 2xx. |
+| **Steps** | Create customer (POST /customer); create collection channel and payment package (UNLOCKED); create manual invoice; POST /invoice-cancellation with invoiceId; assert response OK. |
+| **Result** | **Failed** |
+| **Failure reason** | 401 Unauthorized on first step (POST http://10.236.20.11:8091/customer). Authentication required; token or env setup may be missing. Run global setup (`npx playwright test --project=setup`) or ensure .env and token.json/envVariables.json exist. |
 
 ---
 
-**Summary:** 1 run, 1 failed, 2 skipped. To run the skipped tests, set `NT1_PAYMENT_ID_UNLOCKED` and `NT1_PAYMENT_ID_LOCKED` to valid payment IDs in the target environment and re-run.
+### Test 2: [NT-1]: Paid invoice with unlocked payment package – cancellation succeeds
+
+| Field | Content |
+|-------|--------|
+| **What is verified** | Paid invoice with unlocked payment package: cancellation via POST /invoice-cancellation succeeds (happy path; regression after NT-1 fix). |
+| **Steps** | Create customer; collection channel + unlocked payment package; manual invoice; create payment linked to invoice; POST /invoice-cancellation; expect 2xx. |
+| **Result** | **Failed** |
+| **Failure reason** | 401 Unauthorized on first step (POST /customer). Same auth/setup issue as Test 1. |
 
 ---
 
-**Slack:** Full report sent to tester (nika kevlishvili, DM). AI report channel was not found in workspace; duplicate was not sent.
+### Test 3: [NT-1]: Paid invoice with locked payment package – cancellation allowed (NT-1 fix)
+
+| Field | Content |
+|-------|--------|
+| **What is verified** | Main NT-1 scenario: invoice paid, payment package LOCKED; create invoice cancellation. Expected (after fix): cancellation allowed. Current bug: "Payment package not found with id X and lock status in UNLOCKED". |
+| **Steps** | Create customer; collection channel + payment package with lockStatus LOCKED; manual invoice; payment linked to invoice; POST /invoice-cancellation; expect 2xx (cancellation allowed). |
+| **Result** | **Failed** |
+| **Failure reason** | 401 Unauthorized on first step (POST /customer). Same auth/setup issue; test did not reach invoice cancellation step. |
+
+---
+
+## Summary
+
+| Metric | Value |
+|--------|--------|
+| **Total tests** | 3 |
+| **Passed** | 0 |
+| **Failed** | 3 |
+| **Not run** | 0 |
+
+All three tests failed at the first API call (Create customer) with **401 Unauthorized**. The spec and scenarios are in place; to get green results, run in an environment where auth is configured (e.g. run global setup then tests locally, or run the same spec via GitHub/CI with proper secrets).

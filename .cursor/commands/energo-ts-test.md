@@ -63,6 +63,20 @@ patterns = agent.analyze_test_patterns()
 tests = agent.list_tests_by_domain("billing")
 ```
 
+## HandsOff bridge: create Playwright tests FROM test cases [CRITICAL when invoked from HandsOff]
+
+When the **HandsOff** flow invokes the energo-ts-test agent (Step 4), the agent receives **test case .md paths** (e.g. `Cursor-Project/test_cases/Flows/Invoice_cancellation/*.md`) and **Jira key + ticket title**. The agent MUST:
+
+1. **Read** the test case .md file(s) and parse scenarios (TC-1, TC-2, …), steps, expected results, and entry points (endpoints).
+2. **Map** each scenario to a Playwright test: use project **fixtures** (Request, Endpoints, baseFixture, etc.) and **project patterns**; do NOT write custom `getToken()`, `apiRequest()`, or inline auth/request helpers unless they already exist in the framework.
+3. **Produce** a single spec file **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`** with:
+   - `test.describe('…')` containing the Jira key and ticket title;
+   - one `test('…')` per main scenario from the .md, with test names including the Jira key (e.g. `[NT-1]: …`);
+   - API calls and assertions derived from the test case steps and expected results.
+4. **Use** `create_new_test()` (or equivalent) with a specification derived from the .md content (endpoints, methods, scenarios). If multiple scenarios share one endpoint, one test per scenario is still required; structure the spec so it matches existing EnergoTS test style.
+
+Reference: `.cursor/commands/hands-off.md` Step 4; `.cursor/rules/handsoff_playwright_report.mdc` §2.
+
 ## Test Creation Workflow [CRITICAL - MANDATORY]
 
 **ABSOLUTE REQUIREMENT**: Before creating ANY test, you MUST follow this workflow:

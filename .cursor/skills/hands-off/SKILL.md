@@ -19,7 +19,7 @@ Use this skill when the user provides a **Jira ticket** (link, key like REG-123,
    - Get Jira ticket and description (Jira MCP).
    - Run cross-dependency-finder for the Jira key (Rule 35a).
    - Run test-case-generator with cross_dependency_data.
-   - Bridge: test case .md → test_specification → EnergoTSTestAgent create_new_test.
+   - **Bridge (Step 4):** Invoke **energo-ts-test agent (EnergoTSTestAgent)** with the **test case .md paths** and Jira key/title. The agent MUST create the Playwright spec from that content using the EnergoTS framework (fixtures); do NOT write the spec manually or with ad-hoc code.
    - Run Playwright tests (energo-ts-run, cursor branch).
    - Save report as `reports/YYYY-MM-DD/{JIRA_KEY}.md` (pass/fail + reasons).
    - Send report to Slack to the tester on the ticket and duplicate the same report to the AI report channel (user-slack MCP).

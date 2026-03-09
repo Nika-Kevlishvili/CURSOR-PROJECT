@@ -38,11 +38,12 @@ Reference: `.cursor/commands/cross-dependency-finder.md`, Rule 35a in `.cursor/r
 
 Reference: `.cursor/commands/test-case-generate.md`, `.cursor/rules/handsoff_playwright_report.mdc` §1.
 
-### Step 4: Create Playwright tests from test cases (bridge)
+### Step 4: Create Playwright tests from test cases (bridge) [MANDATORY: energo-ts-test agent]
 
-1. **Path:** Create (or ensure) Playwright spec in **`Cursor-Project/EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`** (e.g. `NT-1-invoice-cancellation.spec.ts`). EnergoTS must be on **cursor** branch (Rule ENERGOTS.0).
-2. **Bridge:** Read test case .md file(s) from `Cursor-Project/test_cases/Flows/...` or `test_cases/Objects/...`. From content derive endpoints and steps; write a spec that references the Jira key in describe/test titles and covers the ticket (e.g. API calls, assertions).
-3. **Verify on disk:** After creation, verify the spec file exists. If the orchestrator/subagent did not create it, **write the spec file directly** with at least one test per main scenario (e.g. create request, happy path). Do not assume "created" without checking.
+1. **MUST use EnergoTSTestAgent (energo-ts-test):** The Playwright spec MUST be created by the **energo-ts-test** agent (EnergoTSTestAgent). Do NOT write the spec manually or with ad-hoc code (e.g. custom `getToken()`, custom `apiRequest()`). The agent reads the test case .md content and produces a spec using the **EnergoTS framework** (fixtures: Request, Endpoints, baseFixture, etc.).
+2. **Input to agent:** Pass to the energo-ts-test agent: (a) **paths to test case .md files** from Step 3 (e.g. `Cursor-Project/test_cases/Flows/Invoice_cancellation/*.md`), (b) **Jira key and ticket title**, (c) cross_dependency_data or entry points if useful. The agent MUST use this content to derive scenarios, endpoints, steps, and assertions.
+3. **Output:** Spec file **`Cursor-Project/EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`** (e.g. `NT-1-invoice-cancellation.spec.ts`). EnergoTS must be on **cursor** branch (Rule ENERGOTS.0). Spec MUST follow project patterns (fixtures, test naming with Jira key, one test per main scenario from the .md).
+4. **Verify on disk:** After the agent runs, verify the spec file exists. If the agent did not create it, invoke the agent again with explicit test case paths and Jira context; do not fall back to writing an ad-hoc spec.
 
 Reference: `.cursor/rules/handsoff_playwright_report.mdc` §2, `.cursor/commands/energo-ts-test.md`.
 

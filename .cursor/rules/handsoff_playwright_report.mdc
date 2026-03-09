@@ -17,14 +17,15 @@ Reference: `.cursor/rules/test_cases_structure.mdc`.
 
 ---
 
-## 2. Playwright tests – MUST be created and visible (e.g. in tests/cursor)
+## 2. Playwright tests – MUST be created by energo-ts-test agent, use framework (tests/cursor)
 
-- **Problem:** User believed Playwright tests were "not created"; tests existed only in one path and were not obvious for cursor-branch runs.
-- **Rule:** Create Playwright spec for the Jira ticket in **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`** (e.g. `NT-1-invoice-cancellation.spec.ts`) so tests are clearly present and runnable on the **cursor** branch (e.g. `npx playwright test tests/cursor/NT-1-invoice-cancellation.spec.ts` or `--grep "NT-1"`).
-- **Rule:** After creating the spec, **verify** the file exists (read or list). If the orchestrator did not create it, **write the spec file directly** with at least: describe/title containing the Jira key, and tests that cover the ticket (e.g. invoice cancellation endpoint, payment cancel flow).
+- **Problem:** User believed Playwright tests were "not created"; tests existed only in one path. Another problem: specs were written with ad-hoc code (custom getToken, custom apiRequest) instead of the EnergoTS framework, producing poor quality and inconsistency.
+- **Rule:** Playwright spec for the Jira ticket MUST be created by the **energo-ts-test agent (EnergoTSTestAgent)**. The orchestrator MUST invoke the energo-ts-test agent with the **test case .md file paths** (from Step 3) and Jira key/title; the agent produces the spec from that content. Do NOT write the spec manually or with ad-hoc helpers.
+- **Rule:** The spec MUST use the **EnergoTS framework** (fixtures such as Request, Endpoints, baseFixture, project patterns). Do NOT add custom inline `getToken()`, `apiRequest()`, or similar unless they are part of the project's shared fixtures/utilities. The agent MUST follow `.cursor/commands/energo-ts-test.md` and create tests that match existing EnergoTS patterns.
+- **Rule:** Output path **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`** (e.g. `NT-1-invoice-cancellation.spec.ts`). After the agent runs, **verify** the file exists. If the agent did not create it, invoke the agent again with explicit test case paths; do not fall back to writing an ad-hoc spec.
 - **Rule:** Do not assume "subagent created it" without checking the workspace.
 
-Reference: Rule ENERGOTS.0 (cursor branch only); `.cursor/commands/energo-ts-run.md`.
+Reference: Rule ENERGOTS.0 (cursor branch only); `.cursor/commands/energo-ts-run.md`; `.cursor/commands/energo-ts-test.md`; `.cursor/commands/hands-off.md` Step 4.
 
 ---
 
