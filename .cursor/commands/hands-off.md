@@ -69,10 +69,21 @@ Reference: `Cursor-Project/agents/Services/reporting_service.py` `save_agent_rep
 ### Step 7: Send report to Slack (Step 9 – part 2)
 
 1. **Tester:** Get the **tester** for the ticket from Jira (e.g. **Assignee** or custom field). If no tester/assignee is set, use a fallback (e.g. skip Slack or send to a default channel – document in config).
-2. **Slack:** Use **user-slack** MCP to send the **full report** content to the tester (see `.cursor/rules/handsoff_playwright_report.mdc`). Send the same content as in `reports/YYYY-MM-DD/{JIRA_KEY}.md` (or at least the full Playwright-results section). Do NOT send only a short summary.
-3. If message length limit applies, send the full Playwright-results section (each test: what is verified, result, failure reason). Message should indicate it is the HandsOff run result for the Jira ticket.
+2. **Slack – two recipients (same full report to both):**
+   - **To tester:** Use **user-slack** MCP `slack_send_message` to send the **full report** content to the tester (see `.cursor/rules/handsoff_playwright_report.mdc`). Send the same content as in `reports/YYYY-MM-DD/{JIRA_KEY}.md` (or at least the full Playwright-results section). Do NOT send only a short summary.
+   - **To AI report channel:** Send the **same full report** (duplicate) to the **AI report** channel. Use `slack_search_channels` to resolve the channel by name (e.g. "AI report") to get `channel_id`, then call `slack_send_message(channel_id, report_content)`. Same content as saved in `reports/YYYY-MM-DD/{JIRA_KEY}.md`.
+3. If message length limit applies (e.g. 5000 chars), send the full Playwright-results section (each test: what is verified, result, failure reason). Message should indicate it is the HandsOff run result for the Jira ticket.
 
-Reference: user-slack MCP tools; Jira issue fields for assignee/custom tester.
+Reference: user-slack MCP tools (`slack_send_message`, `slack_search_channels`); Jira issue fields for assignee/custom tester.
+
+### Step 8: Agent questions after report (with attribution)
+
+1. **Collect questions:** After the report is saved and sent (Steps 6–7), **each participating agent** (CrossDependencyFinder, TestCaseGenerator, EnergoTSTestAgent, PhoenixExpert if consulted, etc.) MUST contribute **questions related to the task** when needed (clarifications, edge cases, follow-ups, open points).
+2. **Attribution:** Each question MUST be tagged with the agent that asked it. Format: `[AgentName]: <question text>` (e.g. `[TestCaseGenerator]: Should cancellation be tested for already-reversed invoices?`).
+3. **Send after report:** Send the list of agent questions **after** the report (e.g. a second Slack message to the same recipients: tester and AI report channel). Do not replace the report; questions are a follow-up.
+4. If an agent has no questions, it may contribute none; only agents that participated and have relevant questions need to contribute.
+
+Reference: `.cursor/rules/handsoff_playwright_report.mdc` §7.
 
 ## Constraints
 
@@ -84,7 +95,7 @@ Reference: user-slack MCP tools; Jira issue fields for assignee/custom tester.
 ## Response Requirements
 
 - While the flow runs, you may briefly confirm each step (e.g. "Step 1: Fetched REG-123…", "Step 2: Cross-deps done…").
-- At the end, summarize: Jira key, tests run, pass/fail counts, report path, and that the report was sent to Slack (or fallback if no tester).
+- At the end, summarize: Jira key, tests run, pass/fail counts, report path, and that the report was sent to Slack (to tester and to AI report channel; or fallback if no tester).
 - End with: **"Agents involved: HandsOff (orchestrator), CrossDependencyFinderAgent, TestCaseGeneratorAgent, EnergoTSTestAgent, EnergoTS Playwright Test Runner"** (and PhoenixExpert if consulted).
 
 ## Generate Reports (Rule 0.6)

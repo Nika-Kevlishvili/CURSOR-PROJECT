@@ -23,7 +23,8 @@ Follow **exactly** the steps in **`.cursor/commands/hands-off.md`**. Summary:
 4. **Playwright tests** – Create or ensure spec in **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**. **Verify** file exists; if not, write the spec directly. Cursor branch only.
 5. **Run tests** – In EnergoTS: if token.json/envVariables.json missing, run **`npx playwright test --project=setup`** first (needs .env). Then run **`npx playwright test --grep "<JIRA_KEY>"`** (or path to spec). **Capture** output: per-test Passed/Failed/Not run and **reason** for each failure or skip.
 6. **Report (Step 9)** – Build report **only** Playwright test results (per test: what is verified, steps, result, failure reason). Save to Cursor-Project/reports/YYYY-MM-DD/{JIRA_KEY}.md.
-7. **Slack** – Send the **full** report content to the tester (user-slack MCP). Do not send only a short summary.
+7. **Slack** – Send the **full** report content to **two recipients**: (1) to the tester (user-slack MCP); (2) **duplicate** the same report to the **AI report** channel (use `slack_search_channels` to find channel "AI report", then `slack_send_message` with same content). Do not send only a short summary.
+8. **Agent questions after report** – After the report is sent, collect **questions from each participating agent** (as needed); each question MUST be **attributed** to the agent (e.g. `[AgentName]: <question>`). Send this list of questions **after** the report to the same Slack recipients (tester + AI report channel). See `.cursor/rules/handsoff_playwright_report.mdc` §7.
 
 ## Agents and Commands You Invoke
 
@@ -34,7 +35,7 @@ Follow **exactly** the steps in **`.cursor/commands/hands-off.md`**. Summary:
 - **EnergoTSTestAgent** – create_new_test(test_specification) after mapping .md → spec.
 - **energo-ts-run** – run Playwright tests from Cursor-Project/EnergoTS (cursor branch); capture output.
 - **ReportingService** or direct file write – save report as {JIRA_KEY}.md.
-- **user-slack MCP** – send report to tester.
+- **user-slack MCP** – send report to tester and duplicate to AI report channel.
 
 ## Constraints
 

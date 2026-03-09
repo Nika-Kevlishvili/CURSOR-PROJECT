@@ -204,8 +204,8 @@ alwaysApply: true
     
     **MANDATORY: Use hands-off workflow**
     - Route to the **hands-off** orchestrator (`.cursor/commands/hands-off.md`, `.cursor/agents/hands-off.md`).
-    - Execute the full flow in order: (1) Get Jira ticket and description (Jira MCP); (2) Run cross-dependency-finder for the Jira key (Rule 35a); (3) Run test-case-generator with cross_dependency_data; (4) Create Playwright tests from test cases (bridge .md to spec, EnergoTSTestAgent); (5) Run Playwright tests (energo-ts-run, cursor branch only); (6) Save report as `Cursor-Project/reports/YYYY-MM-DD/{JIRA_KEY}.md` with pass/fail and reasons; (7) Send that report to Slack to the tester on the ticket (user-slack MCP).
-    - Do not skip steps. Report must be named after the Jira key and sent to Slack as part of Step 9.
+    - Execute the full flow in order: (1) Get Jira ticket and description (Jira MCP); (2) Run cross-dependency-finder for the Jira key (Rule 35a); (3) Run test-case-generator with cross_dependency_data; (4) Create Playwright tests from test cases (bridge .md to spec, EnergoTSTestAgent); (5) Run Playwright tests (energo-ts-run, cursor branch only); (6) Save report as `Cursor-Project/reports/YYYY-MM-DD/{JIRA_KEY}.md` with pass/fail and reasons; (7) Send that report to Slack to the tester and to the AI report channel (user-slack MCP); (8) After the report, collect questions from each participating agent (as needed), tag each question with the agent name, and send the list of questions to the same Slack recipients.
+    - Do not skip steps. Report must be named after the Jira key and sent to Slack; then agent questions (with attribution) must be sent after the report.
     
     **When to apply**
     - User message contains a Jira ticket identifier and the trigger **/HandsOff** or **!HandsOff** (or "HandsOff for this ticket", "Run HandsOff for REG-123", etc.).

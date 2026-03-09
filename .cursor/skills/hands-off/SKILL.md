@@ -1,6 +1,6 @@
 ---
 name: hands-off
-description: Runs the full HandsOff flow when user provides a Jira ticket (link, key, or name) and /HandsOff or !HandsOff. Orchestrates Jira fetch → cross-dependencies → test cases → Playwright creation → run tests → report (save as Jira key + send to Slack to tester). Use when the user gives a Jira ticket and invokes HandsOff.
+description: Runs the full HandsOff flow when user provides a Jira ticket (link, key, or name) and /HandsOff or !HandsOff. Orchestrates Jira fetch → cross-dependencies → test cases → Playwright creation → run tests → report (save as Jira key + send to Slack to tester and to AI report channel). Use when the user gives a Jira ticket and invokes HandsOff.
 ---
 
 # HandsOff Skill
@@ -22,7 +22,8 @@ Use this skill when the user provides a **Jira ticket** (link, key like REG-123,
    - Bridge: test case .md → test_specification → EnergoTSTestAgent create_new_test.
    - Run Playwright tests (energo-ts-run, cursor branch).
    - Save report as `reports/YYYY-MM-DD/{JIRA_KEY}.md` (pass/fail + reasons).
-   - Send report to Slack to the tester on the ticket (user-slack MCP).
+   - Send report to Slack to the tester on the ticket and duplicate the same report to the AI report channel (user-slack MCP).
+   - **After the report:** Collect questions from each participating agent (as needed); tag each question with the agent name (`[AgentName]: <question>`); send the list of questions to the same Slack recipients (tester + AI report channel). See `.cursor/rules/handsoff_playwright_report.mdc` §7.
 
 ## References
 
@@ -35,4 +36,4 @@ Use this skill when the user provides a **Jira ticket** (link, key like REG-123,
 - Do not skip steps; run the full flow.
 - EnergoTS must use **cursor** branch only (Rule ENERGOTS.0).
 - Report must be named after the Jira key and sent to Slack as part of Step 9.
-- **Lessons learned (do not repeat):** See `.cursor/rules/handsoff_playwright_report.mdc` – test cases in required folder and verified on disk; Playwright spec in `tests/cursor/` and verified; report ONLY Playwright test results (per test: what is verified, result, failure reason); send **full** report to Slack, not a short summary.
+- **Lessons learned (do not repeat):** See `.cursor/rules/handsoff_playwright_report.mdc` – test cases in required folder and verified on disk; Playwright spec in `tests/cursor/` and verified; report ONLY Playwright test results (per test: what is verified, result, failure reason); send **full** report to Slack, not a short summary; after report, send agent questions with attribution (each question tagged with agent name).

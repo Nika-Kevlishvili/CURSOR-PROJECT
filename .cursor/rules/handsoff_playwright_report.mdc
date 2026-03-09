@@ -39,12 +39,12 @@ Reference: Rule 0.6 (report generation); `.cursor/commands/hands-off.md` Step 6.
 
 ---
 
-## 4. Slack – Send FULL report (not a short summary)
+## 4. Slack – Send FULL report (not a short summary) – to tester AND AI report channel
 
 - **Problem:** The message sent to Slack was too brief; user wanted the **full report**.
-- **Rule:** When sending the HandsOff result to Slack (user-slack MCP), send the **full report content** (the same as in `reports/YYYY-MM-DD/{JIRA_KEY}.md`). If the message length limit applies (e.g. 5000 chars), send the full Playwright-results section at minimum (each test: what is verified, result, failure reason). Do not send only a one-paragraph summary.
+- **Rule:** When sending the HandsOff result to Slack (user-slack MCP), send the **full report content** (the same as in `reports/YYYY-MM-DD/{JIRA_KEY}.md`) to **two recipients**: (1) to the **tester** (assignee); (2) **duplicate** the same full report to the **AI report** channel. Use `slack_search_channels` to resolve the "AI report" channel if needed, then `slack_send_message` with the same content for both. If the message length limit applies (e.g. 5000 chars), send the full Playwright-results section at minimum (each test: what is verified, result, failure reason). Do not send only a one-paragraph summary.
 
-Reference: `.cursor/commands/hands-off.md` Step 7; user-slack MCP `slack_send_message`.
+Reference: `.cursor/commands/hands-off.md` Step 7; user-slack MCP `slack_send_message`, `slack_search_channels`.
 
 ---
 
@@ -70,11 +70,24 @@ Reference: `EnergoTS/.env.example`, `EnergoTS/fixtures/login.ts`, `EnergoTS/test
 
 ---
 
+## 7. Agent questions after report – collect and send (with agent attribution)
+
+- **Rule:** When HandsOff is run, **after** the report is saved and sent to Slack, **every agent that participated** (as needed for the task) MUST contribute **questions related to the task** (clarifications, edge cases, follow-ups, or open points).
+- **Rule:** These questions MUST be **sent after the report** (e.g. in a separate Slack message or appended section). Do not replace the report with questions; send questions as a follow-up.
+- **Rule:** **Each question MUST be attributed to the agent that asked it.** Format: `[AgentName]: <question text>` or a clear label (e.g. "CrossDependencyFinder: …", "TestCaseGenerator: …"). So the recipient knows which agent raised each question.
+- **Rule:** Only agents that actually participated in the HandsOff run for this ticket contribute questions; agents contribute only when they have relevant questions (as needed).
+- **Workflow:** (1) Save report → (2) Send full report to Slack (tester + AI report channel) → (3) Collect questions from each participating agent (with agent name) → (4) Send the list of questions (with attribution) after the report, to the same recipients or as specified.
+
+Reference: `.cursor/commands/hands-off.md` Step 8; user-slack MCP for sending.
+
+---
+
 ## Summary checklist (HandsOff)
 
 - [ ] Test cases: written to `test_cases/Flows/<Flow>/` (or Objects); folder and .md files verified on disk; Flows/README.md updated.
 - [ ] Playwright: spec created in `EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts` (or equivalent); file verified on disk.
 - [ ] Report: content is **only** Playwright test results (per test: what is verified, steps, result, failure reason).
-- [ ] Slack: full report (or full Playwright section) sent, not a short summary.
+- [ ] Slack: full report (or full Playwright section) sent to **tester** and **duplicate** sent to **AI report** channel; not a short summary.
+- [ ] Agent questions: after report, collect questions from each participating agent (as needed); each question tagged with agent name; send questions after the report (same recipients or as specified).
 
 Violation: repeat of the above problems is a workflow error; correct before considering HandsOff complete.
