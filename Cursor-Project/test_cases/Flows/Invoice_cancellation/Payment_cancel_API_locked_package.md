@@ -1,93 +1,60 @@
-# Payment cancel API – locked payment package (NT-1 regression)
+# Payment Cancel API – Locked vs Unlocked Package (NT-1)
 
-**Jira:** NT-1 (regression / integration)  
-**Cross-dependency:** cross_dependencies/2026-03-08_NT-1-invoice-cancellation-paid-locked-package.json
-
-**Scope:** Direct payment cancel API (POST payment cancel) and any flow that calls `PaymentService.cancel` when the payment package is LOCKED. Ensures that a fix for NT-1 does not break direct cancel behaviour and that behaviour is consistent between invoice cancellation and direct cancel.
-
-**Code references:**
-- `PaymentController` (phoenix-core) – exposes payment cancel API; calls `paymentService.cancel(request)` (e.g. line 167).
-- `PaymentService.cancel` (phoenix-core-lib) – requires payment package lock status UNLOCKED (lines 904–908).
-- Mass import / other callers may use `PaymentService.cancel`.
+**Jira:** NT-1 – Invoice cancellation - it is not possible to cancel an invoice if it's paid and the payment package is locked  
+**Entry points:** POST `/payment/cancel` (payment_id), PaymentService.cancel  
+**Integration:** POST `/payment/cancel` with payment_id → UNLOCKED check; payment package lifecycle UNLOCKED → lock (LPF) → cancel requires UNLOCKED.  
+**What could break:** POST /payment/cancel when LOCKED; LPF/lock semantics.
 
 ---
 
-## Test data (preconditions)
+## Preconditions
 
-- **Payment** in status that allows cancel (not already reversed), linked to a **payment package**.
-- Ability to set the payment package to **LOCKED** (e.g. package blocker job or test data).
+- A payment exists and is linked to a payment package.
+- The payment package has a lock status (UNLOCKED or LOCKED) that can be set or queried.
 
 ---
 
-## TC-1: Direct payment cancel API when package is LOCKED (current behaviour)
+## TC-1: POST /payment/cancel with UNLOCKED package (success)
 
-**Objective:** Document and verify current behaviour of the direct payment cancel API when the payment's package is LOCKED.
-
-**Preconditions:** One payment linked to a payment package; package lock status = LOCKED.
+**Objective:** Verify that payment cancel succeeds when the payment’s package is UNLOCKED.
 
 **Steps:**
-1. Ensure the payment package for the target payment is LOCKED (e.g. run package blocker or set lock status in test data).
-2. Call POST payment cancel API (e.g. `PaymentController` endpoint) with the payment ID (and any required body/params).
-3. Observe response status and body.
 
-**Expected result (current):**  
-- API returns error (e.g. 404 or 4xx) with message containing "Payment package not found" and "lock status in UNLOCKED" (or equivalent).  
-- Payment is **not** cancelled.
+1. Identify a payment whose payment package is **UNLOCKED** (e.g. query by payment_id and package lock status).
+2. Call POST `/payment/cancel` with the payment identifier (e.g. `payment_id`).
+3. Verify response (e.g. 200 or success payload).
+4. Verify payment and related entities (e.g. liability/receivable, package) are updated as per cancel flow (e.g. status CANCELLED or equivalent).
 
-**Expected result (after NT-1 fix, if direct cancel is also relaxed):**  
-- If product decision is to allow cancel when package is locked: request succeeds and payment is cancelled.  
-- If product decision is to keep strict UNLOCKED check for direct API: same as current (error).  
-- Behaviour must be documented and consistent with invoice cancellation.
-
-**References:** PaymentController → paymentService.cancel; PaymentService.cancel (UNLOCKED check).
+**Expected result:** Cancel succeeds. No "Payment package not found with id … and lock status in UNLOCKED" error. Payment and related data reflect cancellation.
 
 ---
 
-## TC-2: Direct payment cancel API when package is UNLOCKED (regression)
+## TC-2: POST /payment/cancel with LOCKED package (current error – NT-1)
 
-**Objective:** Ensure direct payment cancel API still works when the payment package is UNLOCKED (no regression).
-
-**Preconditions:** One payment linked to a payment package; package lock status = UNLOCKED.
+**Objective:** Reproduce the behaviour when cancel is requested for a payment whose package is LOCKED.
 
 **Steps:**
-1. Call POST payment cancel API with the payment ID (and required request body).
-2. Verify response is success (e.g. 200) and payment is cancelled (e.g. status REVERSED).
-3. Verify liability/receivable and related data are updated as per business rules.
 
-**Expected result:**  
-- Cancel succeeds; payment reversed; related offsets/receivables/liabilities updated correctly.  
-- No regression after any NT-1 change.
+1. Identify a payment whose payment package is **LOCKED** (e.g. locked via LPF or lock flow).
+2. Call POST `/payment/cancel` with that payment identifier (e.g. `payment_id`).
+3. Observe response and any error message.
 
-**References:** PaymentController; PaymentService.cancel (happy path).
+**Expected result (current behaviour):** Request fails with error such as: *"Payment package not found with id &lt;package_id&gt; and lock status in UNLOCKED"* (or equivalent indicating cancel is not allowed for LOCKED package).
+
+**Expected result (after fix / product decision):** Either cancel is allowed for LOCKED package with defined behaviour, or a clear, user-facing message explains that the package must be unlocked first.
+
+**Technical note:** PaymentService.cancel() only allows UNLOCKED; no handling for LOCKED today.
 
 ---
 
-## TC-3: Mass import / PaymentService.cancel with locked package
+## Regression: Mass import / Invoice cancellation upload
 
-**Objective:** Cover flows that call `PaymentService.cancel` outside invoice cancellation (e.g. mass import). If NT-1 fix only affects invoice cancellation path, mass import may still fail when package is locked.
-
-**Preconditions:** Mass import or other process that triggers payment cancel; payment(s) with LOCKED package.
+**Objective:** Ensure invoice cancellation via mass import (e.g. POST `/invoice-cancellation/upload-file`) is covered when some payments have locked packages.
 
 **Steps:**
-1. Prepare input (e.g. file or API) that triggers payment cancel for a payment whose package is LOCKED.
-2. Run the mass import or process (e.g. upload file or invoke batch).
-3. Check response/report: success vs error and error message.
 
-**Expected result (current):**  
-- Process fails or reports error for the payment(s) with locked package; error message references payment package lock status.
+1. Prepare a file with invoice cancellation data where at least one invoice is paid and its payment package is LOCKED.
+2. Call POST `/invoice-cancellation/upload-file` with the file.
+3. Verify behaviour: partial success vs full failure, error messages, and that errors match the locked-package case (e.g. same "UNLOCKED" constraint message).
 
-**Expected result (after fix):**  
-- Per product decision: either cancel is allowed for locked package in this flow too, or error remains but is consistent and documented.  
-- No silent partial success that leaves data inconsistent.
-
-**References:** cross_dependency_data "what could break": Mass import / PaymentService.cancel; AbstractTxtMassImportProcessService or other callers of PaymentService.cancel.
-
----
-
-## Confluence / code references (summary)
-
-| Topic | Reference |
-|-------|-----------|
-| Payment cancel API | PaymentController (phoenix-core) – POST payment cancel; paymentService.cancel(request). |
-| PaymentService.cancel | phoenix-core-lib PaymentService.cancel – UNLOCKED check; DomainEntityNotFoundException. |
-| Integration | Invoice cancellation uses same PaymentService.cancel; direct cancel API and mass import are other callers. |
+**Expected result:** Behaviour is consistent with single cancellation: either clear error for locked package or defined product rule (e.g. skip with warning, or fail row with message).

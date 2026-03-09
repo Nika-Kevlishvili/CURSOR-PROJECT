@@ -1,0 +1,70 @@
+{
+  "jira_key": "NT-1",
+  "scope": "NT-1: Invoice cancellation - not possible to cancel invoice when paid and payment package is locked",
+  "summary": "Invoice cancellation - it is not possible to cancel an invoice if it's paid and the payment package is locked",
+  "description_repro": "1. Generate invoice 2. Pay the invoice 3. Lock the payment package for this payment 4. Create invoice cancellation. Actual: 'Payment package not found with with id 1100 and lock status in UNLOCKED'. Expected: It must be possible to cancel the invoice.",
+  "entry_points": [
+    "POST /invoice-cancellation (create invoice cancellation request)",
+    "POST /invoice-cancellation/upload-file (mass import)",
+    "POST /payment/cancel (direct payment cancel API)",
+    "InvoiceCancellationProcessService.startCancellationProcessing (async process)",
+    "InvoiceCancellationService.processDebitNoteInvoice (calls paymentService.cancel for each payment linked to liability)",
+    "PaymentService.cancel(PaymentCancelRequest)"
+  ],
+  "upstream": [
+    { "type": "service", "name": "PaymentService", "usage": "cancel() enforces payment package UNLOCKED; findPaymentPackageByIdAndLockStatusIn(..., List.of(UNLOCKED))" },
+    { "type": "db", "name": "PaymentPackageRepository.findPaymentPackageByIdAndLockStatusIn", "usage": "Returns package only if lock status is UNLOCKED; LOCKED package causes DomainEntityNotFoundException" },
+    { "type": "db", "name": "payment_package (lock_status)", "usage": "Payment package lock status (UNLOCKED/LOCKED) blocks cancel when LOCKED" },
+    { "type": "db", "name": "customer_liability, customer_receivable_transactions", "usage": "Invoice cancellation finds payments via liability offsetting (APO); then calls paymentService.cancel" },
+    { "type": "api", "name": "Payment cancel API", "usage": "Exposed endpoint that calls PaymentService.cancel; same UNLOCKED check" },
+    { "type": "config", "name": "PaymentPackageLockStatus", "usage": "Enum UNLOCKED/LOCKED; business rule: cancel allowed only when UNLOCKED" }
+  ],
+  "downstream": [
+    { "type": "ui", "name": "Invoice cancellation screen (Billing > Invoice Cancellation)", "usage": "User creates cancellation; process triggers payment cancels for paid invoices" },
+    { "type": "service", "name": "InvoiceCancellationService.processDebitNoteInvoice", "usage": "For each liability with payments (APO), calls paymentService.cancel; fails if package locked" },
+    { "type": "api", "name": "POST /payment/cancel consumers", "usage": "Any client calling payment cancel when package is locked gets same error" },
+    { "type": "flow", "name": "Invoice cancellation process (batch)", "usage": "Process job runs cancellation; fails on step that cancels payments when package is locked" }
+  ],
+  "shared": [
+    "phoenix-core-lib: PaymentService, InvoiceCancellationService, InvoiceCancellationProcessService, InvoiceCancellationProcessor",
+    "PaymentPackageRepository (phoenix-core-lib)",
+    "PaymentCancelRequest DTO",
+    "PaymentPackageLockStatus enum"
+  ],
+  "data_entities": [
+    "invoice",
+    "payment",
+    "payment_package (id, lock_status)",
+    "customer_liability",
+    "customer_receivable_transactions (APO/ALO)",
+    "invoice_cancellation",
+    "process (invoice cancellation process)"
+  ],
+  "integration_points": [
+    "Invoice cancellation create (POST /invoice-cancellation) -> Process -> Process debit note invoices -> For each liability with payment offsetting (APO) -> PaymentService.cancel",
+    "POST /payment/cancel with payment_id -> PaymentService.cancel -> findPaymentPackageByIdAndLockStatusIn(UNLOCKED) -> fail if LOCKED",
+    "Payment package lock status lifecycle: create (UNLOCKED) -> lock (e.g. after LPF) -> cancel requires UNLOCKED",
+    "Regression: when package is UNLOCKED, payment cancel must succeed; when LOCKED, current behaviour throws (NT-1: allow cancel when LOCKED for invoice cancellation flow or keep restriction and document)"
+  ],
+  "what_could_break": [
+    { "item": "Invoice cancellation process", "location": "InvoiceCancellationService.processDebitNoteInvoice -> paymentService.cancel", "reason": "If payment package is locked, cancel throws; entire cancellation fails for that invoice" },
+    { "item": "Payment cancel API", "location": "POST /payment/cancel or any caller of PaymentService.cancel", "reason": "Same UNLOCKED check; LOCKED package returns 404/DomainEntityNotFoundException" },
+    { "item": "Mass import / upload-file flow", "location": "Invoice cancellation upload-file processing", "reason": "Uses same processDebitNoteInvoice path; same failure when payments have locked package" },
+    { "item": "Late payment fine and lock", "location": "Confluence: After LPF for the day for collection channel the payment package should be locked", "reason": "Locking prevents payment cancel; invoice cancellation then fails for those payments" },
+    { "item": "Reversal offsetting and liability flows", "location": "PaymentService.cancel reverse offsetting, receivable reversal", "reason": "Any change to cancel() (e.g. allowing LOCKED) affects all callers; reversal logic must stay consistent" }
+  ],
+  "technical_details": "Merge history: No git commit or branch explicitly mentions 'NT-1' in phoenix-core-lib. Related branches/commits: feature/invoice-cancellation-changes (merged into dev multiple times); commits 'Refactor services and update payment package query logic' (445afd508) touched PaymentPackageRepository; 'payment package change depend on online payment' and feature/OnlinePaymentEditRestricted. Key code: phoenix-core-lib PaymentService.cancel() lines 903-907: paymentPackageRepository.findPaymentPackageByIdAndLockStatusIn(payment.getPaymentPackageId(), List.of(PaymentPackageLockStatus.UNLOCKED)) or else throw DomainEntityNotFoundException (message: 'Payment package not found with with id %s and lock status in UNLOCKED'). InvoiceCancellationService.processDebitNoteInvoice (lines 375-384) finds payments linked to liability via APO and calls paymentService.cancel(offsetting.getSourceId()). No conditional sync performed: no merge found specifically for NT-1 on dev/dev2.",
+  "confluence_sources": [
+    { "title": "Invoice Cancelation - Create Process", "pageId": "27099258", "relevance": "Cancel process; locked invoice error message" },
+    { "title": "Payment package Create", "pageId": "63864981", "relevance": "Unlocked/Locked; after LPF for day for collection channel payment package should be locked" },
+    { "title": "Invoice cancelation - process", "pageId": "21200989", "relevance": "Invoice cancellation process in Billing > Invoice Cancelation" },
+    { "title": "Phase 2 - Invoice Cancelation - Create Process", "pageId": "585728648", "relevance": "User story cancel real invoices; locked invoice error" },
+    { "title": "Phase 2 - Payment package Create (2)", "pageId": "585697488", "relevance": "Payment package locked status; offline payment created with unlocked" }
+  ],
+  "code_references": [
+    { "file": "phoenix-core-lib/.../PaymentService.java", "lines": "903-907", "issue": "findPaymentPackageByIdAndLockStatusIn(..., UNLOCKED) only; LOCKED package causes exception" },
+    { "file": "phoenix-core-lib/.../InvoiceCancellationService.java", "lines": "375-384", "issue": "Calls paymentService.cancel for each APO payment; no handling for locked package" },
+    { "file": "phoenix-core-lib/.../InvoiceCancellationProcessService.java", "lines": "78-109", "issue": "startCancellationProcessing drives process that eventually calls processDebitNoteInvoice" }
+  ],
+  "impact_risk": "High for invoice cancellation when invoice is paid and payment package is locked: process fails with clear error. Fix would likely involve either (a) allowing cancel when package is LOCKED in certain context (e.g. invoice cancellation) or (b) unlocking package as part of cancellation flow; both have downstream impact on payment cancel API and LPF/lock semantics."
+}

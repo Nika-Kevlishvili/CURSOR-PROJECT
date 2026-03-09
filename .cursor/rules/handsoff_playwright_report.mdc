@@ -42,7 +42,7 @@ Reference: Rule 0.6 (report generation); `.cursor/commands/hands-off.md` Step 6.
 ## 4. Slack – Send FULL report (not a short summary) – to tester AND AI report channel
 
 - **Problem:** The message sent to Slack was too brief; user wanted the **full report**.
-- **Rule:** When sending the HandsOff result to Slack (user-slack MCP), send the **full report content** (the same as in `reports/YYYY-MM-DD/{JIRA_KEY}.md`) to **two recipients**: (1) to the **tester** (assignee); (2) **duplicate** the same full report to the **AI report** channel. Use `slack_search_channels` to resolve the "AI report" channel if needed, then `slack_send_message` with the same content for both. If the message length limit applies (e.g. 5000 chars), send the full Playwright-results section at minimum (each test: what is verified, result, failure reason). Do not send only a one-paragraph summary.
+- **Rule:** When sending the HandsOff result to Slack (user-slack MCP), send the **full report content** (the same as in `reports/YYYY-MM-DD/{JIRA_KEY}.md`) to **two recipients**: (1) to the **tester** (assignee); (2) **duplicate** the same full report to the **#ai-report** channel. **Always use** Slack channel_id **`C0AK96S1D7X`** for the AI report channel (do not rely on search; use this ID every time). Then `slack_send_message` with the same content for both. If the message length limit applies (e.g. 5000 chars), send the full Playwright-results section at minimum (each test: what is verified, result, failure reason). Do not send only a one-paragraph summary.
 
 Reference: `.cursor/commands/hands-off.md` Step 7; user-slack MCP `slack_send_message`, `slack_search_channels`.
 
@@ -87,7 +87,7 @@ Reference: `.cursor/commands/hands-off.md` Step 8; user-slack MCP for sending.
 - [ ] Test cases: written to `test_cases/Flows/<Flow>/` (or Objects); folder and .md files verified on disk; Flows/README.md updated.
 - [ ] Playwright: spec created in `EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts` (or equivalent); file verified on disk.
 - [ ] Report: content is **only** Playwright test results (per test: what is verified, steps, result, failure reason).
-- [ ] Slack: full report (or full Playwright section) sent to **tester** and **duplicate** sent to **AI report** channel; not a short summary.
+- [ ] Slack: full report (or full Playwright section) sent to **tester** and **duplicate** sent to **#ai-report** channel (channel_id **C0AK96S1D7X** – always use this); not a short summary.
 - [ ] Agent questions: after report, collect questions from each participating agent (as needed); each question tagged with agent name; send questions after the report (same recipients or as specified).
 
 Violation: repeat of the above problems is a workflow error; correct before considering HandsOff complete.
