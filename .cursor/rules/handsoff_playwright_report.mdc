@@ -42,10 +42,11 @@ Reference: Rule 0.6 (report generation); `.cursor/commands/hands-off.md` Step 6.
 
 ## 4. Slack – Send FULL report (not a short summary) – to tester AND AI report channel
 
-- **Problem:** The message sent to Slack was too brief; user wanted the **full report**.
-- **Rule:** When sending the HandsOff result to Slack (user-slack MCP), send the **full report content** (the same as in `reports/YYYY-MM-DD/{JIRA_KEY}.md`) to **two recipients**: (1) to the **tester** (assignee); (2) **duplicate** the same full report to the **#ai-report** channel. **Always use** Slack channel_id **`C0AK96S1D7X`** for the AI report channel (do not rely on search; use this ID every time). Then `slack_send_message` with the same content for both. If the message length limit applies (e.g. 5000 chars), send the full Playwright-results section at minimum (each test: what is verified, result, failure reason). Do not send only a one-paragraph summary.
+- **Problem:** The message sent to Slack was too brief; user wanted the **full report**. Sometimes the report was sent only to the channel and not to the tester.
+- **Rule (ALWAYS BOTH):** The report must **always** be sent to **both** recipients – (1) to the **tester** (DM), and (2) to the **#ai-report** channel. Never send to only one. When sending the HandsOff result to Slack (user-slack MCP), send the **full report content** (the same as in `reports/YYYY-MM-DD/{JIRA_KEY}.md`) to **both**: first to the tester via `slack_send_message(channel_id: <user_id>, message: report_content)` (user_id from step below), then to **#ai-report** via `slack_send_message(channel_id: "C0AK96S1D7X", message: report_content)`. **Always use** channel_id **`C0AK96S1D7X`** for the AI report channel. If the message length limit applies (e.g. 5000 chars), send the full Playwright-results section at minimum. Do not send only a one-paragraph summary.
+- **Find tester by name (not by ID):** Get the tester **display name** from Jira (e.g. assignee). Call **`slack_search_users(query: <tester display name>)`** to find the tester on Slack; use the returned **User ID** as `channel_id` to send the DM. Do **not** use hardcoded Slack user IDs; always resolve the tester **by name** via `slack_search_users`. Do **not** add @mention. Then send the full report to **both** the tester (DM) and #ai-report (C0AK96S1D7X).
 
-Reference: `.cursor/commands/hands-off.md` Step 7; user-slack MCP `slack_send_message`, `slack_search_channels`.
+Reference: `.cursor/commands/hands-off.md` Step 7; user-slack MCP `slack_send_message`, `slack_search_users`, `slack_search_channels`.
 
 ---
 

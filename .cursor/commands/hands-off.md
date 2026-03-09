@@ -69,13 +69,17 @@ Reference: `Cursor-Project/agents/Services/reporting_service.py` `save_agent_rep
 
 ### Step 7: Send report to Slack (Step 9 – part 2)
 
-1. **Tester:** Get the **tester** for the ticket from Jira (e.g. **Assignee** or custom field). If no tester/assignee is set, use a fallback (e.g. skip Slack or send to a default channel – document in config).
-2. **Slack – two recipients (same full report to both):**
-   - **To tester:** Use **user-slack** MCP `slack_send_message` to send the **full report** content to the tester (see `.cursor/rules/handsoff_playwright_report.mdc`). Send the same content as in `reports/YYYY-MM-DD/{JIRA_KEY}.md` (or at least the full Playwright-results section). Do NOT send only a short summary.
-   - **To AI report channel:** Send the **same full report** (duplicate) to the **#ai-report** channel. **Always use** channel_id **`C0AK96S1D7X`** (Slack #ai-report). Call `slack_send_message(channel_id: "C0AK96S1D7X", message: report_content)`. Same content as saved in `reports/YYYY-MM-DD/{JIRA_KEY}.md`. If search is ever needed, use query **"ai-report"** with `channel_types: "public_channel,private_channel"` (the channel is private).
-3. If message length limit applies (e.g. 5000 chars), send the full Playwright-results section (each test: what is verified, result, failure reason). Message should indicate it is the HandsOff run result for the Jira ticket.
+**Rule: The report must ALWAYS be sent to BOTH recipients – to the tester (DM) and to #ai-report. Never send to only one.**
 
-Reference: user-slack MCP tools (`slack_send_message`, `slack_search_channels`); Jira issue fields for assignee/custom tester.
+1. **Tester:** Get the **tester** for the ticket from Jira (e.g. **Assignee** – use the **display name**). If no tester/assignee is set, use a fallback (e.g. skip tester DM but still send to #ai-report – document in config).
+2. **Find tester on Slack by name (not by ID):** Call **user-slack** MCP `slack_search_users(query: <assignee display name>)` (e.g. `slack_search_users({"query": "nika kevlishvili"})`). Use the **name** from Jira assignee; do NOT use hardcoded Slack user IDs. From the result, take the **User ID** (e.g. `U07A2K9D4J3`). Do **not** add @mention in the message.
+3. **Slack – send to BOTH (mandatory):**
+   - **To tester (DM):** Call `slack_send_message(channel_id: <user_id from step 2>, message: report_content)`. The user-slack MCP treats `channel_id` = user ID as a DM to that user. Send the **full report** (same as in `reports/YYYY-MM-DD/{JIRA_KEY}.md`). Do NOT use @mention.
+   - **To #ai-report:** Call `slack_send_message(channel_id: "C0AK96S1D7X", message: report_content)`. Send the **same full report** (duplicate). **Always use** channel_id **`C0AK96S1D7X`** for #ai-report. Do NOT send only a short summary.
+   - **Both sends are required** every time; the report must always be in both places.
+4. If message length limit applies (e.g. 5000 chars), send the full Playwright-results section (each test: what is verified, result, failure reason). Message should indicate it is the HandsOff run result for the Jira ticket.
+
+Reference: user-slack MCP tools (`slack_send_message`, `slack_search_users`, `slack_search_channels`); Jira issue fields for assignee display name; find tester **by name** via `slack_search_users`; then send to **both** tester (channel_id = user_id) and #ai-report (C0AK96S1D7X). Do not add @mention.
 
 ### Step 8: Agent questions after report (with attribution)
 
