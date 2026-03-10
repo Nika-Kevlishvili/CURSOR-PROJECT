@@ -42,11 +42,13 @@ When the **user requests test case creation**, the parent MUST run **cross-depen
   - `result = agent.generate_test_cases(prompt=..., prompt_type='bug'|'task', confluence_data=..., context={'codebase_findings': ..., 'cross_dependency_data': ...})`
 - If Python agent is not run in this context: **output** a structured test-case spec (positive/negative, Confluence refs, code refs, integration points, and tests for items in what_could_break) so the user or another tool can use it.
 
-## Output format – human-readable hierarchy (MANDATORY)
+## Output format – template and human-readable (MANDATORY)
 
-Test cases MUST be **maximally understandable for humans** and saved in the **hierarchical folder structure** below. Do not use a flat list or the old `test_cases/` folder for this format.
+**Content:** Every test case document MUST follow the **Test Case Template**: **`Cursor-Project/config/Test_case_template.md`**. Use that template’s structure and placeholders. Write in **maximally detailed**, **human-readable** language: full sentences where they help, no unexplained jargon, plain English. Each scenario (TC-1, TC-2, …) MUST have: Objective, Preconditions (numbered), Steps (numbered), Expected result, and—for bugs—Actual result. See the template for the exact sections and the human-readable language rules.
 
-**Root folder:** `Cursor-Project/generated_test_cases/`
+**Folder (hierarchy):** Save in the structure below. Do not use a flat list.
+
+**Root folder:** `Cursor-Project/generated_test_cases/` (or for HandsOff: **`Cursor-Project/test_cases/Flows/<Flow_name>/`** or **`Cursor-Project/test_cases/Objects/<Entity_name>/`** per `.cursor/rules/test_cases_structure.mdc`).
 
 **Structure (folder tree, then leaf `.md` files):**
 - **Object/** – domain entities and actions (e.g. customer → Create, Edit, Delete, View; contract → …).
@@ -54,9 +56,9 @@ Test cases MUST be **maximally understandable for humans** and saved in the **hi
 
 **Rules:**
 - Use only folders for hierarchy; at the **leaf** of each branch, create one **.md file** per logical group (e.g. `Create.md`, `Edit.md`, `Profile.md`, `scale.md`). Use underscores for multi-word names (e.g. `For_volumes.md`).
-- Each leaf `.md` contains one or more test cases: clear title, steps, expected result (and optional preconditions). Keep wording short and human-readable.
+- Each leaf `.md` content MUST follow **`Cursor-Project/config/Test_case_template.md`**: document title, Jira, Type, Summary, Scope, Test data (preconditions), then TC-1, TC-2, … with Objective, Preconditions, Steps, Expected result, Actual result (if bug), References. **Include both positive and negative test cases:** at least one **(Positive)** (happy path, valid input, expected success) and at least one **(Negative)** (invalid input, error condition, expected rejection/failure). Label each TC as (Positive) or (Negative). Maximally detailed and human-readable.
 - Map: entities/actions → under **Object**; flows/variants/subflows → under **Flows**. Regression/impact cases (from cross_dependency_data) go under the most relevant Object or Flow path.
-- Full spec: **Cursor-Project/docs/TEST_CASES_HIERARCHY_FORMAT.md**.
+- Full spec (hierarchy): **Cursor-Project/docs/TEST_CASES_HIERARCHY_FORMAT.md**. Content spec: **Cursor-Project/config/Test_case_template.md**.
 
 **Also include in output (e.g. in a summary or index):**
 - Confluence references – relevant Confluence pages.

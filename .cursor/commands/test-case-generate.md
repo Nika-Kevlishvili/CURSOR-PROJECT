@@ -29,18 +29,22 @@ Use this command when the user asks to:
 6. **Save** – Write test cases in the **hierarchical format** to `Cursor-Project/generated_test_cases/` (see below).
 7. **Report** – Generate reports (Rule 0.6).
 
-## Output – Hierarchical Format (MANDATORY)
+## Output – Structure and content (MANDATORY)
 
-Test cases MUST be **maximally human-readable** and saved under:
+**Content template:** Every test case document MUST follow the **Test Case Template**: **`Cursor-Project/config/Test_case_template.md`**. Use that template’s structure (header, Summary, Scope, Test data, TC-1/TC-2/… with Objective, Preconditions, Steps, Expected result, Actual result if bug, References). **Include both positive and negative scenarios:** at least one **Positive** (valid input, happy path, expected success) and at least one **Negative** (invalid input, error condition, expected rejection); label each TC as **(Positive)** or **(Negative)**. Write in **maximally detailed**, **human-readable** language (full sentences where helpful, no unexplained jargon, plain English). Same rules apply whether saving under `generated_test_cases/` or `test_cases/Flows/` / `test_cases/Objects/`.
+
+**Folder (generic flow):** Save under:
 
 **Root:** `Cursor-Project/generated_test_cases/`
 
 **Structure:**
 - **Object/** – Entities and actions (e.g. customer → Create, Edit, …; contract → …).
 - **Flows/** – Business flows and variants (e.g. Billing → Standard → For_volumes → scale, Profile; interim; …).
-- **Leaf:** One `.md` file per logical group (e.g. `Create.md`, `Profile.md`). Clear title, steps, expected result per case.
+- **Leaf:** One `.md` file per logical group (e.g. `Create.md`, `Profile.md`). Each file follows the template: clear title, Summary, Scope, Test data, then TC-1, TC-2, … with Objective, Preconditions, Steps, Expected result (and Actual result if bug).
 
-Full spec: `Cursor-Project/docs/TEST_CASES_HIERARCHY_FORMAT.md`.
+**Folder (HandsOff):** When generating for HandsOff, save under **`Cursor-Project/test_cases/Flows/<Flow_name>/`** or **`Cursor-Project/test_cases/Objects/<Entity_name>/`** (see `.cursor/rules/test_cases_structure.mdc`). Content still MUST follow **`Cursor-Project/config/Test_case_template.md`**.
+
+Full spec (hierarchy): `Cursor-Project/docs/TEST_CASES_HIERARCHY_FORMAT.md`. Content spec: `Cursor-Project/config/Test_case_template.md`.
 
 ## Constraints
 

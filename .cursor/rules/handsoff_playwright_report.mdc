@@ -6,14 +6,15 @@ alwaysApply: true
 
 These problems occurred in HandsOff runs and MUST NOT happen again. Apply whenever running HandsOff or generating Playwright/test-case reports.
 
-## 1. Test cases – MUST be in required folder and MUST exist on disk
+## 1. Test cases – MUST be in required folder and MUST follow template
 
 - **Problem:** Test cases were reported as "created" by a subagent but were **not** actually written to the workspace (folder or files missing).
 - **Rule:** Test cases for a flow (e.g. Invoice cancellation) MUST be saved under **`Cursor-Project/test_cases/Flows/<Flow_name>/`** (or `Objects/<Entity>/` for entity-based). Use thematic names with underscores (e.g. `Invoice_cancellation`).
-- **Rule:** After test case generation, **verify** that the folder and .md files exist (e.g. list or read the path). If missing, **write them directly** (create the folder, create each .md file with the content). Do not rely only on subagent output.
+- **Rule (content):** The **content** of each test case .md MUST follow the **Test Case Template**: **`Cursor-Project/config/Test_case_template.md`**. Structure: document title, Jira, Type, Summary, Scope, Test data (preconditions), then TC-1, TC-2, … with Objective, Preconditions, Steps, Expected result, Actual result (if bug), References. **Include both positive and negative test cases** (at least one Positive and one Negative per document; label each TC as (Positive) or (Negative)). Write in **maximally detailed**, **human-readable** language (plain English, full sentences where helpful, no unexplained jargon).
+- **Rule:** After test case generation, **verify** that the folder and .md files exist (e.g. list or read the path). If missing, **write them directly** (create the folder, create each .md file with the content following the template). Do not rely only on subagent output.
 - **Rule:** Update **`test_cases/Flows/README.md`** (or Objects/README.md) to include the new flow/entity in the table.
 
-Reference: `.cursor/rules/test_cases_structure.mdc`.
+Reference: `.cursor/rules/test_cases_structure.mdc`; `Cursor-Project/config/Test_case_template.md`.
 
 ---
 
@@ -43,10 +44,11 @@ Reference: Rule 0.6 (report generation); `.cursor/commands/hands-off.md` Step 6.
 ## 4. Slack – Send FULL report (not a short summary) – to tester AND AI report channel
 
 - **Problem:** The message sent to Slack was too brief; user wanted the **full report**. Sometimes the report was sent only to the channel and not to the tester.
-- **Rule (ALWAYS BOTH):** The report must **always** be sent to **both** recipients – (1) to the **tester** (DM), and (2) to the **#ai-report** channel. Never send to only one. When sending the HandsOff result to Slack (user-slack MCP), send the **full report content** (the same as in `reports/YYYY-MM-DD/{JIRA_KEY}.md`) to **both**: first to the tester via `slack_send_message(channel_id: <user_id>, message: report_content)` (user_id from step below), then to **#ai-report** via `slack_send_message(channel_id: "C0AK96S1D7X", message: report_content)`. **Always use** channel_id **`C0AK96S1D7X`** for the AI report channel. If the message length limit applies (e.g. 5000 chars), send the full Playwright-results section at minimum. Do not send only a one-paragraph summary.
+- **Rule (template):** The content sent to Slack MUST follow the **Slack report template** structure every time. Use **`Cursor-Project/config/Slack_report_template.md`** as the canonical format. The message MUST include: (1) Header: `{JIRA_KEY} – Playwright test results`; (2) Jira, Title, Date, Assignee / Tester; (3) Total: X passed, Y failed, Z skipped; (4) Separator `-------------------------`; (5) For each test: `Test N: [JIRA_KEY] short title – short details`, then **Test description**, **Expected result**, **Actual result**, **Test result**. Fill all placeholders from the Jira ticket and Playwright run. Same structure for every HandsOff Slack report.
+- **Rule (ALWAYS BOTH):** The report must **always** be sent to **both** recipients – (1) to the **tester** (DM), and (2) to the **#ai-report** channel. Never send to only one. Send the **full report content** (built from the template above) to **both**: to the tester via `slack_send_message(channel_id: <user_id>, message: report_content)` (user_id from step below), and to **#ai-report** via `slack_send_message(channel_id: "C0AK96S1D7X", message: report_content)`. **Always use** channel_id **`C0AK96S1D7X`** for #ai-report. If the message length limit applies (e.g. 5000 chars), send the full Playwright-results section at minimum. Do not send only a one-paragraph summary.
 - **Find tester by name (not by ID):** Get the tester **display name** from Jira (e.g. assignee). Call **`slack_search_users(query: <tester display name>)`** to find the tester on Slack; use the returned **User ID** as `channel_id` to send the DM. Do **not** use hardcoded Slack user IDs; always resolve the tester **by name** via `slack_search_users`. Do **not** add @mention. Then send the full report to **both** the tester (DM) and #ai-report (C0AK96S1D7X).
 
-Reference: `.cursor/commands/hands-off.md` Step 7; user-slack MCP `slack_send_message`, `slack_search_users`, `slack_search_channels`.
+Reference: `Cursor-Project/config/Slack_report_template.md`; `.cursor/commands/hands-off.md` Step 7; user-slack MCP `slack_send_message`, `slack_search_users`, `slack_search_channels`.
 
 ---
 
@@ -89,7 +91,7 @@ Reference: `.cursor/commands/hands-off.md` Step 8; user-slack MCP for sending.
 - [ ] Test cases: written to `test_cases/Flows/<Flow>/` (or Objects); folder and .md files verified on disk; Flows/README.md updated.
 - [ ] Playwright: spec created in `EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts` (or equivalent); file verified on disk.
 - [ ] Report: content is **only** Playwright test results (per test: what is verified, steps, result, failure reason).
-- [ ] Slack: full report (or full Playwright section) sent to **tester** and **duplicate** sent to **#ai-report** channel (channel_id **C0AK96S1D7X** – always use this); not a short summary.
+- [ ] Slack: report built from **`Cursor-Project/config/Slack_report_template.md`**; full report sent to **tester** and **duplicate** to **#ai-report** channel (channel_id **C0AK96S1D7X**); not a short summary.
 - [ ] Agent questions: after report, collect questions from each participating agent (as needed); each question tagged with agent name; send questions after the report (same recipients or as specified).
 
 Violation: repeat of the above problems is a workflow error; correct before considering HandsOff complete.

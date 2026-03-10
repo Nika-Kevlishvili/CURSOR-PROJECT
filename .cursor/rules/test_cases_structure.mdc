@@ -65,6 +65,12 @@ When adding a new entity or flow folder, add or update the corresponding README 
 
 ---
 
+## Content of test case files (structure and readability)
+
+The **content** of each test case `.md` file MUST follow the **Test Case Template**: **`Cursor-Project/config/Test_case_template.md`**. That template defines: document header (title, Jira, Type, Summary, Scope), Test data (preconditions), then for each scenario (TC-1, TC-2, …): Objective, Preconditions, Steps, Expected result, Actual result (if bug), References. Each document MUST include **both positive and negative** test cases (at least one Positive and one Negative; label each TC as **(Positive)** or **(Negative)**). Test cases must be **maximally detailed** and **human-readable** (plain English, full sentences where helpful, no unexplained jargon). See the template for placeholders and examples.
+
+---
+
 ## Summary
 
 1. **Root:** `Cursor-Project/test_cases/`
