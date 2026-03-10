@@ -14,7 +14,7 @@ Run the **entire flow** without user intervention when the user provides a **Jir
 1. **IntegrationService** – Call `IntegrationService.update_before_task()` first (Rule 11).
 2. **Parse input** – From the user message extract the Jira **issue key** (e.g. REG-123, BUG-456). If user gave a link, parse the key from the URL. If user gave a screenshot only, use vision/OCR if available to extract the key.
 3. **Get cloudId** – Use Jira MCP (e.g. `getAccessibleAtlassianResources` or equivalent) to obtain cloudId if needed.
-4. **Fetch ticket** – Call **Jira MCP** `getJiraIssue(cloudId, issueIdOrKey)` to get the ticket **summary** (title) and **description**. Store for later: description (for cross-deps and test case generator), and **tester/assignee** (for Step 9 Slack).
+4. **Fetch ticket** – Call **Jira MCP** `getJiraIssue(cloudId, issueIdOrKey)` to get the ticket **summary** (title) and **description**. Store for later: description (for cross-deps and test case generator), and **Tester** (display name, for Step 7 Slack – report is sent only to Tester and #ai-report, never to Assignee).
 5. If ticket cannot be fetched, stop and report error.
 
 ### Step 2: Cross-dependencies (Rule 35a)
@@ -42,9 +42,9 @@ Reference: `.cursor/commands/test-case-generate.md`, `.cursor/rules/handsoff_pla
 ### Step 4: Create Playwright tests from test cases (bridge) [MANDATORY: energo-ts-test agent]
 
 1. **MUST use EnergoTSTestAgent (energo-ts-test):** The Playwright spec MUST be created by the **energo-ts-test** agent (EnergoTSTestAgent). Do NOT write the spec manually or with ad-hoc code (e.g. custom `getToken()`, custom `apiRequest()`). The agent reads the test case .md content and produces a spec using the **EnergoTS framework** (fixtures: Request, Endpoints, baseFixture, etc.).
-2. **Input to agent:** Pass to the energo-ts-test agent: (a) **paths to test case .md files** from Step 3 (e.g. `Cursor-Project/test_cases/Flows/Invoice_cancellation/*.md`), (b) **Jira key and ticket title**, (c) cross_dependency_data or entry points if useful. The agent MUST use this content to derive scenarios, endpoints, steps, and assertions.
-3. **Output:** Spec file **`Cursor-Project/EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`** (e.g. `NT-1-invoice-cancellation.spec.ts`). EnergoTS must be on **cursor** branch (Rule ENERGOTS.0). Spec MUST follow project patterns (fixtures, test naming with Jira key, one test per main scenario from the .md).
-4. **Verify on disk:** After the agent runs, verify the spec file exists. If the agent did not create it, invoke the agent again with explicit test case paths and Jira context; do not fall back to writing an ad-hoc spec.
+2. **Input to agent:** Pass to the energo-ts-test agent: (a) **paths to all test case .md files** from Step 3 (e.g. `Cursor-Project/test_cases/Flows/Invoice_cancellation/*.md` or the full list of .md files in that folder), (b) **Jira key and ticket title**, (c) cross_dependency_data or entry points if useful. The agent MUST use this content to derive scenarios, endpoints, steps, and assertions.
+3. **Output:** Spec file **`Cursor-Project/EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`** (e.g. `NT-1-invoice-cancellation.spec.ts`). EnergoTS must be on **cursor** branch (Rule ENERGOTS.0). Spec MUST follow project patterns (fixtures, test naming with Jira key). **CRITICAL – full coverage:** The spec MUST contain **one `test()` (or equivalent) for every test case (TC-1, TC-2, …)** defined in the .md files in the corresponding test case folder. Playwright tests must cover **all** test cases written in that folder; the number of tests in the spec MUST equal the total number of TCs. If a TC cannot be automated (e.g. no API, complex setup), include it as `test.skip(..., 'reason')` so the count matches.
+4. **Verify on disk:** After the agent runs, verify the spec file exists and that it has one test per test case from the folder (count must match). If the agent did not create it or coverage is incomplete, invoke the agent again with explicit test case paths and the requirement to cover all TCs; do not fall back to writing an ad-hoc spec.
 
 Reference: `.cursor/rules/handsoff_playwright_report.mdc` §2, `.cursor/commands/energo-ts-test.md`.
 
@@ -69,18 +69,18 @@ Reference: `Cursor-Project/config/Slack_report_template.md`; `Cursor-Project/age
 
 ### Step 7: Send report to Slack (Step 9 – part 2)
 
-**Rule: The report must ALWAYS be sent to BOTH recipients – to the tester (DM) and to #ai-report. Never send to only one.**
+**Rule [CRITICAL]: The report must be sent ONLY to (1) the Tester (DM) and (2) the #ai-report channel. Do NOT send the report to anyone else on Slack (not to Assignee, not to any other user). Only Tester and #ai-report.**
 
-1. **Tester:** Get the **tester** for the ticket from Jira (e.g. **Assignee** – use the **display name**). If no tester/assignee is set, use a fallback (e.g. skip tester DM but still send to #ai-report – document in config).
+1. **Tester:** Get the **Tester** for the ticket from Jira (e.g. custom field such as Tester / QA, or equivalent; use the **display name**). Do NOT use Assignee as report recipient; only the designated Tester. If no Tester is set, send only to #ai-report (do not send to Assignee or anyone else).
 2. **Slack message:** Build the message using the **Slack report template**: **`Cursor-Project/config/Slack_report_template.md`**. The content MUST follow that template (header, Jira/Title/Date/Assignee/Tester, Total, separator, then each test with Test description, Expected result, Actual result, Test result). Use the same content for both recipients.
-3. **Find tester on Slack by name (not by ID):** Call **user-slack** MCP `slack_search_users(query: <assignee display name>)` (e.g. `slack_search_users({"query": "nika kevlishvili"})`). Use the **name** from Jira assignee; do NOT use hardcoded Slack user IDs. From the result, take the **User ID** (e.g. `U07A2K9D4J3`). Do **not** add @mention in the message.
-4. **Slack – send to BOTH (mandatory):**
-   - **To tester (DM):** Call `slack_send_message(channel_id: <user_id from step 3>, message: report_content)`. The user-slack MCP treats `channel_id` = user ID as a DM to that user. Send the **full report** (template-filled content, same as in `reports/YYYY-MM-DD/{JIRA_KEY}.md`). Do NOT use @mention.
-   - **To #ai-report:** Call `slack_send_message(channel_id: "C0AK96S1D7X", message: report_content)`. Send the **same full report** (duplicate). **Always use** channel_id **`C0AK96S1D7X`** for #ai-report. Do NOT send only a short summary.
-   - **Both sends are required** every time; the report must always be in both places.
-5. If message length limit applies (e.g. 5000 chars), send at least the full Playwright-results section (each test: description, expected, actual, result). Message should indicate it is the HandsOff run result for the Jira ticket.
+3. **Find tester on Slack by name (not by ID):** Call **user-slack** MCP `slack_search_users(query: <tester display name>)` (e.g. from Jira Tester field). Use the **name** from Jira Tester; do NOT use hardcoded Slack user IDs. From the result, take the **User ID**. Do **not** add @mention in the message.
+4. **Slack – send ONLY to these two (mandatory):**
+   - **To Tester (DM):** If Tester is set in Jira, call `slack_send_message(channel_id: <tester_user_id>, message: report_content)`. The user-slack MCP treats `channel_id` = user ID as a DM to that user. Send the **full report**. Do NOT use @mention. Do NOT send to Assignee.
+   - **To #ai-report:** Call `slack_send_message(channel_id: "C0AK96S1D7X", message: report_content)`. Send the **same full report**. **Always use** channel_id **`C0AK96S1D7X`** for #ai-report. Do NOT send only a short summary.
+   - **Do NOT send to Assignee or any other Slack user.** Only Tester (DM) and #ai-report.
+5. If message length limit applies (e.g. 5000 chars), send at least the full Playwright-results section. Message should indicate it is the HandsOff run result for the Jira ticket.
 
-Reference: `Cursor-Project/config/Slack_report_template.md`; user-slack MCP tools (`slack_send_message`, `slack_search_users`, `slack_search_channels`); Jira issue fields for assignee display name; find tester **by name** via `slack_search_users`; then send to **both** tester (channel_id = user_id) and #ai-report (C0AK96S1D7X). Do not add @mention.
+Reference: `Cursor-Project/config/Slack_report_template.md`; user-slack MCP tools (`slack_send_message`, `slack_search_users`); Jira Tester field (e.g. customfield); find tester **by name** via `slack_search_users`; send **only** to Tester (DM) and #ai-report (C0AK96S1D7X). Never send to Assignee or anyone else.
 
 ### Step 8: Agent questions after report (with attribution)
 
@@ -101,7 +101,7 @@ Reference: `.cursor/rules/handsoff_playwright_report.mdc` §7.
 ## Response Requirements
 
 - While the flow runs, you may briefly confirm each step (e.g. "Step 1: Fetched REG-123…", "Step 2: Cross-deps done…").
-- At the end, summarize: Jira key, tests run, pass/fail counts, report path, and that the report was sent to Slack (to tester and to AI report channel; or fallback if no tester).
+- At the end, summarize: Jira key, tests run, pass/fail counts, report path, and that the report was sent to Slack only to Tester (DM) and #ai-report (never to Assignee or anyone else; or only to #ai-report if no Tester).
 - End with: **"Agents involved: HandsOff (orchestrator), CrossDependencyFinderAgent, TestCaseGeneratorAgent, EnergoTSTestAgent, EnergoTS Playwright Test Runner"** (and PhoenixExpert if consulted).
 
 ## Generate Reports (Rule 0.6)

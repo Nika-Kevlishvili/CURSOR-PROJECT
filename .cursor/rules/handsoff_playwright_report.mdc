@@ -18,12 +18,13 @@ Reference: `.cursor/rules/test_cases_structure.mdc`; `Cursor-Project/config/Test
 
 ---
 
-## 2. Playwright tests – MUST be created by energo-ts-test agent, use framework (tests/cursor)
+## 2. Playwright tests – MUST be created by energo-ts-test agent, use framework (tests/cursor), MUST cover ALL test cases
 
-- **Problem:** User believed Playwright tests were "not created"; tests existed only in one path. Another problem: specs were written with ad-hoc code (custom getToken, custom apiRequest) instead of the EnergoTS framework, producing poor quality and inconsistency.
+- **Problem:** User believed Playwright tests were "not created"; tests existed only in one path. Another problem: specs were written with ad-hoc code (custom getToken, custom apiRequest) instead of the EnergoTS framework. **Critical:** The number of Playwright tests did not match the number of test cases; every test case written in the folder must have a corresponding Playwright test.
 - **Rule:** Playwright spec for the Jira ticket MUST be created by the **energo-ts-test agent (EnergoTSTestAgent)**. The orchestrator MUST invoke the energo-ts-test agent with the **test case .md file paths** (from Step 3) and Jira key/title; the agent produces the spec from that content. Do NOT write the spec manually or with ad-hoc helpers.
 - **Rule:** The spec MUST use the **EnergoTS framework** (fixtures such as Request, Endpoints, baseFixture, project patterns). Do NOT add custom inline `getToken()`, `apiRequest()`, or similar unless they are part of the project's shared fixtures/utilities. The agent MUST follow `.cursor/commands/energo-ts-test.md` and create tests that match existing EnergoTS patterns.
-- **Rule:** Output path **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`** (e.g. `NT-1-invoice-cancellation.spec.ts`). After the agent runs, **verify** the file exists. If the agent did not create it, invoke the agent again with explicit test case paths; do not fall back to writing an ad-hoc spec.
+- **Rule (CRITICAL – full coverage):** Playwright tests MUST cover **every** test case (TC-1, TC-2, …) defined in the test case .md files in the **corresponding folder** (`test_cases/Flows/<Flow_name>/` or `test_cases/Objects/<Entity>/`). There must be a **1:1 correspondence**: for each TC in those .md files there must be exactly one `test()` (or equivalent) in the spec. If a TC cannot be automated (e.g. no API, complex setup), the spec MUST still contain a test for it (e.g. `test.skip(..., 'reason')`) so that the count matches and coverage is explicit. The number of tests in the Playwright spec MUST equal the total number of test cases across all .md files in that flow/entity folder.
+- **Rule:** Output path **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`** (e.g. `NT-1-invoice-cancellation.spec.ts`). After the agent runs, **verify** the file exists and that it contains one test per test case from the folder. If the agent did not create it or coverage is incomplete, invoke the agent again with explicit test case paths and the requirement to cover all TCs; do not fall back to writing an ad-hoc spec.
 - **Rule:** Do not assume "subagent created it" without checking the workspace.
 
 Reference: Rule ENERGOTS.0 (cursor branch only); `.cursor/commands/energo-ts-run.md`; `.cursor/commands/energo-ts-test.md`; `.cursor/commands/hands-off.md` Step 4.
@@ -41,12 +42,12 @@ Reference: Rule 0.6 (report generation); `.cursor/commands/hands-off.md` Step 6.
 
 ---
 
-## 4. Slack – Send FULL report (not a short summary) – to tester AND AI report channel
+## 4. Slack – Send FULL report ONLY to Tester (DM) and #ai-report – NEVER to anyone else
 
-- **Problem:** The message sent to Slack was too brief; user wanted the **full report**. Sometimes the report was sent only to the channel and not to the tester.
+- **Problem:** The message sent to Slack was too brief; user wanted the **full report**. Sometimes the report was sent to Assignee or other users; it must go only to Tester and #ai-report.
 - **Rule (template):** The content sent to Slack MUST follow the **Slack report template** structure every time. Use **`Cursor-Project/config/Slack_report_template.md`** as the canonical format. The message MUST include: (1) Header: `{JIRA_KEY} – Playwright test results`; (2) Jira, Title, Date, Assignee / Tester; (3) Total: X passed, Y failed, Z skipped; (4) Separator `-------------------------`; (5) For each test: `Test N: [JIRA_KEY] short title – short details`, then **Test description**, **Expected result**, **Actual result**, **Test result**. Fill all placeholders from the Jira ticket and Playwright run. Same structure for every HandsOff Slack report.
-- **Rule (ALWAYS BOTH):** The report must **always** be sent to **both** recipients – (1) to the **tester** (DM), and (2) to the **#ai-report** channel. Never send to only one. Send the **full report content** (built from the template above) to **both**: to the tester via `slack_send_message(channel_id: <user_id>, message: report_content)` (user_id from step below), and to **#ai-report** via `slack_send_message(channel_id: "C0AK96S1D7X", message: report_content)`. **Always use** channel_id **`C0AK96S1D7X`** for #ai-report. If the message length limit applies (e.g. 5000 chars), send the full Playwright-results section at minimum. Do not send only a one-paragraph summary.
-- **Find tester by name (not by ID):** Get the tester **display name** from Jira (e.g. assignee). Call **`slack_search_users(query: <tester display name>)`** to find the tester on Slack; use the returned **User ID** as `channel_id` to send the DM. Do **not** use hardcoded Slack user IDs; always resolve the tester **by name** via `slack_search_users`. Do **not** add @mention. Then send the full report to **both** the tester (DM) and #ai-report (C0AK96S1D7X).
+- **Rule (ONLY two recipients – CRITICAL):** The report must be sent **only** to (1) the **Tester** (DM) and (2) the **#ai-report** channel. **Do NOT send the report to Assignee or to any other Slack user.** Never send to only one of the two when both are applicable; send the **full report content** to the Tester via `slack_send_message(channel_id: <tester_user_id>, message: report_content)` and to **#ai-report** via `slack_send_message(channel_id: "C0AK96S1D7X", message: report_content)`. **Always use** channel_id **`C0AK96S1D7X`** for #ai-report. If no Tester is set in Jira, send only to #ai-report (still never to Assignee). If the message length limit applies (e.g. 5000 chars), send the full Playwright-results section at minimum.
+- **Find Tester by name (not by ID):** Get the **Tester** display name from Jira (e.g. Tester/QA custom field; do **not** use Assignee as the report recipient). Call **`slack_search_users(query: <tester display name>)`** to find the Tester on Slack; use the returned **User ID** as `channel_id` for the DM. Do **not** use hardcoded Slack user IDs; do **not** add @mention. Send the full report **only** to Tester (DM) and #ai-report (C0AK96S1D7X). **Never send to Assignee or anyone else.**
 
 Reference: `Cursor-Project/config/Slack_report_template.md`; `.cursor/commands/hands-off.md` Step 7; user-slack MCP `slack_send_message`, `slack_search_users`, `slack_search_channels`.
 
@@ -89,9 +90,9 @@ Reference: `.cursor/commands/hands-off.md` Step 8; user-slack MCP for sending.
 ## Summary checklist (HandsOff)
 
 - [ ] Test cases: written to `test_cases/Flows/<Flow>/` (or Objects); folder and .md files verified on disk; Flows/README.md updated.
-- [ ] Playwright: spec created in `EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts` (or equivalent); file verified on disk.
+- [ ] Playwright: spec created in `EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts` (or equivalent); file verified on disk; **number of `test()` blocks equals total number of test cases (TC-1, TC-2, …) in the .md files in that folder** – full coverage, 1:1.
 - [ ] Report: content is **only** Playwright test results (per test: what is verified, steps, result, failure reason).
-- [ ] Slack: report built from **`Cursor-Project/config/Slack_report_template.md`**; full report sent to **tester** and **duplicate** to **#ai-report** channel (channel_id **C0AK96S1D7X**); not a short summary.
-- [ ] Agent questions: after report, collect questions from each participating agent (as needed); each question tagged with agent name; send questions after the report (same recipients or as specified).
+- [ ] Slack: report built from **`Cursor-Project/config/Slack_report_template.md`**; full report sent **only** to **Tester** (DM) and **#ai-report** (channel_id **C0AK96S1D7X**); **never** to Assignee or anyone else; not a short summary.
+- [ ] Agent questions: after report, collect questions from each participating agent (as needed); each question tagged with agent name; send questions after the report to the same recipients (Tester and #ai-report only).
 
 Violation: repeat of the above problems is a workflow error; correct before considering HandsOff complete.
