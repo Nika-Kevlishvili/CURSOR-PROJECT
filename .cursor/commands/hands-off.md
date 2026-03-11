@@ -14,7 +14,7 @@ Run the **entire flow** without user intervention when the user provides a **Jir
 1. **IntegrationService** – Call `IntegrationService.update_before_task()` first (Rule 11).
 2. **Parse input** – From the user message extract the Jira **issue key** (e.g. REG-123, BUG-456). If user gave a link, parse the key from the URL. If user gave a screenshot only, use vision/OCR if available to extract the key.
 3. **Get cloudId** – Use Jira MCP (e.g. `getAccessibleAtlassianResources` or equivalent) to obtain cloudId if needed.
-4. **Fetch ticket** – Call **Jira MCP** `getJiraIssue(cloudId, issueIdOrKey)` to get the ticket **summary** (title) and **description**. Store for later: description (for cross-deps and test case generator), and **Tester** (display name, for Step 7 Slack – report is sent only to Tester and #ai-report, never to Assignee).
+4. **Fetch ticket** – Call **Jira MCP** `getJiraIssue(cloudId, issueIdOrKey)` (use `expand: "names"` to resolve field names). Get the ticket **summary** (title) and **description**. For **Tester**, read **only** from the Jira custom field **"Tester"**: in this project that is **`customfield_10095`** (single user picker). Use that user’s **displayName** for Slack lookup in Step 7. **Do NOT use** Assignee, **customfield_11151** (BA), or any other field as Tester. If `customfield_10095` is null, there is no Tester – send report only to #ai-report. Store for later: description, and Tester display name (from customfield_10095 only).
 5. If ticket cannot be fetched, stop and report error.
 
 ### Step 2: Cross-dependencies (Rule 35a)
@@ -71,7 +71,7 @@ Reference: `Cursor-Project/config/Slack_report_template.md`; `Cursor-Project/age
 
 **Rule [CRITICAL]: The report must be sent ONLY to (1) the Tester (DM) and (2) the #ai-report channel. Do NOT send the report to anyone else on Slack (not to Assignee, not to any other user). Only Tester and #ai-report.**
 
-1. **Tester:** Get the **Tester** for the ticket from Jira (e.g. custom field such as Tester / QA, or equivalent; use the **display name**). Do NOT use Assignee as report recipient; only the designated Tester. If no Tester is set, send only to #ai-report (do not send to Assignee or anyone else).
+1. **Tester:** Get the **Tester** for the ticket **only** from the Jira **"Tester"** field. In this project that is **`customfield_10095`** (single user). Use that user’s **displayName** to find them on Slack. **Do NOT use** Assignee or **customfield_11151** (BA). If no Tester is set (customfield_10095 is null), send only to #ai-report.
 2. **Slack message:** Build the message using the **Slack report template**: **`Cursor-Project/config/Slack_report_template.md`**. The content MUST follow that template (header, Jira/Title/Date/Assignee/Tester, Total, separator, then each test with Test description, Expected result, Actual result, Test result). Use the same content for both recipients.
 3. **Find tester on Slack by name (not by ID):** Call **user-slack** MCP `slack_search_users(query: <tester display name>)` (e.g. from Jira Tester field). Use the **name** from Jira Tester; do NOT use hardcoded Slack user IDs. From the result, take the **User ID**. Do **not** add @mention in the message.
 4. **Slack – send ONLY to these two (mandatory):**
@@ -80,7 +80,7 @@ Reference: `Cursor-Project/config/Slack_report_template.md`; `Cursor-Project/age
    - **Do NOT send to Assignee or any other Slack user.** Only Tester (DM) and #ai-report.
 5. If message length limit applies (e.g. 5000 chars), send at least the full Playwright-results section. Message should indicate it is the HandsOff run result for the Jira ticket.
 
-Reference: `Cursor-Project/config/Slack_report_template.md`; user-slack MCP tools (`slack_send_message`, `slack_search_users`); Jira Tester field (e.g. customfield); find tester **by name** via `slack_search_users`; send **only** to Tester (DM) and #ai-report (C0AK96S1D7X). Never send to Assignee or anyone else.
+Reference: `Cursor-Project/config/Slack_report_template.md`; user-slack MCP tools (`slack_send_message`, `slack_search_users`). Jira Tester = **customfield_10095** only (not Assignee, not customfield_11151/BA); find tester by name via `slack_search_users`; send **only** to Tester (DM) and #ai-report (C0AK96S1D7X).
 
 ### Step 8: Agent questions after report (with attribution)
 

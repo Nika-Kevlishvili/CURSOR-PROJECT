@@ -1,0 +1,82 @@
+{
+  "scope": "PDT-2474: Liabilities and receivables must not be generated with amount zero. All flows that create CustomerLiability or CustomerReceivable must not persist entities with initialAmount zero.",
+  "jira_key": "PDT-2474",
+  "entry_points": [
+    "Manual liability creation (API: CustomerLiabilityRequest with @DecimalMin(0, inclusive=false) on initialAmount)",
+    "Manual receivable creation (API: CustomerReceivableRequest with @Positive on initialAmount)",
+    "Action flow (ActionService -> CustomerLiabilityMapperService.mapLiabilityFromAction -> CustomerLiabilityService)",
+    "Deposit flow (DepositService -> customerLiabilityRepository.save)",
+    "Late payment fine (LatePaymentFineService -> customerLiabilityRepository.save, customerReceivableRepository.saveAndFlush)",
+    "Rescheduling (ReschedulingService, ReschedulingMapperService -> customerLiabilityRepository.saveAll)",
+    "Payment (PaymentService -> customerReceivableRepository.save/saveAndFlush)",
+    "Goods order invoice (GoodsOrderProcessService -> CustomerLiabilityService/CustomerReceivableService)",
+    "Service order invoice (ServiceOrderProcessService -> CustomerLiabilityService/CustomerReceivableService)",
+    "Billing run (BillingRunStartAccountingInvokeService -> generateLiabilities/generateReceivables -> CustomerLiabilityService, CustomerReceivableService)",
+    "Request for disconnection / Disconnection of power supply (DisconnectionPowerSupplyRequestsService, DisconnectionOfPowerSupplyService -> customerLiabilityRepository.saveAndFlush)",
+    "Invoice cancellation (InvoiceCancellationService -> LiabilityOrReceivableCreationSource.INVOICE_CANCELLATION)",
+    "Reversal of invoice (InvoiceReversalProcessService -> customerLiabilityRepository.saveAndFlush)",
+    "Reversal of payment / manual liability offsetting (CustomerLiabilityService, CustomerReceivableService)",
+    "Manual liability offsetting (ManualLiabilityOffsettingService -> customerLiabilityRepository.saveAndFlush)",
+    "Billing run: Credit notes, invoice corrections, VAT base adjustments, Compensations (CustomerReceivableService, CustomerReceivableMapperService, CompensationReceivableService)",
+    "JPA persistence (all paths that call customerLiabilityRepository.save/saveAll/saveAndFlush or customerReceivableRepository.save/saveAll/saveAndFlush)"
+  ],
+  "upstream": [
+    { "type": "db", "name": "receivable.customer_liabilities", "usage": "Persists CustomerLiability; ZeroAmountValidationListener runs @PrePersist" },
+    { "type": "db", "name": "receivable.customer_receivables", "usage": "Persists CustomerReceivable; ZeroAmountValidationListener runs @PrePersist" },
+    { "type": "service", "name": "CustomerLiabilityMapperService", "usage": "Builds liability entities; skips zero-amount VAT base liability before saveAll" },
+    { "type": "service", "name": "CustomerReceivableMapperService", "usage": "Builds receivable entities from invoice/VAT base" },
+    { "type": "service", "name": "CustomerReceivableService", "usage": "Creates/saves receivables; skips zero-amount VAT base receivable before saveAll" },
+    { "type": "api", "name": "CustomerLiabilityRequest", "usage": "DTO with @DecimalMin(value=0, inclusive=false) on initialAmount" },
+    { "type": "api", "name": "CustomerReceivableRequest", "usage": "DTO with @Positive on initialAmount" },
+    { "type": "lib", "name": "phoenix-core-lib", "usage": "Contains entities, mappers, services, and ZeroAmountValidationListener" }
+  ],
+  "downstream": [
+    { "type": "service", "name": "CustomerLiabilityService", "usage": "Multiple entry points for liability creation; all persist via repository (listener enforced)" },
+    { "type": "service", "name": "CustomerReceivableService", "usage": "Manual and automatic receivable creation; VAT base skip logic and listener" },
+    { "type": "service", "name": "BillingRunStartAccountingInvokeService", "usage": "Calls generateLiabilities and generateReceivables for billing run" },
+    { "type": "service", "name": "InvoiceCancellationService", "usage": "Creates liabilities/receivables with INVOICE_CANCELLATION source" },
+    { "type": "service", "name": "InvoiceReversalProcessService", "usage": "Creates VAT base liabilities on reversal" },
+    { "type": "consumer", "name": "UI/API clients", "usage": "Manual liability/receivable creation endpoints; validation errors if zero sent" },
+    { "type": "consumer", "name": "Reporting/export jobs", "usage": "ExportLiabilitiesJobService, collections; assume no zero-amount records" }
+  ],
+  "shared": [
+    "phoenix-core-lib (entities CustomerLiability, CustomerReceivable, ZeroAmountValidationListener)",
+    "receivable schema (customer_liabilities, customer_receivables tables)",
+    "CreationType / LiabilityOrReceivableCreationSource enums"
+  ],
+  "data_entities": [
+    "CustomerLiability",
+    "CustomerReceivable",
+    "Invoice",
+    "BillingRun",
+    "Deposit",
+    "Payment",
+    "Action",
+    "LatePaymentFine",
+    "Rescheduling",
+    "ManualLiabilityOffsetting"
+  ],
+  "integration_points": [
+    "Manual liability/receivable REST API (request validation + listener on persist)",
+    "Billing run start accounting (generateLiabilities / generateReceivables)",
+    "Invoice cancellation flow (mapReceivableFromInvoiceByVatBaseWithCancellationDate, liability/receivable creation)",
+    "Invoice reversal (VAT base liability creation)",
+    "Deposit creation (liability save)",
+    "Late payment fine job (liability and receivable save)",
+    "Rescheduling (liability saveAll)",
+    "Payment (receivable save)",
+    "Goods order / Service order (liability/receivable creation)",
+    "Disconnection of power supply / request for disconnection (liability save)",
+    "Manual liability offsetting (liability save)",
+    "JPA @PrePersist on CustomerLiability and CustomerReceivable (ZeroAmountValidationListener)"
+  ],
+  "what_could_break": [
+    { "item": "Flows that compute amount from external data", "location": "Any service that builds CustomerLiability/CustomerReceivable with calculated amount", "reason": "If calculation yields zero, @PrePersist throws IllegalArgumentException; flow must skip or avoid building entity" },
+    { "item": "Manual API callers sending initialAmount=0", "location": "CustomerLiabilityRequest / CustomerReceivableRequest", "reason": "Validation rejects (DecimalMin/Positive); clients get 400 with message" },
+    { "item": "Billing run / invoice flows with zero total", "location": "BillingRunStartAccountingInvokeService, CustomerLiabilityMapperService, CustomerReceivableService", "reason": "VAT base skip logic and listener prevent persist; no record created for zero—reporting may assume one record per invoice in some cases" },
+    { "item": "Reversal and cancellation flows", "location": "InvoiceReversalProcessService, InvoiceCancellationService", "reason": "Zero-amount reversal/cancellation would throw on persist; must be skipped or not created" },
+    { "item": "Deposit / Late payment fine / Rescheduling / Payment / Disconnection", "location": "DepositService, LatePaymentFineService, ReschedulingService, PaymentService, DisconnectionOfPowerSupplyService, DisconnectionPowerSupplyRequestsService", "reason": "Any path that builds liability/receivable with amount zero will throw at save; flows must ensure non-zero or skip" },
+    { "item": "Tests or integrations assuming zero-amount records exist", "location": "Tests, reporting, exports", "reason": "Zero-amount records are no longer persisted; queries filtering by amount or counting may change" }
+  ],
+  "technical_details": "Merge for PDT-2474: phoenix-core-lib only. MR phoenix/phoenix-core-lib!1736. Merge commit 5d33f7897 (Merge branch 'feature/PDT-2474' into 'dev'). Author: Mariam Gogoladze. Date: 2026-02-13. Files changed: build.gradle; entity/receivable/CustomerReceivable.java (+ EntityListeners ZeroAmountValidationListener); new ZeroAmountValidationListener.java (JPA @PrePersist, throws if CustomerLiability or CustomerReceivable initialAmount is zero); entity/customerLiability/CustomerLiability.java (+ EntityListeners); request CustomerLiabilityRequest.java (initialAmount validation); CustomerReceivableRequest.java (initialAmount validation); CustomerLiabilityMapperService.java (skip zero-amount VAT base liability); CustomerReceivableMapperService.java (zero-amount handling); CustomerReceivableService.java (skip zero-amount VAT base receivable). No merge found in phoenix-core, phoenix-billing-run, or other Phoenix repos for PDT-2474; scope is contained in phoenix-core-lib. Conditional sync: phoenix-core-lib already on dev; fetch to origin/dev skipped (host unreachable in environment)."
+}
