@@ -35,7 +35,9 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 - Confluence: cloudId → search → collect title, content, pageId, spaceId.
 - Codebase: codebase_search (and grep) for terms from prompt; collect findings.
 
-### 3. Generate and save in hierarchical format
+### 3. Generate and save in hierarchical format (comprehensive coverage)
+
+**Coverage (CRITICAL):** Generate **exhaustive** test cases – **not** a random or minimal set. Cover **every scenario that could occur**: all positive (happy path, valid inputs), all negative (invalid inputs, errors, rejections), edge cases, boundaries, and regression from cross_dependency_data (what_could_break). Aim for the **maximum number** of test cases that **fully cover** the task or bug.
 
 **Root folder:** `Cursor-Project/generated_test_cases/`
 

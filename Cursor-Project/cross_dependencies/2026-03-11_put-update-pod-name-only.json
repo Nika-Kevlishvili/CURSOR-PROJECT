@@ -1,0 +1,55 @@
+{
+  "scope": "Put / Update existing POD (POD name only) – Technical User Story from Confluence. Updates only the name of an existing Point of Delivery on the current version; does not create a new version.",
+  "jira_key": null,
+  "entry_points": [
+    "PUT /api/pod/{id} – path id = POD DB id; body: versionId (Integer), name (String, 1–1024 chars, non-blank). Response: 200 with { id, podDetailId, versionId }. Validations: 400 for validation failures; 404 when POD or POD version not found.",
+    "point-of-delivery-controller (OpenAPI: edit_39) – existing PUT /pod/{id} in backend-architecture; may be extended or a new name-only variant (e.g. PodNameUpdateRequest) per story."
+  ],
+  "upstream": [
+    { "type": "db", "name": "pod.pod", "usage": "POD entity; path {id} refers to pod.id" },
+    { "type": "db", "name": "pod.pod_details", "usage": "Only pod_details.name is updated; versionId in request identifies the current version" },
+    { "type": "api", "name": "PointOfDeliveryController", "usage": "Exposes PUT /pod/{id}; reuse or extend for name-only update" },
+    { "type": "service", "name": "PointOfDeliveryService", "usage": "Business logic for POD update; must update only name on existing version" },
+    { "type": "api", "name": "PointOfDeliveryDetailsRepository", "usage": "Persistence for pod_details; update of name field" },
+    { "type": "api", "name": "PodResponse", "usage": "Response DTO: id, podDetailId, versionId (from OpenAPI)" },
+    { "type": "api", "name": "PodUpdateRequest or PodNameUpdateRequest", "usage": "Request DTO: versionId, name (1–1024, non-blank); current PodUpdateRequest has many required fields—name-only may need new DTO or overload" },
+    { "type": "service", "name": "Auth / permissions", "usage": "Sales portal user must have permission to update POD (e.g. Sales agent)" }
+  ],
+  "downstream": [
+    { "type": "consumer", "name": "Sales portal", "usage": "Triggers API when user confirms (record) update on existing POD data; re-contracting flow; only POD name is updated" },
+    { "type": "api", "name": "GET /pod/{id}", "usage": "Returns POD details; callers will see updated name after PUT" },
+    { "type": "api", "name": "GET /pod/list", "usage": "Search/listing; POD name may appear in results" },
+    { "type": "api", "name": "contract-pod-controller, product-contract, service-contract, express-contract", "usage": "Contract–POD associations; contract screens and GET /pod/contract/{identifier} may display or use POD name" },
+    { "type": "consumer", "name": "Phoenix UI (contract preview, POD tabs)", "usage": "Displays POD data; name change reflected after update" },
+    { "type": "consumer", "name": "Billing / invoice / termination flows", "usage": "Reference POD; reports or exports that use pod_details.name may change after update" }
+  ],
+  "shared": [
+    "pod schema (pod.pod, pod.pod_details)",
+    "PodResponse (id, podDetailId, versionId)",
+    "point-of-delivery-controller (domain: pod)",
+    "product_contract.contract_pods → pod_details; service_contract.contract_pods → pod"
+  ],
+  "data_entities": [
+    "POD (pod.pod)",
+    "pod_details (pod.pod_details – name field updated)",
+    "product_contract.contract_pods",
+    "service_contract.contract_pods"
+  ],
+  "integration_points": [
+    "Sales portal → PUT /api/pod/{id} (trigger on confirm update/actualization)",
+    "Phoenix API gateway / point-of-delivery-controller",
+    "Contract–POD association (product/service/express contract screens and APIs that show POD name)",
+    "GET /pod/{id}, GET /pod/list (consumers of updated name)",
+    "GET /pod/contract/{identifier}, GET /express-contract/pod/{identifier} (contract by POD identifier)"
+  ],
+  "what_could_break": [
+    { "item": "Existing PUT /pod/{id} callers sending full PodUpdateRequest", "location": "point-of-delivery-controller, edit_39", "reason": "If backend switches to name-only (PodNameUpdateRequest) or adds validation that rejects missing optional fields, existing clients could get 400" },
+    { "item": "Validation: name 1–1024, non-blank", "location": "Request DTO / controller validation", "reason": "Sales portal or other callers sending empty name or length > 1024 will get 400; must align portal validation" },
+    { "item": "404 when POD or version not found", "location": "PointOfDeliveryService / repository", "reason": "Invalid id or versionId returns 404; Sales portal must handle and display appropriately" },
+    { "item": "Contract and termination flows that display POD name", "location": "Contract preview, POD tabs, termination (POD-based)", "reason": "UI or reports that cache or display pod name should reflect update; no new version created so only current version name changes" },
+    { "item": "Billing run / invoice / SLP logic that use pod_details", "location": "Billing, invoice, price_parameter_name / pod_measurement_types", "reason": "Only name is updated; if any logic incorrectly depended on name for billing/invoice key, it could be affected (unlikely for name-only)" },
+    { "item": "GET /pod/list or search responses", "location": "point-of-delivery-controller search", "reason": "Listings that show POD name will show new name after update" },
+    { "item": "EnergoTS / automated tests for POD", "location": "EnergoTS fixtures, tests that create or update POD", "reason": "New or changed request body (versionId + name only) may require test updates" }
+  ],
+  "technical_details": "No Jira key provided; no merge lookup performed (Rule 35a applies only when Jira/bug/task key is given). Confluence source: Phoenix space, page id 740229121, title 'Put Update existing POD'. Business rule: only data customer can update is POD name; update happens on existing POD version (from request); system does not create new version. Current OpenAPI (backend-architecture.json): point-of-delivery-controller has PUT /pod/{id} (edit_39), models PodUpdateRequest (required: consumptionPurpose, estimatedMonthlyAvgConsumption, name, type, voltageLevel; name minLength 1, maxLength 1024; versionId in validation_rules) and PodResponse (id, podDetailId, versionId). Implementation may introduce PodNameUpdateRequest (versionId, name only) or restrict existing PUT to name-only for Sales portal path. Backend: pod.pod, pod.pod_details; only pod_details.name updated. Reuse: PointOfDeliveryController, PointOfDeliveryService, PointOfDeliveryDetailsRepository."
+}

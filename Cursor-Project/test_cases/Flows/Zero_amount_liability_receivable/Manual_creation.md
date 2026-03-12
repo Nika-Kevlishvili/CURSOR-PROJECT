@@ -97,6 +97,64 @@
 
 ---
 
+## TC-5 (Negative): Manual liability creation rejected when initial amount is negative
+
+**Objective:** Verify that when the user sends a request to create a manual liability with a negative initial amount, the system rejects the request. CustomerLiabilityRequest uses @DecimalMin(0, inclusive=false), so zero and negative values must be rejected.
+
+**Preconditions:**
+1. A customer exists and is active in the system.
+2. The caller has access to the manual liability creation API.
+
+**Steps:**
+1. Prepare a request payload for manual liability creation with initial amount set to a negative value (e.g. -10.00).
+2. Send the request to the manual liability creation endpoint.
+3. Observe the HTTP status code and response body.
+
+**Expected result:** The system returns a validation error (e.g. 400 Bad Request). No CustomerLiability record is created. The response indicates that the initial amount must be greater than zero (or equivalent).
+
+**References:** PDT-2474; CustomerLiabilityRequest validation; @DecimalMin(0, inclusive=false).
+
+---
+
+## TC-6 (Positive): Manual liability creation succeeds with minimum positive amount (boundary)
+
+**Objective:** Verify that the system accepts the smallest positive amount (e.g. 0.01 or the smallest supported decimal) for manual liability creation. This confirms that the validation rejects only zero (and negative), not all small amounts.
+
+**Preconditions:**
+1. A customer exists and is active in the system.
+2. The caller has access to the manual liability creation API.
+3. The system supports a small positive amount (e.g. 0.01 in the contract currency).
+
+**Steps:**
+1. Prepare a request payload for manual liability creation with initial amount set to the smallest valid positive value (e.g. 0.01).
+2. Send the request to the manual liability creation endpoint.
+3. Verify the response indicates success and that a liability record exists with that amount.
+
+**Expected result:** The system creates the manual liability successfully with the small positive amount. No validation error is returned. This confirms boundary behaviour: zero is rejected, small positive is accepted.
+
+**References:** PDT-2474; boundary; manual liability API.
+
+---
+
+## TC-7 (Negative): Manual receivable creation rejected when initial amount is missing or null
+
+**Objective:** Verify that when the initial amount is missing or null in the manual receivable creation request, the system rejects the request with a validation error. This ensures required-field validation is in place in addition to zero-amount validation.
+
+**Preconditions:**
+1. A customer exists and is active in the system.
+2. The caller has access to the manual receivable creation API.
+
+**Steps:**
+1. Prepare a request payload for manual receivable creation with the initial amount omitted or set to null.
+2. Send the request to the manual receivable creation endpoint.
+3. Observe the HTTP status code and response body.
+
+**Expected result:** The system returns a validation error (e.g. 400 Bad Request). No CustomerReceivable record is created. The response indicates that the initial amount is required (or equivalent).
+
+**References:** PDT-2474; CustomerReceivableRequest @Positive; required field validation.
+
+---
+
 ## References
 
 - **Jira:** PDT-2474 – Liabilities and receivables shouldn't be generated with amount zero.

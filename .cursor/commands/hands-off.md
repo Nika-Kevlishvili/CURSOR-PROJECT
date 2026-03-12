@@ -26,16 +26,17 @@ Run the **entire flow** without user intervention when the user provides a **Jir
 
 Reference: `.cursor/commands/cross-dependency-finder.md`, Rule 35a in `.cursor/rules/workflow_rules.mdc`.
 
-### Step 3: Test case generator
+### Step 3: Test case generator (comprehensive coverage – mandatory)
 
 1. Run **test-case-generator** with:
    - **prompt** = Jira ticket description (and summary if useful).
    - **prompt_type** = `'bug'` or `'task'` as appropriate.
    - **context** = `{ 'cross_dependency_data': <output from Step 2> }` (and codebase_findings / confluence_data if collected).
+   - **Coverage requirement (CRITICAL):** Instruct the generator to produce **comprehensive, exhaustive** test cases – **not** a random or minimal set. Test cases MUST cover **every scenario that could possibly occur** for the task or bug: all **positive** (happy path, valid inputs, expected success), all **negative** (invalid inputs, error conditions, rejections), **edge cases**, **boundary conditions**, and **regression/impact** scenarios from cross_dependency_data (what_could_break). Aim for the **maximum number of test cases** needed to **fully cover** the task or bug; do not limit to a small subset.
 2. Test cases MUST be saved in the **required folder** (see `.cursor/rules/test_cases_structure.mdc`): **`Cursor-Project/test_cases/Flows/<Flow_name>/`** or **`Cursor-Project/test_cases/Objects/<Entity>/`** (e.g. `test_cases/Flows/Invoice_cancellation/`). Use thematic names with underscores.
-3. **Content:** Each test case .md MUST follow the **Test Case Template**: **`Cursor-Project/config/Test_case_template.md`** (maximally detailed, human-readable: Summary, Scope, Test data, TC-1/TC-2 with Objective, Preconditions, Steps, Expected result, Actual result if bug, References).
+3. **Content:** Each test case .md MUST follow the **Test Case Template**: **`Cursor-Project/config/Test_case_template.md`** (maximally detailed, human-readable: Summary, Scope, Test data, TC-1/TC-2/… with Objective, Preconditions, Steps, Expected result, Actual result if bug, References). **Include both positive and negative** for every document; label each TC as **(Positive)** or **(Negative)**.
 4. **Verify on disk:** After generation, check that the folder and .md files exist. If missing, **write them directly** (create folder, create each .md from test case content using the template). Update **`test_cases/Flows/README.md`** (or Objects/README.md) to include the new flow/entity.
-4. Note the paths of test case files for the bridge to Playwright.
+5. Note the paths of test case files for the bridge to Playwright.
 
 Reference: `.cursor/commands/test-case-generate.md`, `.cursor/rules/handsoff_playwright_report.mdc` §1.
 

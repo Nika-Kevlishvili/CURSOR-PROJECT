@@ -31,6 +31,13 @@ Use this command when the user asks to:
 
 ## Output – Structure and content (MANDATORY)
 
+**Comprehensive coverage (CRITICAL):** Test case generation MUST produce **exhaustive** coverage of the task or bug – **not** a random or minimal set. Generate the **maximum number of test cases** that **fully cover** the scope:
+- **All positive scenarios:** happy path(s), valid inputs, expected success, main flows.
+- **All negative scenarios:** invalid inputs, missing/invalid IDs, wrong state, expected errors and rejections.
+- **Edge cases and boundaries:** empty lists, zero amounts, max values, dates at boundaries, already-processed state, duplicate actions.
+- **Regression/impact:** every scenario from `cross_dependency_data` (what_could_break, integration points) that could be affected.
+Do **not** limit to 2–3 test cases; aim for **all plausible scenarios** so the task or bug is covered entirely.
+
 **Content template:** Every test case document MUST follow the **Test Case Template**: **`Cursor-Project/config/Test_case_template.md`**. Use that template’s structure (header, Summary, Scope, Test data, TC-1/TC-2/… with Objective, Preconditions, Steps, Expected result, Actual result if bug, References). **Include both positive and negative scenarios:** at least one **Positive** (valid input, happy path, expected success) and at least one **Negative** (invalid input, error condition, expected rejection); label each TC as **(Positive)** or **(Negative)**. Write in **maximally detailed**, **human-readable** language (full sentences where helpful, no unexplained jargon, plain English). Same rules apply whether saving under `generated_test_cases/` or `test_cases/Flows/` / `test_cases/Objects/`.
 
 **Folder (generic flow):** Save under:

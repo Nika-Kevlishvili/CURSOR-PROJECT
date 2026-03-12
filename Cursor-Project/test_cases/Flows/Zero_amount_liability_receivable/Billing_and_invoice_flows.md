@@ -112,6 +112,82 @@
 
 ---
 
+## TC-6 (Positive): VAT base liability or receivable with zero amount is skipped before save
+
+**Objective:** Verify that when the billing run or related flow builds liabilities or receivables per VAT base and the computed amount for a VAT base is zero, the system skips creating that liability or receivable (CustomerLiabilityMapperService and CustomerReceivableService skip zero-amount VAT base entries before saveAll). No record with initialAmount zero is persisted.
+
+**Preconditions:**
+1. A billing run (or start-accounting) can be executed that generates liabilities or receivables by VAT base.
+2. The input data or scenario yields at least one VAT base with computed amount zero.
+
+**Steps:**
+1. Execute the flow that creates liabilities or receivables by VAT base (e.g. BillingRunStartAccountingInvokeService generateLiabilities / generateReceivables) in a scenario where one or more VAT bases have amount zero.
+2. Inspect the created CustomerLiability and CustomerReceivable records.
+3. Verify that no record has initialAmount zero and that zero-amount VAT base entries were skipped (not persisted).
+
+**Expected result:** Zero-amount VAT base liability or receivable is not persisted. The mapper/service skips such entries before calling saveAll. Only non-zero amounts are stored. Technical reference: CustomerLiabilityMapperService skip zero-amount VAT base liability; CustomerReceivableService skip zero-amount VAT base receivable.
+
+**References:** PDT-2474; CustomerLiabilityMapperService; CustomerReceivableMapperService; CustomerReceivableService; integration point: Billing run start accounting; technical_details from cross_dependency_data.
+
+---
+
+## TC-7 (Positive): Goods order invoice does not persist zero-amount liability or receivable
+
+**Objective:** Verify that when a goods order invoice is processed (GoodsOrderProcessService) and the computed liability or receivable amount is zero, the system does not create a CustomerLiability or CustomerReceivable with initialAmount zero. Either the record is not created or validation prevents persistence.
+
+**Preconditions:**
+1. A goods order can be processed that creates liabilities and/or receivables via CustomerLiabilityService and CustomerReceivableService.
+2. A scenario exists or can be set up where the computed amount for a liability or receivable is zero (e.g. zero quantity, zero price, or adjustment that nets to zero).
+
+**Steps:**
+1. Process a goods order invoice in a scenario where the resulting liability or receivable amount is zero.
+2. Check the created CustomerLiability and CustomerReceivable records for this invoice.
+3. Verify that no record has initialAmount equal to zero.
+
+**Expected result:** No CustomerLiability or CustomerReceivable with initialAmount zero is created for the goods order invoice. The flow either skips creation for zero amount or the persistence layer rejects zero.
+
+**References:** PDT-2474; Goods order invoice; GoodsOrderProcessService; entry_points from cross_dependency_data.
+
+---
+
+## TC-8 (Positive): Service order invoice does not persist zero-amount liability or receivable
+
+**Objective:** Verify that when a service order invoice is processed (ServiceOrderProcessService) and the computed liability or receivable amount is zero, the system does not create a CustomerLiability or CustomerReceivable with initialAmount zero.
+
+**Preconditions:**
+1. A service order can be processed that creates liabilities and/or receivables.
+2. A scenario exists or can be set up where the computed amount is zero.
+
+**Steps:**
+1. Process a service order invoice in a scenario where the resulting liability or receivable amount is zero.
+2. Check the created CustomerLiability and CustomerReceivable records.
+3. Verify that no record has initialAmount equal to zero.
+
+**Expected result:** No CustomerLiability or CustomerReceivable with initialAmount zero is created for the service order invoice. The flow skips or validation prevents zero.
+
+**References:** PDT-2474; Service order invoice; ServiceOrderProcessService; entry_points from cross_dependency_data.
+
+---
+
+## TC-9 (Negative): Billing run with invoice totalling zero does not create liability or receivable with amount zero
+
+**Objective:** Verify that when a billing run produces an invoice (or line) with total amount zero and the flow would otherwise create a liability or receivable for it, the system does not persist a CustomerLiability or CustomerReceivable with initialAmount zero. Reporting or downstream processes must not assume one record per invoice when the amount is zero.
+
+**Preconditions:**
+1. A billing run can be executed that creates liabilities/receivables per invoice or per line.
+2. The billing input is such that at least one invoice (or line) has total amount zero.
+
+**Steps:**
+1. Execute the billing run for the zero-total scenario.
+2. Query CustomerLiability and CustomerReceivable created for this run.
+3. Verify that no record has initialAmount zero; if the run would have created one record per invoice, the zero-total case must be skipped.
+
+**Expected result:** No zero-amount liability or receivable is persisted. The system skips creating a record when the amount is zero. What could break: reporting may assume one record per invoice—test confirms zero-total does not create a record.
+
+**References:** PDT-2474; BillingRunStartAccountingInvokeService; what_could_break: billing run/invoice flows with zero total.
+
+---
+
 ## References
 
 - **Jira:** PDT-2474 – Liabilities and receivables shouldn't be generated with amount zero.

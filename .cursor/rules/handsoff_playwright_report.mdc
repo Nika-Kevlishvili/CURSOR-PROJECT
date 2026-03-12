@@ -6,9 +6,10 @@ alwaysApply: true
 
 These problems occurred in HandsOff runs and MUST NOT happen again. Apply whenever running HandsOff or generating Playwright/test-case reports.
 
-## 1. Test cases – MUST be in required folder and MUST follow template
+## 1. Test cases – MUST be in required folder, MUST follow template, MUST be comprehensive
 
-- **Problem:** Test cases were reported as "created" by a subagent but were **not** actually written to the workspace (folder or files missing).
+- **Problem:** Test cases were reported as "created" by a subagent but were **not** actually written to the workspace (folder or files missing). Another problem: only a random or minimal set of test cases was generated instead of full coverage.
+- **Rule (coverage – CRITICAL):** Test case generation MUST aim for **exhaustive, full coverage** of the task or bug. Generate the **maximum number** of test cases that cover **every scenario that could occur**: all **positive** (happy path, valid inputs), all **negative** (invalid inputs, errors, rejections), **edge cases**, **boundary conditions**, and **regression** from cross_dependency_data (what_could_break). Do **not** produce a random or minimal subset; the set of test cases must **fully cover** the task or bug.
 - **Rule:** Test cases for a flow (e.g. Invoice cancellation) MUST be saved under **`Cursor-Project/test_cases/Flows/<Flow_name>/`** (or `Objects/<Entity>/` for entity-based). Use thematic names with underscores (e.g. `Invoice_cancellation`).
 - **Rule (content):** The **content** of each test case .md MUST follow the **Test Case Template**: **`Cursor-Project/config/Test_case_template.md`**. Structure: document title, Jira, Type, Summary, Scope, Test data (preconditions), then TC-1, TC-2, … with Objective, Preconditions, Steps, Expected result, Actual result (if bug), References. **Include both positive and negative test cases** (at least one Positive and one Negative per document; label each TC as (Positive) or (Negative)). Write in **maximally detailed**, **human-readable** language (plain English, full sentences where helpful, no unexplained jargon).
 - **Rule:** After test case generation, **verify** that the folder and .md files exist (e.g. list or read the path). If missing, **write them directly** (create the folder, create each .md file with the content following the template). Do not rely only on subagent output.

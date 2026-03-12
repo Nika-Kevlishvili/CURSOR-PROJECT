@@ -7,6 +7,7 @@ Each subfolder is one entity. The folder name tells you what type of tests are i
 | Subfolder | Content |
 |-----------|--------|
 | **Product_contract/** | Product contract (`product_contract`) tests: Create, Edit, View, status changes, Basic Parameters, validations, etc. |
+| **POD/** | Point of Delivery (POD) entity tests: Update_name (PUT /api/pod/{id} – name only, no new version); validations, 404, regression. |
 | **Service_contract/** | Service contract tests (when added). |
 | **Customer/** | Customer entity tests (when added). |
 | **Invoice/** | Invoice tests (when added). |

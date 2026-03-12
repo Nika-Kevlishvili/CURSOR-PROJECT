@@ -34,13 +34,19 @@ When the **user requests test case creation**, the parent MUST run **cross-depen
 - Use this data so test cases cover: integration points, upstream/downstream behaviour, data entities, and **what_could_break** (regression and impact risks).
 - See `.cursor/agents/cross-dependency-finder.md` and `Cursor-Project/docs/CROSS_DEPENDENCY_FINDER_AGENT.md`.
 
-### 4. Generate test cases
+### 4. Generate test cases (comprehensive coverage – mandatory)
 
+- **Coverage rule (CRITICAL):** Do **not** produce a random or minimal set. Generate **exhaustive** test cases that **fully cover** the task or bug:
+  - **All positive:** happy path(s), valid inputs, expected success.
+  - **All negative:** invalid/missing IDs, wrong state, validation errors, expected rejections.
+  - **Edge cases:** empty/zero values, boundaries, already-done state, duplicates.
+  - **Regression:** every scenario from cross_dependency_data (what_could_break, integration points).
+  Aim for the **maximum number** of test cases needed so that **any scenario that could occur** is covered (positive and negative).
 - **Preferred:** Use TestCaseGeneratorAgent with Confluence + codebase data + cross_dependency_data.
   - `from agents.Main import get_test_case_generator_agent`
   - `agent = get_test_case_generator_agent()`
   - `result = agent.generate_test_cases(prompt=..., prompt_type='bug'|'task', confluence_data=..., context={'codebase_findings': ..., 'cross_dependency_data': ...})`
-- If Python agent is not run in this context: **output** a structured test-case spec (positive/negative, Confluence refs, code refs, integration points, and tests for items in what_could_break) so the user or another tool can use it.
+- If Python agent is not run in this context: **output** a structured test-case spec with **all** positive/negative/edge/regression cases (Confluence refs, code refs, integration points, and tests for every item in what_could_break) so the user or another tool can use it.
 
 ## Output format – template and human-readable (MANDATORY)
 
