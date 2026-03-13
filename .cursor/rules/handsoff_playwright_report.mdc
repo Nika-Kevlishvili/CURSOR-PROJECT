@@ -32,6 +32,17 @@ Reference: Rule ENERGOTS.0 (cursor branch only); `.cursor/commands/energo-ts-run
 
 ---
 
+## 2a. Validate Playwright tests before run (quality gate – Step 4.5)
+
+- **Rule:** After Playwright spec is created (Step 4) and **before** running tests (Step 5), the orchestrator MUST invoke the **playwright-test-validator** agent (`.cursor/agents/playwright-test-validator.md`).
+- **Validator checks (READ-ONLY):** Syntax (TypeScript/Playwright), 1:1 coverage (test count = TC count), alignment of each test with its TC (Objective, Steps, Expected result), and framework usage (EnergoTS fixtures; no ad-hoc getToken/apiRequest).
+- **If validation fails:** The orchestrator MUST pass the validator’s **issues** and **suggestions** to test-case-generator and/or energo-ts-test, **re-run** test case generation (Step 3) and/or Playwright creation (Step 4), then **re-run the validator**. Repeat until **validation passes** or **max iterations** (e.g. 3). If max iterations reached with failures, proceed to run tests and **include validation issues in the report**.
+- **If validation passes:** Proceed to Step 5 (Run Playwright tests). Do not skip the validator step.
+
+Reference: `.cursor/commands/hands-off.md` Step 4.5; `.cursor/agents/playwright-test-validator.md`.
+
+---
+
 ## 3. Report – ONLY Playwright test results (detailed per test)
 
 - **Problem:** Report contained cross-deps, artifacts, test case file lists, etc. User wanted **only** Playwright test results.
@@ -93,7 +104,8 @@ Reference: `.cursor/commands/hands-off.md` Step 8; user-slack MCP for sending.
 
 - [ ] Test cases: written to `test_cases/Flows/<Flow>/` (or Objects); folder and .md files verified on disk; Flows/README.md updated.
 - [ ] Playwright: spec created in `EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts` (or equivalent); file verified on disk; **number of `test()` blocks equals total number of test cases (TC-1, TC-2, …) in the .md files in that folder** – full coverage, 1:1.
-- [ ] Report: content is **only** Playwright test results (per test: what is verified, steps, result, failure reason).
+- [ ] **Validation (Step 4.5):** playwright-test-validator invoked; if failed, re-run test-case-generator and/or energo-ts-test and re-validate until pass or max iterations; only then run tests.
+- [ ] Report: content is **only** Playwright test results (per test: what is verified, steps, result, failure reason); if validation had issues, include a short Validation section.
 - [ ] Slack: report built from **`Cursor-Project/config/Slack_report_template.md`**; full report sent **only** to **Tester** (DM) and **#ai-report** (channel_id **C0AK96S1D7X**); **never** to Assignee or anyone else; not a short summary.
 - [ ] Agent questions: after report, collect questions from each participating agent (as needed); each question tagged with agent name; send questions after the report to the same recipients (Tester and #ai-report only).
 

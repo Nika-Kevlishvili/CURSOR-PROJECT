@@ -49,6 +49,33 @@ Reference: `.cursor/commands/test-case-generate.md`, `.cursor/rules/handsoff_pla
 
 Reference: `.cursor/rules/handsoff_playwright_report.mdc` §2, `.cursor/commands/energo-ts-test.md`.
 
+### Step 4.5: Validate Playwright tests (quality gate) [MANDATORY – repeat until pass or max iterations]
+
+**Purpose:** Before running tests, ensure the Playwright spec is **correctly written**, **fully covers** the test cases, is **syntactically correct**, and **satisfies** the test case requirements. This is a **quality control** step. If validation fails, the orchestrator **must** trigger re-generation of test cases and/or Playwright tests and re-validate until the validator passes or a max iteration count is reached.
+
+1. **Invoke Playwright Test Validator:** Call the **playwright-test-validator** agent (see `.cursor/agents/playwright-test-validator.md`) with:
+   - **Test case paths:** All .md file paths from Step 3 (e.g. `Cursor-Project/test_cases/Flows/<Flow_name>/` or the full list of .md files).
+   - **Playwright spec path:** The spec file path from Step 4 (e.g. `Cursor-Project/EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`).
+   - **Jira key:** For context and naming checks.
+2. **Validator checks (READ-ONLY):** The validator analyzes (does not modify):
+   - **Syntactic correctness:** Valid TypeScript/Playwright syntax, no obvious errors, imports resolve.
+   - **Full coverage (1:1):** Number of `test()` / `test.skip()` in spec equals total number of TCs in the .md files; each TC has a corresponding test.
+   - **Alignment with test cases:** Each test implements the intent of the corresponding TC (Objective, Steps, Expected result); assertions match Expected result.
+   - **Framework usage:** Spec uses EnergoTS framework (fixtures); no ad-hoc `getToken()`, custom `apiRequest()`, etc.
+3. **Validator result:** The validator returns **passed** (true/false) and a list of **issues** (criterion, description, location, suggestion).
+4. **Iteration logic (CRITICAL):**
+   - **If validation passed:** Proceed to **Step 5** (Run Playwright tests).
+   - **If validation failed:**
+     - Pass the validator’s **issues** and **suggestions** to:
+       - **test-case-generator** (if issues relate to missing/unclear test cases or coverage).
+       - **energo-ts-test** (to fix/regenerate the spec: coverage, alignment, framework, syntax).
+     - **Re-run Step 3** (test case generator with validator feedback) and/or **Step 4** (energo-ts-test with validator feedback) as appropriate.
+     - **Re-run Step 4.5** (validator) again on the updated spec and test cases.
+     - **Repeat** until **validation passes** or **max iterations** (e.g. **3**) is reached. If max iterations reached with validation still failing, the orchestrator may still proceed to Step 5 and **include the validation issues in the report** so the tester sees what was not satisfied.
+5. **Max iterations:** Use a fixed limit (e.g. 3) to avoid infinite loops. After the limit, proceed to Step 5 and document validation failures in the report.
+
+Reference: `.cursor/agents/playwright-test-validator.md`; `.cursor/rules/handsoff_playwright_report.mdc` §2 (validator).
+
 ### Step 5: Run Playwright tests
 
 1. **Ensure cursor branch** – In `Cursor-Project/EnergoTS/`, if current branch is not `cursor`, run `git checkout cursor` (Rule ENERGOTS.0).
@@ -85,7 +112,7 @@ Reference: `Cursor-Project/config/Slack_report_template.md`; user-slack MCP tool
 
 ### Step 8: Agent questions after report (with attribution)
 
-1. **Collect questions:** After the report is saved and sent (Steps 6–7), **each participating agent** (CrossDependencyFinder, TestCaseGenerator, EnergoTSTestAgent, PhoenixExpert if consulted, etc.) MUST contribute **questions related to the task** when needed (clarifications, edge cases, follow-ups, open points).
+1. **Collect questions:** After the report is saved and sent (Steps 6–7), **each participating agent** (CrossDependencyFinder, TestCaseGenerator, EnergoTSTestAgent, PlaywrightTestValidatorAgent, PhoenixExpert if consulted, etc.) MUST contribute **questions related to the task** when needed (clarifications, edge cases, follow-ups, open points).
 2. **Attribution:** Each question MUST be tagged with the agent that asked it. Format: `[AgentName]: <question text>` (e.g. `[TestCaseGenerator]: Should cancellation be tested for already-reversed invoices?`).
 3. **Send after report:** Send the list of agent questions **after** the report (e.g. a second Slack message to the same recipients: tester and AI report channel). Do not replace the report; questions are a follow-up.
 4. If an agent has no questions, it may contribute none; only agents that participated and have relevant questions need to contribute.
@@ -103,7 +130,7 @@ Reference: `.cursor/rules/handsoff_playwright_report.mdc` §7.
 
 - While the flow runs, you may briefly confirm each step (e.g. "Step 1: Fetched REG-123…", "Step 2: Cross-deps done…").
 - At the end, summarize: Jira key, tests run, pass/fail counts, report path, and that the report was sent to Slack only to Tester (DM) and #ai-report (never to Assignee or anyone else; or only to #ai-report if no Tester).
-- End with: **"Agents involved: HandsOff (orchestrator), CrossDependencyFinderAgent, TestCaseGeneratorAgent, EnergoTSTestAgent, EnergoTS Playwright Test Runner"** (and PhoenixExpert if consulted).
+- End with: **"Agents involved: HandsOff (orchestrator), CrossDependencyFinderAgent, TestCaseGeneratorAgent, EnergoTSTestAgent, PlaywrightTestValidatorAgent, EnergoTS Playwright Test Runner"** (and PhoenixExpert if consulted).
 
 ## Generate Reports (Rule 0.6)
 

@@ -20,6 +20,7 @@ Use this skill when the user provides a **Jira ticket** (link, key like REG-123,
    - Run cross-dependency-finder for the Jira key (Rule 35a).
    - Run test-case-generator with cross_dependency_data.
    - **Bridge (Step 4):** Invoke **energo-ts-test agent (EnergoTSTestAgent)** with the **test case .md paths** and Jira key/title. The agent MUST create the Playwright spec from that content using the EnergoTS framework (fixtures); do NOT write the spec manually or with ad-hoc code.
+   - **Step 4.5 – Validate (quality gate):** Invoke **playwright-test-validator** agent with test case paths, spec path, and Jira key. If validation fails, pass issues to test-case-generator and/or energo-ts-test, re-run Step 3 and/or Step 4, then re-validate (repeat until pass or max iterations, e.g. 3). Only then proceed to run tests.
    - Run Playwright tests (energo-ts-run, cursor branch).
    - Save report as `reports/YYYY-MM-DD/{JIRA_KEY}.md` (pass/fail + reasons).
    - Send report to Slack to the tester on the ticket and duplicate the same report to the AI report channel (user-slack MCP).
@@ -29,6 +30,7 @@ Use this skill when the user provides a **Jira ticket** (link, key like REG-123,
 
 - **Command (full steps):** `.cursor/commands/hands-off.md`
 - **Agent (orchestrator):** `.cursor/agents/hands-off.md`
+- **Validator agent:** `.cursor/agents/playwright-test-validator.md`
 - **Phoenix commands:** `.cursor/skills/phoenix-commands/SKILL.md` (Hands-off row)
 
 ## Constraints
