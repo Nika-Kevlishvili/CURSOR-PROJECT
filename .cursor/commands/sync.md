@@ -11,7 +11,7 @@ Synchronize Phoenix projects from GitLab using `git_sync_workflow.mdc` rules.
 ## Triggers
 
 - `!sync` - Fetch all Phoenix projects from GitLab
-- `!update <branch>` - Update specified branch (dev, dev2, dev-fix, test)
+- `!update <branch>` - Update specified branch (dev, dev2, dev-fix, test, experiment)
 - `!checkout <branch>` - Checkout specified branch
 
 ## Workflow Reference
@@ -89,6 +89,13 @@ Update Phoenix projects from GitLab
 /sync
 
 !checkout dev2
+```
+
+**Checkout experiment branch:**
+```
+/sync
+
+!checkout experiment
 ```
 
 ## Response Must Include:
