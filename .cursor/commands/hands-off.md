@@ -7,6 +7,18 @@ Run the **entire flow** without user intervention when the user provides a **Jir
 - User provides a **Jira ticket** (link, ticket key e.g. REG-123, or ticket name) and types **`/HandsOff`** or **`!HandsOff`**.
 - User wants the system to run the full pipeline automatically: fetch ticket → cross-deps → test cases → create Playwright tests → run them → save report named after the ticket → send report to Slack to the tester on the ticket.
 
+## Optional: Target environment (recommended)
+
+If you need the HandsOff run to validate a feature deployed to a specific environment (for example the **experiment** environment), include it in the request:
+
+- Example: `PHN-2529 /HandsOff --env experiment`
+
+**How it is applied:**
+
+- HandsOff keeps EnergoTS on the `cursor` branch (Rule ENERGOTS.0).
+- The `--env <name>` value is used to select the **target base URL** (and related auth settings) for Playwright setup + tests.
+- Environment base URLs are documented in `Cursor-Project/config/environments.md`.
+
 ## Mandatory Workflow (run in order)
 
 ### Step 1: Get Jira ticket and description
@@ -79,9 +91,10 @@ Reference: `.cursor/agents/playwright-test-validator.md`; `.cursor/rules/handsof
 ### Step 5: Run Playwright tests
 
 1. **Ensure cursor branch** – In `Cursor-Project/EnergoTS/`, if current branch is not `cursor`, run `git checkout cursor` (Rule ENERGOTS.0).
-2. **Ensure fixtures exist:** If `fixtures/token.json` or `fixtures/envVariables.json` are missing, run **global setup first** so tests can load: from `EnergoTS/` run `npx playwright test --project=setup` (requires .env with PORTAL_USER, PASSWORD, DEVAUTHAPI or TESTAUTHAPI). This creates token.json and envVariables.json.
-3. **Run tests** from `Cursor-Project/EnergoTS/`: `npx playwright test --grep "<JIRA_KEY>"` or `npx playwright test tests/cursor/<JIRA_KEY>-*.spec.ts`. Use list (or similar) reporter to capture output.
-4. **Capture** the run output: which tests ran, which **passed** or **failed**, and for each failure the **reason** (assertion message, status code, error snippet). If tests could not run (e.g. setup failed or token still missing), record "Not run" and the exact reason (e.g. ENOENT token.json, or setup error message).
+2. **Target environment (if specified):** If the user requested an environment (e.g. `--env experiment`), ensure EnergoTS is configured to target that environment base URL (typically via `Cursor-Project/EnergoTS/.env` `BASE_URL=...`). Reference base URLs in `Cursor-Project/config/environments.md`.
+3. **Ensure fixtures exist:** If `fixtures/token.json` or `fixtures/envVariables.json` are missing, run **global setup first** so tests can load: from `EnergoTS/` run `npx playwright test --project=setup` (requires .env with PORTAL_USER, PASSWORD, DEVAUTHAPI or TESTAUTHAPI). This creates token.json and envVariables.json.
+4. **Run tests** from `Cursor-Project/EnergoTS/`: `npx playwright test --grep "<JIRA_KEY>"` or `npx playwright test tests/cursor/<JIRA_KEY>-*.spec.ts`. Use list (or similar) reporter to capture output.
+5. **Capture** the run output: which tests ran, which **passed** or **failed**, and for each failure the **reason** (assertion message, status code, error snippet). If tests could not run (e.g. setup failed or token still missing), record "Not run" and the exact reason (e.g. ENOENT token.json, or setup error message).
 
 Reference: `.cursor/commands/energo-ts-run.md`, Rule 36, `.cursor/rules/handsoff_playwright_report.mdc` §5–6.
 
