@@ -45,6 +45,7 @@ Follow **exactly** the steps in **`.cursor/commands/hands-off.md`**. Summary:
 - **EnergoTS** – use only **cursor** branch (Rule ENERGOTS.0).
 - **Rule 35/35a** – cross-dependency-finder runs first; merge lookup and technical_details when Jira key provided.
 - All report and user-facing content in **English** (Rule 0.7).
+- **Target environment** – If the user requests a target environment (e.g. `--env experiment`), configure EnergoTS to use the environment base URL (see `Cursor-Project/config/environments.md`) before running setup/tests. This does not change any branches; it only changes where tests run against.
 
 ## Output
 
