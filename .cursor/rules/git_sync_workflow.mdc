@@ -19,8 +19,8 @@ alwaysApply: true
 This rule applies when:
 - **Primary triggers:** 
   - `!sync` - Fetch all projects and update current branches
-  - `!update <branch>` - Update specified branches (dev, dev2, dev-fix, test)
-  - `!checkout <branch>` - Checkout specified branch (dev, dev2, dev-fix, test)
+  - `!update <branch>` - Update specified branches (dev, dev2, dev-fix, test, experiment)
+  - `!checkout <branch>` - Checkout specified branch (dev, dev2, dev-fix, test, experiment)
 - User requests to fetch projects from remote
 - User wants to update specific branches
 - User wants to checkout a branch
@@ -33,8 +33,8 @@ This rule applies when:
 The sync workflow supports three main operations:
 
 1. **Initial Fetch** - Fetch all available projects from remote using readonly token
-2. **Update Branches** - Update specified branches (dev, dev2, dev-fix, test) from remote
-3. **Checkout Branches** - Checkout specified branches (dev, dev2, dev-fix, test)
+2. **Update Branches** - Update specified branches (dev, dev2, dev-fix, test, experiment) from remote
+3. **Checkout Branches** - Checkout specified branches (dev, dev2, dev-fix, test, experiment)
 
 ---
 
@@ -480,7 +480,7 @@ fi
 
 **Trigger:** `!update <branch>` or `!sync <branch>` (e.g., `!update dev`, `!sync dev2`)
 
-**Supported Branches:** `dev`, `dev2`, `dev-fix`, `test`, `main`, `master`
+**Supported Branches:** `dev`, `dev2`, `dev-fix`, `test`, `experiment`, `main`, `master`
 
 **Action:** Update specified branch from remote in all Phoenix repositories using readonly token
 
@@ -516,7 +516,7 @@ fi
 
 **For PowerShell (Windows):**
 ```powershell
-$BRANCH = "dev"  # or dev2, dev-fix, test, main, master
+$BRANCH = "dev"  # or dev2, dev-fix, test, experiment, main, master
 $env:GIT_READONLY_TOKEN = "glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
 
 # Detect workspace root - find Cursor-Project directory (same as Step 1)
@@ -632,7 +632,7 @@ if (Test-Path "Phoenix") {
 
 **For Bash (Git Bash/Linux/macOS):**
 ```bash
-BRANCH="dev"  # or dev2, dev-fix, test, main, master
+BRANCH="dev"  # or dev2, dev-fix, test, experiment, main, master
 GIT_READONLY_TOKEN="glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
 
 # Detect workspace root - MUST find Cursor-Project/Phoenix/ (same as Step 1)
@@ -749,7 +749,7 @@ fi
 
 **Trigger:** `!checkout <branch>` (e.g., `!checkout dev`, `!checkout dev2`)
 
-**Supported Branches:** `dev`, `dev2`, `dev-fix`, `test`, `main`, `master`
+**Supported Branches:** `dev`, `dev2`, `dev-fix`, `test`, `experiment`, `main`, `master`
 
 **Action:** Checkout specified branch in all Phoenix repositories using readonly token
 
@@ -773,7 +773,7 @@ fi
 
 **For PowerShell (Windows):**
 ```powershell
-$BRANCH = "dev"  # or dev2, dev-fix, test, main, master
+$BRANCH = "dev"  # or dev2, dev-fix, test, experiment, main, master
 $env:GIT_READONLY_TOKEN = "glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
 
 # Detect workspace root - find Cursor-Project directory (same as Step 1)
@@ -867,7 +867,7 @@ if (Test-Path "Phoenix") {
 
 **For Bash (Git Bash/Linux/macOS):**
 ```bash
-BRANCH="dev"  # or dev2, dev-fix, test, main, master
+BRANCH="dev"  # or dev2, dev-fix, test, experiment, main, master
 GIT_READONLY_TOKEN="glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg"
 
 # Detect workspace root - MUST find Cursor-Project/Phoenix/ (same as Step 1)
@@ -1021,7 +1021,7 @@ fi
 
 1. **Automatic Stash/Unstash:** Uncommitted changes are automatically stashed before operations and unstashed after successful operations
 2. **All Phoenix Repositories:** All operations are performed on all Git repositories found in `Phoenix/` directory
-3. **Supported Branches:** `dev`, `dev2`, `dev-fix`, `test`, `main`, `master` (and any branch that exists on remote)
+3. **Supported Branches:** `dev`, `dev2`, `dev-fix`, `test`, `experiment`, `main`, `master` (and any branch that exists on remote)
 4. **Safe Operations:** Always fetch before checking branch status
 5. **Branch Divergence:** Update will skip repository if branches have diverged - user must choose merge strategy
 6. **No Building:** This rule does NOT perform any build steps - it only handles Git operations
@@ -1165,7 +1165,7 @@ git fetch origin --dry-run
 **Error:** `fatal: couldn't find remote ref <branch>`
 
 **Solution:**
-- Verify branch name is correct (dev, dev2, dev-fix, test, main, master)
+- Verify branch name is correct (dev, dev2, dev-fix, test, experiment, main, master)
 - List available branches: `git branch -r`
 - Check if branch exists on remote: `git ls-remote --heads origin`
 - Some repositories may not have all branches - this is normal
@@ -1209,7 +1209,7 @@ This standalone rule provides:
 - ✅ Checkout specified branches (`!checkout <branch>`) using readonly token
 - ✅ Readonly Personal Access Token configuration
 - ✅ Automatic stash/unstash of local changes
-- ✅ Support for branches: dev, dev2, dev-fix, test, main, master
+- ✅ Support for branches: dev, dev2, dev-fix, test, experiment, main, master
 - ✅ Auto-discovery of all Git repositories in `Phoenix/` directory
 - ✅ Completely standalone - no dependencies on other files
 - ✅ Cross-platform compatible - works on Windows, Linux, macOS
