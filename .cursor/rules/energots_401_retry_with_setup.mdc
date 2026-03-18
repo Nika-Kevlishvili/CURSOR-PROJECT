@@ -1,0 +1,32 @@
+---
+alwaysApply: true
+---
+
+# EnergoTS – 401 retry policy (single iteration) [CRITICAL]
+
+## Rule ENERGOTS.401: On HTTP 401, re-auth via setup then retry once
+
+### Scope
+
+Applies to any automation that performs HTTP/API requests (UI-driven or direct API calls), especially when using `Cursor-Project/EnergoTS/fixtures/token.json` and/or `fixtures/envVariables.json`.
+
+### Policy (MUST)
+
+If **any request returns HTTP 401 (Unauthorized)**:
+
+1. **Run EnergoTS global setup once** (this regenerates authentication artifacts such as `fixtures/token.json` and `fixtures/envVariables.json`):
+   - Execute from `Cursor-Project/EnergoTS/`:
+     - `npx playwright test --project=setup`
+
+2. **Retry the exact same request once** (single retry only).
+
+### Limits (MUST)
+
+- **Only 1 iteration** is allowed. If the retried request still returns **401**, do not loop.
+- After the single retry fails with **401**, continue with failure handling and diagnostics (env mismatch, token audience/scope, permissions, expired credentials), but do not keep retrying.
+
+### Notes (SHOULD)
+
+- Prefer the existing EnergoTS fixtures and setup flow; do not implement ad-hoc token generation helpers when a setup project exists.
+- Keep credentials in `.env` / CI secrets; never hardcode tokens.
+
