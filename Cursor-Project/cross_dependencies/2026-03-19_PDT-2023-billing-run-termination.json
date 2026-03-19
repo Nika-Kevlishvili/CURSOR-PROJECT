@@ -1,0 +1,49 @@
+{
+  "jira_key": "PDT-2023",
+  "scope": "Billing run termination: terminate button, status 'in progress termination' (termination allowed for runs in INITIAL, IN_PROGRESS_DRAFT, DRAFT, IN_PROGRESS_GENERATION, GENERATED, PAUSED); flow from UI/API to cancel() and stored procedure.",
+  "summary": "Cross-dependencies for billing run termination (terminate button, PATCH /billing-run/terminate, BillingRunService.cancel(), terminate_billing_run stored procedure, lock cleanup, status CANCELLED).",
+  "entry_points": [
+    "PATCH /billing-run/terminate (billing-run-controller, operationId: terminate)",
+    "BillingRunService.cancel(Long billingRunId, boolean mustCheckPermission)",
+    "UI: Billing run list/detail – Terminate button (calls PATCH /billing-run/terminate)"
+  ],
+  "upstream": [
+    { "type": "api", "name": "billing-run-controller", "usage": "Exposes PATCH /billing-run/terminate; delegates to BillingRunService.cancel" },
+    { "type": "db", "name": "billing_run (table/schema)", "usage": "Billing run entity; status updated to CANCELLED; processStage not updated by cancel()" },
+    { "type": "db", "name": "billing_run.terminate_billing_run(?)", "usage": "Stored procedure called with run ID; may perform cleanup (lock release inconsistent per reports)" },
+    { "type": "db", "name": "Lock / lock table", "usage": "Locks associated with billing run (billingId); terminate_billing_run may not always release them" },
+    { "type": "service", "name": "BillingRunRepository", "usage": "save(billingRun) after status set to CANCELLED" },
+    { "type": "config", "name": "BillingStatus enum", "usage": "availableStatusesForTermination: INITIAL, IN_PROGRESS_DRAFT, DRAFT, IN_PROGRESS_GENERATION, GENERATED, PAUSED; cancel() throws if status not in list" }
+  ],
+  "downstream": [
+    { "type": "ui", "name": "Billing run list/detail screen", "usage": "Terminate button triggers PATCH /billing-run/terminate; shows status (e.g. CANCELLED)" },
+    { "type": "service", "name": "BillingRunStartAccountingScheduler / state listener", "usage": "Processes runs by status; resume() does not check CANCELLED, only processStage – cancelled runs can be resumed to IN_PROGRESS_ACCOUNTING" },
+    { "type": "service", "name": "BillingRunService.resume()", "usage": "If processStage is ACCOUNTING/DRAFT, can set status back to IN_PROGRESS_ACCOUNTING/IN_PROGRESS_DRAFT; CANCELLED run can thus move back to in-progress" },
+    { "type": "api", "name": "GET /billing-run/list, GET /billing-run/{id}", "usage": "Consumers expect CANCELLED status and correct lock state after termination" }
+  ],
+  "shared": [
+    "phoenix-billing-run: BillingRunService, BillingRunRepository, BillingRunStartAccountingService, BillingRunStartAccountingScheduler",
+    "BillingStatus enum (INITIAL, IN_PROGRESS_DRAFT, DRAFT, IN_PROGRESS_GENERATION, GENERATED, PAUSED, CANCELLED, COMPLETED, etc.)",
+    "billing_run schema and terminate_billing_run stored procedure",
+    "Lock entity / lock table (billingId)"
+  ],
+  "data_entities": [
+    "billing_run (id, status, processStage, runStages)",
+    "Lock (billingId, systemLock, entity references)",
+    "BillingStatus (enum)"
+  ],
+  "integration_points": [
+    "UI Terminate button → PATCH /billing-run/terminate → BillingRunService.cancel() → permission check → availableStatusesForTermination check → session.doWork: CALL billing_run.terminate_billing_run(?) → billingRun.setStatus(CANCELLED) → save",
+    "Termination vs scheduler: cancel() does not update processStage; BillingRunStartAccountingScheduler and resume() can later move CANCELLED run to IN_PROGRESS_ACCOUNTING if processStage still ACCOUNTING",
+    "Lock lifecycle: billing run creates locks during processing; terminate_billing_run expected to release; observed inconsistency (some CANCELLED runs keep locks)",
+    "Regression: completion flow uses make_billing_run_real(?) and releases locks; termination uses terminate_billing_run(?); both must leave run in consistent state"
+  ],
+  "what_could_break": [
+    { "item": "Lock cleanup", "location": "terminate_billing_run(?) / BillingRunService.cancel()", "reason": "Stored procedure may not always unlock; CANCELLED runs can retain locks (see BillingRunLockAnalysis report); any change to terminate flow must preserve or add explicit unlock" },
+    { "item": "Resume after cancel", "location": "BillingRunService.resume(), BillingRunStartAccountingScheduler", "reason": "resume() checks processStage not status; CANCELLED run with processStage ACCOUNTING can be resumed to IN_PROGRESS_ACCOUNTING and then COMPLETED; fix may require resume() to reject CANCELLED or clear processStage on cancel" },
+    { "item": "Terminate button / API", "location": "PATCH /billing-run/terminate", "reason": "Callers expect run to be CANCELLED and no longer processed; UI and batch jobs depend on status" },
+    { "item": "Concurrent start and terminate", "location": "BillingRunService.cancel vs startGenerating/startBilling/startAccounting", "reason": "Race if user terminates while start is in progress; ordering and validation of status transitions" },
+    { "item": "Billing run list and filters", "location": "GET /billing-run/list, standard-list, periodic-list", "reason": "Filters and counts by status; CANCELLED must be reflected; any new status (e.g. IN_PROGRESS_TERMINATION) would need UI and API support" }
+  ],
+  "technical_details": "Rule 35a merge lookup: (1) PDT-2023: Local git was searched in Phoenix repos under Cursor-Project (phoenix-billing-run, phoenix-core, phoenix-core-lib, phoenix-ui, phoenix-api-gateway). git log --all --grep='PDT-2023' and branch names containing 'PDT' or '2023' returned no matches. Phoenix directories may be submodules or shallow clones (.git not found at phoenix-billing-run path). (2) No merge commit or MR identified for Jira key PDT-2023 on dev/dev2. Conditional sync: SKIPPED (no merge found for PDT-2023). (3) Scope derived from user description and existing reports: billing run termination, terminate button, statuses allowing termination (IN_PROGRESS_DRAFT, IN_PROGRESS_GENERATION, etc.). Key code references (from workspace reports): BillingRunService.cancel() (lines ~2475-2513), availableStatusesForTermination = INITIAL, IN_PROGRESS_DRAFT, DRAFT, IN_PROGRESS_GENERATION, GENERATED, PAUSED; CALL billing_run.terminate_billing_run(?); billingRun.setStatus(BillingStatus.CANCELLED); processStage not updated. BillingRunStartAccountingService (completion) and BillingRunStartAccountingScheduler (resume/IN_PROGRESS_ACCOUNTING) are downstream. Modules: phoenix-billing-run (BillingRunService, BillingRunRepository), billing_run schema, Lock entity."
+}
