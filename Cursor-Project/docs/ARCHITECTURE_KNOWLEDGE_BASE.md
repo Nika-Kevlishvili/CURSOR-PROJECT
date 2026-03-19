@@ -3,7 +3,7 @@
 ## API Overview
 - **Title**: OpenAPI definition
 - **Version**: v0
-- **Base URL**: http://10.236.20.11:8091
+- **Base URL**: http://10.236.20.81:8094
 - **Total Endpoints**: 1,149
 - **Total Controllers**: 180
 - **Total Schemas/Models**: 1,453

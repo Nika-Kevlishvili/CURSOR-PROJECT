@@ -1,0 +1,106 @@
+{
+  "scope": "PHN-2529 - GET /sales-portal/customer/by-coordinates dependency and impact analysis across controller, service, DTO/projection, and repository native query layers.",
+  "entry_points": [
+    "GET /sales-portal/customer/by-coordinates",
+    "GET /sales-portal/customers/by-coordinates (observed variant; mismatch risk)",
+    "SalesPortalCustomerController",
+    "SalesPortalCustomerService",
+    "SalesPortalCustomerByCoordinatesRequest",
+    "SalesPortalCustomerByCoordinatesResponse",
+    "SalesPortalCustomerByCoordinatesProjection",
+    "CustomerDetailsRepository native query",
+    "Commit anchors: phoenix-core-lib@26cbc0495, phoenix-core@788f4cdfb6"
+  ],
+  "upstream": [
+    {
+      "type": "service",
+      "name": "Auth chain (gateway/security filter/JWT validation)",
+      "usage": "Bearer token validation (signature/issuer/audience/scope/role) is evaluated before business logic and can short-circuit request flow with 401/403."
+    },
+    {
+      "type": "api",
+      "name": "Request parameter binding and validation",
+      "usage": "Coordinates and pagination contract depends on query params latitude/longitude/radius/page/size/sort and framework validation constraints."
+    },
+    {
+      "type": "db",
+      "name": "CustomerDetailsRepository native SQL + count query",
+      "usage": "Business data, classification derivation, and pagination metadata depend on SQL joins/filters/order and count query parity."
+    },
+    {
+      "type": "lib",
+      "name": "phoenix-core-lib shared request/response/projection models",
+      "usage": "DTO/projection schema contracts are shared across modules and must stay compatible with phoenix-core runtime mapping."
+    }
+  ],
+  "downstream": [
+    {
+      "type": "consumer",
+      "name": "Sales Portal UI/API clients",
+      "usage": "Consumers depend on canonical endpoint path, auth behavior, and stable response schema for list rendering and pagination UX."
+    },
+    {
+      "type": "consumer",
+      "name": "EnergoTS automated tests (PHN-2529 suite)",
+      "usage": "Tests assert status codes, classification values, and pagination consistency; failures surface contract/auth drift quickly."
+    },
+    {
+      "type": "consumer",
+      "name": "Downstream analytics/reporting consumers",
+      "usage": "Any consumer using classification labels (acquisition/recontract) or paging metadata is affected by response/logic changes."
+    }
+  ],
+  "shared": [
+    "Shared DTO/projection contract in phoenix-core-lib",
+    "Pagination schema conventions (content/totalElements/totalPages/numberOfElements)",
+    "Classification value contract (acquisition, recontract)",
+    "Authorization conventions for bearer tokens"
+  ],
+  "data_entities": [
+    "Customer",
+    "CustomerDetails",
+    "Coordinates (latitude, longitude, radius)",
+    "Classification (acquisition, recontract)",
+    "Pagination metadata (page/size/totalElements/totalPages/numberOfElements)"
+  ],
+  "integration_points": [
+    "API gateway/security filter chain to controller dispatch",
+    "Controller -> Service -> Repository native query execution path",
+    "Native SQL result mapping to SalesPortalCustomerByCoordinatesProjection/Response",
+    "Shared model compatibility between phoenix-core-lib and phoenix-core",
+    "Endpoint path consistency across backend routing, docs, and clients",
+    "Stable sorting and count-query parity for pagination correctness"
+  ],
+  "what_could_break": [
+    {
+      "item": "Authorized happy-path scenarios",
+      "location": "Auth chain before SalesPortalCustomerController",
+      "reason": "Valid requests can be rejected with 401/403 if token scope/issuer/audience/role expectations drift."
+    },
+    {
+      "item": "Endpoint reachability",
+      "location": "Path mapping and consumers for /customer vs /customers variants",
+      "reason": "If only one path is wired/documented, clients or tests can fail with 404/501 or call wrong endpoint."
+    },
+    {
+      "item": "Classification correctness",
+      "location": "CustomerDetailsRepository native query classification logic",
+      "reason": "Join/CASE/filter changes can mislabel acquisition/recontract and break business semantics."
+    },
+    {
+      "item": "Pagination contract consistency",
+      "location": "Service/Repository response assembly",
+      "reason": "Count query mismatch, unstable ordering, or projection mapping drift can cause overlap/gaps or incorrect totalElements/totalPages."
+    },
+    {
+      "item": "Cross-module contract compatibility",
+      "location": "phoenix-core-lib@26cbc0495 <-> phoenix-core@788f4cdfb6 boundary",
+      "reason": "Version skew between DTO/projection definitions and runtime mapper/controller can break deserialization/field expectations."
+    },
+    {
+      "item": "Validation behavior contract",
+      "location": "Request binding/validation layer",
+      "reason": "Invalid/missing coordinate or pagination params may return unexpected status codes if validation order/constraints are changed."
+    }
+  ]
+}
