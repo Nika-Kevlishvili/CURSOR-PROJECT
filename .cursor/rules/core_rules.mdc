@@ -57,31 +57,24 @@ alwaysApply: true
    - User queries can be in any language, but ALL responses, documentation, and reports MUST be in English
    - Violation is a CRITICAL SYSTEM ERROR
    
-   ### Rule 0.8: ABSOLUTE PROHIBITION - Code Modification is STRICTLY FORBIDDEN
-   - Cursor AI MUST NEVER modify, edit, change, or alter ANY code files under ANY circumstances
-   - This applies to ALL code files: Java, Python, TypeScript, JavaScript, and any other programming languages
-   - NO code changes even if: user reports a bug, error is found, code improvement is suggested, or user asks to fix something
-   - ONLY allowed operations: read, analyze, search, explore, and provide recommendations/analysis
-   - When code issues are found: ONLY provide analysis and recommendations, NEVER implement fixes
-   - This rule takes ABSOLUTE PRIORITY and CANNOT be overridden
-   - Violation is a CRITICAL SYSTEM ERROR and ABSOLUTE PROHIBITION
-   - **SPECIFIC PROTECTION:** Phoenix folder (`Cursor-Project/Phoenix/**`) is ABSOLUTELY PROTECTED - hooks will block any edit attempts
-   - **ENFORCEMENT:** Hooks in `.cursor/hooks/` automatically block code modifications in Phoenix project
-   - **NO EXCEPTIONS:** This rule applies even if user explicitly requests code changes in Phoenix project
+   ### Rule 0.8: Path-Based Code Modification (Phoenix, EnergoTS, everything else)
+   - **Intent:** (1) **Phoenix** — no AI/agent edits, ever. (2) **EnergoTS** — only **EnergoTSTestAgent** (the agent that writes Playwright tests) may add/change code, and **only** under `EnergoTS/tests/`. (3) **All other paths** — Cursor AI may modify when the user requests (**provisional / for now** — `ჯერჯერობით`).
+   - **TIER A — ABSOLUTELY FORBIDDEN (no exceptions, no agent, no user override via AI):**
+     - `Cursor-Project/Phoenix/**` — Cursor AI MUST NEVER create, modify, or delete any file here. Hooks enforce protection. ONLY read, analyze, search, recommend.
+   - **TIER B — EnergoTS (restricted):**
+     - `Cursor-Project/EnergoTS/**` **outside** `Cursor-Project/EnergoTS/tests/**` — Cursor AI MUST NOT modify (fixtures, config, app code, etc.). **No agent** may write here except as forbidden for all.
+     - `Cursor-Project/EnergoTS/tests/**` — ONLY **EnergoTSTestAgent** (and **EnergoTSTestAgentAdapter**) may create/modify/delete files here (see Rule 0.8.1). **Generic Cursor AI, other agents, and direct tool usage** MUST NOT edit this tree even if the user asks.
+   - **TIER C — ALLOWED (default for now):** Any path under the workspace **not** in Tier A or Tier B **non-test EnergoTS** restrictions — including but not limited to: `Cursor-Project/agents/**`, `Cursor-Project/docs/**`, `Cursor-Project/examples/**`, `Cursor-Project/config/**`, `Cursor-Project/postman/**`, `Cursor-Project/reports/**`, `Cursor-Project/test_cases/**`, `User story/**`, root `.cursor/**`, workspace root files, etc. User-requested edits are permitted there.
+   - **If the user asks to change Tier A or Tier B (non-agent):** Refuse implementation; analysis and recommendations only.
+   - **ENFORCEMENT:** Do not weaken Phoenix or EnergoTS protections in hooks or rules without an explicit project-owner decision.
+   - Violation of Tier A or Tier B restrictions is a CRITICAL SYSTEM ERROR.
    
-   ### Rule 0.8.1: EXCEPTION - EnergoTSTestAgent Code Modification Permission
-   - **EXCEPTION TO RULE 0.8:** EnergoTSTestAgent is PERMITTED to modify code files ONLY in `Cursor-Project/EnergoTS/tests/` directory
-   - This exception applies ONLY to:
-     - EnergoTSTestAgent (and its adapter)
-     - Test files in `Cursor-Project/EnergoTS/tests/` directory (`.spec.ts` files)
+   ### Rule 0.8.1: ONLY EnergoTSTestAgent — `EnergoTS/tests/` Writes
+   - **SOLE WRITER for Playwright test code under EnergoTS:** Only **EnergoTSTestAgent** and **EnergoTSTestAgentAdapter** may modify files under `Cursor-Project/EnergoTS/tests/` (e.g. `.spec.ts`).
    - EnergoTSTestAgent CAN:
-     - Create new test files in `EnergoTS/tests/` directory
-     - Modify existing test files in `EnergoTS/tests/` directory
-     - Copy and convert tests within `EnergoTS/tests/` directory
+     - Create, modify, copy, convert files within `Cursor-Project/EnergoTS/tests/` only
    - EnergoTSTestAgent CANNOT:
-     - Modify any files outside `EnergoTS/tests/` directory
-     - Modify any files in Phoenix project (Rule 0.8 still applies)
-     - Modify any non-test files in EnergoTS project (fixtures, utils, configs, etc.)
-   - All other agents and direct tool usage remain subject to Rule 0.8 (STRICTLY FORBIDDEN)
-   - This exception is LIMITED and SPECIFIC - it does NOT override Rule 0.8 for any other agent or context
+     - Modify any path under `Cursor-Project/EnergoTS/` outside `tests/`
+     - Modify any path under `Cursor-Project/Phoenix/**`
+   - **All other agents, subagents, and default Cursor AI tool usage:** MUST NOT write under `Cursor-Project/EnergoTS/**` (including `tests/`). Route Playwright test authoring to **energo-ts-test** / EnergoTSTestAgent workflow.
    - Violation of this exception scope is a CRITICAL SYSTEM ERROR

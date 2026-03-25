@@ -210,6 +210,6 @@ alwaysApply: true
     **When to apply**
     - User message contains a Jira ticket identifier and the trigger **/HandsOff** or **!HandsOff** (or "HandsOff for this ticket", "Run HandsOff for REG-123", etc.).
     
-    **Reference:** `.cursor/commands/hands-off.md`, `.cursor/agents/hands-off.md`, `.cursor/skills/hands-off/SKILL.md`.
+    **Reference:** `.cursor/commands/hands-off.md`, `.cursor/agents/hands-off.md`. (HandsOff has no project skill entry; trigger via **/HandsOff**, **!HandsOff**, or the **hands-off** slash command only.)
     
     - Violation is a CRITICAL SYSTEM ERROR.

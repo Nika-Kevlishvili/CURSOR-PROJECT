@@ -1,0 +1,58 @@
+{
+  "jira_key": "PDT-2655",
+  "scope": "PDT-2655: [Backend] Invoice cancellation does not work correctly when user cancels invoice generated from SLP (measured) profile with two price components in different slots",
+  "summary": "Bug – Invoice cancellation fails or behaves incorrectly for invoices generated from SLP profile when product has two measured price components (slot one and slot two); billing run produces two invoices per profile; cancelling both invoices does not work correctly",
+  "description_repro": "1. Product contract for SLP flow. 2. Product with two measured (измерено) price components. 3. Price components with different slots (slot one and slot two). 4. Start billing run for this contract. 5. Two invoices are generated for one measured profile. 6. Cancel both invoices – bug: cancellation does not work correctly.",
+  "entry_points": [
+    "POST /invoice-cancellation (create invoice cancellation request)",
+    "POST /invoice-cancellation/upload-file (mass import file)",
+    "InvoiceCancellationProcessService.startCancellationProcessing (async process; invokes processInvoice per invoice)",
+    "InvoiceCancellationService.processInvoice (STANDARD type: PROFILE/SCALE handling via validInvoices)",
+    "InvoiceCancellationInvoicesRepository.findInvoiceToCancel (builds validInvoices / InvoiceCancellationDto list per base invoice)",
+    "InvoiceCancellationService processInvoice switch case PROFILE (BillingByProfile delete or setInvoiced(false))"
+  ],
+  "upstream": [
+    { "type": "db", "name": "invoice.invoice_standard_detailed_data (billing_data_profile_ids, billing_data_scale_ids)", "usage": "Source for which billing profile/scale IDs are linked to each cancelled invoice; unnest gives one row per profile/scale ID" },
+    { "type": "db", "name": "pod.billing_by_profile (id, invoice_ids, billing_scale_id, billing_run_id)", "usage": "PROFILE flow: join by billingProfileId; invoice_ids array links profile to invoice(s); used to determine shouldDelete (billingRunId is not null) and to validate all linked invoices are in cancellation list" },
+    { "type": "db", "name": "pod.billing_by_scale", "usage": "SCALE flow: same pattern for scale-based billing" },
+    { "type": "db", "name": "pod.billing_data_by_profile", "usage": "Deleted when shouldDelete is true for PROFILE (deleteByBillingByProfileId then delete BillingByProfile)" },
+    { "type": "service", "name": "BillingByProfileRepository, BillingDataByProfileRepository, BillingByScaleRepository", "usage": "findById(billingDataId) in processInvoice; delete or setInvoiced(false)" },
+    { "type": "api", "name": "Billing run (phoenix-billing-run or similar)", "usage": "Creates invoices and populates invoice_standard_detailed_data and billing_by_profile.invoice_ids; SLP with two slots may create two invoices and link them to one or two BillingByProfile records" }
+  ],
+  "downstream": [
+    { "type": "ui", "name": "Invoice cancellation screen (Billing > Invoice Cancellation)", "usage": "User selects invoices to cancel; both SLP-generated invoices must be in the list for validInvoice to pass" },
+    { "type": "service", "name": "InvoiceCancellationService.processInvoice", "usage": "For STANDARD + validInvoices: iterates InvoiceCancellationDto; PROFILE: delete or setInvoiced(false) on BillingByProfile; SCALE: setInvoiced(false) on BillingByScale" },
+    { "type": "flow", "name": "Invoice cancellation process (batch)", "usage": "Processes each invoice row; validInvoiceMap.get(row.getId()) supplies list of DTOs; if validInvoice false, row is skipped with error" },
+    { "type": "integration", "name": "Receivable/liability reversal (processDebitNoteInvoice, processCreditNoteInvoice, processProformaInvoice)", "usage": "After PROFILE/SCALE revert, document type handling runs (debit/credit/proforma); depends on correct billing data state" }
+  ],
+  "shared": [
+    "phoenix-core-lib: InvoiceCancellationService, InvoiceCancellationProcessService, InvoiceCancellationProcessor",
+    "InvoiceCancellationInvoicesRepository (findInvoiceToCancel native query)",
+    "InvoiceCancellationDto (baseInvoiceId, validInvoice, billingDataId, shouldDelete, type PROFILE|SCALE)",
+    "BillingByProfile, BillingByScale, BillingDataByProfileRepository"
+  ],
+  "data_entities": [
+    "invoice (invoices to cancel; STANDARD type)",
+    "invoice_cancellation",
+    "invoice_cancellation_invoices",
+    "invoice_standard_detailed_data (billing_data_profile_ids, billing_data_scale_ids)",
+    "billing_by_profile (id, invoice_ids, billing_scale_id, billing_run_id)",
+    "billing_by_scale",
+    "billing_data_by_profile",
+    "process (invoice cancellation process)"
+  ],
+  "integration_points": [
+    "Create cancellation -> save invoice_cancellation_invoices (invoice_id, cancellation_id) -> Process -> findInvoiceToCancel(cancellationId) -> build validInvoiceMap by baseInvoiceId -> for each invoice row: processInvoice(row, ..., validInvoiceMap.get(row.getId()))",
+    "findInvoiceToCancel: cancel_invoices -> billing_profile (unnest billing_data_profile_ids) -> middle_invoices (join pod.billing_by_profile) -> profile_invoices (group by mi.id, baseInvoiceId, scaleId, billingRunId) -> validation_result (validInvoice = all invoiceIds in cancel list) -> PROFILE rows; same for SCALE",
+    "processInvoice STANDARD: for each validInvoice with type PROFILE: find BillingByProfile by billingDataId; if shouldDelete delete BillingDataByProfile + BillingByProfile else setInvoiced(false)",
+    "SLP two slots: two invoices; each invoice may link to one or two billing_data_profile_ids; validInvoice requires all invoices linked to the same billing run/profile set to be in cancellation list; reverting one invoice may revert shared BillingByProfile(s), leaving second invoice in inconsistent state or duplicate revert on second cancel"
+  ],
+  "what_could_break": [
+    { "item": "ValidInvoice validation", "location": "InvoiceCancellationInvoicesRepository.findInvoiceToCancel (validation_result, profile_invoices)", "reason": "For SLP with two invoices, validInvoice = not exists(unnest(bi.invoiceIds) except cancel_invoices). If user does not include both invoices in the cancellation list, validInvoice is false and process adds error for that base invoice; if both are included, both get same list of DTOs (one per BillingByProfile). Processing first invoice may revert both profiles; processing second may then try to delete or update already reverted records" },
+    { "item": "PROFILE revert (delete vs setInvoiced)", "location": "InvoiceCancellationService.processInvoice case PROFILE", "reason": "shouldDelete = (billingRunId is not null). When two invoices share the same billing run, first cancel may delete BillingByProfile (if shouldDelete); second cancel then does findById(billingDataId) and throws DomainEntityNotFoundException. Or first cancel sets invoiced=false for both profile rows; second cancel idempotently sets same again – but if one profile is deleted, second fails" },
+    { "item": "One row per invoice vs per profile", "location": "findInvoiceToCancel profile_invoices group by mi.id, baseInvoiceId, scaleId, billingRunId", "reason": "Result set has one row per (BillingByProfile.id, baseInvoiceId). For two slots there are two BillingByProfile rows; each base invoice (each of the two invoices) joins to profile_invoices. So each of the two invoices gets the same two DTOs (both baseInvoiceIds appear in invoice_ids). So when we process invoice A we get [dto1, dto2]; when we process invoice B we get [dto1, dto2]. Reverting both for invoice A reverts both profiles; then for invoice B we try to revert same two again – delete fails or double update" },
+    { "item": "Billing run / SLP invoice creation", "location": "phoenix-billing-run (or module that creates invoices from billing_by_profile)", "reason": "Not in workspace; how invoice_standard_detailed_data and billing_by_profile.invoice_ids are filled for two slots affects how many rows and which baseInvoiceId appear in findInvoiceToCancel. Any fix in cancellation must align with how billing run creates and links the two invoices" },
+    { "item": "Interim and debit/credit note flows", "location": "InvoiceCancellationProcessService invalidInterims, findInvalidDebitCreditInvoice", "reason": "Pre-validation may mark invoices as invalid; SLP two-invoice scenario could interact with interim or credit/debit note rules" }
+  ],
+  "technical_details": "Rule 35a merge lookup: (1) PDT-2655: Local git (cursor-project root, Cursor-Project/Phoenix/phoenix-core-lib, phoenix-core) – git log --all --oneline --grep='PDT-2655' returned no commits. No branch names containing '2655' found. (2) No MR or merge found specifically for Jira key PDT-2655 on dev/dev2. Conditional sync: SKIPPED (no merge for PDT-2655). (3) Key code for scope: phoenix-core-lib InvoiceCancellationService.processInvoice (lines 338–368) handles STANDARD type and iterates validInvoices; PROFILE: BillingByProfile findById(billingDataId), then either delete (billingDataByProfileRepository.deleteByBillingByProfileId, billingByProfileRepository.deleteById) or setInvoiced(false). InvoiceCancellationProcessService (lines 125–136, 193–198) builds validInvoices via InvoiceCancellationInvoicesRepository.findInvoiceToCancel and groups by baseInvoiceId; passes validInvoiceMap.get(row.getId()) to processInvoice. InvoiceCancellationInvoicesRepository.findInvoiceToCancel (native SQL) uses invoice_standard_detailed_data.billing_data_profile_ids, pod.billing_by_profile, and validation that all linked invoices are in cancel list. Modules: InvoiceCancellationService, InvoiceCancellationProcessService, InvoiceCancellationInvoicesRepository, BillingByProfileRepository, BillingDataByProfileRepository; tables invoice.invoice_standard_detailed_data, pod.billing_by_profile, pod.billing_data_by_profile."
+}

@@ -92,7 +92,7 @@ All rules with `alwaysApply: true` are automatically loaded and applied. The rul
 2. **Rule 0.1:** ALWAYS end responses with "Agents involved: [names]"
 3. **Rule 0.2:** ALL Phoenix questions → PhoenixExpert ONLY
 4. **Rule 0.6:** ALWAYS generate reports after tasks
-5. **Rule 0.8:** Code modification is STRICTLY FORBIDDEN - NO EXCEPTIONS (see safety_rules.mdc Rule 7)
+5. **Rule 0.8:** Phoenix never edited by AI; EnergoTS only EnergoTSTestAgent in `tests/`; all other workspace paths editable when user requests (provisional) — see safety_rules.mdc Rule 7
 6. **Rule 1:** GitLab and Confluence are READ-ONLY
 7. **Rule 8:** ALWAYS consult PhoenixExpert before tasks
 8. **Rule 11:** ALWAYS call IntegrationService.update_before_task()
