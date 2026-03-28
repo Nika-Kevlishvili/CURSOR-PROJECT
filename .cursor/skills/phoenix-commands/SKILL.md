@@ -1,6 +1,6 @@
 ---
 name: phoenix-commands
-description: Maps user intent to Cursor commands and workflows (Phoenix query, consult, report, bug-validate, jira-bug, sync, cross-dependency-finder, test-case-generate, energo-ts-run, hands-off). Use when the user asks how to run a workflow or which command to use for Phoenix, consultation, reports, bug validation, Jira bug on Experiments board, Git sync, cross-dependencies, test case generation, running Playwright tests from EnergoTS/GitHub by prompt, or full HandsOff flow (Jira ticket → cross-deps → test cases → Playwright → run → report + Slack).
+description: Maps user intent to Cursor commands and workflows (Phoenix query, consult, report, bug-validate, jira-bug, sync, cross-dependency-finder, test-case-generate, energo-ts-run, hands-off command). Use when the user asks how to run a workflow or which command to use. For HandsOff: there is no separate hands-off skill—use slash command **hands-off** or triggers **/HandsOff** / **!HandsOff** per Rule 37 and `.cursor/commands/hands-off.md`.
 ---
 
 # Phoenix Commands and Workflows
@@ -93,7 +93,8 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 
 ## Hands-off (hands-off.md)
 
-- **When:** User provides a **Jira ticket** (link, key e.g. REG-123, or name) and types **/HandsOff** or **!HandsOff**.
+- **Trigger (command-only):** Run via Cursor slash command **hands-off** (`.cursor/commands/hands-off.md`) and/or user text **/HandsOff** or **!HandsOff** with a Jira key (Rule 37). There is **no** `hands-off` entry under `.cursor/skills/`—do not rely on a dedicated HandsOff skill.
+- **When:** User provides a **Jira ticket** (link, key e.g. REG-123, or name) and types **/HandsOff** or **!HandsOff** (or runs the **hands-off** command).
 - **Flow:** Route to **hands-off** orchestrator. Full flow: (1) Get Jira ticket and description (Jira MCP); (2) Run cross-dependency-finder (Rule 35a); (3) Run test-case-generator with cross_dependency_data; (4) Create Playwright tests from test cases (bridge .md → spec → EnergoTSTestAgent); (5) Run Playwright tests (energo-ts-run, cursor branch); (6) Save report as `reports/YYYY-MM-DD/{JIRA_KEY}.md` with pass/fail and reasons; (7) Send report to Slack to the tester and duplicate to the AI report channel (user-slack MCP).
 - **Output:** Summary of run; report file; Slack delivery. "Agents involved: HandsOff (orchestrator), CrossDependencyFinderAgent, TestCaseGeneratorAgent, EnergoTSTestAgent, EnergoTS Playwright Test Runner".
 
@@ -109,6 +110,6 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 - Cross-dependencies → Cross-dependency-finder command + CrossDependencyFinderAgent.
 - Test cases → Test-case-generate command (cross-dependency-finder first, then TestCaseGeneratorAgent).
 - Run Playwright tests from EnergoTS by prompt → Energo-ts-run command (resolve test, run locally).
-- Full HandsOff flow (Jira + /HandsOff or !HandsOff) → Hands-off command + hands-off orchestrator (Jira → cross-deps → test cases → Playwright → run → report + Slack).
+- Full HandsOff flow (Jira + /HandsOff or !HandsOff or **hands-off** slash command) → `.cursor/commands/hands-off.md` + hands-off orchestrator (no separate hands-off skill).
 
 All commands assume rules are loaded first (Rule 0.0) from `.cursor/rules/`.

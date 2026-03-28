@@ -1,0 +1,51 @@
+{
+  "scope": "PHN-2197: Backend GET: POD list – Search of pods by Coordinates on Map view. Backend support for searching/filtering the POD list by geographic coordinates (e.g. bounding box or lat/long) for use in a map view.",
+  "jira_key": "PHN-2197",
+  "entry_points": [
+    "GET /pod/list (point-of-delivery-controller, operationId: search) – existing search endpoint; likely to be extended with coordinate/bbox query parameters for map view",
+    "PointOfDeliveryController (phoenix-core) – POD domain controller exposing /pod/list",
+    "PodSearchRequest (request DTO) – current required fields: consumptionPurposes, measurementTypes, page, podTypes, prompt, size, sortBy, sortDirection, voltageLevels; no coordinate fields in current backend-architecture.json"
+  ],
+  "upstream": [
+    { "type": "db", "name": "pod.pod", "usage": "POD entity; list/search reads from pod table" },
+    { "type": "db", "name": "pod.pod_details", "usage": "POD version/details; address or location data may be stored here or in related address/location tables for coordinate filtering" },
+    { "type": "api", "name": "point-of-delivery-controller", "usage": "Exposes GET /pod/list (search); must accept and apply coordinate/bbox filter" },
+    { "type": "service", "name": "PointOfDeliveryService (or equivalent)", "usage": "Business logic for POD search; must support coordinate-based filtering" },
+    { "type": "api", "name": "PodSearchRequest", "usage": "Request DTO; may be extended with latitude, longitude, bbox (minLat, maxLat, minLon, maxLon) or similar for map view" },
+    { "type": "api", "name": "PagePointOfDeliveryFilterResponse", "usage": "Paged response for POD list; content type PointOfDeliveryFilterResponse (id, detailId)" },
+    { "type": "db", "name": "POD location/address schema", "usage": "If coordinates are stored (e.g. in pod_details or address tables), repository queries must filter by bbox/coordinates" },
+    { "type": "service", "name": "Auth / permissions", "usage": "Same as existing /pod/list; caller must have permission to list PODs" }
+  ],
+  "downstream": [
+    { "type": "consumer", "name": "Map view UI (frontend)", "usage": "Calls GET /pod/list with coordinate/bbox params to display PODs on map" },
+    { "type": "api", "name": "GET /pod/{id}", "usage": "Detail view; map may link to POD detail" },
+    { "type": "consumer", "name": "Sales portal / Phoenix UI", "usage": "POD listing and map view; contract flows that select POD from map" },
+    { "type": "api", "name": "Contract–POD APIs", "usage": "product-contract, service-contract, express-contract; map-selected POD may be used in contract creation" },
+    { "type": "consumer", "name": "EnergoTS / API tests", "usage": "Tests for /pod/list may need to cover new query params (coordinates/bbox)" }
+  ],
+  "shared": [
+    "pod schema (pod.pod, pod.pod_details)",
+    "point-of-delivery-controller (domain: pod)",
+    "PodSearchRequest, PagePointOfDeliveryFilterResponse, PointOfDeliveryFilterResponse",
+    "product_contract.contract_pods, service_contract.contract_pods (POD associations)"
+  ],
+  "data_entities": [
+    "POD (pod.pod)",
+    "pod_details (pod.pod_details)",
+    "Address/location data if stored for POD (for coordinate filtering)"
+  ],
+  "integration_points": [
+    "Frontend map view → GET /api/pod/list?…&bbox=… or lat/lon params",
+    "Phoenix API gateway → point-of-delivery-controller",
+    "Contract creation flows that use POD list (e.g. select POD from map)",
+    "Existing /pod/list callers (must remain compatible if new params are optional)"
+  ],
+  "what_could_break": [
+    { "item": "Existing GET /pod/list callers", "location": "point-of-delivery-controller search", "reason": "If new coordinate params change request contract or validation, existing clients without these params must still work (backward compatibility)" },
+    { "item": "Pagination and sort with bbox", "location": "PointOfDeliveryService / repository", "reason": "Combining coordinate filter with page/size/sortBy/sortDirection must be consistent; performance of geo queries" },
+    { "item": "PODs without coordinates", "location": "DB/repository", "reason": "If coordinates are optional on POD, map view must handle missing location data; filter behaviour (exclude vs include null)" },
+    { "item": "Contract and termination flows that list or select POD", "location": "Sales portal, contract screens", "reason": "UI that reuse POD list (e.g. dropdown vs map) must work with same or extended API" },
+    { "item": "EnergoTS / Postman tests for /pod/list", "location": "EnergoTS fixtures, Postman collections", "reason": "New optional params should be covered; existing tests must not break" }
+  ],
+  "technical_details": "Merge history lookup for PHN-2197: No local git commit messages containing 'PHN-2197' found in Cursor-Project or in Phoenix repos (phoenix-core, phoenix-api-gateway). No branch name containing '2197' found in phoenix-core (e.g. no feature/PHN-2197 or PHN-2197). GitLab MR/merge commit search was not performed (no GitLab MCP available in this run). Conditional sync: skipped – no merge identified for PHN-2197; local state used. Scope derived from Jira title and backend-architecture.json: GET /pod/list (operationId search), point-of-delivery-controller, PodSearchRequest (current required: consumptionPurposes, measurementTypes, page, podTypes, prompt, size, sortBy, sortDirection, voltageLevels). Current PodSearchRequest in backend-architecture.json has no latitude, longitude, or bbox fields; PHN-2197 likely adds optional coordinate/bbox parameters for map view. Phoenix project layout: phoenix-core contains PointOfDeliveryController (pod/); phoenix-core-lib contains entities and services. Recommendation: confirm in Confluence or Jira the exact request contract (e.g. bbox vs lat/lon/radius) and whether POD location is stored in pod_details or separate table; run cross-dependency and test-case generation after merge is available."
+}

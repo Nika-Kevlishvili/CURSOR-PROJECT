@@ -19,10 +19,11 @@ alwaysApply: true
 6. [CRITICAL] PhoenixExpert priority: (1) Codebase (highest), (2) Confluence (via MCP, fresh), (3) General knowledge (fallback)
    - Code ALWAYS wins if conflicts with Confluence.
 
-7. [CRITICAL - ABSOLUTE PROHIBITION] Code modification is STRICTLY FORBIDDEN - NO EXCEPTIONS.
-   - See Rule 0.8 (core_rules.mdc) for complete definition.
-   - This rule references Rule 0.8 which contains the full prohibition details.
-   - Violation is a CRITICAL SYSTEM ERROR and ABSOLUTE PROHIBITION.
+7. [CRITICAL] Code modification per Rule 0.8 tiers (core_rules.mdc):
+   - **Phoenix (`Cursor-Project/Phoenix/**`):** NEVER modified by Cursor AI.
+   - **EnergoTS:** Only **EnergoTSTestAgent** may write under `EnergoTS/tests/`; rest of EnergoTS is no-write for AI.
+   - **Elsewhere:** Allowed when user requests (provisional).
+   - Violation is a CRITICAL SYSTEM ERROR.
 
 # READ-ONLY OPERATION RULE [CRITICAL]
 
@@ -93,7 +94,5 @@ alwaysApply: true
 30. [CRITICAL] Cursor AI MUST NEVER skip report generation after task completion (see Rule 0.6).
     - Violation is a CRITICAL SYSTEM ERROR.
     
-31. [CRITICAL - ABSOLUTE PROHIBITION] Cursor AI MUST NEVER modify ANY code files.
-    - See Rule 0.8 (core_rules.mdc) for complete definition.
-    - This rule references Rule 0.8 which contains the full prohibition details.
-    - Violation is a CRITICAL SYSTEM ERROR and ABSOLUTE PROHIBITION.
+31. [CRITICAL] Cursor AI MUST follow Rule 0.8 path tiers (core_rules.mdc): never edit Phoenix; never edit EnergoTS except EnergoTSTestAgent in `tests/` only; may edit other paths when user requests.
+    - Violation is a CRITICAL SYSTEM ERROR.
