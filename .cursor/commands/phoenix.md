@@ -4,7 +4,7 @@ Route ALL Phoenix-related questions to PhoenixExpert agent (Rule 0.2 - ABSOLUTE 
 
 ## Mandatory Workflow:
 
-1. **IntegrationService** - Call `IntegrationService.update_before_task()` FIRST
+1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. **Confluence Check** - Search Confluence via MCP tools (FRESH, no cache)
 3. **Codebase Check** - Search Phoenix codebase (primary source)
 4. **PhoenixExpert Response** - Provide answer with full context
@@ -20,5 +20,5 @@ Route ALL Phoenix-related questions to PhoenixExpert agent (Rule 0.2 - ABSOLUTE 
 - End with: "Agents involved: PhoenixExpert"
 
 ## Generate Reports (Rule 0.6):
-- Save to `reports/YYYY-MM-DD/PhoenixExpert_{HHMM}.md`
-- Save summary to `reports/YYYY-MM-DD/Summary_{HHMM}.md`
+- Save to **`Cursor-Project/reports/YYYY-MM-DD/PhoenixExpert_{HHMM}.md`**
+- Save summary to **`Cursor-Project/reports/YYYY-MM-DD/Summary_{HHMM}.md`**

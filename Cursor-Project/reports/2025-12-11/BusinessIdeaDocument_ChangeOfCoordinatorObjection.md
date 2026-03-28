@@ -20,7 +20,7 @@ Successfully created a comprehensive business idea document for the "Change of C
 ## Actions Taken
 
 1. **Read Rules and Guidelines**
-   - Read `.cursor/rules/phoenix.mdc` for project guidelines
+   - Read `.cursor/rules/main/phoenix.mdc` for project guidelines
    - Understood file organization requirements (User story/ directory)
    - Confirmed English language requirement for user stories
 

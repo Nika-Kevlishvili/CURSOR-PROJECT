@@ -1,5 +1,7 @@
 # Environment Variables Setup Guide
 
+> **Current:** Cursor/MCP and scripts use env vars from your machine or `.env` as documented per command. Environment **access** workflow: **`.cursor/agents/environment-access.md`**. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. “Agents” below means historical Python stack or generic tooling.
+
 ## პრობლემა / Problem
 
 როდესაც პროექტს გადაიტანთ სხვა კომპიუტერზე, environment variables არ არის დაყენებული, რის გამოც agents არ მუშაობს სწორად.

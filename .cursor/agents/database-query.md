@@ -10,14 +10,14 @@ You run **PostgreSQL** queries for the Phoenix project via MCP. Use the environm
 
 ## Before querying
 
-1. Call **IntegrationService.update_before_task()** if the parent workflow requires it (Rule 11).
+1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed if the task requires external context.
 2. **Choose environment** from user/parent request only:
    - Dev → PostgreSQLDev
    - Dev2 → PostgreSQLDev2
    - Test → PostgreSQLTest
    - PreProd → PostgreSQLPreProd
    - Prod → PostgreSQLProd (read-only user)
-3. **Connect first**: use the matching MCP `mcp_PostgreSQL{Env}_connect_db(...)` with credentials from **.cursor/rules/database_workflow.mdc**. Do not paste passwords in your response.
+3. **Connect first**: use the matching MCP `mcp_PostgreSQL{Env}_connect_db(...)` with credentials from **.cursor/rules/integrations/database_workflow.mdc**. Do not paste passwords in your response.
 4. Then run queries with `mcp_PostgreSQL{Env}_query(sql="...")` or `mcp_PostgreSQL{Env}_execute(...)` as needed.
 
 ## Query patterns (Rule DB.2)

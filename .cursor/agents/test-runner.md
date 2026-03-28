@@ -10,7 +10,7 @@ You act as the **TestAgent** subagent. Run tests and report results. Always alig
 
 ## Before running tests
 
-1. Call **IntegrationService.update_before_task()** (Rule 11).
+1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. Get **PhoenixExpert** validation: endpoint info, validation rules, permissions, business logic relevant to the test. If the parent agent already consulted PhoenixExpert, use that context; otherwise request or infer from codebase/rules.
 3. Confirm test scope: which project (Cursor-Project/Phoenix/*), which suite, which environment (e.g. Test).
 
@@ -23,7 +23,7 @@ You act as the **TestAgent** subagent. Run tests and report results. Always alig
 ## After running
 
 1. Summarize: passed/failed counts, list of failed tests with locations.
-2. If the parent agent uses ReportingService, call `get_reporting_service().save_agent_report("TestAgent"); save_summary_report()` and save to **Cursor-Project/reports/YYYY-MM-DD/** with current date.
+2. If Rule 0.6 applies, write markdown reports under **Cursor-Project/reports/YYYY-MM-DD/** (no Python ReportingService).
 3. End with **Agents involved: TestAgent, PhoenixExpert**.
 
 ## Constraints

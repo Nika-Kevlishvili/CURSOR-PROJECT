@@ -1,5 +1,7 @@
 # Confluence Integration Status
 
+> **Current:** Confluence via **MCP** in Cursor; Phoenix answers → **`.cursor/agents/phoenix-qa.md`** (Rule 0.2, 0.5). Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**.
+
 ## Integration Complete
 
 Confluence documentation has been integrated into the **PhoenixExpert** agent system in **read-only mode**.

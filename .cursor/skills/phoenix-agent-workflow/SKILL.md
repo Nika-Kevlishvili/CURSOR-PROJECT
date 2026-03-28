@@ -1,77 +1,56 @@
 ---
 name: phoenix-agent-workflow
-description: Routes Phoenix project queries through AgentRouter, enforces PhoenixExpert consultation and IntegrationService before tasks, and triggers report generation. Use when handling Phoenix-related questions, multi-agent tasks, or when the user asks about agents, routing, consultation, or report generation.
+description: Guides Phoenix-related work in Cursor using rules, subagents, skills, PhoenixExpert consultation (Rule 8), Rule 0.3 (no Python agents package), and markdown reporting (Rule 0.6). Use for multi-step Phoenix tasks, routing questions, or report footers.
 ---
 
-# Phoenix Agent Workflow
+# Phoenix Agent Workflow (Cursor)
 
-Guides the agent to use the project's agent system correctly: routing, consultation, integration service, and reporting.
+Guides the assistant to follow **`.cursor/rules/`**, **`.cursor/agents/*.md`**, and **skills** — not a Python `AgentRouter` or `IntegrationService` in this workspace.
 
 ## When to Apply
 
-- User asks about Phoenix (backend, endpoints, business logic, Confluence).
-- Task involves tests, Postman, GitLab, environment access, or bug validation.
-- User mentions consultation, routing, or "which agent".
-- Any task that must follow Rule 0.0–0.6, Rule 8, Rule 11, Rule 13.
+- Phoenix questions, tests, Postman, GitLab sync, environment access, bug validation, reporting.
+- User asks about agents, consultation, or which workflow to use.
 
 ## Quick Reference
 
 | Step | Action | Reference |
 |------|--------|-----------|
-| 0 | Read all rules from `.cursor/rules/` first | Rule 0.0 |
-| 1 | Call `IntegrationService.update_before_task()` before executing task | Rule 11 |
-| 2 | Route via `AgentRouter.route_query()` — do not pick agents manually | Rule 13 |
-| 3 | Consult PhoenixExpert before task (all agents) | Rule 8 |
-| 4 | After task: save agent report + summary report | Rule 0.6 |
-| 5 | End response with "Agents involved: [names]" | Rule 0.1 |
-
-## Routing
-
-- **Route all queries** through AgentRouter for agent selection.
-- Use: `from agents.Core.agent_router import get_agent_router; router = get_agent_router(); router.route_query(user_query, context)`
-- Do not manually choose agents; router uses keywords (phoenix, test, postman, environment, etc.).
+| 0 | Read all `.cursor/rules/**/*.mdc` first | Rule 0.0 |
+| 1 | **Rule 0.3:** no `agents.*` imports; use MCP/Jira/GitLab steps when needed | `main/core_rules.mdc` |
+| 2 | Route via **subagents/skills/rules** — no Python AgentRouter | `agents/agent_rules.mdc` Rule 13 |
+| 3 | Consult PhoenixExpert before task (in chat / role) | Rule 8 |
+| 4 | After task: save markdown reports under `Cursor-Project/reports/YYYY-MM-DD/` | Rule 0.6 |
+| 5 | End with **Agents involved:** | Rule 0.1 |
 
 ## Consultation (Rule 8)
 
-- Before any task: get PhoenixExpert validation (approach, logic, correctness).
-- Use: `AgentRegistry.consult_best_agent()` to get PhoenixExpert.
-- Task must not proceed without approval. If rejected, follow PhoenixExpert guidance.
+- Before tasks that need Phoenix authority: gather evidence from codebase + Confluence MCP, answer in **PhoenixExpert** role.
+- No `AgentRegistry.consult_best_agent()` — coordinate explicitly in chat.
 
-## IntegrationService (Rule 11)
+## Reporting (Rule 0.6)
 
-- Before any task execution: call `IntegrationService.update_before_task()`.
-- Use: `from agents.Core.integration_service import get_integration_service; get_integration_service().update_before_task(...)`
-- Updates GitLab pipelines and Jira; skipping this is a critical violation.
+- Write markdown files with file tools; no `get_reporting_service()`.
 
-## Agent Collaboration Patterns
+## Collaboration Patterns (chat)
 
-- **Test:** TestAgent → consult PhoenixExpert → execute test.
-- **Postman:** PostmanCollectionGenerator → consult PhoenixExpert → generate collection.
-- **GitLab updates:** GitLabUpdateAgent → consult PhoenixExpert → validate → update.
-- **Environment access:** EnvironmentAccessAgent → IntegrationService → access environment.
-- **Bug validation:** BugFinderAgent → IntegrationService → consult PhoenixExpert → validate (Confluence + code) → report.
+- **Tests:** consult PhoenixExpert → follow test-runner / energo-ts workflows.
+- **Postman:** PostmanCollectionGenerator role → PhoenixExpert for APIs.
+- **GitLab:** read-only sync per `integrations/git_sync_workflow.mdc`.
+- **Environment:** `.cursor/agents/environment-access.md` + browser/MCP.
+- **Bug validation:** Rule 32 in `workflows/workflow_rules.mdc` (no `get_bug_finder_agent`).
 
-All participating agents must appear in the "Agents involved" footer.
+## Agent layout (Rule 34)
 
-## Agent Directory Structure (Rule 34)
+- **`Cursor-Project/agents/`** Python package is **not** in this workspace.
+- Cursor roles live in **`.cursor/agents/*.md`** plus rules and skills.
 
-New agents must live in subdirectories of `agents/`:
+## Output
 
-- `Main/` — primary (PhoenixExpert, TestAgent, BugFinderAgent).
-- `Support/` — GitLabUpdateAgent, EnvironmentAccessAgent.
-- `Core/` — AgentRegistry, AgentRouter, IntegrationService, GlobalRules.
-- `Adapters/` — `*_adapter.py` implementing Agent interface.
-- `Services/` — ReportingService, PostmanCollectionGenerator.
-- `Utils/` — rules_loader, logger_utils, reporting_helper.
+- State expert at start when applicable.
+- End with **Agents involved:** (Rule 0.1).
+- On-disk text in English (Rule 0.7).
 
-Never place agent modules in `agents/` root. Use absolute imports: `from agents.Main import ...`.
+## Rules index
 
-## Output Requirements
-
-- State expert at beginning (e.g. "**Expert:** PhoenixExpert").
-- End with: "Agents involved: [AgentNames]" or "Agents involved: None (direct tool usage)".
-- All documentation and reports in English (Rule 0.7).
-
-## Rules Source
-
-Full rules: `.cursor/rules/` (agent_rules.mdc, core_rules.mdc, phoenix.mdc). Rule 0.0 requires loading rules before any action.
+- **`.cursor/rules/main/phoenix.mdc`** — start here for file paths.

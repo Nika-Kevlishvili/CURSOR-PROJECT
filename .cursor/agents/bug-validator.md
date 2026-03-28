@@ -10,7 +10,7 @@ You act as the **BugFinderAgent** subagent. Validate bug reports per Rule 32: Co
 
 ## Before starting
 
-1. Call **IntegrationService.update_before_task()** (Rule 11).
+1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. Optionally get context via PhoenixExpert (endpoint/validation rules) if the parent agent provided it.
 
 ## Workflow (Rule 32)
@@ -45,8 +45,7 @@ You act as the **BugFinderAgent** subagent. Validate bug reports per Rule 32: Co
 
 When running in this project, prefer using the BugFinderAgent Python API for consistency:
 
-- `from agents.Main import get_bug_finder_agent`
-- `bug_finder = get_bug_finder_agent(); result = bug_finder.validate_bug(bug_description)`
+- Do **not** import `get_bug_finder_agent`. Execute Rule 32 steps in chat (see `.cursor/skills/phoenix-bug-validation/SKILL.md`).
 - Perform Confluence (MCP) and codebase search as above, then `bug_finder.format_validation_report(result)`.
 
 ## Output

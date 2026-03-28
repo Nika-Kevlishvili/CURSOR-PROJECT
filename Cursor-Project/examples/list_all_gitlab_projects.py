@@ -1,4 +1,6 @@
 """
+LEGACY: Requires removed Cursor-Project/agents/. Use git_sync workflow / MCP as appropriate (AGENT_SUBAGENT_MAP.md).
+
 List All Projects from GitLab
 """
 

@@ -1,11 +1,11 @@
 ---
 name: test-case-generator
-description: Generates test cases from bug or task descriptions. Rule 35: run cross-dependency-finder FIRST, then generate with cross_dependency_data. Saves to hierarchical format (Object/Flows) in generated_test_cases/ for maximum human readability. Use when the user asks to generate test cases, create test scenarios from a bug/task, or derive tests.
+description: Generates test cases from bug or task descriptions. Rule 35: run cross-dependency-finder FIRST, then generate with cross_dependency_data. Prefer Cursor-Project/test_cases/ (Objects/ and Flows/) per test_cases_structure.mdc. Use when the user asks to generate test cases or scenarios.
 ---
 
 # Test Case Generator Skill
 
-Ensures test case generation follows Rule 35 (cross-dependency-finder first) and saves output in the mandatory hierarchical, human-readable format under `Cursor-Project/generated_test_cases/`. READ-ONLY for Phoenix code; only generated test-case files are written.
+Ensures test case generation follows Rule 35 (cross-dependency-finder first) and saves output under **`Cursor-Project/test_cases/`** (**Objects/** and **Flows/** per `.cursor/rules/workspace/test_cases_structure.mdc`). Legacy `generated_test_cases/` is optional. READ-ONLY for Phoenix code except test-case markdown writes in allowed paths.
 
 ## When to Apply
 
@@ -39,14 +39,14 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 
 **Coverage (CRITICAL):** Generate **exhaustive** test cases – **not** a random or minimal set. Cover **every scenario that could occur**: all positive (happy path, valid inputs), all negative (invalid inputs, errors, rejections), edge cases, boundaries, and regression from cross_dependency_data (what_could_break). Aim for the **maximum number** of test cases that **fully cover** the task or bug.
 
-**Root folder:** `Cursor-Project/generated_test_cases/`
+**Root folder:** `Cursor-Project/test_cases/` with top-level **`Objects/`** and **`Flows/`** (siblings).
 
 **Structure:**
-- **Object/** – Domain entities and actions (e.g. customer → Create, Edit, Delete, View; contract → …).
-- **Flows/** – Business flows and variants (e.g. Billing → Standard → For_volumes → scale, Profile; interim; …).
+- **`Objects/<Entity_name>/`** — entity-based scenarios (e.g. `Objects/Product_contract/Create.md`).
+- **`Flows/<Flow_name>/`** — flow-based scenarios (e.g. `Flows/Contract_termination/Multi_version_termination_date.md`).
 - **Leaf:** One `.md` file per logical group (e.g. `Create.md`, `Profile.md`). Each file: clear title, steps, expected result per case. Use underscores for multi-word names (e.g. `For_volumes.md`).
 
-Map: entities/actions → Object; flows/variants → Flows. Regression/impact cases (from what_could_break) under the most relevant path.
+Map: entities → Objects; flows → Flows. Regression/impact cases (from what_could_break) under the most relevant path. Update the folder README tables when adding new entity/flow folders.
 
 Full spec: `Cursor-Project/docs/TEST_CASES_HIERARCHY_FORMAT.md`.
 
@@ -56,14 +56,14 @@ Full spec: `Cursor-Project/docs/TEST_CASES_HIERARCHY_FORMAT.md`.
 
 ## READ-ONLY for Phoenix
 
-- Do not modify Phoenix/production code. Only write generated test-case files under `generated_test_cases/`.
+- Do not modify Phoenix/production code. Only write test-case markdown under `Cursor-Project/test_cases/` (or legacy `generated_test_cases/` if explicitly requested).
 - All output in English (Rule 0.7).
 
 ## Integration
 
-- IntegrationService before task.
+- **Rule 0.3:** no Python IntegrationService here.
 - PhoenixExpert if needed (reuse context from cross-dependency-finder when provided).
-- ReportingService after generation (Rule 0.6).
+- Markdown reports after generation if Rule 0.6 applies (no Python ReportingService).
 - End with: "Agents involved: TestCaseGeneratorAgent, CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
 
 ## Command and references
@@ -72,4 +72,4 @@ Full spec: `Cursor-Project/docs/TEST_CASES_HIERARCHY_FORMAT.md`.
 - Subagent: `.cursor/agents/test-case-generator.md`
 - Hierarchy format: `Cursor-Project/docs/TEST_CASES_HIERARCHY_FORMAT.md`
 - Agent doc: `Cursor-Project/docs/TEST_CASE_GENERATOR_AGENT.md`
-- Rule 35: `.cursor/rules/workflow_rules.mdc`
+- Rule 35: `.cursor/rules/workflows/workflow_rules.mdc`

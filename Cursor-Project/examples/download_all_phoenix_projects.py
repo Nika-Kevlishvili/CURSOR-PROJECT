@@ -1,4 +1,6 @@
 """
+LEGACY: Requires removed Cursor-Project/agents/. Use .cursor/agents/git-sync.md (AGENT_SUBAGENT_MAP.md).
+
 Example: Download All Phoenix Projects from GitLab
 
 This script authenticates with GitLab using username/password,

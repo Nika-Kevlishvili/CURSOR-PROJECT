@@ -1,5 +1,7 @@
 # Jira Description Writer Agent
 
+> **Current locations:** Jira/Experiments bug text → **`.cursor/agents/jira-bug.md`**, **`.cursor/skills/jira-bug-template/SKILL.md`**. EnergoTS test authoring → **`.cursor/agents/energo-ts-test.md`**. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. Below: historical Python agent.
+
 ## Overview
 
 The JiraDescriptionWriterAgent automatically analyzes EnergoTS test code and generates detailed Jira descriptions based on the test structure. It extracts all required objects, parameters, and test conditions, then writes them to Jira tickets using Jira MCP tools.

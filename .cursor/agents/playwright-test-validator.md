@@ -92,5 +92,5 @@ Return a **validation result** object (or equivalent) with:
 ## Reference
 
 - HandsOff: `.cursor/commands/hands-off.md` (Step 4.5 – Validate Playwright tests).
-- Test cases structure: `.cursor/rules/test_cases_structure.mdc`; template: `Cursor-Project/config/Test_case_template.md`.
-- Playwright creation: `.cursor/agents/energo-ts-test.md`; `.cursor/rules/handsoff_playwright_report.mdc` §2.
+- Test cases structure: `.cursor/rules/workspace/test_cases_structure.mdc`; template: `Cursor-Project/config/template/Test_case_template.md`.
+- Playwright creation: `.cursor/agents/energo-ts-test.md`; `.cursor/rules/workflows/handsoff_playwright_report.mdc` §2.

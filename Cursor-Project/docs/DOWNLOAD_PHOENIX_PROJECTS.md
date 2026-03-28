@@ -1,5 +1,7 @@
 # Phoenix პროექტების ჩამოტვირთვა GitLab-იდან
 
+> **Current:** Git sync → **`.cursor/agents/git-sync.md`**, **`git_sync_workflow.mdc`**. Phoenix Q&A → **`.cursor/agents/phoenix-qa.md`**. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. ქვემოთ — ძველი `from agents...` მაგალითები.
+
 ეს დოკუმენტაცია აღწერს, თუ როგორ ჩამოტვირთოთ Phoenix-ის ყველა პროექტი GitLab-იდან username/password-ით და როგორ გამოიყენოთ PhoenixExpert-ი მათი ანალიზისთვის.
 
 ## მიმოხილვა

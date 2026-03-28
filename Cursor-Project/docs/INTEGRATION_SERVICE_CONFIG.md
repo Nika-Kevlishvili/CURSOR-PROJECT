@@ -1,5 +1,7 @@
 # Integration Service Configuration
 
+> **Current (Cursor chat):** **Rule 0.3** — no Python `IntegrationService` here; use **MCP** (Jira, Confluence, GitLab read-only scripts per rules). External automation that still ships IntegrationService is out of this repo. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**.
+
 ## Overview
 
 The Integration Service automatically updates GitLab and Jira before every test execution or task execution. This is a **CRITICAL REQUIREMENT** for all agents.

@@ -4,7 +4,7 @@ Synchronize Phoenix projects from GitLab using `git_sync_workflow.mdc` rules.
 
 ## MANDATORY: Follow git_sync_workflow.mdc Rules
 
-**CRITICAL:** This command MUST follow the workflow defined in `.cursor/rules/git_sync_workflow.mdc`.
+**CRITICAL:** This command MUST follow the workflow defined in `.cursor/rules/integrations/git_sync_workflow.mdc`.
 
 **DO NOT use GitLabUpdateAgent class or any Python agent code. Use direct git commands as specified in the rules.**
 
@@ -16,7 +16,7 @@ Synchronize Phoenix projects from GitLab using `git_sync_workflow.mdc` rules.
 
 ## Workflow Reference
 
-**ALWAYS read and follow:** `.cursor/rules/git_sync_workflow.mdc`
+**ALWAYS read and follow:** `.cursor/rules/integrations/git_sync_workflow.mdc`
 
 ### Key Principles (from git_sync_workflow.mdc):
 

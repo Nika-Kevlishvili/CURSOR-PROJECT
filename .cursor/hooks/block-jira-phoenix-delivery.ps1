@@ -28,7 +28,7 @@ try {
             continue    = $false
             block      = $true
             user_message  = "[HOOK BLOCKED] Creating Jira bugs in Phoenix delivery is not allowed (Rule JIRA.0). Use the Experiments board for bug creation. Command: !jira-bug (Experiments board only)."
-            agent_message = "CRITICAL: Jira bug creation in Phoenix delivery is PROHIBITED. Use Experiments board only. See .cursor/rules/jira_bug_agent.mdc."
+            agent_message = "CRITICAL: Jira bug creation in Phoenix delivery is PROHIBITED. Use Experiments board only. See .cursor/rules/integrations/jira_bug_agent.mdc."
         }
     } else {
         $response = @{ continue = $true }

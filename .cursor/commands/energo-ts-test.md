@@ -15,7 +15,7 @@ Use this command when the user asks about:
 
 ## Mandatory Workflow:
 
-1. **IntegrationService** - Call `IntegrationService.update_before_task()` FIRST (Rule 0.3)
+1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. **Read Jira Task** - ALWAYS read Jira task title and description BEFORE creating test
 3. **Clarify Requirements** - Ask clarifying questions if test requirements are unclear
 4. **PhoenixExpert Consultation** - Consult PhoenixExpert if needed for API/business logic understanding (Rule 0.4)
@@ -24,44 +24,12 @@ Use this command when the user asks about:
 
 ## Available Operations
 
-### Study Test
-```python
-from agents.Main import get_energo_ts_test_agent
-agent = get_energo_ts_test_agent()
-analysis = agent.study_test("tests/customers/customer.spec.ts")
-```
+Delegate to **`.cursor/agents/energo-ts-test.md`**. There is **no** Python `get_energo_ts_test_agent` in this workspace.
 
-### Create New Test
-```python
-result = agent.create_new_test({
-    'jira_id': 'REG-123',
-    'test_name': 'Create Customer',
-    'domain': 'customers',
-    'fixtures': ['Request', 'GeneratePayload', 'Endpoints'],
-    'endpoint': 'customer',
-    'method': 'POST',
-    'payload_generator': 'customers.customer_private_business'
-})
-```
-
-### Copy and Convert Test
-```python
-result = agent.copy_and_convert_test(
-    source_test_path="tests/customers/customer.spec.ts",
-    target_test_path="tests/customers/customer_v2.spec.ts",
-    conversion_rules={'change_jira_id': 'REG-999'}
-)
-```
-
-### Analyze Patterns
-```python
-patterns = agent.analyze_test_patterns()
-```
-
-### List Tests by Domain
-```python
-tests = agent.list_tests_by_domain("billing")
-```
+- **Study test** — read/analyze existing `.spec.ts` under `EnergoTS/tests/`.
+- **Create test** — write new `.spec.ts` under `EnergoTS/tests/` using project fixtures after Jira/requirements are clear.
+- **Copy / convert** — adapt specs path-to-path under `EnergoTS/tests/`.
+- **Patterns / list by domain** — use `grep`/filesystem search from `EnergoTS/tests/`.
 
 ## HandsOff bridge: create Playwright tests FROM test cases [CRITICAL when invoked from HandsOff]
 
@@ -73,9 +41,9 @@ When the **HandsOff** flow invokes the energo-ts-test agent (Step 4), the agent 
    - `test.describe('…')` containing the Jira key and ticket title;
    - one `test('…')` per main scenario from the .md, with test names including the Jira key (e.g. `[NT-1]: …`);
    - API calls and assertions derived from the test case steps and expected results.
-4. **Use** `create_new_test()` (or equivalent) with a specification derived from the .md content (endpoints, methods, scenarios). If multiple scenarios share one endpoint, one test per scenario is still required; structure the spec so it matches existing EnergoTS test style.
+4. **Write** the spec file directly from the .md (endpoints, methods, scenarios). If multiple scenarios share one endpoint, one `test()` per scenario; match existing EnergoTS style.
 
-Reference: `.cursor/commands/hands-off.md` Step 4; `.cursor/rules/handsoff_playwright_report.mdc` §2.
+Reference: `.cursor/commands/hands-off.md` Step 4; `.cursor/rules/workflows/handsoff_playwright_report.mdc` §2.
 
 ## Test Creation Workflow [CRITICAL - MANDATORY]
 

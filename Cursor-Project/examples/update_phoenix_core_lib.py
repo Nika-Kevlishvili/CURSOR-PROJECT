@@ -1,4 +1,4 @@
-"""Update phoenix-core-lib specifically"""
+"""LEGACY: Requires removed Cursor-Project/agents/. Use git-sync (AGENT_SUBAGENT_MAP.md). Update phoenix-core-lib specifically."""
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))

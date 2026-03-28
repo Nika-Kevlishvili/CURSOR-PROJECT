@@ -18,7 +18,7 @@ You act as the **EnergoTSTestAgent** subagent. Manage EnergoTS Playwright test a
 
 ## Before Any Task
 
-1. Call **IntegrationService.update_before_task()** (Rule 0.3).
+1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. **Read Jira Task** - ALWAYS read Jira task title and description BEFORE creating test.
 3. **Clarify Requirements** - Ask clarifying questions if test requirements are unclear.
 4. Consult **PhoenixExpert** if needed for business logic or API understanding (Rule 0.4).
@@ -102,38 +102,11 @@ User: "Create test for REG-1027"
 - Modify any files in Phoenix project (Rule 0.8 still applies)
 - Modify non-test files in EnergoTS project (fixtures, utils, configs, etc.)
 
-## Common Operations
+## Common Operations (implement in Cursor — no `get_energo_ts_test_agent`)
 
-### Study a Test
-```python
-from agents.Main import get_energo_ts_test_agent
-agent = get_energo_ts_test_agent()
-analysis = agent.study_test("tests/customers/customer.spec.ts")
-```
-
-### Create New Test
-```python
-result = agent.create_new_test({
-    'jira_id': 'REG-123',
-    'test_name': 'Create Customer',
-    'domain': 'customers',
-    'fixtures': ['Request', 'GeneratePayload', 'Endpoints', 'Responses'],
-    'endpoint': 'customer',
-    'method': 'POST',
-    'payload_generator': 'customers.customer_private_business'
-})
-# File is automatically written to disk
-```
-
-### Copy and Convert Test
-```python
-result = agent.copy_and_convert_test(
-    source_test_path="tests/customers/customer.spec.ts",
-    target_test_path="tests/customers/customer_v2.spec.ts",
-    conversion_rules={'change_jira_id': 'REG-999'}
-)
-# File is automatically written to disk
-```
+- **Study a test:** Read and summarize an existing `.spec.ts` under `EnergoTS/tests/` (patterns, fixtures, endpoints).
+- **Create new test:** After Jira/requirements are clear, author a new `.spec.ts` under **`EnergoTS/tests/`** only, using EnergoTS fixtures (Request, Endpoints, baseFixture, etc.) and naming rules below.
+- **Copy / convert:** Duplicate or adapt an existing spec path-to-path under `EnergoTS/tests/` with the requested changes (e.g. Jira id).
 
 ## When invoked from HandsOff (bridge: test cases → Playwright spec)
 
@@ -142,7 +115,7 @@ You receive **test case .md paths** (e.g. from `test_cases/Flows/Invoice_cancell
 1. **Read** the .md file(s) and extract scenarios (TC-1, TC-2, …), steps, expected results, and endpoints.
 2. **Create** the spec using the **EnergoTS framework** (Request, Endpoints, baseFixture, project patterns). Do NOT write custom `getToken()`, `apiRequest()`, or other ad-hoc request helpers; use the project's fixtures and utilities.
 3. **Output** to **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**. One `test()` per main scenario from the .md; describe and test titles must include the Jira key.
-4. Use `create_new_test()` with a specification derived from the .md (endpoints, methods, scenario names). If the framework does not yet expose a "create from markdown" API, generate the spec content following the same structure and fixtures as existing EnergoTS tests.
+4. **Write** the spec file content directly (no Python API): map .md scenarios to `test()` blocks using the same structure and fixtures as existing EnergoTS tests.
 
 Reference: `.cursor/commands/energo-ts-test.md` (HandsOff bridge section); `.cursor/commands/hands-off.md` Step 4.
 
@@ -159,7 +132,7 @@ Reference: `.cursor/commands/energo-ts-test.md` (HandsOff bridge section); `.cur
 ## After Task Completion
 
 1. Summarize what was done (test created/modified/analyzed).
-2. If the parent agent uses ReportingService, call `get_reporting_service().save_agent_report("EnergoTSTestAgent"); save_summary_report()` and save to **Cursor-Project/reports/YYYY-MM-DD/** with current date (Rule 0.6).
+2. If Rule 0.6 applies, write markdown under **Cursor-Project/reports/YYYY-MM-DD/** (no Python ReportingService).
 3. End with **Agents involved: EnergoTSTestAgent** (and PhoenixExpert if consulted).
 
 ## Constraints

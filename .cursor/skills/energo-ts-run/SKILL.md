@@ -31,6 +31,6 @@ Use this skill when the user wants to **run** (execute) Playwright tests from th
 
 ## Rules
 
-- IntegrationService.update_before_task() when available (Rule 0.3).
+- **Rule 0.3:** no Python IntegrationService in this workspace; follow MCP/Jira when needed.
 - No code modification; only run tests (Rule 0.8).
 - Reports in English; save reports (Rule 0.6, 0.7).

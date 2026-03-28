@@ -12,7 +12,7 @@ Use this command when the user asks to:
 
 ## Workflow
 
-1. **IntegrationService** – Call `IntegrationService.update_before_task()` first (Rule 0.3) if available.
+1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. **Ensure `cursor` branch** – In `Cursor-Project/EnergoTS/`, check `git branch --show-current`. If not `cursor`, run `git checkout cursor`. Tests must run only from the `cursor` branch (Rule ENERGOTS.0).
 3. **Resolve test from prompt** – Determine which test(s) to run:
    - "Newly created" → most recent `.spec.ts` in `Cursor-Project/EnergoTS/tests/`

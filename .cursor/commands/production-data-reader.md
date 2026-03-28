@@ -4,7 +4,7 @@ Route ALL production database data questions to ProductionDataReaderAgent (Rule 
 
 ## Mandatory Workflow:
 
-1. **IntegrationService** - Call `IntegrationService.update_before_task()` FIRST
+1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. **Connect to Production Database** - Use PostgreSQLProd MCP with readonly_user credentials
 3. **Parse Entity** - Extract entity ID and type from query (liability, receivable, payment, deposit, invoice, contract, etc.)
 4. **Analyze Data** - Use universal method:

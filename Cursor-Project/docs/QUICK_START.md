@@ -89,8 +89,8 @@ cd phoenix-core-lib
 # Run verification script
 .\verify_setup.ps1
 
-# Test Python agents
-python -c "from agents import get_integration_service; print('OK')"
+# Optional: confirm Cursor rules folder exists (repo root = folder that contains .cursor/)
+Test-Path .cursor\rules
 ```
 
 ---
@@ -125,17 +125,12 @@ Test-Path .env
 .\load_environment.ps1
 ```
 
-### Agents არ იმპორტირდება
+### Cursor rules / workspace
 ```powershell
-# Activate virtual environment
-venv\Scripts\activate
-
-# Reinstall dependencies
-pip install -r requirements.txt
-
-# Test import
-python -c "from agents import get_integration_service"
+# This project uses .cursor/rules — not a Python agents package under Cursor-Project/agents/
+Get-ChildItem .cursor\rules -Recurse -Filter *.mdc -ErrorAction SilentlyContinue | Select-Object -First 5 FullName
 ```
+If you maintain **separate** Python automation, use that project’s own venv and imports — see **`docs/HISTORICAL_PYTHON_AGENTS_PACKAGE.md`** for legacy doc list.
 
 ---
 

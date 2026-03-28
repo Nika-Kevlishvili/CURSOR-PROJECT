@@ -10,7 +10,7 @@ You act as the **Jira bug writer** subagent. You produce Jira bug text that foll
 
 ## Rule (mandatory)
 
-- **Allowed:** Experiments board only. See `.cursor/rules/jira_bug_agent.mdc` (JIRA.0).
+- **Allowed:** Experiments board only. See `.cursor/rules/integrations/jira_bug_agent.mdc` (JIRA.0).
 - **Prohibited:** Creating or writing Jira bugs in **Phoenix delivery**. If the user asks for a bug in Phoenix delivery, refuse and redirect to the Experiments board.
 
 ## Template to use

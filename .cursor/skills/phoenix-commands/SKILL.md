@@ -32,25 +32,25 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 ## Phoenix (phoenix.md)
 
 - **When:** Any Phoenix-related question.
-- **Flow:** IntegrationService → Confluence (MCP, fresh) → Codebase → PhoenixExpert answer.
+- **Flow:** Confluence (MCP, fresh) → Codebase → PhoenixExpert answer (Rule 0.3: no Python IntegrationService).
 - **Output:** Start with "**Expert:** PhoenixExpert", end with "Agents involved: PhoenixExpert", save reports.
 
 ## Consult (consult.md)
 
 - **When:** Before any task that affects Phoenix (tests, Postman, GitLab, env access, etc.).
-- **Flow:** IntegrationService → Describe task → PhoenixExpert review → Approval required.
+- **Flow:** Describe task → PhoenixExpert review → Approval required (in chat; Rule 0.3).
 - **Output:** "Agents involved: PhoenixExpert, [others]". Consultation is binding (Rule 27).
 
 ## Report (report.md)
 
 - **When:** After every task (Rule 0.6).
-- **Flow:** `get_reporting_service().save_agent_report(...)` + `save_summary_report()`.
+- **Flow:** Write markdown under `Cursor-Project/reports/YYYY-MM-DD/` (no Python ReportingService).
 - **Location:** `Cursor-Project/reports/YYYY-MM-DD/` with current date.
 
 ## Bug-validate (bug-validate.md)
 
 - **When:** User wants to validate or verify a bug report.
-- **Flow:** IntegrationService → BugFinderAgent → Confluence → Codebase → analysis → report file.
+- **Flow:** Rule 32 in chat → Confluence → Codebase → analysis → report file (no `get_bug_finder_agent`).
 - **Output:** Structured Bug Validation Analysis; "Agents involved: BugFinderAgent, PhoenixExpert".
 
 ## Jira-bug (jira-bug.md)
@@ -63,31 +63,31 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 ## Production-data-reader (production-data-reader.md)
 
 - **When:** User asks about production database data, liability offsets, receivable history, or how an entity was created.
-- **Flow:** IntegrationService → Connect to PostgreSQLProd → Parse entity → Analyze → Generate step-by-step explanation.
+- **Flow:** PostgreSQLProd MCP (readonly) → SELECT queries → step-by-step explanation (see `integrations/production_data_reader.mdc`).
 - **Output:** Detailed analysis with offset sequence and creation process; "Agents involved: ProductionDataReaderAgent".
 
 ## Sync (sync.md)
 
 - **When:** User wants to fetch/update/checkout Phoenix projects from GitLab.
 - **Triggers:** `!sync`, `!update <branch>`, `!checkout <branch>`.
-- **Rule:** Follow `.cursor/rules/git_sync_workflow.mdc` exactly; use git commands (no Python agent for sync). Read-only (fetch/checkout/merge only; no push).
+- **Rule:** Follow `.cursor/rules/integrations/git_sync_workflow.mdc` exactly; use git commands (no Python agent for sync). Read-only (fetch/checkout/merge only; no push).
 
 ## Cross-dependency-finder (cross-dependency-finder.md)
 
 - **When:** User asks for cross-dependencies, what could break, or dependency analysis for a scope (bug/task/feature). Also run automatically before test case generation (Rule 35).
-- **Flow (Rule 35a):** (1) **Merge lookup** for Jira/bug/task key (local git + GitLab) → (2) **Conditional sync** for that branch only if merge exists → (3) IntegrationService → PhoenixExpert (if needed) → Define scope → Codebase + Confluence → Output (upstream, downstream, what_could_break, **technical_details** from merges) → optional JSON to `Cursor-Project/cross_dependencies/`.
+- **Flow (Rule 35a):** (1) **Merge lookup** for Jira/bug/task key (local git + GitLab) → (2) **Conditional sync** for that branch only if merge exists → (3) PhoenixExpert (if needed) → Define scope → Codebase + Confluence → Output (upstream, downstream, what_could_break, **technical_details** from merges) → optional JSON to `Cursor-Project/cross_dependencies/`.
 - **Output:** Structured report including **technical_details** (merge/MR info when Jira provided); "Agents involved: CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
 
 ## Test-case-generate (test-case-generate.md)
 
 - **When:** User asks to generate test cases for a bug or task.
-- **Flow:** Rule 35: (1) Run **cross-dependency-finder** first (including Rule 35a: merge lookup → conditional sync → technical_details) → (2) Run **test-case-generator** with `context['cross_dependency_data']` (includes technical_details). Save to `Cursor-Project/generated_test_cases/` in hierarchical format (Object/Flows tree).
+- **Flow:** Rule 35: (1) Run **cross-dependency-finder** first (including Rule 35a) → (2) Run **test-case-generator** with cross_dependency_data. Prefer **`Cursor-Project/test_cases/`** (Objects/ and Flows/ per `workspace/test_cases_structure.mdc`); `generated_test_cases/` is legacy.
 - **Output:** Test cases in human-readable hierarchy; "Agents involved: TestCaseGeneratorAgent, CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
 
 ## Energo-ts-run (energo-ts-run.md)
 
 - **When:** User wants to run specific Playwright tests from EnergoTS based on prompt (e.g. "run newly created test", "run test REG-123", "run from GitHub").
-- **Flow:** IntegrationService (if available) → Resolve which test(s) from prompt (newly created / Jira key / file path / domain) → Run `npx playwright test <target>` from `Cursor-Project/EnergoTS/` → Report results.
+- **Flow:** Resolve which test(s) from prompt → Run `npx playwright test <target>` from `Cursor-Project/EnergoTS/` (`cursor` branch only) → Report results.
 - **Output:** Test run summary (passed/failed); report to `Cursor-Project/reports/YYYY-MM-DD/`; "Agents involved: EnergoTS Playwright Test Runner".
 - **Note:** Tests run from local repo (synced from GitHub). Suggest `!sync` if user wants latest code first.
 
@@ -95,7 +95,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 
 - **Trigger (command-only):** Run via Cursor slash command **hands-off** (`.cursor/commands/hands-off.md`) and/or user text **/HandsOff** or **!HandsOff** with a Jira key (Rule 37). There is **no** `hands-off` entry under `.cursor/skills/`—do not rely on a dedicated HandsOff skill.
 - **When:** User provides a **Jira ticket** (link, key e.g. REG-123, or name) and types **/HandsOff** or **!HandsOff** (or runs the **hands-off** command).
-- **Flow:** Route to **hands-off** orchestrator. Full flow: (1) Get Jira ticket and description (Jira MCP); (2) Run cross-dependency-finder (Rule 35a); (3) Run test-case-generator with cross_dependency_data; (4) Create Playwright tests from test cases (bridge .md → spec → EnergoTSTestAgent); (5) Run Playwright tests (energo-ts-run, cursor branch); (6) Save report as `reports/YYYY-MM-DD/{JIRA_KEY}.md` with pass/fail and reasons; (7) Send report to Slack to the tester and duplicate to the AI report channel (user-slack MCP).
+- **Flow:** Route to **hands-off** orchestrator. Full flow: (1) Get Jira ticket and description (Jira MCP); (2) Run cross-dependency-finder (Rule 35a); (3) Run test-case-generator with cross_dependency_data; (4) Create Playwright tests from test cases (bridge .md → spec → EnergoTSTestAgent); (5) Run Playwright tests (energo-ts-run, cursor branch); (6) Save report as **`Cursor-Project/reports/YYYY-MM-DD/{JIRA_KEY}.md`** with pass/fail and reasons; (7) Send report to Slack to the tester and duplicate to the AI report channel (user-slack MCP).
 - **Output:** Summary of run; report file; Slack delivery. "Agents involved: HandsOff (orchestrator), CrossDependencyFinderAgent, TestCaseGeneratorAgent, EnergoTSTestAgent, EnergoTS Playwright Test Runner".
 
 ## Summary

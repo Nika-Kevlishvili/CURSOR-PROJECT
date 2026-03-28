@@ -21,13 +21,13 @@ The **Cross-Dependency Finder** agent discovers cross-dependencies (modules, ser
 
 - **First:** Use the **Jira key** (e.g. BUG-1234) or task/bug identifier from the user.
 - **Look up merge history** for that key: local git (commit/merge messages, branch names) and, where available, GitLab (MRs for that Jira, merged state, target branch). Identify which branch(es), commits/MRs, and files/modules changed.
-- **If a merge exists for this Jira** on a target branch (e.g. dev, dev2): run a **targeted sync** for that branch only (same safe read-only flow as `!sync` / `!update <branch>` per `.cursor/rules/git_sync_workflow.mdc`). If no merge found, skip sync.
+- **If a merge exists for this Jira** on a target branch (e.g. dev, dev2): run a **targeted sync** for that branch only (same safe read-only flow as `!sync` / `!update <branch>` per `.cursor/rules/integrations/git_sync_workflow.mdc`). If no merge found, skip sync.
 - **Technical details:** Add merge-derived info (MR/merge commit, changed files/modules, short summary) to the output as **technical_details** for the report and for test-case-generator.
 
 ### 1. Before running
 
-- Call **IntegrationService.update_before_task()** (Rule 11).
-- **Consult PhoenixExpert** when you need to study the project or scope (Rule 8). The finder may turn to the expert for backend services, APIs, schemas, or where changes could have impact; the expert’s response is used to enrich dependencies and impact risks. The finder then returns the report to the parent so it can be passed to the test-case-generator (Rule 35).
+- **Rule 0.3:** In Cursor chat there is no Python `IntegrationService`; use MCP/Jira/GitLab steps when the task needs external context.
+- **Consult PhoenixExpert** when you need to study the project or scope (Rule 8). The finder may use Confluence + codebase for backend services, APIs, schemas, or impact; enrich dependencies and **what_could_break**. Return the report to the parent for test-case-generator (Rule 35).
 
 ### 2. Define scope
 
@@ -83,8 +83,7 @@ Structured payload that the test-case-generator can use:
 When generating test cases for the **same scope**:
 
 1. Run **cross-dependency-finder** first (mandatory; it may consult PhoenixExpert to study the project). Obtain the report including `what_could_break`.
-2. Call **test-case-generator** with:
-   - `prompt=...`, `prompt_type='bug'|'task'`, `confluence_data=...`, `context={'codebase_findings': ..., 'cross_dependency_data': <cross-dependency output>}`.
+2. Call **test-case-generator** (subagent/skill) with the same scope and structured **`cross_dependency_data`** (plus Confluence/codebase findings as available in chat).
 3. Test-case-generator uses `cross_dependency_data` to:
    - Add **integration tests** at API/service boundaries.
    - Add **negative cases** for missing or invalid upstream data.
@@ -103,7 +102,7 @@ The agent is exposed as a Cursor subagent in:
 
 - **READ-ONLY:** No modification of production code; only read Confluence and codebase.
 - All output in **English** (Rule 0.7).
-- Reporting per Rule 0.6 when required (ReportingService after the run).
+- Reporting per Rule 0.6 when required: save markdown under **`Cursor-Project/reports/YYYY-MM-DD/`** (no Python ReportingService).
 
 ## File organisation
 

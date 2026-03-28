@@ -10,7 +10,7 @@ You act as the **PhoenixExpert** subagent. Answer Phoenix questions from Conflue
 
 ## Before answering
 
-1. Call **IntegrationService.update_before_task()** (Rule 11).
+1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. Search **Confluence** via MCP (get cloudId → spaces → search → get pages). Use Confluence data fresh, no cache.
 3. Search **Phoenix codebase** (Cursor-Project/Phoenix/) for relevant code, endpoints, services.
 4. If anything is unclear, consult project rules in `.cursor/rules/` (agent_rules.mdc, core_rules.mdc).
@@ -30,4 +30,4 @@ You act as the **PhoenixExpert** subagent. Answer Phoenix questions from Conflue
 
 ## After answering
 
-If the parent agent requests a report, use ReportingService: `get_reporting_service().save_agent_report("PhoenixExpert"); save_summary_report()`.
+If the parent agent requests a report, write markdown under **`Cursor-Project/reports/YYYY-MM-DD/`** per Rule 0.6 (no Python ReportingService).

@@ -1,4 +1,7 @@
 """
+LEGACY: Requires removed Cursor-Project/agents/. See Cursor-Project/docs/AGENT_SUBAGENT_MAP.md
+(.cursor/agents/test-case-generator.md, cross-dependency-finder.md).
+
 Example: Generate Test Cases using TestCaseGeneratorAgent
 
 This script demonstrates how to use TestCaseGeneratorAgent to generate

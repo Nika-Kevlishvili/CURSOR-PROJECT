@@ -1,5 +1,7 @@
 # Phoenix Project GitLab Clone Guide
 
+> **Current:** **`.cursor/agents/git-sync.md`**, **`git_sync_workflow.mdc`**. Phoenix Q&A → **`.cursor/agents/phoenix-qa.md`**. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**.
+
 ეს დოკუმენტაცია აღწერს, თუ როგორ გადმოვწეროთ Phoenix პროექტი GitLab-იდან და გავაუმჯობესოთ PhoenixExpert-ის გაგება.
 
 ## GitLab-იდან გადმოწერა

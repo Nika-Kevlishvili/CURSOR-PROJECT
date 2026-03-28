@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Fixed script to query PhoenixExpert avoiding import issues
+Fixed script to query PhoenixExpert avoiding import issues (historical).
 """
+# LEGACY: loads Cursor-Project/agents/*.py — that folder was removed. Use .cursor/agents/phoenix-qa.md in Cursor.
 import sys
 import time
 import json

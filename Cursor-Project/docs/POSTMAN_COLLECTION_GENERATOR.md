@@ -1,5 +1,7 @@
 # Postman Collection Generator
 
+> **Current locations:** **`.cursor/agents/postman-collection.md`**. Collections → **`Cursor-Project/postman/`**. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. Below: historical Python usage.
+
 ## Overview
 
 Postman Collection Generator ავტომატურად ქმნის Postman collection-ებს სხვადასხვა test case-ებით და ატვირთავს მათ Postman workspace-ში.

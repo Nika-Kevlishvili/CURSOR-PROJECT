@@ -29,8 +29,8 @@ Route to cross-dependency-finder subagent / CrossDependencyFinderAgent. Do not d
 
 ### 1. Before running
 
-- Call `IntegrationService.update_before_task()` (Rule 11).
-- Consult **PhoenixExpert** when you need to study the project or scope (Rule 8). The finder may turn to the expert; return the report to the parent for test-case-generator.
+- **Rule 0.3:** no Python IntegrationService in this workspace; use MCP/Jira when the task needs external context.
+- Consult **PhoenixExpert** when you need to study the project or scope (Rule 8). Return the report to the parent for test-case-generator.
 
 ### 2. Define scope
 
@@ -67,9 +67,8 @@ Optionally save to `Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope_slug>.js
 
 ## Integration
 
-- IntegrationService before task.
 - PhoenixExpert when studying project/scope.
-- ReportingService after run if Rule 0.6 applies.
+- Save markdown reports after run if Rule 0.6 applies (no Python ReportingService).
 - End with: "Agents involved: CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
 
 ## Command reference

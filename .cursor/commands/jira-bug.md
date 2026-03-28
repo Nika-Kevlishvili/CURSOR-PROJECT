@@ -14,7 +14,7 @@ Create or rewrite a Jira bug using the standard template. **Only for the Experim
 
 ## Rule and template
 
-- **Rule:** `.cursor/rules/jira_bug_agent.mdc` (JIRA.0).
+- **Rule:** `.cursor/rules/integrations/jira_bug_agent.mdc` (JIRA.0).
 - **Template:** Summary, Description, Steps to reproduce, Expected result, Actual result, Environment (Board: Experiments, Environment, Browser), Technical details (Endpoint, Payload, Status), Example.
 - **Skill:** `.cursor/skills/jira-bug-template/SKILL.md`.
 - **Sub-agent:** `.cursor/agents/jira-bug.md`.

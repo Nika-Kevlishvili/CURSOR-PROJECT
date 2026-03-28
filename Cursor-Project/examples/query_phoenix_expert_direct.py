@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
+LEGACY: Requires removed Cursor-Project/agents/. Use .cursor/agents/phoenix-qa.md in Cursor.
+
 Direct script to query PhoenixExpert avoiding import issues
 """
 import sys

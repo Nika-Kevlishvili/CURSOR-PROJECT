@@ -9,7 +9,7 @@ You find **cross-dependencies** for a given scope (feature, module, bug, or task
 
 ## Before running
 
-1. Call **IntegrationService.update_before_task()** (Rule 11).
+1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. **Consult PhoenixExpert** when you need to study the project or scope (Rule 8). You MAY turn to the expert for: backend services, APIs, schemas, entry points, or where changes could have impact. Use parent context if already provided. Return the cross-dependency report to the parent so it can be passed to the **test-case-generator**.
 
 ## Workflow
@@ -78,7 +78,7 @@ Save to **Cursor-Project/cross_dependencies/** (e.g. `YYYY-MM-DD_<scope_slug>.js
 
 - **READ-ONLY:** Only read Confluence and codebase; do not modify production code.
 - All output in **English** (Rule 0.7).
-- If reporting is required (Rule 0.6), call ReportingService after the run.
+- If Rule 0.6 applies, save markdown under `Cursor-Project/reports/YYYY-MM-DD/` after the run.
 
 ## Output
 

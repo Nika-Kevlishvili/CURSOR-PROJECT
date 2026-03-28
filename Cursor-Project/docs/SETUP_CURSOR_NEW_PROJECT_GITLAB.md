@@ -13,7 +13,7 @@ In this workspace, GitLab is configured as follows:
 | **Git host** | `git.domain.internal` (GitLab) |
 | **Base URL** | `https://git.domain.internal` |
 | **Auth** | GitLab Personal Access Token (read-only: `read_repository`, `read_api`) |
-| **Token env** | `GIT_READONLY_TOKEN` (in `.cursor/rules/git_sync_workflow.mdc`) |
+| **Token env** | `GIT_READONLY_TOKEN` (in `.cursor/rules/integrations/git_sync_workflow.mdc`) |
 | **Repos** | Phoenix group projects under `Cursor-Project/Phoenix/` |
 | **Sync** | `!sync`, `!update <branch>`, `!checkout <branch>` (read-only fetch/merge/checkout) |
 
@@ -31,7 +31,7 @@ In this workspace, GitLab is configured as follows:
 1. **Create `.cursor/rules/` in the new project.**
 
 2. **Create a Git sync rule** (e.g. `git_sync_workflow.mdc`) adapted for your GitLab:
-   - Copy the structure from this workspace’s `.cursor/rules/git_sync_workflow.mdc`.
+   - Copy the structure from this workspace’s `.cursor/rules/integrations/git_sync_workflow.mdc`.
    - Replace:
      - **Git host** → your GitLab host (e.g. `git.mycompany.com` or `gitlab.com`).
      - **GIT_READONLY_TOKEN** → a **new** Personal Access Token from **that** GitLab (read-only: `read_repository`, `read_api`).
@@ -95,14 +95,14 @@ $reposPath    = Join-Path $workspaceRoot "Repos"
 
 Use the same pattern as `sync-main-project.ps1` (stash → fetch → merge → unstash), but with paths and branches appropriate for your new project.
 
-### 2.6 Optional: GitLabUpdateAgent / IntegrationService
+### 2.6 Optional: automation outside Cursor
 
-If you copy the **agents** from this workspace (e.g. `Cursor-Project/agents/`) into the new project:
+This workspace’s **Cursor** workflows use **`.cursor/rules`**, **scripts** (e.g. sync), and **MCP** — not a bundled **`Cursor-Project/agents/`** Python tree.
 
-- **IntegrationService** and **GitLabUpdateAgent** read `GITLAB_URL` and `GITLAB_TOKEN` from the **environment** (and config).
-- In the **new** project, set `GITLAB_URL` and `GITLAB_TOKEN` to the **new** GitLab so all agent actions (e.g. pipeline/issue updates, clone/update) go to that instance only.
+If your **new** project has **separate** Python or CI automation that talks to GitLab/Jira:
 
-Do not reuse the Phoenix token in the new project.
+- Configure **`GITLAB_URL`**, tokens, and credentials for the **new** GitLab only (do not reuse Phoenix production tokens).
+- Keep GitLab **read-only** for sync scripts unless you intentionally allow writes elsewhere.
 
 ---
 
@@ -114,7 +114,7 @@ Do not reuse the Phoenix token in the new project.
 - [ ] `GITLAB_URL` and `GITLAB_TOKEN` (or `GIT_READONLY_TOKEN`) set for the **new** GitLab only.
 - [ ] Git credentials (URL or credential helper) use the **new** token and host.
 - [ ] Sync script (if any) uses new paths and no reference to `git.domain.internal` or Phoenix.
-- [ ] If using agents, env/config points to the new GitLab only.
+- [ ] If using any custom automation (scripts, MCP, external tools), env/config points to the new GitLab only.
 
 ---
 

@@ -1,31 +1,28 @@
 # Project Skills
 
-Skills teach the Cursor agent how to follow this project's agents, rules, and commands. They are used automatically when the agent detects relevant triggers (e.g. Phoenix questions, bug validation, reports, file placement).
-
-**Location:** Workspace root `.cursor/skills/` (same level as `commands/` and `hooks/`) so Cursor's "Rules, Skills, Subagents" UI can discover them.
+Skills guide the Cursor agent for this repo’s workflows. **Location:** workspace root `.cursor/skills/`.
 
 ## Skills
 
 | Skill | Purpose |
 |-------|---------|
-| **phoenix-agent-workflow** | AgentRouter, PhoenixExpert consultation, IntegrationService, report footer, agent directory structure |
-| **phoenix-bug-validation** | BugFinderAgent workflow (Rule 32): Confluence → codebase → analysis → report |
-| **phoenix-file-organization** | Where to put files: agents, docs, User story, reports/YYYY-MM-DD, config, postman |
-| **phoenix-reporting** | Report generation (Rule 0.6): agent reports + summary, path and naming |
-| **phoenix-commands** | When to use which command: Phoenix, consult, report, bug-validate, jira-bug, production-data-reader, sync, cross-dependency-finder, test-case-generate |
-| **phoenix-database** | PostgreSQL MCP: environment (Dev/Test/Prod), connect first, contract/POD query patterns, no credentials in logs |
-| **production-data-reader** | ProductionDataReaderAgent workflow (Rule PDR.0): read production data → analyze offsets → explain step-by-step creation |
-| **cross-dependency-finder** | CrossDependencyFinderAgent: find cross-dependencies and what could break; consult PhoenixExpert; output for test-case-generator (Rule 35) |
-| **test-case-generator** | TestCaseGeneratorAgent: generate test cases (Rule 35 = cross-dependency-finder first); hierarchical output in generated_test_cases/ (Object/Flows) |
-| **phoenix-safety-readonly** | GitLab/Confluence read-only, code modification forbidden, Confluence edit tools forbidden, no credentials in logs |
-| **jira-bug-template** | Jira bug text for Experiments board only (template: Summary, Description, Steps, Expected, Actual, Environment, Technical details, Example); must NOT create bugs in Phoenix delivery (Rule JIRA.0) |
+| **phoenix-agent-workflow** | Rules + subagents + PhoenixExpert; Rule 0.3 (no `agents.*`); reports |
+| **phoenix-bug-validation** | Rule 32 in chat (Confluence → codebase → report) |
+| **phoenix-file-organization** | Where to put files (`Cursor-Project/`, `.cursor/`, `User story/`) |
+| **phoenix-reporting** | Rule 0.6 markdown reports under `Cursor-Project/reports/YYYY-MM-DD/` |
+| **phoenix-commands** | Which slash command / workflow to use |
+| **phoenix-database** | PostgreSQL MCP; environments; connect first |
+| **production-data-reader** | Rule PDR.0; PostgreSQLProd MCP readonly |
+| **cross-dependency-finder** | Rule 35 / 35a; output for test-case-generator |
+| **test-case-generator** | Rule 35; prefer `test_cases/Objects/` and `Flows/` |
+| **phoenix-safety-readonly** | GitLab/Confluence read-only; path tiers |
+| **jira-bug-template** | Experiments board bugs only (Rule JIRA.0) |
+| **energo-ts-run** | Rule 36; Playwright from EnergoTS `cursor` branch |
 
 ## Source
 
-Skills are derived from:
-
-- **Agents:** `Cursor-Project/agents/` (Main, Support, Core, Adapters, Services, Utils)
-- **Rules:** `.cursor/rules/*.mdc`
+- **Subagent specs:** `.cursor/agents/*.md`
+- **Rules:** `.cursor/rules/**/*.mdc` (index: `main/phoenix.mdc`)
 - **Commands:** `.cursor/commands/*.md`
 
-For full authority, the agent still loads rules from `.cursor/rules/` (Rule 0.0). Skills summarize and point to those rules.
+Rule 0.0: load rules before acting. Skills summarize; rules are authoritative.

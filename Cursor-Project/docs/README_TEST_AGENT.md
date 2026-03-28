@@ -1,5 +1,7 @@
 # TestAgent - Automated Testing Agent
 
+> **Current locations:** **`.cursor/agents/test-runner.md`**, consult PhoenixExpert (Rule 8). Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. Below: historical Python TestAgent.
+
 ## Overview
 
 TestAgent არის ავტომატიზირებული ტესტირების აგენტი, რომელიც იღებს დავალებებს და ასრულებს ტესტებს. ის მხარს უჭერს სხვადასხვა ტიპის ტესტებს: API, UI, Integration და E2E.

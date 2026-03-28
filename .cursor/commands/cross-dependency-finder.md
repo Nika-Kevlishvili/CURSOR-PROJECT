@@ -17,12 +17,12 @@ Use this command when the user asks about:
    - **First** look up **merge history** for that key (local git + GitLab if available): which branch(es), MR(s), merge commit(s), and changed files/modules.
    - **If a merge exists** for this Jira on a target branch: run a **targeted sync** for that branch only (same safe read-only flow as `!update <branch>` per `git_sync_workflow.mdc`). If no merge found, skip sync.
    - Add merge-derived info to the output as **technical_details** (MR/merge, changed files/modules, short summary).
-1. **IntegrationService** – Call `IntegrationService.update_before_task()` FIRST (Rule 11).
+1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. **PhoenixExpert** – Consult when you need to study the project or scope (Rule 8). The finder may turn to the expert; return the report to the parent for test-case-generator.
 3. **Define scope** – From bug/task/feature description: entry points, modules, services in scope.
 4. **Find cross-dependencies** – Codebase (imports, API clients, DB, callers, consumers) + Confluence (MCP) for architecture/docs. Identify **what could break** (callers, consumers, contract usage).
 5. **Output** – Structured report: scope, entry_points, upstream, downstream, shared, data_entities, integration_points, **what_could_break**, **technical_details** (from merges when Jira/bug/task was provided).
-6. **Report** – If Rule 0.6 applies, call ReportingService after the run.
+6. **Report** – If Rule 0.6 applies, save markdown under `Cursor-Project/reports/YYYY-MM-DD/` after the run (no Python ReportingService).
 
 ## Output Format
 

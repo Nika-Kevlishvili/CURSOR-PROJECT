@@ -1,6 +1,8 @@
 # აგენტების რეპორტინგის გაიდი
 
-ეს დოკუმენტაცია ახსნის როგორ იყენებენ აგენტები `reporting_service`-ს რეპორტების შესანახად.
+> **Current (this workspace):** Markdown reports → **`Cursor-Project/reports/YYYY-MM-DD/`** (Rule 0.6). Subagent: **`.cursor/agents/report-generator.md`**. Skill: **`phoenix-reporting`**. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. ქვემოთ — ძველი Python `reporting_service`.
+
+ეს დოკუმენტაცია ახსნის როგორ იყენებდნენ აგენტები `reporting_service`-ს (ისტორიული).
 
 ## რეპორტების სტრუქტურა
 

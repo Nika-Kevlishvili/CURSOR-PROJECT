@@ -44,7 +44,7 @@
 
 ## 5. Test cases
 
-- **Structure:** `Cursor-Project/test_cases/` – **Objects/** (by entity) and **Flows/** (by flow) as siblings; README in each folder (see `.cursor/rules/test_cases_structure.mdc`).  
+- **Structure:** `Cursor-Project/test_cases/` – **Objects/** (by entity) and **Flows/** (by flow) as siblings; README in each folder (see `.cursor/rules/workspace/test_cases_structure.mdc`).  
 - **Objects/Product_contract/Create.md:** Product contract create – 7 test cases (valid create, validations, API, termination date disabled, duplicate number).  
 - **Flows/Contract_termination/Multi_version_termination_date.md:** PDT-2610 – 6 test cases (display, system overwrite, POD vs term-based, regression Basic Parameter, audit, test endpoints).  
 

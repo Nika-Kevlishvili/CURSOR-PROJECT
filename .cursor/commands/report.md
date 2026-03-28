@@ -1,44 +1,31 @@
 # Generate Task Report
 
-MANDATORY report generation after ANY task completion (Rule 0.6 - CRITICAL).
+MANDATORY report generation after ANY task completion (Rule 0.6 — CRITICAL).
 
-## When Reports Are Required:
-- After ANY task completion
-- After ANY answer provided
-- After ANY interaction
-- Even if task failed
-- Even if only one agent used
-- Even if no code changes made
+## When reports are required
 
-## Report Types:
+- After ANY task completion, answer, or interaction
+- Even if the task failed, only one role was used, or no code changed
 
-### 1. Agent-Specific Reports
-- **Location:** `reports/YYYY-MM-DD/{AgentName}_{HHMM}.md`
-- **Example:** `reports/2026-01-19/PhoenixExpert_1430.md`
-- **Content:** Agent's specific actions, findings, decisions
+## Report types
 
-### 2. Summary Report
-- **Location:** `reports/YYYY-MM-DD/Summary_{HHMM}.md`
-- **Example:** `reports/2026-01-19/Summary_1430.md`
-- **Content:** Overview of all agents involved, task summary, outcomes
+### 1. Agent-specific reports
 
-## Workflow:
+- **Path:** `Cursor-Project/reports/YYYY-MM-DD/{AgentName}_{HHMM}.md`
+- **Example:** `Cursor-Project/reports/2026-03-28/PhoenixExpert_1430.md`
+- **Content:** Actions, findings, decisions for that agent/role
 
-```python
-from agents.Services.reporting_service import get_reporting_service
-import datetime
+### 2. Summary report
 
-reporting_service = get_reporting_service()
+- **Path:** `Cursor-Project/reports/YYYY-MM-DD/Summary_{HHMM}.md`
+- **Content:** Overview, participants, outcomes
 
-# Save agent-specific reports
-reporting_service.save_agent_report("AgentName")
+## Workflow (this workspace)
 
-# Save summary report
-reporting_service.save_summary_report()
-```
+There is **no** Python `ReportingService`. Use editor/file tools:
 
-## Critical Requirements:
-- ALWAYS use CURRENT date dynamically: `datetime.now().strftime('%Y-%m-%d')`
-- Reports saved for ALL agents that participated
-- Skipping report generation is a CRITICAL SYSTEM ERROR
-- Ensures complete traceability and audit trail
+1. Use **today’s date** for the folder name (`YYYY-MM-DD`).
+2. Write one markdown file per agent involved + one summary.
+3. Do **not** skip reports — Rule 0.6.
+
+See also: **phoenix-reporting** skill and `.cursor/agents/report-generator.md`.

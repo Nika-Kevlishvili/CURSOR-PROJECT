@@ -1,5 +1,7 @@
 # BugFinderAgent - Bug Validation Agent
 
+> **Current locations:** Cursor → **`.cursor/agents/bug-validator.md`**, **`.cursor/skills/phoenix-bug-validation/SKILL.md`**. Reports → **`Cursor-Project/reports/YYYY-MM-DD/BugValidation_*.md`**. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. The following sections describe the **removed** Python agent; behavior is implemented in chat per Rule 32.
+
 ## Overview
 
 BugFinderAgent is a specialized agent for validating bug reports by comparing them against Confluence documentation and codebase implementation. It follows Rule 32 workflow to ensure comprehensive bug validation.
@@ -26,7 +28,7 @@ The agent follows a strict 4-step workflow (Rule 32):
    - Provide detailed analysis with conclusions
 
 4. **Report Generation**
-   - Create markdown report file in `reports/YYYY-MM-DD/BugValidation_[BugName].md`
+   - Create markdown report file in **`Cursor-Project/reports/YYYY-MM-DD/BugValidation_[BugName].md`**
    - Include all findings, code references, and conclusions
    - **CRITICAL: READ-ONLY mode - NO code modifications during validation**
 
@@ -149,4 +151,4 @@ BugFinderAgent is located in `agents/Main/` as it's a primary agent providing co
 
 ## Reporting
 
-All bug validations are logged via ReportingService and reports are saved to `reports/YYYY-MM-DD/BugFinderAgent_HHMM.md`.
+In this workspace, reports are **markdown files** under **`Cursor-Project/reports/YYYY-MM-DD/`** (Rule 0.6), not a Python ReportingService.

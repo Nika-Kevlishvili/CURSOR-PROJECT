@@ -1,46 +1,46 @@
 # Cursor Subagents (Project)
 
-Subagents delegate work to specialized contexts. Each subagent here maps to this project's **existing agents** and **rules** so the main Cursor agent can delegate Phoenix-related tasks consistently.
+Subagents delegate work to specialized contexts. Each file under **`.cursor/agents/`** describes how to run that role **in Cursor chat** (no `Cursor-Project/agents/` Python package in this workspace).
 
 **Location:** Workspace root `.cursor/agents/` (same level as `commands/`, `hooks/`, `skills/`).
 
----
-
-## Mapping: Subagent → Project Agent / Rules
-
-| Subagent file       | Maps to                    | When to use |
-|---------------------|----------------------------|-------------|
-| **phoenix-qa.md**    | PhoenixExpert (Rule 0.2)   | Phoenix Q&A: backend, endpoints, business logic, Confluence + codebase. READ-ONLY. |
-| **bug-validator.md**| BugFinderAgent (Rule 32)   | Validate bug: Confluence first, then codebase; report to `reports/YYYY-MM-DD/BugValidation_*.md`. READ-ONLY. |
-| **test-runner.md**  | TestAgent (Rule 8, 17)     | Run tests; consult PhoenixExpert first; report results. |
-| **report-generator.md** | ReportingService (Rule 0.6) | After task: save agent report + summary to `Cursor-Project/reports/YYYY-MM-DD/`. |
-| **database-query.md**  | database_workflow.mdc (Rule DB.0–DB.5) | PostgreSQL MCP: correct env (Dev/Test/Prod), connect first, contract/POD patterns; no credentials in output. |
-| **git-sync.md**        | GitLabUpdateAgent / git_sync_workflow.mdc | Sync/update/checkout Phoenix repos from GitLab; !sync, !update &lt;branch&gt;, !checkout &lt;branch&gt;; READ-ONLY (no push). |
-| **environment-access.md** | EnvironmentAccessAgent (Rule 10)     | Access Dev or Dev2: navigation, login, environment selection. |
-| **postman-collection.md** | PostmanCollectionGenerator (Rule 8, 17) | Generate Postman collections; consult PhoenixExpert first; save to postman/. |
-| **test-case-generator.md** | TestCaseGeneratorAgent | Generate test cases from bug/task; Confluence (MCP) + codebase; optional cross_dependency_data for better coverage; save to test_cases/. |
-| **cross-dependency-finder.md** | CrossDependencyFinderAgent | Find cross-dependencies (modules, services, APIs, DB) for a scope; output shared with test-case-generator for more robust test cases. |
-| **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8.1) | Manage EnergoTS Playwright tests: study, create, copy, convert tests in EnergoTS/tests/. CAN modify test files (Rule 0.8.1 exception). |
-| **energo-ts-run.md** | EnergoTS Playwright Test Runner | Run specific Playwright tests from EnergoTS (local repo from GitHub) by prompt: newly created, Jira key, file path, or domain. Execute `npx playwright test`; no code modification. |
-| **jira-bug.md** | jira_bug_agent.mdc (Rule JIRA.0) | Create/rewrite Jira bugs using Experiments board template only. Must NOT create bugs in Phoenix delivery. |
+**Canonical map (roles, report paths, outputs):** `Cursor-Project/docs/AGENT_SUBAGENT_MAP.md`
 
 ---
 
-## Project rules and agents
+## Mapping: Subagent → Role / Rules
 
-- **Rules:** `.cursor/rules/*.mdc` (agent_rules, core_rules, workflow_rules, database_workflow, safety_rules, etc.)
-- **Python agents:** `Cursor-Project/agents/` (Main: PhoenixExpert, TestAgent, BugFinderAgent; Support: GitLabUpdateAgent, EnvironmentAccessAgent; Core: AgentRouter, IntegrationService; Services: ReportingService)
-- **Skills:** `.cursor/skills/` (phoenix-agent-workflow, phoenix-bug-validation, phoenix-reporting, phoenix-database, etc.)
+| Subagent file | Role | When to use |
+|---------------|------|-------------|
+| **phoenix-qa.md** | PhoenixExpert (Rule 0.2) | Phoenix Q&A; Confluence MCP + codebase. READ-ONLY. |
+| **bug-validator.md** | Bug validation (Rule 32) | Confluence → codebase → **`Cursor-Project/reports/YYYY-MM-DD/BugValidation_*.md`**. READ-ONLY. |
+| **test-runner.md** | TestAgent | Tests; consult PhoenixExpert first; report results. |
+| **report-generator.md** | Reports (Rule 0.6) | After task: markdown under `Cursor-Project/reports/YYYY-MM-DD/`. |
+| **database-query.md** | DB workflow (Rule DB.0+) | PostgreSQL MCP; connect first; see `integrations/database_workflow.mdc`. |
+| **git-sync.md** | Git sync | `integrations/git_sync_workflow.mdc`; read-only GitLab. |
+| **environment-access.md** | Environment access | Dev/Dev2; browser/MCP per subagent doc. |
+| **postman-collection.md** | Postman collections | PhoenixExpert first; save under `postman/`. |
+| **test-case-generator.md** | Test cases (Rule 35) | Confluence + codebase + `cross_dependency_data`; prefer `test_cases/Objects/` and `test_cases/Flows/`. |
+| **cross-dependency-finder.md** | Cross-dependencies (Rule 35, 35a) | Scope + deps + what_could_break; hand off to test-case-generator. |
+| **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8.1) | Playwright tests under `EnergoTS/tests/` only. |
+| **energo-ts-run.md** | Playwright runner (Rule 36) | `npx playwright test` from EnergoTS; `cursor` branch only. |
+| **jira-bug.md** | Jira bug (Rule JIRA.0) | Experiments board only. |
+| **hands-off.md** | HandsOff orchestrator (Rule 37) | Jira + `/HandsOff` / `!HandsOff` full flow. |
+| **playwright-test-validator.md** | Playwright QA gate | Spec vs test cases (HandsOff Step 4.5). |
+| **production-data-reader.md** | Production data (Rule PDR.0) | PostgreSQLProd MCP readonly. |
 
-Subagent prompts reference these so delegated work follows the same IntegrationService, PhoenixExpert consultation, and reporting requirements.
+---
 
-**Combined workflow for better test coverage:** Run **cross-dependency-finder** for a scope (bug/task), then run **test-case-generator** with `context['cross_dependency_data']` set to the finder's output so test cases cover integration points and dependencies.
+## Rules and skills
+
+- **Rules:** `.cursor/rules/**/*.mdc` — index: **`main/phoenix.mdc`**.
+- **Skills:** `.cursor/skills/` (phoenix-agent-workflow, phoenix-reporting, phoenix-database, etc.)
+
+**Rule 0.3:** No Python `IntegrationService` in chat; use MCP/Jira when external context is needed. **Rule 0.6:** Markdown reports with file tools, not `ReportingService`.
 
 ---
 
 ## How Cursor uses these
 
-- The main agent can **delegate** to these subagents when a task fits (e.g. "validate this bug" → bug-validator).
-- Each subagent runs in its **own context**; the parent gets back a summary/result.
-- Subagents are **discovered** from `.cursor/agents/`; no extra config needed.
-- For more: [Cursor Docs – Subagents](https://cursor.com/docs/context/subagents).
+- Delegate when a task fits a subagent.
+- Subagents are loaded from `.cursor/agents/`.

@@ -30,7 +30,7 @@ Specialized subagent for reading and analyzing production database data. Provide
 
 ## Workflow
 
-1. **IntegrationService** - Call `IntegrationService.update_before_task()` FIRST (Rule 11)
+1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. **Connect to Production Database** - Use PostgreSQLProd MCP with readonly_user credentials
    - Host: 10.236.20.78
    - Port: 5000
@@ -95,5 +95,5 @@ Provide for ANY entity type:
 
 - **Rule PDR.0:** ProductionDataReaderAgent Usage (production_data_reader.mdc)
 - **Rule 0.6:** Report generation after tasks
-- **Rule 11:** IntegrationService before tasks
+- **Rule 0.3:** No Python IntegrationService in chat; use MCP workflow from `integrations/production_data_reader.mdc`
 - **Rule DB.0:** Database environment selection (use PostgreSQLProd for production)

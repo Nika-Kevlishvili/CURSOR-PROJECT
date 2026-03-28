@@ -35,7 +35,7 @@
 1. **Cross-dependency-finder** run first (Rule 35); no Jira key – scope: Put Update existing POD (name only); Confluence and entry points/downstream/what_could_break captured.
 2. **Test case generation** used cross_dependency_data, Confluence content, and acceptance cases from Ani’s messages (including thread Part 2/2).
 3. **Save location:** test_cases/Objects/POD/ per test_cases_structure.mdc (entity = POD, action = Update name).
-4. **Template:** Structure and wording follow Cursor-Project/config/Test_case_template.md; all content in English.
+4. **Template:** Structure and wording follow Cursor-Project/config/template/Test_case_template.md; all content in English.
 
 ## Agents involved
 
