@@ -43,7 +43,7 @@ Cursor loads **all** `.mdc` files under `.cursor/rules/` **recursively**. Rule 0
 7. **Rule 8:** ALWAYS consult PhoenixExpert before tasks
 8. **Rule 11 / 0.3:** External automation may use IntegrationService; in Cursor chat follow MCP/Jira/GitLab steps — no `agents.*` imports here
 9. **Rule 32:** ALL bug validation → ALWAYS use BugFinderAgent
-10. **Rule 35/35a:** Test cases → cross-dependency-finder FIRST; when user gives Jira/bug/task: merge lookup → conditional sync if merge exists → technical_details in output
+10. **Rule 35/35a:** Test cases → cross-dependency-finder FIRST; Rule 35a: **Jira + codebase + shallow Confluence** — **no** local merge/git or git snapshot for cross-dep (see `workflow_rules.mdc`)
 11. **Rule 36:** Run Playwright tests from EnergoTS → energo-ts-run workflow ONLY; run only from `cursor` branch (Rule ENERGOTS.0)
 12. **Rule 37:** Jira ticket + /HandsOff or !HandsOff → ALWAYS run full HandsOff flow (hands-off command/orchestrator); report named after Jira key + send to Slack to tester
 13. **Rule JIRA.0:** Jira bug agent → Experiments board ONLY; NEVER create bugs in Phoenix delivery

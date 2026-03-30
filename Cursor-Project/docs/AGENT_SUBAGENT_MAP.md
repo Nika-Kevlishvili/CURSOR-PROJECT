@@ -16,10 +16,11 @@ Use this file as the **single map** from “agent role” to **where it lives to
 | **database-query.md** | PostgreSQL (Dev/Test/Prod) | DB questions; `database_workflow.mdc` |
 | **production-data-reader.md** | Production DB (read-only) | Rule PDR.0; PostgreSQLProd MCP |
 | **git-sync.md** | Phoenix GitLab sync | `/sync`, `!sync`, `git_sync_workflow.mdc` |
+| **shell.md** | CLI / terminal delegation | Parent Task `shell`; hooks; optional `git_sync` for multi-repo |
 | **environment-access.md** | Dev / Dev2 access | Rule 10; browser/MCP |
 | **postman-collection.md** | Postman collections | Postman generation flows |
 | **test-case-generator.md** | Test cases (Rule 35) | `/test-case-generate`; after cross-dependency-finder |
-| **cross-dependency-finder.md** | Cross-dependencies (35, 35a) | Before test cases; impact analysis |
+| **cross-dependency-finder.md** | Cross-dependencies (35, 35a) | Before test cases; Jira + code + shallow Confluence; **no** local merge/git; **`docs/CROSS_DEPENDENCY_WORK_PATTERN.md`** |
 | **energo-ts-test.md** | Playwright test authoring | Rule 0.8.1; `EnergoTS/tests/` only |
 | **energo-ts-run.md** | Playwright test run | Rule 36; `cursor` branch only |
 | **jira-bug.md** | Jira bug text (Experiments) | Rule JIRA.0; `/jira-bug` |

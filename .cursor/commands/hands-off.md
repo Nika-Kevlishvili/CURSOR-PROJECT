@@ -20,7 +20,7 @@ Run the **entire flow** without user intervention when the user provides a **Jir
 ### Step 2: Cross-dependencies (Rule 35a)
 
 1. Run **cross-dependency-finder** for this Jira key (same scope = ticket description).
-2. Finder MUST follow **Rule 35a**: (a) **merge history lookup** for this Jira key (local git + GitLab); (b) **conditional sync** of the branch if a merge exists for this ticket; (c) include **technical_details** from merge (MR/commits, changed files) in the output.
+2. Finder MUST follow **Rule 35a**: **Jira MCP + codebase + shallow Confluence** — **no** local merge/git or git sync triggered only for this step; **technical_details** from ticket + code (GitLab MR only if user explicitly asked).
 3. Cross-dependency-finder may consult **PhoenixExpert**. Obtain the full structured output: scope, entry_points, upstream, downstream, what_could_break, **technical_details**.
 4. Pass this output as **cross_dependency_data** to the next step.
 
@@ -124,7 +124,7 @@ Reference: `.cursor/rules/workflows/handsoff_playwright_report.mdc` §7.
 - **READ-ONLY** for Phoenix application code; do not modify production code (Rule 0.8). Only generated test files in `EnergoTS/tests/` may be created/modified (Rule 0.8.1).
 - All report and test case content in **English** (Rule 0.7).
 - **EnergoTS:** Use only the **cursor** branch for running and creating tests (Rule ENERGOTS.0).
-- **Rule 35/35a:** Cross-dependency-finder must run before test case generator; merge lookup and technical_details are mandatory when a Jira key is provided.
+- **Rule 35/35a:** Cross-dependency-finder must run before test case generator (Jira + codebase + shallow Confluence; **no** local merge/git); **technical_details** when a Jira key is provided.
 
 ## Response Requirements
 

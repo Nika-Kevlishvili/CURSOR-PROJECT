@@ -18,10 +18,11 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 | **report-generator.md** | Reports (Rule 0.6) | After task: markdown under `Cursor-Project/reports/YYYY-MM-DD/`. |
 | **database-query.md** | DB workflow (Rule DB.0+) | PostgreSQL MCP; connect first; see `integrations/database_workflow.mdc`. |
 | **git-sync.md** | Git sync | `integrations/git_sync_workflow.mdc`; read-only GitLab. |
+| **shell.md** | Shell / CLI | Delegated terminal + safe git/CLI; hooks + `git_sync_workflow` for multi-repo sync. |
 | **environment-access.md** | Environment access | Dev/Dev2; browser/MCP per subagent doc. |
 | **postman-collection.md** | Postman collections | PhoenixExpert first; save under `postman/`. |
 | **test-case-generator.md** | Test cases (Rule 35) | Confluence + codebase + `cross_dependency_data`; prefer `test_cases/Objects/` and `test_cases/Flows/`. |
-| **cross-dependency-finder.md** | Cross-dependencies (Rule 35, 35a) | Scope + deps + what_could_break; hand off to test-case-generator. |
+| **cross-dependency-finder.md** | Cross-dependencies (Rule 35, 35a) | Jira + code + shallow Confluence; **no** local merge/git; hand off to test-case-generator. |
 | **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8.1) | Playwright tests under `EnergoTS/tests/` only. |
 | **energo-ts-run.md** | Playwright runner (Rule 36) | `npx playwright test` from EnergoTS; `cursor` branch only. |
 | **jira-bug.md** | Jira bug (Rule JIRA.0) | Experiments board only. |

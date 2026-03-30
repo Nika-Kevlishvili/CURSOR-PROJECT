@@ -196,11 +196,11 @@ This document lists every Cursor command and what it can do in detail.
 **Trigger:** Dependency analysis, “what could break”, or before test case generation (Rule 35). **Rule 35a** applies when user gives a Jira/bug/task key.
 
 **What it can do:**
-- **Merge-first (Rule 35a):** When user provides a Jira/bug/task key: (1) Look up merge history for that key (local git + GitLab). (2) If a merge exists for that Jira on a target branch, run a targeted sync for that branch only (same as `!update <branch>`). (3) Add merge-derived **technical_details** (MR/merge, changed files/modules) to the output.
+- **Rule 35a:** **Jira MCP + codebase + shallow Confluence** — **no** local merge/`git log`/git sync solely for cross-dep; **technical_details** from Jira + code. **GitLab MR** only if the user explicitly asks.
 - Follow Rule 0.3; consult PhoenixExpert if needed (Rule 8).
 - Define scope (bug/task/feature): entry points, modules, services.
-- Find cross-dependencies: code (imports, APIs, DB, callers, consumers) and Confluence.
-- Produce structured report: scope, entry_points, upstream, downstream, shared, data_entities, integration_points, **what_could_break**, **technical_details** (from merges when Jira provided).
+- Find cross-dependencies: code (imports, APIs, DB, callers, consumers) and Confluence (shallow).
+- Produce structured report: scope, entry_points, upstream, downstream, shared, data_entities, integration_points, **what_could_break**, **technical_details**.
 - Optionally save to `Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope>.json`.
 - Output is passed to test-case-generator as `context['cross_dependency_data']`.
 - Read-only.
@@ -211,10 +211,10 @@ This document lists every Cursor command and what it can do in detail.
 
 ## 15. Test case generate
 
-**Trigger:** “Generate test cases for this bug/task/feature” (Rule 35). Cross-dependency-finder follows Rule 35a (merge lookup → conditional sync → technical_details).
+**Trigger:** “Generate test cases for this bug/task/feature” (Rule 35). Cross-dependency-finder follows Rule 35a (Jira + codebase + shallow Confluence; no local merge/git).
 
 **What it can do:**
-- **Step 1 (mandatory):** Run cross-dependency-finder for the same scope (including Rule 35a: merge lookup for Jira key, conditional sync if merge exists, technical_details); get report including what_could_break and technical_details; pass as `context['cross_dependency_data']`.
+- **Step 1 (mandatory):** Run cross-dependency-finder for the same scope (Rule 35a); get report including what_could_break and technical_details; pass as `context['cross_dependency_data']`.
 - **Step 2:** Follow Rule 0.3; consult PhoenixExpert; search Confluence and codebase; run **test-case-generator** workflow (subagent/skill) with `cross_dependency_data` from step 1.
 - Save test cases under **`Cursor-Project/test_cases/`** per **`test_cases_structure.mdc`**:
   - **`Objects/<Entity>/`** – e.g. `Product_contract/Create.md`.
@@ -251,7 +251,7 @@ This document lists every Cursor command and what it can do in detail.
 
 **What it can do:**
 1. **Get Jira ticket** – Parse issue key; call Jira MCP getJiraIssue → description, summary, tester/assignee.
-2. **Cross-dependencies** – Run cross-dependency-finder for this Jira key (Rule 35a: merge lookup → conditional sync → technical_details); get cross_dependency_data.
+2. **Cross-dependencies** – Run cross-dependency-finder for this Jira key (Rule 35a: Jira + codebase + shallow Confluence; no local merge/git); get cross_dependency_data.
 3. **Test cases** – Run test-case-generator with ticket description and cross_dependency_data; save under `Cursor-Project/test_cases/Flows/` or `Objects/` (per template).
 4. **Playwright tests** – Follow **`.cursor/agents/energo-ts-test.md`**: map test case `.md` → spec with EnergoTS framework; output **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**; stay on **`cursor`** branch (Rule ENERGOTS.0). No Python `get_energo_ts_test_agent()` in this workspace.
 5. **Run tests** – Run Playwright tests (e.g. by Jira key or newly created file); capture pass/fail and failure reasons.

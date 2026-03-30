@@ -75,8 +75,8 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 ## Cross-dependency-finder (cross-dependency-finder.md)
 
 - **When:** User asks for cross-dependencies, what could break, or dependency analysis for a scope (bug/task/feature). Also run automatically before test case generation (Rule 35).
-- **Flow (Rule 35a):** (1) **Merge lookup** for Jira/bug/task key (local git + GitLab) → (2) **Conditional sync** for that branch only if merge exists → (3) PhoenixExpert (if needed) → Define scope → Codebase + Confluence → Output (upstream, downstream, what_could_break, **technical_details** from merges) → optional JSON to `Cursor-Project/cross_dependencies/`.
-- **Output:** Structured report including **technical_details** (merge/MR info when Jira provided); "Agents involved: CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
+- **Flow (Rule 35a):** **Jira MCP + codebase + shallow Confluence** — **no** local merge/git for cross-dep. PhoenixExpert (if needed) → scope → output (upstream, downstream, what_could_break, **technical_details** from Jira + code) → optional JSON to `Cursor-Project/cross_dependencies/`.
+- **Output:** Structured report including **technical_details**; "Agents involved: CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
 
 ## Test-case-generate (test-case-generate.md)
 

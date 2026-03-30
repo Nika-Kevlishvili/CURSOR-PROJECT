@@ -56,6 +56,7 @@ alwaysApply: true
 
 13. [IMPORTANT] Route work to the right specialist (subagent/skills/rules). There is no Python `AgentRouter` in this workspace.
     - Prefer Task tool / subagents when the workflow requires delegation; otherwise apply the matching rules for the query type.
+    - **Shell subagent:** The project defines **`.cursor/agents/shell.md`** so Cursor can resolve **`subagent_type: shell`** with a proper tool context (file read + terminal). Purely GitLab/Phoenix multi-repo sync should still follow **`git-sync`** / **`git_sync_workflow.mdc`**. If **`shell`** still fails with an internal tool error, fall back to **`generalPurpose`** or run shell from the parent agent.
 
 # AGENT COLLABORATION PATTERNS [CRITICAL]
 

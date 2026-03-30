@@ -23,9 +23,11 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 | **Database Query** | `database-query.md` | database_workflow.mdc | Run PostgreSQL MCP queries; correct env (Dev/Test/Prod); connect first; contract/POD patterns. |
 | **Production Data Reader** | `production-data-reader.md` | ProductionDataReaderAgent (Rule PDR.0) | Read production database data; analyze liability offsets, receivable history; explain step-by-step creation process. READ-ONLY. |
 | **Git Sync** | `git-sync.md` | GitLabUpdateAgent / git_sync_workflow.mdc | Sync/update/checkout Phoenix repos from GitLab; READ-ONLY (fetch/checkout/merge only). |
+| **Shell / CLI** | `shell.md` | Delegated terminal | Bash/PowerShell tasks, diagnostics; respects hooks; multi-repo GitLab sync still maps to git-sync / git_sync_workflow. |
 | **Environment Access** | `environment-access.md` | EnvironmentAccessAgent (Rule 10) | Access Dev or Dev2; navigation, login, environment selection. |
 | **Postman Collection** | `postman-collection.md` | PostmanCollectionGenerator (Rule 8, 17) | Generate Postman collections; consult PhoenixExpert first. |
 | **Test Case Generator** | `test-case-generator.md` | TestCaseGeneratorAgent (role in chat) | Generate test cases from bug/task; Confluence + codebase; save under `Cursor-Project/test_cases/` (Objects/Flows per `test_cases_structure.mdc`). |
+| **Cross-Dependency Finder** | `cross-dependency-finder.md` | CrossDependencyFinderAgent (Rule 35, 35a) | Dependencies + what_could_break; **pattern:** [`CROSS_DEPENDENCY_WORK_PATTERN.md`](CROSS_DEPENDENCY_WORK_PATTERN.md) — Jira + codebase + shallow Confluence; **no** local merge/git. |
 
 ---
 
@@ -37,6 +39,7 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 - **Rule 0.6 reporting** → Cursor subagent **report-generator**: save markdown report + summary under `Cursor-Project/reports/YYYY-MM-DD/`.
 - **Database workflow** (Rule DB.0–DB.5) → Cursor subagent **database-query**: same env selection and query patterns.
 - **GitLabUpdateAgent** / **git_sync_workflow.mdc** → Cursor subagent **git-sync**: same sync/update/checkout workflow; read-only.
+- **Delegated CLI / Task `shell`** → Cursor subagent **shell**: terminal work in isolation; use **git-sync** when the task is full Phoenix GitLab sync.
 - **EnvironmentAccessAgent** (Rule 10) → Cursor subagent **environment-access**: same Dev/Dev2 access workflow.
 - **PostmanCollectionGenerator** (Rule 8, 17) → Cursor subagent **postman-collection**: same “consult PhoenixExpert → generate collection” pattern.
 - **TestCaseGeneratorAgent** → Cursor subagent **test-case-generator**: same "Confluence + codebase → generate test cases" workflow; save to test_cases/.

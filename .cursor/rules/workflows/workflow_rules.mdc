@@ -121,47 +121,41 @@ alwaysApply: true
     
     **Step 1: Run Cross-Dependency Finder FIRST (MANDATORY)**
     - Delegate to **cross-dependency-finder** subagent (or run CrossDependencyFinderAgent) for the same scope (bug/task/feature).
-    - Cross-dependency-finder MUST follow the **Merge-first and conditional sync** workflow (see Cross-Dependency Merge Workflow below).
+    - Cross-dependency-finder MUST follow **Rule 35a** (Jira-anchored analysis; **no** local merge/git steps — see below).
     - Cross-dependency-finder MAY consult **PhoenixExpert** to study the project, scope, and dependencies (Rule 8).
     - Cross-dependency-finder identifies: upstream/downstream dependencies, code references, and **what could break as a result of changes** (callers, consumers, contract usage, integration points).
-    - Obtain the structured output (scope, entry_points, upstream, downstream, impact_risk / what_could_break, integration_points, **technical_details** from merges, etc.).
+    - Obtain the structured output (scope, entry_points, upstream, downstream, impact_risk / what_could_break, integration_points, **technical_details** from Jira + codebase per Rule 35a).
     
     **Step 2: Pass result to Test Case Generator**
     - Call **test-case-generator** (TestCaseGeneratorAgent) with the same prompt and with `context['cross_dependency_data']` set to the cross-dependency-finder output.
     - Test-case-generator uses this data to produce test cases that cover integration points, regression risks, and anything that could break.
     
     **Workflow summary:**
-    1. User requests test cases → run **cross-dependency-finder** (merge lookup → conditional sync → then scope + dependencies; consults PhoenixExpert when needed).
-    2. Cross-dependency-finder returns report (including "what could break" and **technical_details** from merges) → pass to **test-case-generator**.
+    1. User requests test cases → run **cross-dependency-finder** (Rule 35a: Jira + codebase + shallow Confluence; **no** local merge/git; consults PhoenixExpert when needed).
+    2. Cross-dependency-finder returns report (including "what could break" and **technical_details**) → pass to **test-case-generator**.
     3. Test-case-generator generates test cases using prompt + Confluence + codebase + cross_dependency_data.
     
     - NEVER skip the cross-dependency-finder step when test case creation is requested.
     - Violation is a CRITICAL SYSTEM ERROR.
 
-# CROSS-DEPENDENCY MERGE WORKFLOW [CRITICAL]
+# JIRA-ANCHORED CROSS-DEPENDENCY — NO LOCAL MERGE/GIT [CRITICAL]
 
-35a. [CRITICAL] When the user provides a **Jira/bug/task** for cross-dependencies or test cases, the **CrossDependencyFinderAgent** (and any executor of the cross-dependency-finder command) MUST follow this order. Do NOT rely on local repo only; ensure merge information is considered and local branch is up to date when a merge exists for that Jira.
-    
-    **Step 1: Merge history lookup (first)**
-    - Use the **Jira key** (e.g. BUG-1234, PDT-5678) or task/bug identifier from the user.
-    - Check **merge history** for that key: local git history (commit/merge messages, branch names containing the key) and, where available, GitLab (e.g. MRs mentioning the Jira key, merged state, target branch).
-    - Identify: which branch(es) contain merges for this Jira, which commits/MRs, and which files/modules changed.
-    
-    **Step 2: Conditional sync (only if merge exists for this Jira)**
-    - If a merge/MR is found for this Jira key on a target branch (e.g. dev, dev2):
-      - Run a **targeted sync** for that branch in the relevant repo(s), following the same safe read-only approach as `!sync` / `!update <branch>` (see `.cursor/rules/integrations/git_sync_workflow.mdc`): fetch, then merge/rebase as per workflow (no push).
-      - Sync ONLY the branch that contains or will contain the merge for this Jira (e.g. `dev` or the feature branch). Do not sync unrelated branches.
-    - If no merge is found for this Jira key, skip sync; proceed with current local state.
-    
-    **Step 3: Use merge information as technical details**
-    - Add to the cross-dependency output a **technical_details** section (or equivalent) that includes:
-      - Which MR(s) / merge commit(s) were found for this Jira key.
-      - Which files, modules, or services changed in those merges.
-      - Short summary usable for test case generation and impact analysis.
-    - Use this technical_details in the structured payload passed to TestCaseGeneratorAgent (e.g. inside `cross_dependency_data`).
-    
-    **Summary:** First look up merges for the Jira key → if a merge exists, sync that branch so local code reflects it → then run cross-dependency analysis and include merge-derived technical details in the report. This applies in every chat when the user asks for cross-dependencies or test cases for a specific bug/task.
-    
+35a. [CRITICAL] When the user provides a **Jira/bug/task** for cross-dependencies or test cases, the **CrossDependencyFinderAgent** (and any executor of the cross-dependency-finder command) MUST **not** use **local disk git merge history** or **mandatory git snapshot scripts** as part of the default workflow (local Phoenix clones on e.g. `D:` may not match the user’s source of truth).
+
+    **Required anchoring**
+    - Use **Jira MCP** (issue key, summary, description, relevant fields) + **codebase search/read** under `Cursor-Project/Phoenix/**` (READ-ONLY) + **shallow Confluence** per cross-dependency-finder policy.
+    - Build **technical_details** from Jira + codebase findings (services, file paths, short implementation notes). **Do not** require merge-commit lists, MR enumerations, or `git log` / `git show` keyed by Jira on local repos as mandatory output.
+
+    **Prohibited in CrossDependencyFinderAgent (default)**
+    - Local **merge history lookup** (e.g. `git log --grep`, branch scans for ticket key) **for** cross-dependency discovery.
+    - **`CrossDependency_GitSnapshot.ps1`** / **`technical_details.git_snapshot`** as required steps (script removed from repo pattern).
+    - **Conditional git sync** (`!sync` / `!update`) triggered **only** because cross-dependency-finder ran for a Jira key.
+
+    **Optional (explicit user request only)**
+    - **GitLab MCP (read-only)** for MRs/merges: only if the user **explicitly** asks for GitLab merge/MR review.
+
+    **Summary:** Cross-dependencies for a ticket are anchored on **Jira + code + shallow Confluence**, not on local merge archaeology.
+
     - Violation is a CRITICAL SYSTEM ERROR.
 
 # ENERGOTS PLAYWRIGHT TEST RUN RULE [CRITICAL]
