@@ -1,4 +1,6 @@
 """
+LEGACY: Requires removed Cursor-Project/agents/. Use .cursor/agents/postman-collection.md (AGENT_SUBAGENT_MAP.md).
+
 Example: Generate POD Create Postman Collection
 
 This example demonstrates how to generate a Postman collection

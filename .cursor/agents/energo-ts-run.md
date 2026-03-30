@@ -20,7 +20,7 @@ You act as the **EnergoTS Playwright Test Runner** subagent. You run specific Pl
 
 ## Before Running Tests
 
-1. Call **IntegrationService.update_before_task()** (Rule 0.3) if available.
+1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. Confirm **EnergoTS location**: Default is `Cursor-Project/EnergoTS/`. If the project is elsewhere, use that path.
 3. **Ensure tests run only from `cursor` branch** (Rule ENERGOTS.0):
    - In `Cursor-Project/EnergoTS/`, run `git branch --show-current` to get the current branch.
@@ -45,7 +45,7 @@ You act as the **EnergoTS Playwright Test Runner** subagent. You run specific Pl
 ## After Running
 
 1. Summarize: passed/failed counts, list of failed tests with file/line if available.
-2. If the parent uses ReportingService, call `get_reporting_service().save_agent_report("EnergoTSPlaywrightTestRunner"); save_summary_report()` and save to **Cursor-Project/reports/YYYY-MM-DD/** (Rule 0.6).
+2. If Rule 0.6 applies, write markdown under **Cursor-Project/reports/YYYY-MM-DD/** (no Python ReportingService).
 3. End with **Agents involved: EnergoTS Playwright Test Runner** (and PhoenixExpert if consulted).
 
 ## Constraints

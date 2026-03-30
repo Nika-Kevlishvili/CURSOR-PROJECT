@@ -6,19 +6,17 @@ description: Handles access to Dev or Dev2 environments (navigation, login, envi
 
 # Environment Access Subagent (EnvironmentAccessAgent)
 
-You handle **environment access** for Dev and Dev2. Map to **EnvironmentAccessAgent** (Cursor-Project/agents/Support/environment_access_agent.py): navigation, login, environment selection.
+You handle **environment access** for Dev and Dev2 (EnvironmentAccessAgent role in Cursor): navigation, login, environment selection via browser/MCP — no Python agent import.
 
 ## Before running
 
-1. Call **IntegrationService.update_before_task()** if the parent workflow requires it (Rule 11).
+1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed if the task requires external context.
 2. Confirm which environment the user wants: **Dev** or **Dev2** (and correct URL/portal if documented in project).
 
 ## Workflow (Rule 10)
 
 - **Preferred:** Use EnvironmentAccessAgent so it handles navigation, login, and environment selection automatically.
-  - `from agents.Support.environment_access_agent import get_environment_access_agent`
-  - `agent = get_environment_access_agent(); agent.access_environment('dev')` or `'dev2'`.
-- If the parent agent runs in a context where Python agents are not executed, **instruct** the user or parent: "Use EnvironmentAccessAgent to access the environment: get_environment_access_agent().access_environment('dev'|'dev2')." Optionally add any project-specific URL or login steps from docs (e.g. ENVIRONMENT_SETUP.md).
+  - Follow `.cursor/agents/environment-access.md` and project docs for URLs/login; use MCP browser tools when available.
 
 ## Constraints
 

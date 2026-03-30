@@ -39,7 +39,7 @@ ALL bug validation requests MUST be handled by BugFinderAgent - NO EXCEPTIONS.
 ```
 
 ## Workflow Requirements:
-- Call `IntegrationService.update_before_task()` FIRST
+- **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed
 - Consult PhoenixExpert for context
 - Use READ-ONLY mode (no code modifications)
 - Generate reports (Rule 0.6)

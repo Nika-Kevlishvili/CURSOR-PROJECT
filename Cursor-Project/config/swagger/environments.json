@@ -1,0 +1,25 @@
+{
+  "description": "Canonical Swagger UI and OpenAPI JSON URLs per environment. Edit this file when hosts change. Fetched by .cursor/commands/update-swagger-specs.ps1 into <id>/swagger-spec.json via openapi_json.",
+  "environments": [
+    {
+      "id": "dev",
+      "swagger_ui": "http://10.236.20.11:8091/swagger-ui/index.html#",
+      "openapi_json": "http://10.236.20.11:8091/v3/api-docs"
+    },
+    {
+      "id": "test",
+      "swagger_ui": "http://10.236.20.31:8091/swagger-ui/index.html#",
+      "openapi_json": "http://10.236.20.31:8091/v3/api-docs"
+    },
+    {
+      "id": "dev2",
+      "swagger_ui": "http://10.236.20.11:8092/swagger-ui/index.html#",
+      "openapi_json": "http://10.236.20.11:8092/v3/api-docs"
+    },
+    {
+      "id": "prod",
+      "swagger_ui": "http://10.236.20.66:8090/swagger-ui/index.html#/",
+      "openapi_json": "http://10.236.20.66:8090/v3/api-docs"
+    }
+  ]
+}

@@ -1,4 +1,6 @@
 """
+LEGACY: Requires removed Cursor-Project/agents/. Use .cursor/agents/git-sync.md (AGENT_SUBAGENT_MAP.md).
+
 Example: Update Project from GitLab using GitLabUpdateAgent
 
 This example demonstrates how to use GitLabUpdateAgent to update

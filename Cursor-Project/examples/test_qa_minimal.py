@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
+LEGACY: Requires removed Cursor-Project/agents/. See Cursor-Project/docs/AGENT_SUBAGENT_MAP.md.
+
 Minimal test script to check Q&A mode, reporting, and rules compliance
 """
 import sys

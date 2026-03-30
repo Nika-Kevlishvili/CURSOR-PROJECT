@@ -6,13 +6,13 @@ description: Generates test cases from bug or task descriptions using Confluence
 
 # Test Case Generator Subagent (TestCaseGeneratorAgent)
 
-You generate **test cases** from bug or task descriptions. Map to **TestCaseGeneratorAgent** (Cursor-Project/agents/Main/test_case_generator_agent.py). Use Confluence (MCP) and codebase to enrich test cases.
+You generate **test cases** from bug or task descriptions (TestCaseGeneratorAgent role in Cursor). Use Confluence (MCP) and codebase to enrich test cases. There is **no** `Cursor-Project/agents/` Python module.
 
 ## Before generating (Rule 35)
 
-When the **user requests test case creation**, the parent MUST run **cross-dependency-finder** first (Rule 35). Cross-dependency-finder may consult **PhoenixExpert** to study the project; it returns a report (including "what could break") that is passed to you as `context['cross_dependency_data']`. Do not run test-case-generator without this step when the user asked for test cases.
+When the **user requests test case creation**, the parent MUST run **cross-dependency-finder** first (Rule 35; Rule 35a = Jira + codebase + shallow Confluence — **no** local merge/git). Cross-dependency-finder may consult **PhoenixExpert**; it returns a report (including "what could break") as `context['cross_dependency_data']`. Do not run test-case-generator without this step when the user asked for test cases.
 
-1. Call **IntegrationService.update_before_task()** (Rule 11).
+1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. Consult **PhoenixExpert** if the task touches endpoints, validation rules, or business logic (Rule 8). Use parent context if already provided (cross-dependency-finder may have already consulted; reuse if passed).
 3. Confirm **prompt type**: bug (repro/verify) or task (feature/acceptance). The agent auto-detects; you can pass `prompt_type='bug'` or `'task'`.
 
@@ -43,18 +43,17 @@ When the **user requests test case creation**, the parent MUST run **cross-depen
   - **Regression:** every scenario from cross_dependency_data (what_could_break, integration points).
   Aim for the **maximum number** of test cases needed so that **any scenario that could occur** is covered (positive and negative).
 - **Preferred:** Use TestCaseGeneratorAgent with Confluence + codebase data + cross_dependency_data.
-  - `from agents.Main import get_test_case_generator_agent`
-  - `agent = get_test_case_generator_agent()`
+  - Implement in chat: build test cases from Confluence + codebase + `cross_dependency_data` and **write** `.md` files under **`Cursor-Project/test_cases/`** (Objects/ or Flows/ per `workspace/test_cases_structure.mdc`). Do not import `get_test_case_generator_agent`.
   - `result = agent.generate_test_cases(prompt=..., prompt_type='bug'|'task', confluence_data=..., context={'codebase_findings': ..., 'cross_dependency_data': ...})`
 - If Python agent is not run in this context: **output** a structured test-case spec with **all** positive/negative/edge/regression cases (Confluence refs, code refs, integration points, and tests for every item in what_could_break) so the user or another tool can use it.
 
 ## Output format – template and human-readable (MANDATORY)
 
-**Content:** Every test case document MUST follow the **Test Case Template**: **`Cursor-Project/config/Test_case_template.md`**. Use that template’s structure and placeholders. Write in **maximally detailed**, **human-readable** language: full sentences where they help, no unexplained jargon, plain English. Each scenario (TC-1, TC-2, …) MUST have: Objective, Preconditions (numbered), Steps (numbered), Expected result, and—for bugs—Actual result. See the template for the exact sections and the human-readable language rules.
+**Content:** Every test case document MUST follow the **Test Case Template**: **`Cursor-Project/config/template/Test_case_template.md`**. Use that template’s structure and placeholders. Write in **maximally detailed**, **human-readable** language: full sentences where they help, no unexplained jargon, plain English. Each scenario (TC-1, TC-2, …) MUST have: Test title (in the TC heading), Description, Preconditions (numbered), Test steps (numbered), Expected test case results, and—for bugs—Actual result. See the template for the exact sections and the human-readable language rules.
 
 **Folder (hierarchy):** Save in the structure below. Do not use a flat list.
 
-**Root folder:** `Cursor-Project/generated_test_cases/` (or for HandsOff: **`Cursor-Project/test_cases/Flows/<Flow_name>/`** or **`Cursor-Project/test_cases/Objects/<Entity_name>/`** per `.cursor/rules/test_cases_structure.mdc`).
+**Root folder:** `Cursor-Project/generated_test_cases/` (or for HandsOff: **`Cursor-Project/test_cases/Flows/<Flow_name>/`** or **`Cursor-Project/test_cases/Objects/<Entity_name>/`** per `.cursor/rules/workspace/test_cases_structure.mdc`).
 
 **Structure (folder tree, then leaf `.md` files):**
 - **Object/** – domain entities and actions (e.g. customer → Create, Edit, Delete, View; contract → …).
@@ -62,9 +61,9 @@ When the **user requests test case creation**, the parent MUST run **cross-depen
 
 **Rules:**
 - Use only folders for hierarchy; at the **leaf** of each branch, create one **.md file** per logical group (e.g. `Create.md`, `Edit.md`, `Profile.md`, `scale.md`). Use underscores for multi-word names (e.g. `For_volumes.md`).
-- Each leaf `.md` content MUST follow **`Cursor-Project/config/Test_case_template.md`**: document title, Jira, Type, Summary, Scope, Test data (preconditions), then TC-1, TC-2, … with Objective, Preconditions, Steps, Expected result, Actual result (if bug), References. **Include both positive and negative test cases:** at least one **(Positive)** (happy path, valid input, expected success) and at least one **(Negative)** (invalid input, error condition, expected rejection/failure). Label each TC as (Positive) or (Negative). Maximally detailed and human-readable.
+- Each leaf `.md` content MUST follow **`Cursor-Project/config/template/Test_case_template.md`**: document title, Jira, Type, Summary, Scope, Test data (preconditions), then TC-1, TC-2, … with Description, Preconditions, Test steps, Expected test case results, Actual result (if bug), References. **Include both positive and negative test cases:** at least one **(Positive)** (happy path, valid input, expected success) and at least one **(Negative)** (invalid input, error condition, expected rejection/failure). Label each TC as (Positive) or (Negative). Maximally detailed and human-readable.
 - Map: entities/actions → under **Object**; flows/variants/subflows → under **Flows**. Regression/impact cases (from cross_dependency_data) go under the most relevant Object or Flow path.
-- Full spec (hierarchy): **Cursor-Project/docs/TEST_CASES_HIERARCHY_FORMAT.md**. Content spec: **Cursor-Project/config/Test_case_template.md**.
+- Full spec (hierarchy): **Cursor-Project/docs/TEST_CASES_HIERARCHY_FORMAT.md**. Content spec: **Cursor-Project/config/template/Test_case_template.md**.
 
 **Also include in output (e.g. in a summary or index):**
 - Confluence references – relevant Confluence pages.
@@ -75,7 +74,7 @@ When the **user requests test case creation**, the parent MUST run **cross-depen
 
 - **READ-ONLY** for Phoenix code: only read Confluence and codebase; do not modify production code.
 - All output in **English** (Rule 0.7).
-- If reporting is required (Rule 0.6), call ReportingService after generation.
+- If Rule 0.6 applies, save markdown reports under `Cursor-Project/reports/YYYY-MM-DD/` after generation.
 
 ## Output
 

@@ -1,0 +1,86 @@
+---
+alwaysApply: true
+---
+
+# PRODUCTION DATA READER RULE [CRITICAL]
+
+## Rule PDR.0: ProductionDataReaderAgent Usage [CRITICAL]
+
+**ALWAYS use ProductionDataReaderAgent when user asks about production database data.**
+
+- User asks about ANY production data (liability, receivable, payment, deposit, invoice, contract, customer, etc.)
+- User asks how an entity was created for ANY production entity
+- User asks about data relationships, dependencies, or traceability
+- User asks about offset sequence, reversal history, or data flow
+- User mentions Prod environment with data questions
+- User wants to query or analyze ANY production database table
+
+## When to Apply
+
+- User asks: "How was X created?" - for ANY entity type
+- User asks: "What is X offset with?"
+- User asks: "What is the sequence of offsets?"
+- User asks about production database data analysis for ANY entity
+- User asks about data relationships, dependencies, or traceability
+- User asks to query or analyze ANY production database table
+- User asks about reversed entities or offsets
+- User asks: "What data does X have?"
+
+## Workflow (Cursor chat — no Python agent package)
+
+1. **Assume the ProductionDataReader role** (follow this rule and **production-data-reader** skill; use MCP PostgreSQLProd and codebase/PhoenixExpert as needed).
+
+2. **Connect to Production Database:**
+   - Use PostgreSQLProd MCP server
+   - Connect per **database_workflow** / MCP docs (readonly_user only)
+   - NEVER use write credentials for production
+
+3. **Query Production Data:**
+   - Query ANY entity type: liability, receivable, payment, deposit, invoice, contract, customer, etc.
+   - Query relationships: foreign keys, reverse relationships, dependencies
+   - Query offsetting tables: `customer_liabilitie_paid_by_*`, `customer_payment_*`, etc.
+   - Use MCP `query` (or equivalent) for SELECTs; build analysis manually (no Python `query_table` / `analyze_relationships` helpers in this workspace)
+
+4. **Analyze and Explain:**
+   - Build chronological sequence of events
+   - Identify reversed entities (status = 'REVERSED')
+   - Analyze relationships and dependencies
+   - Explain step-by-step creation and modification process
+   - Provide detailed traceability for ANY entity type
+
+5. **Generate Report:**
+   - Format analysis as markdown report
+   - Include liability/receivable details, offset sequence, step-by-step explanation
+   - Save report under `Cursor-Project/reports/YYYY-MM-DD/` per Rule 0.6
+
+## Security [CRITICAL]
+
+- **READ-ONLY ONLY:** use readonly_user credentials for production
+- **NO MODIFICATIONS:** Never modify production data
+- **NO WRITES:** Only SELECT queries allowed
+- **ENVIRONMENT:** Only use PostgreSQLProd MCP server for production queries
+
+## Integration with Other Agents
+
+- **PhoenixExpert Consultation:** May consult PhoenixExpert for business logic understanding
+- **Rule 0.3 / 0.6:** No Python IntegrationService or ReportingService here — follow MCP workflow and save markdown reports after analysis
+
+## Output Format
+
+ProductionDataReaderAgent provides for ANY entity type:
+- **Entity Details:** ID, number, amounts, dates, currency, status, etc.
+- **Relationships:** All related entities and their connections
+- **Event Sequence:** Chronological list of all events (offsets, reversals, modifications)
+- **Event Details:** Type, ID, amount, date, status (ACTIVE/REVERSED)
+- **Step-by-Step Explanation:** How entity was created, modified, and related to other entities
+- **Reversal History:** If any events were reversed, when and why
+- **Dependencies:** What entities depend on this entity
+- **Dependents:** What entities depend on this entity
+
+## Error Handling
+
+- If entity not found: Return clear error message
+- If database connection fails: Retry with exponential backoff
+- If query fails: Log error and provide partial results if available
+
+**Violation of production data reader rules is a CRITICAL SYSTEM ERROR.**

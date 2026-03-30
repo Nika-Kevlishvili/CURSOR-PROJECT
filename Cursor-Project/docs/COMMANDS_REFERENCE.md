@@ -124,11 +124,11 @@ This document lists every Cursor command and what it can do in detail.
 **Trigger:** Phoenix-related questions (routed by Rule 0.2)
 
 **What it can do:**
-- Call IntegrationService.update_before_task() first.
+- Follow **Rule 0.3** (this workspace: no Python `IntegrationService` in chat; use MCP/Jira when external context is needed).
 - Search Confluence via MCP (fresh, no cache).
 - Search Phoenix codebase (primary source).
 - Answer with source priority: codebase > Confluence > general knowledge.
-- Save reports to `reports/YYYY-MM-DD/PhoenixExpert_{HHMM}.md` and Summary.
+- Save reports to **`Cursor-Project/reports/YYYY-MM-DD/PhoenixExpert_{HHMM}.md`** and Summary.
 
 **When to use:** Any question about Phoenix backend, APIs, business logic, or documentation.
 
@@ -152,8 +152,8 @@ This document lists every Cursor command and what it can do in detail.
 **Trigger:** After any task (Rule 0.6)
 
 **What it can do:**
-- Save agent-specific report: `reports/YYYY-MM-DD/{AgentName}_{HHMM}.md`.
-- Save summary: `reports/YYYY-MM-DD/Summary_{HHMM}.md`.
+- Save agent-specific report: **`Cursor-Project/reports/YYYY-MM-DD/{AgentName}_{HHMM}.md`**.
+- Save summary: **`Cursor-Project/reports/YYYY-MM-DD/Summary_{HHMM}.md`**.
 - Use current date; required even if task failed or only one agent was used.
 
 **When to use:** Automatically after every task; or when you explicitly request a report.
@@ -165,7 +165,7 @@ This document lists every Cursor command and what it can do in detail.
 **Trigger:** Bug validation requests (Rule 32 – BugFinderAgent)
 
 **What it can do:**
-- Call IntegrationService and consult PhoenixExpert.
+- Follow Rule 0.3; consult PhoenixExpert where Rule 8 applies.
 - **Step 1 – Confluence:** Search Confluence via MCP; check if bug description matches docs; report correct/incorrect/partially correct.
 - **Step 2 – Code:** Search codebase; check if implementation matches expected behavior; report satisfies/does not satisfy.
 - **Step 3 – Conclusion:** Combine findings; conclude if bug is valid; suggest fix but do not implement (read-only).
@@ -182,7 +182,7 @@ This document lists every Cursor command and what it can do in detail.
 **What it can do:**
 - Connect to production DB (PostgreSQLProd, readonly_user).
 - Analyze any entity: liability, receivable, payment, deposit, invoice, contract, customer, etc.
-- Use: analyze_entity(type, id), query_table(...), analyze_relationships(...).
+- Use **PostgreSQLProd MCP**: `connect_db` then `query` with SELECT-only SQL; build analysis manually (no bundled `analyze_entity` helpers in this workspace).
 - Explain step-by-step how data was created; offset sequence; reversals; relationships.
 - Save report to `Cursor-Project/reports/YYYY-MM-DD/ProductionDataReaderAgent_{HHMM}.md`.
 - Read-only; no writes.
@@ -196,11 +196,11 @@ This document lists every Cursor command and what it can do in detail.
 **Trigger:** Dependency analysis, “what could break”, or before test case generation (Rule 35). **Rule 35a** applies when user gives a Jira/bug/task key.
 
 **What it can do:**
-- **Merge-first (Rule 35a):** When user provides a Jira/bug/task key: (1) Look up merge history for that key (local git + GitLab). (2) If a merge exists for that Jira on a target branch, run a targeted sync for that branch only (same as `!update <branch>`). (3) Add merge-derived **technical_details** (MR/merge, changed files/modules) to the output.
-- Call IntegrationService; consult PhoenixExpert if needed.
+- **Rule 35a:** **Jira MCP + codebase + shallow Confluence** — **no** local merge/`git log`/git sync solely for cross-dep; **technical_details** from Jira + code. **GitLab MR** only if the user explicitly asks.
+- Follow Rule 0.3; consult PhoenixExpert if needed (Rule 8).
 - Define scope (bug/task/feature): entry points, modules, services.
-- Find cross-dependencies: code (imports, APIs, DB, callers, consumers) and Confluence.
-- Produce structured report: scope, entry_points, upstream, downstream, shared, data_entities, integration_points, **what_could_break**, **technical_details** (from merges when Jira provided).
+- Find cross-dependencies: code (imports, APIs, DB, callers, consumers) and Confluence (shallow).
+- Produce structured report: scope, entry_points, upstream, downstream, shared, data_entities, integration_points, **what_could_break**, **technical_details**.
 - Optionally save to `Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope>.json`.
 - Output is passed to test-case-generator as `context['cross_dependency_data']`.
 - Read-only.
@@ -211,14 +211,15 @@ This document lists every Cursor command and what it can do in detail.
 
 ## 15. Test case generate
 
-**Trigger:** “Generate test cases for this bug/task/feature” (Rule 35). Cross-dependency-finder follows Rule 35a (merge lookup → conditional sync → technical_details).
+**Trigger:** “Generate test cases for this bug/task/feature” (Rule 35). Cross-dependency-finder follows Rule 35a (Jira + codebase + shallow Confluence; no local merge/git).
 
 **What it can do:**
-- **Step 1 (mandatory):** Run cross-dependency-finder for the same scope (including Rule 35a: merge lookup for Jira key, conditional sync if merge exists, technical_details); get report including what_could_break and technical_details; pass as `context['cross_dependency_data']`.
-- **Step 2:** Call IntegrationService; consult PhoenixExpert; search Confluence and codebase; call TestCaseGeneratorAgent with prompt, confluence_data, codebase_findings, cross_dependency_data.
-- Save test cases in hierarchical format under `Cursor-Project/generated_test_cases/`:
-  - **Object/** – e.g. customer → Create, Edit.
-  - **Flows/** – e.g. Billing → Standard → For_volumes → Profile.md.
+- **Step 1 (mandatory):** Run cross-dependency-finder for the same scope (Rule 35a); get report including what_could_break and technical_details; pass as `context['cross_dependency_data']`.
+- **Step 2:** Follow Rule 0.3; consult PhoenixExpert; search Confluence and codebase; run **test-case-generator** workflow (subagent/skill) with `cross_dependency_data` from step 1.
+- Save test cases under **`Cursor-Project/test_cases/`** per **`test_cases_structure.mdc`**:
+  - **`Objects/<Entity>/`** – e.g. `Product_contract/Create.md`.
+  - **`Flows/<Flow_name>/`** – e.g. `Contract_termination/Multi_version_termination_date.md`.
+- Legacy **`generated_test_cases/`** may still exist in older material; prefer **`test_cases/`** for new work.
 - One `.md` per group with title, steps, expected result.
 - Save reports (Rule 0.6). Read-only for Phoenix code.
 
@@ -231,7 +232,7 @@ This document lists every Cursor command and what it can do in detail.
 **Trigger:** EnergoTS test creation, modification, analysis (Rule 0.8.1 – may edit only `EnergoTS/tests/`)
 
 **What it can do:**
-- Call IntegrationService; read Jira task (title, description) before creating tests.
+- Follow Rule 0.3; read Jira task (title, description) via Jira MCP before creating tests.
 - Consult PhoenixExpert for API/business logic if needed.
 - **Study test:** Analyze a test file (e.g. `tests/billing/...spec.ts`).
 - **Create new test:** From Jira ID, domain, fixtures, endpoint, method, payload generator; test name must match Jira task title exactly.
@@ -250,12 +251,12 @@ This document lists every Cursor command and what it can do in detail.
 
 **What it can do:**
 1. **Get Jira ticket** – Parse issue key; call Jira MCP getJiraIssue → description, summary, tester/assignee.
-2. **Cross-dependencies** – Run cross-dependency-finder for this Jira key (Rule 35a: merge lookup → conditional sync → technical_details); get cross_dependency_data.
-3. **Test cases** – Run test-case-generator with ticket description and cross_dependency_data; save to `Cursor-Project/generated_test_cases/` (Object/Flows).
-4. **Playwright tests** – Bridge: from generated test case .md derive test_specification; call EnergoTSTestAgent create_new_test; ensure EnergoTS on cursor branch.
+2. **Cross-dependencies** – Run cross-dependency-finder for this Jira key (Rule 35a: Jira + codebase + shallow Confluence; no local merge/git); get cross_dependency_data.
+3. **Test cases** – Run test-case-generator with ticket description and cross_dependency_data; save under `Cursor-Project/test_cases/Flows/` or `Objects/` (per template).
+4. **Playwright tests** – Follow **`.cursor/agents/energo-ts-test.md`**: map test case `.md` → spec with EnergoTS framework; output **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**; stay on **`cursor`** branch (Rule ENERGOTS.0). No Python `get_energo_ts_test_agent()` in this workspace.
 5. **Run tests** – Run Playwright tests (e.g. by Jira key or newly created file); capture pass/fail and failure reasons.
 6. **Report (Step 9)** – Save report as `Cursor-Project/reports/YYYY-MM-DD/{JIRA_KEY}.md` with: Jira key, title, tests run, per-test pass/fail and reason.
-7. **Slack** – Send report to the tester on the ticket (user-slack MCP); use assignee or custom “Tester” field; map to Slack user/channel.
+7. **Slack** – Send **full** report per **`Slack_report_template.md`** to **Tester** (Jira custom field `customfield_10095`, DM via `slack_search_users`) and **#ai-report** (`C0AK96S1D7X`) only — see **`handsoff_playwright_report.mdc`**.
 
 **When to use:** Run the full pipeline automatically for a Jira ticket: fetch → cross-deps → test cases → create Playwright tests → run → report (save + send to Slack). No user intervention after providing the ticket and /HandsOff.
 

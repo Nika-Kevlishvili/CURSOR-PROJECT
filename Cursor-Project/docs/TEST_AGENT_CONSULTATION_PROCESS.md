@@ -1,5 +1,7 @@
 # TestAgent Consultation Process Documentation
 
+> **Current:** **`.cursor/agents/test-runner.md`**, Rule 8 (PhoenixExpert consultation). Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. Below: historical Python flow.
+
 ## Overview
 
 TestAgent **ALWAYS** consults with PhoenixExpert agent before executing ANY test. This ensures that all tests are built with accurate information from the Phoenix codebase and Confluence documentation.

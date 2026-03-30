@@ -1,5 +1,9 @@
 # Agents Package - Organized Structure
 
+> **⚠️ Historical — Python package removed from this workspace.**  
+> Current behavior: **`.cursor/agents/*.md`**, **`.cursor/rules/**/*.mdc`**, skills, MCP. See **`HISTORICAL_PYTHON_AGENTS_PACKAGE.md`** and **`AGENTS_COMPARISON_AND_ALIGNMENT.md`**.  
+> The text below describes the **former** `Cursor-Project/agents/` tree if you reintroduce it.
+
 Agents are organized by topic in separate folders.
 
 ## 📁 Structure

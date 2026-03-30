@@ -4,7 +4,7 @@ Synchronize Phoenix projects from GitLab using `git_sync_workflow.mdc` rules.
 
 ## MANDATORY: Follow git_sync_workflow.mdc Rules
 
-**CRITICAL:** This command MUST follow the workflow defined in `.cursor/rules/git_sync_workflow.mdc`.
+**CRITICAL:** This command MUST follow the workflow defined in `.cursor/rules/integrations/git_sync_workflow.mdc`.
 
 **DO NOT use GitLabUpdateAgent class or any Python agent code. Use direct git commands as specified in the rules.**
 
@@ -16,7 +16,7 @@ Synchronize Phoenix projects from GitLab using `git_sync_workflow.mdc` rules.
 
 ## Workflow Reference
 
-**ALWAYS read and follow:** `.cursor/rules/git_sync_workflow.mdc`
+**ALWAYS read and follow:** `.cursor/rules/integrations/git_sync_workflow.mdc`
 
 ### Key Principles (from git_sync_workflow.mdc):
 
@@ -34,7 +34,7 @@ Synchronize Phoenix projects from GitLab using `git_sync_workflow.mdc` rules.
 1. Detect workspace root (find Phoenix/ directory)
 2. For each repo in Phoenix/:
    - Stash uncommitted changes
-   - git fetch origin --all
+   - git fetch origin
    - git fetch origin --prune
    - Unstash changes
 ```
@@ -61,12 +61,9 @@ Synchronize Phoenix projects from GitLab using `git_sync_workflow.mdc` rules.
    - Unstash changes
 ```
 
-## Token Configuration
+## Token / auth
 
-Token is already configured in `git_sync_workflow.mdc`:
-- **Token:** `glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg`
-- **Host:** `git.domain.internal`
-- **Credentials:** Stored in `~/.git-credentials`
+Set **`GIT_READONLY_TOKEN`** (read-only GitLab PAT) in your environment or use HTTPS credentials / `~/.git-credentials` per `.cursor/rules/integrations/git_sync_workflow.mdc`. Do not commit tokens to the repo.
 
 ## Usage Examples
 

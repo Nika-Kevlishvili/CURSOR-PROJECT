@@ -66,12 +66,8 @@ Cursor-Project/generated_test_cases/
 ## Content of leaf files (e.g. `Create.md`, `Profile.md`)
 
 - Each leaf `.md` file contains **one or more test cases** for that bucket.
-- Format inside the file: **clear, human-oriented** (short title, steps, expected result, optional preconditions).
-- Prefer:
-  - Short descriptive titles.
-  - Numbered steps.
-  - One “Expected result” per case.
-  - Optional: “Preconditions”, “Data”, “Confluence/Code refs” if useful.
+- **Canonical structure:** `Cursor-Project/config/template/Test_case_template.md` — per TC: **Test title** (in the `TC-N` heading), **Description**, **Preconditions**, **Test steps**, **Expected test case results** (plus optional Actual result / References).
+- Prefer short titles, numbered steps, and one expected outcome block per case.
 
 Example for `Object/customer/Create.md`:
 

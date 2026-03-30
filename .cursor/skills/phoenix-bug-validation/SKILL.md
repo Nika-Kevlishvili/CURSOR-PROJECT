@@ -1,29 +1,20 @@
 ---
 name: phoenix-bug-validation
-description: Validates bug reports using BugFinderAgent: Confluence first, then codebase, then combined analysis and report. Use when the user asks to validate a bug, verify a bug report, or run bug validation workflow (Rule 32).
+description: Validates bug reports using Rule 32 workflow: Confluence first, then codebase, then combined analysis and report. Use when the user asks to validate a bug, verify a bug report, or run bug validation (Rule 32). READ-ONLY.
 ---
 
 # Phoenix Bug Validation
 
-Ensures bug validation follows the mandatory BugFinderAgent workflow (Rule 32): Confluence → codebase → analysis → report. READ-ONLY; no code changes during validation.
+Ensures bug validation follows **Rule 32** in `.cursor/rules/workflows/workflow_rules.mdc`: Confluence → codebase → analysis → report. **READ-ONLY** — no code changes during validation.
 
 ## When to Apply
 
 - User asks to validate a bug, verify a bug report, or check if a bug is valid.
 - User mentions "bug validation", "bug report", or "Rule 32".
-- Command or request references bug-validate or BugFinderAgent.
 
-## Mandatory: Use BugFinderAgent
+## Mandatory: Rule 32 in chat
 
-All bug validation must go through BugFinderAgent. Do not validate bugs ad-hoc.
-
-```python
-from agents.Main import get_bug_finder_agent
-bug_finder = get_bug_finder_agent()
-result = bug_finder.validate_bug(bug_description)
-# Perform validation via MCP + codebase search, then:
-report = bug_finder.format_validation_report(result)
-```
+There is **no** `from agents.Main import get_bug_finder_agent` in this workspace. Run the steps below directly.
 
 ## Workflow (Rule 32)
 
@@ -36,7 +27,7 @@ report = bug_finder.format_validation_report(result)
 
 ### Step 2: Code validation (second)
 
-- Search codebase (codebase_search, grep) for relevant code.
+- Search codebase (semantic search, grep, read_file) for relevant code.
 - Analyze implementation vs expected behavior in the bug report.
 - Report: "Code validation: [satisfies / does not satisfy] the bug report - [explanation]".
 - Include file paths, line numbers, and code snippets; identify bug location.
@@ -56,33 +47,16 @@ report = bug_finder.format_validation_report(result)
 ## READ-ONLY
 
 - No code modifications during validation.
-- No fixing bugs unless user explicitly asks for a fix after validation is complete.
+- No fixing bugs unless user explicitly asks after validation is complete.
 
 ## Integration
 
-- Call `IntegrationService.update_before_task()` first.
-- Consult PhoenixExpert for context.
-- Generate reports per Rule 0.6.
-- End with: "Agents involved: BugFinderAgent, PhoenixExpert".
+- **Rule 0.3:** follow MCP/Jira when needed — no Python IntegrationService here.
+- Consult PhoenixExpert for context when needed.
+- Markdown reports per Rule 0.6.
+- End with: "Agents involved: BugFinderAgent (workflow), PhoenixExpert" (or as applicable).
 
-## Response structure (template)
+## Command reference
 
-```markdown
-## Bug Validation Analysis
-
-### 1. Confluence Validation
-**Status:** [correct/incorrect/partially correct]
-**Explanation:** ...
-**Sources:** [Confluence pages]
-
-### 2. Code Analysis
-**Status:** [satisfies/does not satisfy]
-**Explanation:** ...
-**Code References:** File, lines, issue description
-
-### 3. Conclusion
-**Bug Valid:** [YES/NO]
-**Summary:** ...
-```
-
-Full workflow details: `.cursor/rules/workflow_rules.mdc` (Rule 32).
+- `.cursor/commands/bug-validate.md`
+- `.cursor/agents/bug-validator.md`

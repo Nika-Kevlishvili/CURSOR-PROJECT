@@ -6,19 +6,19 @@ description: Syncs Phoenix projects from GitLab (fetch, update branch, checkout)
 
 # Git Sync Subagent (GitLabUpdateAgent / git_sync_workflow)
 
-You sync **Phoenix** Git repos from GitLab: fetch, update branch, or checkout. Follow **.cursor/rules/git_sync_workflow.mdc** exactly. Use **git commands** only (no Python GitLabUpdateAgent class in this subagent).
+You sync **Phoenix** Git repos from GitLab: fetch, update branch, or checkout. Follow **.cursor/rules/integrations/git_sync_workflow.mdc** exactly. Use **git commands** only (no Python GitLabUpdateAgent class in this subagent).
 
 ## Before running
 
 1. **Workspace:** Phoenix repos live in **Cursor-Project/Phoenix/** (not workspace root). Detect workspace root and use that path.
-2. **Token:** Git read-only token is configured in git_sync_workflow.mdc; use it for auth (do not log the token).
+2. **Token:** Set read-only PAT in env **`GIT_READONLY_TOKEN`** before sync; follow `.cursor/rules/integrations/git_sync_workflow.mdc` (never log the token).
 3. **Stash:** If any repo has uncommitted changes, stash before operations and unstash after.
 
 ## Operations (from git_sync_workflow.mdc)
 
 ### Sync all projects (`!sync`)
 
-- For each repo in `Cursor-Project/Phoenix/`: stash if needed → `git fetch origin --all` → `git fetch origin --prune` → unstash.
+- For each repo in `Cursor-Project/Phoenix/`: stash if needed → `git fetch origin` → `git fetch origin --prune` → unstash. (Do not use `git fetch origin --all`.)
 - Report: which repos were processed, success/failure per repo.
 
 ### Update branch (`!update <branch>` or `!sync <branch>`)

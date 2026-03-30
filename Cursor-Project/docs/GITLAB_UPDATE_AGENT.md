@@ -1,5 +1,7 @@
 # GitLabUpdateAgent - პროექტის განახლება GitLab-იდან
 
+> **Current locations (Cursor):** **`.cursor/agents/git-sync.md`**, **`.cursor/commands/sync.md`**, **`.cursor/rules/integrations/git_sync_workflow.mdc`**. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. ქვემოთ — ისტორიული Python აგენტი.
+
 ## მიმოხილვა
 
 GitLabUpdateAgent არის სპეციალიზირებული აგენტი, რომელიც განაახლებს პროექტებს GitLab-იდან. **ეს აგენტი ყოველთვის აიღებს GitLab-ის ვერსიას** და ჩაანაცვლებს ლოკალურ ფაილებს.

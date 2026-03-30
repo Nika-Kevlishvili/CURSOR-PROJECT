@@ -9,7 +9,7 @@
 ## Merge summary (fast-forward)
 
 - `.cursor/commands/sync.md` — updated
-- `.cursor/rules/git_sync_workflow.mdc` — updated
+- `.cursor/rules/integrations/git_sync_workflow.mdc` — updated
 - `Cursor-Project/EnergoTS` — submodule pointer updated
 
 ## After sync

@@ -1,4 +1,6 @@
 """
+LEGACY: Requires removed Cursor-Project/agents/. Use .cursor/agents/git-sync.md (AGENT_SUBAGENT_MAP.md).
+
 Phoenix Folder Update Script
 
 This script updates the Phoenix folder with the latest version from GitLab.

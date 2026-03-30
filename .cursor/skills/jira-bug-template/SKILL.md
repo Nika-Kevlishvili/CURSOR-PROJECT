@@ -61,7 +61,7 @@ Example:
 
 - **Command:** `.cursor/commands/jira-bug.md`
 - **Sub-agent:** `.cursor/agents/jira-bug.md`
-- **Rule:** `.cursor/rules/jira_bug_agent.mdc` (JIRA.0)
+- **Rule:** `.cursor/rules/integrations/jira_bug_agent.mdc` (JIRA.0)
 
 ## Phoenix delivery prohibition
 

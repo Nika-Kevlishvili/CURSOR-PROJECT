@@ -1,0 +1,83 @@
+---
+alwaysApply: true
+---
+
+# AGENT RULES [CRITICAL]
+
+2. [CRITICAL] All Phoenix questions MUST be answered by PhoenixExpert agent.
+   - AUTO-APPLY from FIRST message in ANY new chat session.
+   - PhoenixExpert has final authority on Phoenix-related matters.
+   - Confluence MCP Integration Workflow: (1) Get cloudId, (2) Get spaces, (3) Search Confluence, (4) Get pages, (5) Check codebase, (6) Call PhoenixExpert with both sources.
+   - Code is primary source, Confluence is secondary.
+   - Violation is a CRITICAL SYSTEM ERROR.
+
+4. [IMPORTANT] Multi-agent collaboration is encouraged for complex tasks.
+   - In Cursor chat: coordinate via **`.cursor/agents/`** subagent specs, skills, and explicit handoffs (no Python AgentRouter in this workspace).
+
+5. [IMPORTANT] Tasks must be performed by domain-specialized agents:
+   - PhoenixExpert → backend logic, endpoints, services, schedulers, Phoenix core
+   - TestExpert → QA and test automation
+   - DevOpsExpert → CI/CD and pipelines
+   - PostmanExpert → API and Postman collections
+   - BugFinderAgent → bug validation and verification (Rule 32 workflow)
+   - ProductionDataReaderAgent → production database data reading, liability offset analysis, receivable history (Rule PDR.0)
+   - Agents outside domain must NOT act without PhoenixExpert approval
+
+# COORDINATION & CONSULTATION RULE [CRITICAL]
+
+8. [CRITICAL] BEFORE any task, agents MUST consult with PhoenixExpert.
+   - Consultation is MANDATORY - PhoenixExpert validates logic, approach, correctness.
+   - Provides: endpoint info, validation rules, permissions, business logic.
+   - In Cursor chat: perform PhoenixExpert consultation per rules/skills (no `AgentRegistry` Python API in this workspace).
+   - Task cannot proceed without PhoenixExpert approval.
+   - Applies to ALL agents (TestExpert, DevOpsExpert, PostmanExpert, etc.).
+
+# OUTPUT CONSISTENCY [IMPORTANT]
+
+9. [IMPORTANT] If multiple agents involved, PhoenixExpert has final decision and must appear in "Agents involved" footer.
+
+# ENVIRONMENT ACCESS RULE [IMPORTANT]
+
+10. [IMPORTANT] Environment access requests → follow **environment-access** workflow (`.cursor/agents/environment-access.md`, EnvironmentAccessAgent role in chat).
+    - No Python `get_environment_access_agent()` in this workspace; use browser/MCP and project docs as instructed.
+
+# INTEGRATION SERVICE RULE [CRITICAL]
+
+11. [CRITICAL] IntegrationService before tasks (see Rule 0.3 in `.cursor/rules/main/core_rules.mdc`).
+    - **Python stack (if present elsewhere):** call `update_before_task()` there.
+    - **This workspace:** no `Cursor-Project/agents/` — follow Jira/GitLab/MCP workflows from rules; do not import `agents.*`.
+
+# AUTONOMOUS OPERATION RULE [IMPORTANT]
+
+12. [IMPORTANT] Agents operate autonomously without confirmation, EXCEPT when Rule 8 requires PhoenixExpert approval.
+    - Only ask confirmation for CRITICAL operations (destructive, production deployments).
+
+# AGENT ROUTING RULE [IMPORTANT]
+
+13. [IMPORTANT] Route work to the right specialist (subagent/skills/rules). There is no Python `AgentRouter` in this workspace.
+    - Prefer Task tool / subagents when the workflow requires delegation; otherwise apply the matching rules for the query type.
+    - **Shell subagent:** The project defines **`.cursor/agents/shell.md`** so Cursor can resolve **`subagent_type: shell`** with a proper tool context (file read + terminal). Purely GitLab/Phoenix multi-repo sync should still follow **`git-sync`** / **`git_sync_workflow.mdc`**. If **`shell`** still fails with an internal tool error, fall back to **`generalPurpose`** or run shell from the parent agent.
+
+# AGENT COLLABORATION PATTERNS [CRITICAL]
+
+17. [CRITICAL] Agent collaboration patterns - when agents MUST work together:
+    
+    **Pattern 1: Test Execution** - TestAgent → consults PhoenixExpert → executes test
+    **Pattern 2: Postman Collection** - PostmanCollectionGenerator → consults PhoenixExpert → generates collection
+    **Pattern 3: GitLab Updates** - GitLabUpdateAgent → consults PhoenixExpert → validates → updates (in chat/MCP; read-only GitLab per safety rules)
+    **Pattern 4: Environment Access** - EnvironmentAccessAgent → MCP/browser → accesses environment
+    **Pattern 5: Multi-Agent Routing** - Parent agent → subagents / explicit handoffs → combined response (no Python AgentRouter)
+    **Pattern 6: Phoenix + Test** - PhoenixExpert → consults TestAgent (if test-related) → provides answer
+    **Pattern 7: Integration Service** - When Python IntegrationService exists in automation → `update_before_task()` → task; in Cursor chat follow Rule 0.3
+    **Pattern 8: Bug Validation** - BugFinder workflow (Rule 32) → Confluence + codebase → report file (no `get_bug_finder_agent` import)
+    
+    All participating agents MUST appear in "Agents involved" footer.
+
+# AGENT ORGANIZATION RULE [UPDATED — NO PYTHON PACKAGE IN THIS WORKSPACE]
+
+34. [IMPORTANT] The **`Cursor-Project/agents/`** Python package was **removed** from this workspace. Cursor-facing behavior is defined in **`.cursor/agents/*.md`**, **skills**, and **rules** — not in a Python tree under `Cursor-Project/agents/`.
+    
+    - If the project **re-introduces** a Python agent package later, organize it under `Cursor-Project/agents/` with subpackages **Main/**, **Support/**, **Core/**, **Adapters/**, **Services/**, **Utils/** (see historical `Cursor-Project/docs/AGENTS_README.md` if still present).
+    - Do **not** recreate `Cursor-Project/agents/` unless explicitly requested.
+    
+    Violation: instructing imports of `agents.*` as if the package exists in this workspace.

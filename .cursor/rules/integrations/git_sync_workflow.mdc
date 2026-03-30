@@ -1,0 +1,119 @@
+---
+description: "GitLab read-only sync for Phoenix under Cursor-Project/Phoenix. !sync, !update, !checkout; set GIT_READONLY_TOKEN; never push."
+alwaysApply: false
+---
+
+# Git Sync Workflow (Phoenix / GitLab, read-only)
+
+## When this applies
+
+- User says **`!sync`**, **`!update <branch>`**, **`!sync <branch>`**, **`!checkout <branch>`**, or asks to fetch/update/checkout Phoenix repos from GitLab.
+- **Scope:** All git repos under **`Cursor-Project/Phoenix/<repo>/`** (each with `.git`). Do **not** use root `Phoenix/` without `Cursor-Project`.
+
+## Safety (must hold)
+
+- **Remote:** read-only — `git fetch`, local `git checkout`, local `git merge origin/<branch>` only.
+- **Never:** `git push`, `commit`, force-push, or GitLab API writes.
+
+## Authentication
+
+1. **Token:** Read-only GitLab PAT in **`GIT_READONLY_TOKEN`** (never paste into chat or store in rules).
+2. **Optional — write `~/.git-credentials` once:** derive `GIT_HOST` from `git remote get-url origin` (hostname only), then line: `https://oauth2:${GIT_READONLY_TOKEN}@${GIT_HOST}`.
+3. **Verify (optional):** Bash: `curl -H "Authorization: Bearer $GIT_READONLY_TOKEN" "https://${GIT_HOST}/api/v4/user"`. PowerShell: use `Invoke-RestMethod` with the same header.
+
+## Resolve workspace directory
+
+1. If **`WORKSPACE_ROOT`** is set → must be **`Cursor-Project`** root (contains `Phoenix/`).
+2. Else walk up from cwd until **`Cursor-Project`** exists → `WORKSPACE_DIR = .../Cursor-Project`.
+3. Else if path contains `Cursor-Project`, strip to that folder.
+4. Else: error — cannot locate `Cursor-Project`.
+
+**`PHOENIX_ROOT`** = `WORKSPACE_DIR/Phoenix`. Create `Phoenix` if missing when cloning.
+
+## Default clone list (only if `Phoenix` has no `.git` children)
+
+`phoenix-core-lib`, `phoenix-core`, `phoenix-billing-run`, `phoenix-api-gateway`, `phoenix-payment-api`, `phoenix-migration`, `phoenix-ui`
+
+**Clone URL:** `https://oauth2:${GIT_READONLY_TOKEN}@${GIT_HOST}/phoenix/${name}.git` — use the same host as `origin` on your machine (e.g. `git.domain.internal`).
+
+Discover **any** other `Phoenix/*` dirs with `.git`.
+
+## Shell
+
+- **Windows:** PowerShell.
+- **Linux/macOS / Git Bash:** bash.
+
+## Per-repo pattern
+
+For each repo under **`PHOENIX_ROOT`**:
+
+1. Dirty tree → `git stash push -m "Stashed before <op> - preserving local changes"`.
+2. Run the operation.
+3. If stash created and step succeeded → `git stash pop`. On merge conflicts, leave stash and tell user.
+
+## Operations
+
+### A) `!sync`
+
+Stash if needed → `git fetch origin` (all refs from `origin`) → `git fetch origin --prune` → unstash.  
+**Do not** use `git fetch origin --all` — on some Git versions it errors (`--all` is for all remotes: `git fetch --all`).
+
+### B) `!update <branch>` or `!sync <branch>`
+
+**Branches:** `dev`, `dev2`, `dev-fix`, `test`, `experiment`, `main`, `master`, or any name on `origin`.
+
+Per repo:
+
+1. Stash if needed.
+2. On `<branch>`: if missing locally, `git fetch origin` then `git checkout -b <branch> origin/<branch>` if remote exists; else skip with message.
+3. `git fetch origin`.
+4. `BEHIND` = count `HEAD..origin/<branch>`, `AHEAD` = count `origin/<branch>..HEAD`.
+5. If both **AHEAD > 0** and **BEHIND > 0** → **abort this repo**, unstash, report **diverged**; ask user (merge / rebase / reset / abort).
+6. If **BEHIND > 0** → `git merge origin/<branch>`. Else report up to date.
+7. Unstash if clean.
+
+### C) `!checkout <branch>`
+
+Stash if needed → `git fetch origin` → if `origin/<branch>` exists, checkout or create tracking branch → unstash.
+
+## Errors (short)
+
+| Case | Action |
+|------|--------|
+| Diverged | Abort repo; `git log HEAD...origin/<branch> --oneline`; user decides. |
+| Merge conflict | Keep stash; `git diff --name-only --diff-filter=U`. |
+| Auth / fetch | Unstash if needed; check token, network, HTTPS remote. |
+| No remote branch | Skip repo; suggest `git branch -r`. |
+
+## Snippets (credential file)
+
+**PowerShell** (run from `Cursor-Project\Phoenix\phoenix-core-lib` after setting token):
+
+```powershell
+$h = (git remote get-url origin) -replace 'https?://([^/]+).*','$1' -replace '.*@',''
+"https://oauth2:$($env:GIT_READONLY_TOKEN)@$h" | Set-Content -Path "$env:USERPROFILE\.git-credentials" -NoNewline -Encoding ascii
+```
+
+**Bash:**
+
+```bash
+cd "$(git rev-parse --show-toplevel)"  # or .../Cursor-Project/Phoenix/phoenix-core-lib
+GIT_HOST=$(git remote get-url origin 2>/dev/null | sed -E 's|https?://([^/]+).*|\1|' | sed 's|.*@||')
+f="${HOME}/.git-credentials"; [ -n "$WINDIR" ] && f="${USERPROFILE:-$HOME}/.git-credentials"
+echo "https://oauth2:${GIT_READONLY_TOKEN}@${GIT_HOST}" > "$f"
+```
+
+## Agent output
+
+- Per repo: success / up-to-date / skipped / diverged / failed + short reason.
+- Never log token values.
+
+## Summary
+
+| Trigger | Effect |
+|--------|--------|
+| `!sync` | `git fetch origin` + `git fetch origin --prune` in every `Phoenix` repo |
+| `!update b` | Ensure `b`, merge `origin/b` if behind; stop if diverged |
+| `!checkout b` | Checkout or track `origin/b` |
+
+**Token:** `GIT_READONLY_TOKEN` only. **No push** to GitLab.

@@ -1,5 +1,7 @@
 # Global Rules and Automatic Agent Routing
 
+> **Current locations:** Rules → **`.cursor/rules/**/*.mdc`**; routing → subagents/skills (**`.cursor/agents/*.md`**, **`.cursor/skills/`**), not Python `AgentRouter`. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. Below: historical Python routing.
+
 ## Overview
 
 This document describes the global rules system and automatic agent routing that all agents must follow.

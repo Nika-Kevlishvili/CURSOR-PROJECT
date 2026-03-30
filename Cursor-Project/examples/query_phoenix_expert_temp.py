@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
+LEGACY: Requires removed agents package (wrong sys.path). Use .cursor/agents/phoenix-qa.md.
+
 Temporary script to query PhoenixExpert and create report
 """
 import sys

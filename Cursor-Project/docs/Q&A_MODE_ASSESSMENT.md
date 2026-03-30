@@ -1,5 +1,7 @@
 # Q&A რეჟიმის შეფასება / Q&A Mode Assessment
 
+> **Current:** Q&A → **`.cursor/agents/phoenix-qa.md`**, rules Rule 0.2. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. ქვემოთ — ძველი Python Router.
+
 ## თქვენი მოთხოვნები / Your Requirements
 
 1. ✅ **კითხვა-პასუხის რეჟიმი** - Question-Answer Mode

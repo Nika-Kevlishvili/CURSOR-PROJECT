@@ -1,114 +1,42 @@
-# Reports Folder
+# Reports (`Cursor-Project/reports/`)
 
-This folder contains activity reports for all agents.
+## Canonical path
 
-## Report Structure
+All task and agent reports use **today’s date folder**:
 
-Reports are stored in separate folders by date:
-- **Folder format:** `YYYY-MM-DD` (e.g., `2025-12-09`)
-- **File format:** `{agent_name}_{hour}{minutes}.md` (e.g., `PhoenixExpert_1830.md`)
+**`Cursor-Project/reports/YYYY-MM-DD/`**
 
-## Report Types
+Example: `Cursor-Project/reports/2026-03-28/PhoenixExpert_1430.md`
 
-1. **Summary Report** (`Summary_{HHMM}.md`) - Overview of all agents
-2. **Agent Reports** (`{agent_name}_{HHMM}.md`) - Detailed report for a specific agent
+This matches **Rule 0.6** (`.cursor/rules/main/core_rules.mdc`) and **`file_organization_rules.mdc`**.
 
-### Example Structure:
+## Naming
+
+| Pattern | Purpose |
+|---------|---------|
+| `{AgentName}_{HHMM}.md` | Per-agent / per-role report |
+| `Summary_{HHMM}.md` | Session summary |
+| `BugValidation_{Name}.md` | Bug validation (Rule 32) |
+| `{JIRA_KEY}.md` | HandsOff Playwright results |
+
+## How reports are produced (this workspace)
+
+There is **no** Python `ReportingService` or `agents.reporting_service` in this repo. The Cursor assistant **writes markdown files** with editor/file tools.
+
+- Orchestration: **`.cursor/agents/report-generator.md`**
+- Skill: **`phoenix-reporting`** (`.cursor/skills/phoenix-reporting/SKILL.md`)
+
+## Agent / subagent map
+
+See **`Cursor-Project/docs/AGENT_SUBAGENT_MAP.md`** for which **`.cursor/agents/*.md`** file corresponds to each workflow.
+
+## Folder layout example
+
 ```
-reports/
-├── 2025-12-09/
-│   ├── PhoenixExpert_1830.md
-│   ├── TestAgent_1830.md
-│   ├── GitLabUpdateAgent_1830.md
-│   └── Summary_1830.md
-└── 2025-12-10/
-    ├── PhoenixExpert_0915.md
-    └── Summary_0915.md
+Cursor-Project/reports/
+├── 2026-03-28/
+│   ├── PhoenixExpert_1430.md
+│   ├── Summary_1430.md
+│   └── BugValidation_Invoice_cancel.md
+└── README.md
 ```
-
-## What's Included in Reports
-
-- **Completed Tasks** - What tasks the agent completed
-- **Communication with Other Agents** - Which agents it communicated with
-- **Information Sources** - Where it retrieved information from
-- **Recent Activities** - Last 10 activities
-
-## AI Assistant Response Reporting
-
-When AI assistant responds to user questions, a report is automatically written:
-
-```python
-from agents.ai_response_logger import log_ai_response
-
-# When using one expert
-log_ai_response(
-    user_query="How does customer endpoint work?",
-    expert_name="PhoenixExpert",
-    response_summary="Explained customer endpoint functionality"
-)
-
-# When using multiple agents
-log_ai_response(
-    user_query="Test execution",
-    agents_used=["TestAgent", "PhoenixExpert"],
-    response_summary="Test completed"
-)
-```
-
-## Generating Reports
-
-To generate reports, use:
-
-```python
-from agents.reporting_service import get_reporting_service
-
-# Get reporting service
-reporting_service = get_reporting_service()
-
-# Save reports for all agents
-reporting_service.save_all_reports()
-
-# Save report for a specific agent
-reporting_service.save_agent_report("PhoenixExpert")
-
-# Save only summary report
-reporting_service.save_summary_report()
-```
-
-## Reporting for Agents
-
-Agents can report their activities:
-
-```python
-from agents.reporting_service import get_reporting_service
-
-reporting_service = get_reporting_service()
-
-# Report task execution
-reporting_service.log_task_execution(
-    agent_name="MyAgent",
-    task="Test execution",
-    task_type="testing",
-    success=True,
-    duration_ms=1234.5
-)
-
-# Report information source
-reporting_service.log_information_source(
-    agent_name="MyAgent",
-    source_type="file",
-    source_description="config.json",
-    information="Configuration loaded"
-)
-
-# Report communication (automatically done via AgentRegistry)
-# But you can also do it manually:
-reporting_service.log_consultation(
-    from_agent="MyAgent",
-    to_agent="PhoenixExpert",
-    query="How does X work?",
-    success=True,
-    duration_ms=567.8
-)
-```
-

@@ -1,4 +1,7 @@
 """
+LEGACY: Requires removed Cursor-Project/agents/. Reports today: Cursor-Project/reports/YYYY-MM-DD/ (Rule 0.6).
+See Cursor-Project/docs/AGENT_SUBAGENT_MAP.md (.cursor/agents/report-generator.md).
+
 Example script for generating agent reports
 
 This script demonstrates how to generate reports for all agents.

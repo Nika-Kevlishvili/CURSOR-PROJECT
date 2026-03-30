@@ -1,5 +1,7 @@
 # EnergoTS Test Management Agent
 
+> **Current locations:** Cursor → **`.cursor/agents/energo-ts-test.md`**, **`.cursor/commands/energo-ts-test.md`**. Run tests → **`.cursor/agents/energo-ts-run.md`**. Specs → **`Cursor-Project/EnergoTS/tests/cursor/`** (branch **`cursor`**). Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. Below: historical Python API.
+
 ## Overview
 
 The **EnergoTSTestAgent** is a specialized agent for managing EnergoTS Playwright test automation framework. It provides comprehensive test management capabilities including studying, analyzing, copying, converting, and creating tests in the EnergoTS project.

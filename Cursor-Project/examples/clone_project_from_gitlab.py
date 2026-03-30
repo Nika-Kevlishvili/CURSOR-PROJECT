@@ -1,4 +1,7 @@
 """
+LEGACY: Imports removed agents.gitlab_update_agent. Prefer .cursor/agents/git-sync.md + git_sync_workflow.mdc.
+See Cursor-Project/docs/AGENT_SUBAGENT_MAP.md.
+
 Clone Project from GitLab - Fresh Clone Script
 This script clones a project fresh from GitLab using GitLabUpdateAgent
 

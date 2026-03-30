@@ -1,4 +1,6 @@
 """
+LEGACY: Requires removed Cursor-Project/agents/. Use .cursor/agents/git-sync.md (AGENT_SUBAGENT_MAP.md).
+
 Download Specific Phoenix Projects from GitLab
 
 This script downloads the Phoenix projects shown in the GitLab interface.

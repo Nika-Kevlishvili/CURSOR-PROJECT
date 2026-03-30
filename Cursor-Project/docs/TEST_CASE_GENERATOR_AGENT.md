@@ -1,5 +1,7 @@
 # TestCaseGeneratorAgent - Documentation
 
+> **Current locations:** Cursor → **`.cursor/agents/test-case-generator.md`**, **`.cursor/skills/test-case-generator/SKILL.md`**. Run **`.cursor/agents/cross-dependency-finder.md`** first (Rule 35). Output → **`Cursor-Project/test_cases/Objects/`** and **`Flows/`**. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. Below: historical Python API.
+
 ## Overview
 
 TestCaseGeneratorAgent is an agent that generates test cases based on prompts. The agent considers:

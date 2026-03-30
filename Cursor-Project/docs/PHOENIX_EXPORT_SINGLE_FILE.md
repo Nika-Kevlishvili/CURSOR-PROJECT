@@ -1,5 +1,7 @@
 # Phoenix Project Export to Single File
 
+> **Current:** Phoenix analysis in Cursor → **`.cursor/agents/phoenix-qa.md`** (codebase + Confluence MCP). Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. ქვემოთ — ძველი Python მაგალითები.
+
 ეს დოკუმენტაცია აღწერს, თუ როგორ ექსპორტირება მთელი Phoenix პროექტი ერთ JSON ფაილში.
 
 ## რატომ ერთ ფაილში?

@@ -1,4 +1,7 @@
 """
+LEGACY: Requires removed Cursor-Project/agents/. See Cursor-Project/docs/AGENT_SUBAGENT_MAP.md
+(.cursor/agents/jira-bug.md, energo-ts-test.md).
+
 Example: Using JiraDescriptionWriterAgent to write test descriptions to Jira
 
 This example shows how to use JiraDescriptionWriterAgent to analyze test code

@@ -20,17 +20,18 @@ Route to cross-dependency-finder subagent / CrossDependencyFinderAgent. Do not d
 
 ## Workflow
 
-### 0. Merge-first and conditional sync (Rule 35a) [MANDATORY when user gives a Jira/bug/task]
+### 0. Jira-anchored analysis (Rule 35a) [when user gives a Jira/bug/task]
 
-- **First:** Use the **Jira key** (e.g. BUG-1234) or task/bug identifier from the user.
-- **Look up merge history** for that key: local git (commit/merge messages, branch names) and, where available, GitLab (MRs for that Jira, merged state, target branch). Identify which branch(es), commits/MRs, and files/modules changed.
-- **If a merge exists for this Jira** on a target branch (e.g. dev, dev2): run a **targeted sync** for that branch only (same safe read-only flow as `!sync` / `!update <branch>` per `git_sync_workflow.mdc`). If no merge found, skip sync.
-- **Technical details:** Add merge-derived info (MR/merge commit, changed files/modules, short summary) to the output as **technical_details** for the report and for test-case-generator.
+- **Jira MCP:** Load issue (key, summary, description).
+- **Codebase:** Search/read Phoenix code (READ-ONLY) for entry points, callers, **what_could_break**.
+- **Prohibited (default):** local **`git log` / merge lookup** for the ticket key; **`git show`** archaeology; **git sync** triggered only because cross-dep ran; any removed **git snapshot** script.
+- **GitLab MR/merge:** **Only** if the user **explicitly** asks; read-only MCP.
+- **technical_details:** From Jira + codebase (paths, services, notes) — **not** mandatory MR/merge-commit lists.
 
 ### 1. Before running
 
-- Call `IntegrationService.update_before_task()` (Rule 11).
-- Consult **PhoenixExpert** when you need to study the project or scope (Rule 8). The finder may turn to the expert; return the report to the parent for test-case-generator.
+- **Rule 0.3:** no Python IntegrationService in this workspace; use MCP/Jira when the task needs external context.
+- Consult **PhoenixExpert** when you need to study the project or scope (Rule 8). Return the report to the parent for test-case-generator.
 
 ### 2. Define scope
 
@@ -40,7 +41,11 @@ Route to cross-dependency-finder subagent / CrossDependencyFinderAgent. Do not d
 ### 3. Find cross-dependencies
 
 - **Codebase:** Imports, references, API clients, DB access, event producers/consumers, shared libs. In code links/references, identify **what could break** (callers, consumers, contract users).
-- **Confluence (MCP):** Architecture docs, dependency diagrams, service contracts.
+- **Confluence (MCP) — shallow only (default):** Do **not** dig deeply. **Primary evidence** remains **Jira + codebase**; Confluence is **light context** only.
+  - **At most one** search or **one** CQL query for the topic (Jira key, service name, or feature phrase).
+  - Use **search snippets and titles** from the first page of results; treat them as sufficient unless **exactly one** hit is obviously the owning spec — then **at most one** `getPage` for that page.
+  - **Forbidden for this workflow:** walking descendants, footers, many related pages, multi-hop “see also”, or full long-page reads. Extract only what is **surface-visible** (title, snippet, top headings if one page is opened).
+  - If top results are weak or redundant with git/Jira, **stop** — note `confluence_shallow: skipped_or_snippets_only` in `technical_details` or a short note in the narrative output.
 - **Collect:** upstream, downstream, shared, data_entities, integration_points, **what_could_break** (item, location, reason).
 
 ### 4. Output format
@@ -52,7 +57,7 @@ Produce structured payload for Test Case Generator:
 - **downstream** (type: api|consumer|ui, name, usage)
 - **shared**, **data_entities**, **integration_points**
 - **what_could_break**: `[{ "item", "location", "reason" }]`
-- **technical_details**: merge/MR info for the Jira key (which MR/merge, changed files/modules, short summary) — always include when user provided a Jira/bug/task (Rule 35a).
+- **technical_details**: Jira key + codebase-derived pointers/notes when user provided a Jira/bug/task (Rule 35a); merge/MR lists only if user explicitly requested GitLab review.
 
 Optionally save to `Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope_slug>.json`.
 
@@ -67,13 +72,13 @@ Optionally save to `Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope_slug>.js
 
 ## Integration
 
-- IntegrationService before task.
 - PhoenixExpert when studying project/scope.
-- ReportingService after run if Rule 0.6 applies.
+- Save markdown reports after run if Rule 0.6 applies (no Python ReportingService).
 - End with: "Agents involved: CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
 
 ## Command reference
 
+- **Saved pattern (stable):** `Cursor-Project/docs/CROSS_DEPENDENCY_WORK_PATTERN.md`
 - `.cursor/commands/cross-dependency-finder.md`
 - Subagent: `.cursor/agents/cross-dependency-finder.md`
 - Design: `Cursor-Project/docs/CROSS_DEPENDENCY_FINDER_AGENT.md`

@@ -18,7 +18,7 @@ MANDATORY consultation before any task execution (Rule 8 - CRITICAL).
 
 ## Workflow:
 
-1. **IntegrationService** - Call `IntegrationService.update_before_task()` FIRST
+1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. **Describe Task** - Clearly state what you want to do
 3. **PhoenixExpert Review** - Get validation of approach
 4. **Approval** - Task cannot proceed without PhoenixExpert approval

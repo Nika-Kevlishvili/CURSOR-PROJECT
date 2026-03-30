@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# LEGACY: imports removed package Cursor-Project/agents/. Current: Cursor-Project/docs/AGENT_SUBAGENT_MAP.md
 """
-Create report for rule compliance analysis task
+Create report for rule compliance analysis task (historical — needs agents package to run).
 """
 
 import sys
@@ -84,7 +85,7 @@ def main():
         service.log_information_source(
             agent_name="RuleComplianceAnalysis",
             source_type="file",
-            source_description=".cursor/rules/phoenix.mdc",
+            source_description=".cursor/rules/main/phoenix.mdc",
             information="Rules analysis and compliance check"
         )
         
