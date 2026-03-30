@@ -1,5 +1,6 @@
 ---
 name: cross-dependency-finder
+model: default
 description: Finds cross-dependencies (modules, services, APIs, DB) for a scope. Shares output with TestCaseGeneratorAgent so test cases are better covered. Use when the user asks for dependency analysis, cross-dependencies, or more robust test coverage.
 ---
 

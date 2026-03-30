@@ -1,89 +1,95 @@
 # Invoice Cancellation – Paid Invoice with Locked Payment Package (NT-1)
 
 **Jira:** NT-1 (AI Experiments)  
-**Type:** Task  
-**Summary:** Invoice cancellation – it must be possible to cancel an invoice when it is paid and the payment package is locked.
+**Type:** Bug  
+**Summary:** Invoice cancellation must be possible for a paid invoice even when the related payment package is **LOCKED**. Currently the system blocks the cancellation flow with an error requiring an **UNLOCKED** package.
 
-**Scope:** Create invoice cancellation when the invoice has been paid and the payment package for that payment is in LOCKED status. Current behaviour returns an error; expected behaviour is that cancellation is allowed.
+**Scope:** This document covers the paid-invoice cancellation flow when the payment belongs to a **locked payment package** (e.g. already reconciled/closed). The expected behaviour is that invoice cancellation is still allowed, and the implementation must propagate an “invoice cancellation” intent so that the usual payment-package lock restriction is bypassed for this specific flow. It also includes negative validation cases to ensure only valid requests can create cancellations and that error messages are clear.
 
 ---
 
 ## Test data (preconditions)
 
 - **Environment:** Test (or as per NT-1).
-- **Invoice:** Generated and in a state that allows cancellation (e.g. not already cancelled).
-- **Payment:** Invoice has been paid (payment exists and is linked to the invoice).
-- **Payment package:** The payment package for this payment is **locked** (lock status = LOCKED).
+- **User/permissions:** A user exists with permission to create invoice cancellations (unless the test case is explicitly about access control).
+- **Invoice:** An invoice exists, is generated successfully, and is not already cancelled.
+- **Payment:** The invoice is paid (a payment exists and is linked to the invoice).
+- **Payment package:** The payment is grouped into a payment package, and the payment package lock status is **LOCKED**.
 
 ---
 
-## TC-1: Invoice cancellation when paid and payment package is locked (main scenario)
+## TC-1 (Positive): Create invoice cancellation for a paid invoice when the payment package is LOCKED (main NT-1 scenario)
 
-**Objective:** Verify that a user can create an invoice cancellation when the invoice is paid and the payment package is locked. The system must not block cancellation with "Payment package not found with id X and lock status in UNLOCKED".
+**Objective:** Verify that a user can create an invoice cancellation even when the related payment package is locked. This is the core NT-1 expectation and must not fail with a message requiring UNLOCKED status.
 
 **Preconditions:**
-1. Invoice has been generated.
-2. Invoice has been paid (payment recorded).
-3. Payment package for this payment is **locked** (lock status LOCKED).
+1. An invoice has been generated and is not cancelled.
+2. The invoice has been paid and the payment is linked to the invoice.
+3. The payment belongs to a payment package whose lock status is **LOCKED**.
 
 **Steps:**
-1. Generate an invoice (or use existing test invoice).
-2. Pay the invoice (record payment against the invoice).
-3. Lock the payment package for this payment (set payment package lock status to LOCKED).
-4. Create invoice cancellation (via UI or API, as per product flow).
+1. Ensure the invoice is paid and the payment package lock status is **LOCKED** (e.g. lock the package through the product flow or test data setup).
+2. Create an invoice cancellation for this invoice (e.g. via UI flow or `POST /invoice-cancellation`).
+3. Observe the response and the persisted state of the invoice/cancellation.
 
-**Expected result:** Invoice cancellation is created successfully. The system allows cancellation even when the payment package is locked. No error "Payment package not found with id X and lock status in UNLOCKED".
+**Expected result:** The invoice cancellation is created successfully. The system does not require the payment package to be UNLOCKED for this flow, and the user does not see an error message like “Payment package not found with id … and lock status in UNLOCKED”.
 
-**Actual result (current bug):** Error returned: "Payment package not found with id 1100 and lock status in UNLOCKED". Cancellation is blocked.
+**Actual result (current bug):** The system returns an error: “Payment package not found with id 1100 and lock status in UNLOCKED”, and the cancellation is not created.
 
-**References:** NT-1 description; payment package lock status; invoice cancellation flow.
+**References:** NT-1 description; paid invoice cancellation; locked payment package.
 
 ---
 
-## TC-2: Assertion – no UNLOCKED check blocking cancellation
+## TC-2 (Positive): API-level cancellation succeeds and explicitly bypasses lock restriction only for invoice cancellation
 
-**Objective:** Ensure the cancellation flow does not require the payment package to be in UNLOCKED status. Cancellation should be permitted when the package is LOCKED.
+**Objective:** Verify that the API path (e.g. `POST /invoice-cancellation`) succeeds for the locked-package scenario and that the backend treats it as an invoice-cancellation flow (i.e. the “invoice cancellation intent/flag” is propagated so the lock restriction is bypassed only for this flow).
 
-**Preconditions:** Same as TC-1 (paid invoice, locked payment package).
+**Preconditions:**
+1. Same as TC-1: paid invoice and payment package is **LOCKED**.
 
 **Steps:**
-1. Confirm payment package lock status is LOCKED (e.g. via API or DB).
-2. Call or perform the invoice cancellation (API or UI).
-3. Verify response: success and cancellation record created; no error message containing "lock status in UNLOCKED".
+1. Call `POST /invoice-cancellation` for the paid invoice whose payment package is LOCKED.
+2. Verify the request succeeds and a cancellation is created.
+3. Verify there is no error message that suggests the package must be UNLOCKED.
 
-**Expected result:** Cancellation succeeds. Backend does not restrict cancellation to UNLOCKED payment packages only.
+**Expected result:** The API request succeeds and a cancellation is created. The lock restriction is bypassed for invoice cancellation only (the system behaviour is consistent with the expected “invoiceCancellation == true” bypass described in cross-dependency data).
+
+**Actual result (current bug):** The API call fails with “Payment package not found with id … and lock status in UNLOCKED”.
 
 ---
 
-## Entry points and upstream (cross-dependency)
+## TC-3 (Negative): Reject cancellation when invoice identifier is missing or invalid (input validation)
 
-- **API:** `POST /invoice-cancellation`, `POST /payment/cancel`
-- **Services:** `InvoiceCancellationService.processDebitNoteInvoice`, `PaymentService.cancel`
-- **Upstream:** `PaymentService.cancel` enforces payment package in **UNLOCKED**; when package is LOCKED, cancellation path fails with "Payment package not found with id X and lock status in UNLOCKED".
-- **What could break:** Invoice cancellation when package is locked; payment cancel API behaviour when package is locked.
+**Objective:** Ensure the system validates the request payload and does not create cancellations for invalid input, returning a clear error.
+
+**Preconditions:**
+1. A user has access to the cancellation endpoint/flow.
+
+**Steps:**
+1. Attempt to create an invoice cancellation with a missing invoice identifier (e.g. empty invoice number) or an invalid format (e.g. non-existent invoice number).
+2. Observe the response and verify persistence.
+
+**Expected result:** The system rejects the request with a clear validation or “not found” error. No cancellation record is created and the invoice state is unchanged.
 
 ---
 
-## TC-3: API-level invoice cancellation when payment package is locked
+## TC-4 (Negative): Reject cancellation when the payment package is missing or not linked to the payment (data integrity)
 
-**Objective:** Verify that `POST /invoice-cancellation` allows creating a cancellation when the related payment package is locked (no UNLOCKED-only check).
+**Objective:** Ensure the system behaves safely and predictably if the payment exists but the system cannot resolve a payment package (e.g. missing linkage, inconsistent data), and that the error is clear and not misleading.
 
-**Preconditions:** Same as TC-1 (invoice generated, paid, payment package locked).
+**Preconditions:**
+1. An invoice is paid and linked to a payment.
+2. The payment package reference/link for that payment is missing or inconsistent (test data setup / controlled negative scenario).
 
 **Steps:**
-1. Ensure invoice is paid and payment package is LOCKED (e.g. id 1100).
-2. Call `POST /invoice-cancellation` with the invoice/cancellation payload.
-3. Assert response: success (e.g. 200/201) and cancellation record created; no error "Payment package not found with id … and lock status in UNLOCKED".
+1. Attempt to create invoice cancellation for the paid invoice.
+2. Observe error message and confirm no cancellation is created.
 
-**Expected result:** Invoice cancellation is created via API; backend does not require payment package to be UNLOCKED for this flow.
-
-**Actual result (current bug):** Error "Payment package not found with id 1100 and lock status in UNLOCKED".
+**Expected result:** The system rejects the cancellation with a clear error indicating that required payment-package data is missing/inconsistent. It must not incorrectly claim the package exists but is “not found with lock status in UNLOCKED”.
 
 ---
 
 ## References
 
-- **Jira:** NT-1 – Invoice cancellation when paid and payment package locked.
-- **Error (current):** "Payment package not found with id 1100 and lock status in UNLOCKED".
-- **Integration:** Invoice cancellation endpoint/service; payment package entity and lock status; payment–invoice linkage.
-- **Cross-dependency:** Entry points POST /invoice-cancellation, POST /payment/cancel; InvoiceCancellationService.processDebitNoteInvoice; PaymentService.cancel (enforces UNLOCKED).
+- **Jira:** NT-1 – Invoice cancellation - it is not possible to cancel an invoice if it's paid and the payment package is locked.
+- **Cross-dependency (given):** Entry point `POST /invoice-cancellation`; `InvoiceCancellationService` processing; `PaymentService.cancel` invoked from invoice cancellation. Regression risks: invoiceCancellation flag propagation; normal payment cancellation remains restricted; partial failure behaviour; accounting periods; process/notification; document generation.
