@@ -106,9 +106,21 @@ try {
         $remoteRev = git rev-parse origin/cursor 2>$null
         if ($localRev -ne $remoteRev) {
             Write-Host "Updating local cursor to origin/cursor..." -ForegroundColor Cyan
-            git merge --ff-only origin/cursor 2>$null
+            # git merge writes hints to stderr; avoid PS treating that as terminating when EAP is Stop
+            $prevEap = $ErrorActionPreference
+            try {
+                # PS 5.1: avoid *>&1 (PS7+); stderr from git must not trigger terminating errors when EAP is Stop
+                $ErrorActionPreference = "Continue"
+                git merge --ff-only origin/cursor 2>$null
+            } finally {
+                $ErrorActionPreference = $prevEap
+            }
             if ($LASTEXITCODE -ne 0) {
                 git reset --hard origin/cursor
+                if ($LASTEXITCODE -ne 0) {
+                    Write-Error "git reset --hard origin/cursor failed."
+                    exit 1
+                }
             }
             Write-Host "Local cursor is now up to date with origin/cursor." -ForegroundColor Green
         } else {

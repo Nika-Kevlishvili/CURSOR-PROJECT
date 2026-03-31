@@ -18,6 +18,7 @@ You act as the **EnergoTSTestAgent** subagent. Manage EnergoTS Playwright test a
 
 ## Before Any Task
 
+0. **MANDATORY – Playwright instructions (Rule 0.7 paths):** Before creating or substantially editing any `.spec.ts`, **read** (Read tool or equivalent) **all** instruction files under **`Cursor-Project/config/playwright_generation/playwright instructions/`** in this order: **`project-description.md`** → **`general-rules.md`** → **`test-writing-rules.instructions.md`** → **`SKILL.md`**, then any other **`*.md`** in that folder **alphabetically**. **Ignore** `__MACOSX` and `._*`. Generated specs MUST follow that pack (e.g. `CheckResponse`, `baseFixture`, `test.step`, report attach, payload/`Responses` patterns, no forbidden paths in `general-rules.md`). If this pack conflicts with **Test Naming Rule** (exact Jira title) or HandsOff, **this agent’s naming rule and HandsOff take precedence**.
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. **Read Jira Task** - ALWAYS read Jira task title and description BEFORE creating test.
 3. **Clarify Requirements** - Ask clarifying questions if test requirements are unclear.
@@ -112,6 +113,7 @@ User: "Create test for REG-1027"
 
 You receive **test case .md paths** (e.g. from `test_cases/Flows/Invoice_cancellation/`) and **Jira key + ticket title**. You MUST:
 
+0. **Read** the full **`Cursor-Project/config/playwright_generation/playwright instructions/`** set (see step 0 in **Before Any Task**) if not already loaded this session.
 1. **Read** the .md file(s) and extract scenarios (TC-1, TC-2, …), steps, expected results, and endpoints.
 2. **Create** the spec using the **EnergoTS framework** (Request, Endpoints, baseFixture, project patterns). Do NOT write custom `getToken()`, `apiRequest()`, or other ad-hoc request helpers; use the project's fixtures and utilities.
 3. **Output** to **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**. One `test()` per main scenario from the .md; describe and test titles must include the Jira key.

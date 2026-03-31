@@ -21,6 +21,26 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 1. **Step 1 – Cross-dependency-finder:** Same scope (bug/task/feature). Finder MUST follow Rule 35a when user gives Jira/bug/task: **Jira MCP + codebase + shallow Confluence** — **no** local merge/git. **Pattern:** `Cursor-Project/docs/CROSS_DEPENDENCY_WORK_PATTERN.md`. Finder may consult PhoenixExpert. Obtain structured output (including what_could_break and technical_details).
 2. **Step 2 – Test-case-generator:** Call with `context['cross_dependency_data'] = <finder output>` (includes technical_details from merges when applicable), plus Confluence data and codebase_findings.
 
+## Mandatory: Playwright instructions (`playwright_generation`)
+
+**Before writing any test-case `.md`**, the generator MUST **read** (Read tool or equivalent) the user-provided Playwright/EnergoTS instruction pack so manual cases **align with how API specs will be written**:
+
+- **Folder:** `Cursor-Project/config/playwright_generation/playwright instructions/`
+- **Ignore:** `__MACOSX`, `._*` fragments, and paths outside that folder.
+
+**Read order (mandatory):**
+
+1. `project-description.md`
+2. `general-rules.md`
+3. `test-writing-rules.instructions.md`
+4. `SKILL.md`
+
+**If the user added more `*.md` files** in that same folder, read them **after** the four above, in **alphabetical** order, and apply their rules together with the template.
+
+**Apply to test cases:** Steps and expected results should be **granular enough** to map to `test.step`, call out **HTTP method, endpoint, status, and response checks** where the instructions require (e.g. CheckResponse-style assertions), and avoid contradictions with **`general-rules.md`** (forbidden paths/patterns). This does **not** replace **`Cursor-Project/config/template/Test_case_template.md`** — use both.
+
+**Related:** Downstream **energo-ts-test** agent reads the same folder when authoring `.spec.ts`; keep manual TCs consistent with that canon.
+
 ## Workflow (test-case-generator part)
 
 ### 1. Inputs (from parent)

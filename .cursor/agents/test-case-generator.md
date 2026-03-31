@@ -16,6 +16,23 @@ When the **user requests test case creation**, the parent MUST run **cross-depen
 2. Consult **PhoenixExpert** if the task touches endpoints, validation rules, or business logic (Rule 8). Use parent context if already provided (cross-dependency-finder may have already consulted; reuse if passed).
 3. Confirm **prompt type**: bug (repro/verify) or task (feature/acceptance). The agent auto-detects; you can pass `prompt_type='bug'` or `'task'`.
 
+### 0. MANDATORY – Playwright instructions (bridge to EnergoTS specs)
+
+Before generating or substantially editing test-case **`.md`** files, **read** (editor Read tool or equivalent) the instruction pack under **`Cursor-Project/config/playwright_generation/playwright instructions/`**. **Ignore** `__MACOSX` and `._*` junk.
+
+**Order:**
+
+1. `project-description.md`
+2. `general-rules.md`
+3. `test-writing-rules.instructions.md`
+4. `SKILL.md`
+
+**Then:** any **other** `*.md` files in that **same** folder, **alphabetically** (user-added rules).
+
+**Apply:** Write test steps and expected results so they **map cleanly** to Playwright API tests: granularity suitable for `test.step`, explicit **HTTP method, path/endpoint, status code, and body/field assertions** where the instructions describe (e.g. CheckResponse, payload order). Do **not** contradict **forbidden patterns** in `general-rules.md`. This is **in addition to** **`Cursor-Project/config/template/Test_case_template.md`** (template still governs document structure).
+
+Downstream **energo-ts-test** also reads this folder; keep cases consistent with that canon.
+
 ## Workflow (from TEST_CASE_GENERATOR_AGENT.md)
 
 ### 1. Confluence (MCP)

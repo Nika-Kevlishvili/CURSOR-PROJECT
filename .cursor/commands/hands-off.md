@@ -28,6 +28,7 @@ Reference: `.cursor/commands/cross-dependency-finder.md`, Rule 35a in `.cursor/r
 
 ### Step 3: Test case generator (comprehensive coverage – mandatory)
 
+0. **Playwright instructions (MANDATORY):** The test-case-generator MUST **read** **`Cursor-Project/config/playwright_generation/playwright instructions/`** before authoring `.md` files: `project-description.md` → `general-rules.md` → `test-writing-rules.instructions.md` → `SKILL.md`, then any other `*.md` in that folder alphabetically (**ignore** `__MACOSX` / `._*`). Orchestrators MUST tell the generator to shape steps/expected results for the **EnergoTS Playwright bridge** (per that pack) in addition to the Test Case Template.
 1. Run **test-case-generator** with:
    - **prompt** = Jira ticket description (and summary if useful).
    - **prompt_type** = `'bug'` or `'task'` as appropriate.
@@ -42,6 +43,7 @@ Reference: `.cursor/commands/test-case-generate.md`, `.cursor/rules/workflows/ha
 
 ### Step 4: Create Playwright tests from test cases (bridge) [MANDATORY: energo-ts-test agent]
 
+0. **Playwright instructions:** The energo-ts-test agent MUST load **`Cursor-Project/config/playwright_generation/playwright instructions/`** (`project-description.md` → `general-rules.md` → `test-writing-rules.instructions.md` → `SKILL.md`, then other `*.md` alphabetically; ignore `__MACOSX` / `._*`) before authoring the spec. Orchestrators MUST require compliance (CheckResponse, `test.step`, fixtures, no forbidden patterns from `general-rules.md`).
 1. **MUST use EnergoTSTestAgent (energo-ts-test):** The Playwright spec MUST be created by the **energo-ts-test** agent (EnergoTSTestAgent). Do NOT write the spec manually or with ad-hoc code (e.g. custom `getToken()`, custom `apiRequest()`). The agent reads the test case .md content and produces a spec using the **EnergoTS framework** (fixtures: Request, Endpoints, baseFixture, etc.).
 2. **Input to agent:** Pass to the energo-ts-test agent: (a) **paths to all test case .md files** from Step 3 (e.g. `Cursor-Project/test_cases/Flows/Invoice_cancellation/*.md` or the full list of .md files in that folder), (b) **Jira key and ticket title**, (c) cross_dependency_data or entry points if useful. The agent MUST use this content to derive scenarios, endpoints, steps, and assertions.
 3. **Output:** Spec file **`Cursor-Project/EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`** (e.g. `NT-1-invoice-cancellation.spec.ts`). EnergoTS must be on **cursor** branch (Rule ENERGOTS.0). Spec MUST follow project patterns (fixtures, test naming with Jira key). **CRITICAL – full coverage:** The spec MUST contain **one `test()` (or equivalent) for every test case (TC-1, TC-2, …)** defined in the .md files in the corresponding test case folder. Playwright tests must cover **all** test cases written in that folder; the number of tests in the spec MUST equal the total number of TCs. If a TC cannot be automated (e.g. no API, complex setup), include it as `test.skip(..., 'reason')` so the count matches.
@@ -62,6 +64,7 @@ Reference: `.cursor/rules/workflows/handsoff_playwright_report.mdc` §2, `.curso
    - **Full coverage (1:1):** Number of `test()` / `test.skip()` in spec equals total number of TCs in the .md files; each TC has a corresponding test.
    - **Alignment with test cases:** Each test implements the intent of the corresponding TC (Objective, Steps, Expected result); assertions match Expected result.
    - **Framework usage:** Spec uses EnergoTS framework (fixtures); no ad-hoc `getToken()`, custom `apiRequest()`, etc.
+   - **Playwright instructions:** Compliance with **`Cursor-Project/config/playwright_generation/playwright instructions/`** (per `.cursor/agents/playwright-test-validator.md` §5).
 3. **Validator result:** The validator returns **passed** (true/false) and a list of **issues** (criterion, description, location, suggestion).
 4. **Iteration logic (CRITICAL):**
    - **If validation passed:** Proceed to **Step 5** (Run Playwright tests).

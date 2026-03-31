@@ -81,7 +81,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 ## Test-case-generate (test-case-generate.md)
 
 - **When:** User asks to generate test cases for a bug or task.
-- **Flow:** Rule 35: (1) Run **cross-dependency-finder** first (including Rule 35a) → (2) Run **test-case-generator** with cross_dependency_data. Prefer **`Cursor-Project/test_cases/`** (Objects/ and Flows/ per `workspace/test_cases_structure.mdc`); `generated_test_cases/` is legacy.
+- **Flow:** Rule 35: (1) Run **cross-dependency-finder** first (including Rule 35a) → (2) **MANDATORY:** read **`Cursor-Project/config/playwright_generation/playwright instructions/`** (see `test-case-generate.md` step 0) → (3) Run **test-case-generator** with cross_dependency_data. Prefer **`Cursor-Project/test_cases/`** (Objects/ and Flows/ per `workspace/test_cases_structure.mdc`); `generated_test_cases/` is legacy.
 - **Output:** Test cases in human-readable hierarchy; "Agents involved: TestCaseGeneratorAgent, CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
 
 ## Energo-ts-run (energo-ts-run.md)

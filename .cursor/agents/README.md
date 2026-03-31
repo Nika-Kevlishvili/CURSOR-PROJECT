@@ -21,13 +21,13 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 | **shell.md** | Shell / CLI | Delegated terminal + safe git/CLI; hooks + `git_sync_workflow` for multi-repo sync. |
 | **environment-access.md** | Environment access | Dev/Dev2; browser/MCP per subagent doc. |
 | **postman-collection.md** | Postman collections | PhoenixExpert first; save under `postman/`. |
-| **test-case-generator.md** | Test cases (Rule 35) | Confluence + codebase + `cross_dependency_data`; prefer `test_cases/Objects/` and `test_cases/Flows/`. |
+| **test-case-generator.md** | Test cases (Rule 35) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.md`; Confluence + codebase + `cross_dependency_data`; prefer `test_cases/Objects/` and `test_cases/Flows/`. |
 | **cross-dependency-finder.md** | Cross-dependencies (Rule 35, 35a) | Jira + code + shallow Confluence; **no** local merge/git; hand off to test-case-generator. |
-| **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8.1) | Playwright tests under `EnergoTS/tests/` only. |
+| **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8.1) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.spec.ts`; Playwright under `EnergoTS/tests/` only. |
 | **energo-ts-run.md** | Playwright runner (Rule 36) | `npx playwright test` from EnergoTS; `cursor` branch only. |
 | **jira-bug.md** | Jira bug (Rule JIRA.0) | Experiments board only. |
 | **hands-off.md** | HandsOff orchestrator (Rule 37) | Jira + `/HandsOff` / `!HandsOff` full flow. |
-| **playwright-test-validator.md** | Playwright QA gate | Spec vs test cases (HandsOff Step 4.5). |
+| **playwright-test-validator.md** | Playwright QA gate | Spec vs test cases + **`playwright instructions/`** (HandsOff Step 4.5). |
 | **production-data-reader.md** | Production data (Rule PDR.0) | PostgreSQLProd MCP readonly. |
 
 ---

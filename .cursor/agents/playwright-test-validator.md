@@ -46,17 +46,22 @@ You act as the **PlaywrightTestValidatorAgent** (Test Quality Validator). You va
 - Test titles should include the **Jira key** (e.g. `[REG-123]: ...`) and be meaningful.
 - No obvious anti-patterns: e.g. hardcoded credentials, duplicated logic that should use fixtures.
 
+### 5. Playwright instructions (`Cursor-Project/config/playwright_generation/playwright instructions/`)
+
+- **Before validating**, read **`test-writing-rules.instructions.md`** and **`SKILL.md`** under that folder (and use **`general-rules.md`** for forbidden-path / anti-pattern checks) so validation matches the user-provided instruction set.
+- Flag deviations as **`canon`** issues (e.g. missing `test.step` where required, wrong assertion style vs `CheckResponse`, forbidden patterns from `general-rules.md`).
+
 ## Output (structured result)
 
 Return a **validation result** object (or equivalent) with:
 
 - **passed:** `true` if all criteria above are satisfied; `false` otherwise.
 - **issues:** List of concrete issues, each with:
-  - **criterion:** One of: `syntax`, `coverage`, `alignment`, `framework`.
+  - **criterion:** One of: `syntax`, `coverage`, `alignment`, `framework`, `canon`.
   - **description:** Short, actionable description in English.
   - **location:** File path and, if applicable, line number or test name.
   - **suggestion:** What test-case-generator or energo-ts-test should do to fix (e.g. "Add one more test() for TC-3", "Assert response status 400 in test X").
-- **summary:** One or two sentences: "Validation passed" or "Validation failed: N issues (syntax: …, coverage: …, alignment: …, framework: …)."
+- **summary:** One or two sentences: "Validation passed" or "Validation failed: N issues (syntax: …, coverage: …, alignment: …, framework: …, canon: …)."
 
 ## Behaviour in HandsOff
 
@@ -69,14 +74,15 @@ Return a **validation result** object (or equivalent) with:
 
 ## Process (what you do)
 
-1. **Read** all provided test case .md files and the Playwright spec file.
+1. **Read** **`Cursor-Project/config/playwright_generation/playwright instructions/`** (at least `test-writing-rules.instructions.md`, `SKILL.md`, and `general-rules.md` per §5), all provided test case .md files, and the Playwright spec file.
 2. **Parse** test cases: list every TC (TC-1, TC-2, …) with Objective, Steps, Expected result.
 3. **Parse** spec: count `test()` and `test.skip()` blocks; extract titles, steps, and assertions.
 4. **Check** syntax (by reading and basic structural checks; optionally suggest running `npx tsc --noEmit` or project lint in the report).
 5. **Check** coverage: count match, and that each TC is mapped to a test.
 6. **Check** alignment: for each TC, verify the corresponding test implements the intent and assertions.
 7. **Check** framework: fixtures used, no forbidden ad-hoc code.
-8. **Build** the result (passed, issues, summary) and return to the orchestrator.
+8. **Check** **playwright instructions** compliance (§5): steps, assertions, forbidden patterns.
+9. **Build** the result (passed, issues, summary) and return to the orchestrator.
 
 ## Constraints
 
@@ -94,3 +100,4 @@ Return a **validation result** object (or equivalent) with:
 - HandsOff: `.cursor/commands/hands-off.md` (Step 4.5 – Validate Playwright tests).
 - Test cases structure: `.cursor/rules/workspace/test_cases_structure.mdc`; template: `Cursor-Project/config/template/Test_case_template.md`.
 - Playwright creation: `.cursor/agents/energo-ts-test.md`; `.cursor/rules/workflows/handsoff_playwright_report.mdc` §2.
+- Playwright instructions: `Cursor-Project/config/playwright_generation/playwright instructions/`.

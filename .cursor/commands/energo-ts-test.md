@@ -15,6 +15,7 @@ Use this command when the user asks about:
 
 ## Mandatory Workflow:
 
+0. **Playwright instructions:** Before creating or editing EnergoTS `.spec.ts`, the agent MUST read **`Cursor-Project/config/playwright_generation/playwright instructions/`** in order: `project-description.md`, `general-rules.md`, `test-writing-rules.instructions.md`, `SKILL.md`, then other `*.md` in that folder alphabetically (**ignore** `__MACOSX` / `._*`). Specs MUST comply with that pack plus **EnergoTSTestAgent** Jira title naming when they differ (see agent doc).
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. **Read Jira Task** - ALWAYS read Jira task title and description BEFORE creating test
 3. **Clarify Requirements** - Ask clarifying questions if test requirements are unclear
@@ -35,13 +36,14 @@ Delegate to **`.cursor/agents/energo-ts-test.md`**. There is **no** Python `get_
 
 When the **HandsOff** flow invokes the energo-ts-test agent (Step 4), the agent receives **test case .md paths** (e.g. `Cursor-Project/test_cases/Flows/Invoice_cancellation/*.md`) and **Jira key + ticket title**. The agent MUST:
 
+0. **Read** **`Cursor-Project/config/playwright_generation/playwright instructions/`** (full set per Mandatory Workflow step 0) before writing the spec.
 1. **Read** the test case .md file(s) and parse scenarios (TC-1, TC-2, …), steps, expected results, and entry points (endpoints).
 2. **Map** each scenario to a Playwright test: use project **fixtures** (Request, Endpoints, baseFixture, etc.) and **project patterns**; do NOT write custom `getToken()`, `apiRequest()`, or inline auth/request helpers unless they already exist in the framework.
 3. **Produce** a single spec file **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`** with:
    - `test.describe('…')` containing the Jira key and ticket title;
    - one `test('…')` per main scenario from the .md, with test names including the Jira key (e.g. `[NT-1]: …`);
    - API calls and assertions derived from the test case steps and expected results.
-4. **Write** the spec file directly from the .md (endpoints, methods, scenarios). If multiple scenarios share one endpoint, one `test()` per scenario; match existing EnergoTS style.
+4. **Write** the spec file directly from the .md (endpoints, methods, scenarios). If multiple scenarios share one endpoint, one `test()` per scenario; match existing EnergoTS style and the **playwright instructions** pack.
 
 Reference: `.cursor/commands/hands-off.md` Step 4; `.cursor/rules/workflows/handsoff_playwright_report.mdc` §2.
 

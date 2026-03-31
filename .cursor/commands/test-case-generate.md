@@ -21,11 +21,12 @@ Use this command when the user asks to:
 
 ### Step 2: Test Case Generator
 
+0. **Playwright instructions (MANDATORY):** Before generating test-case content, **read** **`Cursor-Project/config/playwright_generation/playwright instructions/`** in order: `project-description.md` → `general-rules.md` → `test-writing-rules.instructions.md` → `SKILL.md`; then any other `*.md` in that folder alphabetically. **Ignore** `__MACOSX` / `._*`. Generated cases MUST follow that pack so steps/expectations **bridge** to EnergoTS Playwright specs (`test.step`, HTTP/status/body checks per instructions, no contradictions with `general-rules.md`). Still use **`Cursor-Project/config/template/Test_case_template.md`** for document shape.
 1. **Rule 0.3** — No Python `IntegrationService` in this workspace; follow MCP/Jira when needed (see `.cursor/rules/main/core_rules.mdc`).
 2. **PhoenixExpert** – Consult if needed (Rule 8); reuse context from cross-dependency-finder if already provided.
 3. **Confluence (MCP)** – Search and collect relevant docs (title, content, pageId, spaceId).
 4. **Codebase** – Search for terms from the prompt; collect codebase_findings.
-5. **Generate** – Call TestCaseGeneratorAgent with `prompt`, `prompt_type` ('bug'|'task'), `confluence_data`, and `context={'codebase_findings': ..., 'cross_dependency_data': <from Step 1>}`.
+5. **Generate** – Call TestCaseGeneratorAgent with `prompt`, `prompt_type` ('bug'|'task'), `confluence_data`, and `context={'codebase_findings': ..., 'cross_dependency_data': <from Step 1>}` (generator MUST have loaded the Playwright instruction pack in step 0).
 6. **Save** – Write test cases in the **hierarchical format** to `Cursor-Project/generated_test_cases/` (see below).
 7. **Report** – Generate reports (Rule 0.6).
 

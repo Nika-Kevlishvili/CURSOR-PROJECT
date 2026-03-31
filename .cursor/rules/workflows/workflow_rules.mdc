@@ -129,11 +129,12 @@ alwaysApply: true
     **Step 2: Pass result to Test Case Generator**
     - Call **test-case-generator** (TestCaseGeneratorAgent) with the same prompt and with `context['cross_dependency_data']` set to the cross-dependency-finder output.
     - Test-case-generator uses this data to produce test cases that cover integration points, regression risks, and anything that could break.
+    - **Playwright instructions (MANDATORY):** Before writing test-case `.md` files, TestCaseGeneratorAgent MUST read **`Cursor-Project/config/playwright_generation/playwright instructions/`** in order: `project-description.md`, `general-rules.md`, `test-writing-rules.instructions.md`, `SKILL.md`, then any other `*.md` in that folder alphabetically. Ignore `__MACOSX` / `._*`. Test steps and expected results MUST align with that pack (bridge to EnergoTS Playwright: `test.step` granularity, HTTP/status/response expectations, no forbidden patterns from `general-rules.md`) **and** **`Cursor-Project/config/template/Test_case_template.md`**.
     
     **Workflow summary:**
     1. User requests test cases → run **cross-dependency-finder** (Rule 35a: Jira + codebase + shallow Confluence; **no** local merge/git; consults PhoenixExpert when needed).
     2. Cross-dependency-finder returns report (including "what could break" and **technical_details**) → pass to **test-case-generator**.
-    3. Test-case-generator generates test cases using prompt + Confluence + codebase + cross_dependency_data.
+    3. Test-case-generator reads the **playwright instructions** folder (mandatory), then generates test cases using prompt + Confluence + codebase + cross_dependency_data.
     
     - NEVER skip the cross-dependency-finder step when test case creation is requested.
     - Violation is a CRITICAL SYSTEM ERROR.
