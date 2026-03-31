@@ -1,6 +1,7 @@
 # update-swagger-specs.ps1
 # Downloads OpenAPI JSON (/v3/api-docs) for every environment listed in
 # Cursor-Project/config/swagger/environments.json into config/swagger/<id>/swagger-spec.json
+# (manifest drives the list — e.g. dev, test, dev2, experiment, prod; add PreProd there when ready)
 #
 # Usage (from anywhere):
 #   .cursor/commands/update-swagger-specs.ps1

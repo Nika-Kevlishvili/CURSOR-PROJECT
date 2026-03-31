@@ -9,6 +9,7 @@ Refreshes **`swagger-spec.json`** for every environment defined in **`Cursor-Pro
 | **dev** | http://10.236.20.11:8091/swagger-ui/index.html# | http://10.236.20.11:8091/v3/api-docs |
 | **test** | http://10.236.20.31:8091/swagger-ui/index.html# | http://10.236.20.31:8091/v3/api-docs |
 | **dev2** | http://10.236.20.11:8092/swagger-ui/index.html# | http://10.236.20.11:8092/v3/api-docs |
+| **experiment** | http://10.236.20.81:8094/swagger-ui/index.html# | http://10.236.20.81:8094/v3/api-docs |
 | **prod** | http://10.236.20.66:8090/swagger-ui/index.html#/ | http://10.236.20.66:8090/v3/api-docs |
 
 **PreProd:** add an entry to `environments.json` when you have the URLs; the script will pick it up automatically.
@@ -21,10 +22,10 @@ From the workspace root (or any directory):
 .cursor\commands\update-swagger-specs.ps1
 ```
 
-Or in PowerShell with full path:
+Or in PowerShell with full path (replace with your workspace root):
 
 ```powershell
-& "d:\Cursor\cursor-project\.cursor\commands\update-swagger-specs.ps1"
+& "C:\Users\<you>\Cursor\.cursor\commands\update-swagger-specs.ps1"
 ```
 
 ## Requirements

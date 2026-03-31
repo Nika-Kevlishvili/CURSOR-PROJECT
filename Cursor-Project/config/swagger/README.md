@@ -21,6 +21,7 @@ See also: **`.cursor/commands/update-swagger-specs.md`** (slash command / instru
 | `dev/` | http://10.236.20.11:8091/swagger-ui/index.html# | `swagger-spec.json` |
 | `test/` | http://10.236.20.31:8091/swagger-ui/index.html# | `swagger-spec.json` (export when needed) |
 | `dev2/` | http://10.236.20.11:8092/swagger-ui/index.html# | `swagger-spec.json` (export when needed) |
+| `experiment/` | http://10.236.20.81:8094/swagger-ui/index.html# | `swagger-spec.json` (export when needed) |
 | `prod/` | http://10.236.20.66:8090/swagger-ui/index.html#/ | `swagger-spec.json` (export when needed) |
 | `preprod/` | _(URL not provided — add `SOURCE.md` when available)_ | — |
 
@@ -38,7 +39,7 @@ Details and typical JSON endpoints (`/v3/api-docs`) are in each folder’s **`SO
 
 ## Current inventory
 
-- **dev, test, dev2, prod:** each folder has **`swagger-spec.json`**, fetched from **`/v3/api-docs`** on the host/port listed in that folder’s `SOURCE.md` (refresh by re-downloading the same URL).
+- **dev, test, dev2, experiment, prod:** each folder has **`swagger-spec.json`**, fetched from **`/v3/api-docs`** on the host/port listed in that folder’s `SOURCE.md` (refresh by re-downloading the same URL).
 - **preprod:** no Swagger URL on file yet — add `swagger-spec.json` when PreProd URL is known.
 
 If you add PreProd or another environment: add an object to **`environments.json`**, create `config/swagger/<name>/` with **`SOURCE.md`**, then run **`update-swagger-specs.ps1`**.
