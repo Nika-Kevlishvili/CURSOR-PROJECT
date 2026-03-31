@@ -1,29 +1,18 @@
-# Summary — Git push to GitHub (2026-03-31)
+# Summary — hands-off_playwright_report.mdc frontmatter
 
-## Task
-Merge/push local workspace changes to GitHub per user request.
+**Time:** 2026-03-31 (local HHmm 1323)  
+**Task:** Fix `.cursor/rules/workflows/handsoff_playwright_report.mdc` so Cursor can apply the rule (per https://cursor.com/docs/context/rules).
 
-## Actions
-- Staged intended paths only (excluded `__MACOSX` under `playwright_generation`; did not stage dirty Phoenix nested repos).
-- Commit `9cf55da` on branch `Do-not-douch`.
-- Pushed to `origin`: `Do-not-douch` → remote branch `Do-not-touch`.
+## Changes
 
-## Remote
-- `https://github.com/Nika-Kevlishvili/CURSOR-PROJECT.git`
+- Added **`description`** (quoted string) for “Apply intelligently”: HandsOff triggers, test cases, EnergoTS Playwright, validator, reports, Slack, global-setup, agent questions.
+- Added **`globs`** so the rule attaches when relevant files are in context: `hands-off` command/agents, `energo-ts-test`, `playwright-test-validator`, `Cursor-Project/test_cases/**`, `EnergoTS/tests/cursor/**/*.spec.ts`, Slack report template, playwright instructions folder.
+- Left **`alwaysApply: false`** to avoid loading this long workflow in every chat; Rule 37 in `workflow_rules.mdc` still governs when HandsOff runs.
 
-## Included in commit
-- `.cursor/` agents, commands, rules, skills updates
-- `Cursor-Project/EnergoTS` submodule pointer → `7fea517`
-- `Cursor-Project/config/extensions.json`, Playwright instruction files under `config/playwright_generation/playwright instructions/`
-- `Cursor-Project/reports/2026-03-31/*` (as staged before commit)
-- Deletions: `15min.xlsx`, `Cursor-Project/config/requirements_test_agent.txt`, `Cursor-Project/cross_dependencies/cache/README.md`
+## Rationale
 
-## Not committed
-- Untracked: `Cursor-Project/config/playwright_generation/__MACOSX/` (junk — omit or delete locally)
-- Unstaged: `Cursor-Project/Phoenix/phoenix-core`, `phoenix-core-lib` (modified content inside nested repos)
+- Docs: intelligent rules need a **`description`**; file-scoped rules need **`globs`**. Combining both improves recall for HandsOff-related work without global always-on cost.
 
-## Note
-Initial snapshot showed modified `test_cases` Invoice_cancellation files; before commit they matched `HEAD` (no diff), so they were not part of this commit.
+## Agents involved
 
-## PhoenixExpert
-No Phoenix backend question; consultation N/A for git-only operations.
+Direct edit; no subagents.

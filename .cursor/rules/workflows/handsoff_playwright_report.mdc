@@ -1,5 +1,15 @@
 ---
+description: "HandsOff workflow (/HandsOff, !HandsOff, Rule 37): lessons learned for orchestrators—test case generation (test_cases layout, template, playwright instructions pack), EnergoTS Playwright via energo-ts-test (1:1 TC coverage, tests/cursor), playwright-test-validator Step 4.5, Jira-key reports (Playwright results only), Slack full report (Slack_report_template, Tester DM + #ai-report only), global-setup/token.json, post-report agent questions with attribution."
 alwaysApply: false
+globs:
+  - ".cursor/commands/hands-off.md"
+  - ".cursor/agents/hands-off.md"
+  - ".cursor/agents/energo-ts-test.md"
+  - ".cursor/agents/playwright-test-validator.md"
+  - "Cursor-Project/test_cases/**/*.md"
+  - "Cursor-Project/EnergoTS/tests/cursor/**/*.spec.ts"
+  - "Cursor-Project/config/template/Slack_report_template.md"
+  - "Cursor-Project/config/playwright_generation/playwright instructions/**/*.md"
 ---
 # HandsOff – Lessons Learned (DO NOT repeat)
 

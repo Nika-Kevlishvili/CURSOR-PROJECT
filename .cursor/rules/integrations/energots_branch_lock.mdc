@@ -1,5 +1,11 @@
 ---
+description: "EnergoTS (Cursor-Project/EnergoTS) git branch lock (Rule ENERGOTS.0): use only the `cursor` branch—never checkout/switch to main or other branches; never auto-sync `cursor` from main unless the user explicitly asks. Apply for Playwright test runs (energo-ts-run), git in EnergoTS, or any work under that directory."
 alwaysApply: false
+globs:
+  - "Cursor-Project/EnergoTS/**"
+  - ".cursor/agents/energo-ts-run.md"
+  - ".cursor/commands/energo-ts-run.md"
+  - ".cursor/skills/energo-ts-run/SKILL.md"
 ---
 # ENERGOTS BRANCH LOCK RULE [CRITICAL]
 
