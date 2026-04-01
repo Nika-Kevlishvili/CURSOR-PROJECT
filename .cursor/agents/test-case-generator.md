@@ -1,6 +1,6 @@
 ---
 name: test-case-generator
-model: default
+model: claude-4.6-sonnet-medium-thinking
 description: Generates test cases from bug or task descriptions using Confluence (MCP) and codebase. Maps to TestCaseGeneratorAgent. Use when the user asks to generate test cases, create test scenarios from a bug, or derive tests from a task description.
 ---
 
@@ -51,7 +51,18 @@ Downstream **energo-ts-test** also reads this folder; keep cases consistent with
 - Use this data so test cases cover: integration points, upstream/downstream behaviour, data entities, and **what_could_break** (regression and impact risks).
 - See `.cursor/agents/cross-dependency-finder.md` and `Cursor-Project/docs/CROSS_DEPENDENCY_FINDER_AGENT.md`.
 
-### 4. Generate test cases (comprehensive coverage – mandatory)
+### 4. Precondition data completeness (MANDATORY)
+
+When writing preconditions (document-level "Test data" and per-TC "Preconditions"), you MUST provide the **complete data chain** — every entity from the top level down to the entity under test. Follow the **specificity principle** from `Cursor-Project/config/template/Test_case_template.md`:
+
+- **Generic** (test works with any instance): "An active customer exists."
+- **Specific** (test depends on type/state/date/amount): "A legal customer with status ACTIVE", "Product with term FIXED, price component: energy 0.15 EUR/kWh, data delivery by profile", "Product contract entry-into-force 2025-01-01, linked to POD GE-EL-001."
+
+**Data layers (include when relevant):** Customer → POD → Product/Tariff → Product contract → Service contract → Billing run (type, period) → Invoice (status, amount) → Payment → Payment package (lock status). Also: specific dates (activation, deactivation, billing period boundaries), amounts (thresholds, scale boundaries), and any attribute whose value affects the test outcome.
+
+**Rule:** If removing a detail from the precondition would make the test ambiguous or impossible to set up without guessing, that detail MUST be present.
+
+### 5. Generate test cases (comprehensive coverage – mandatory)
 
 - **Coverage rule (CRITICAL):** Do **not** produce a random or minimal set. Generate **exhaustive** test cases that **fully cover** the task or bug:
   - **All positive:** happy path(s), valid inputs, expected success.

@@ -55,7 +55,17 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 - Confluence: cloudId → search → collect title, content, pageId, spaceId.
 - Codebase: codebase_search (and grep) for terms from prompt; collect findings.
 
-### 3. Generate and save in hierarchical format (comprehensive coverage)
+### 3. Precondition data completeness (MANDATORY)
+
+When writing **Preconditions** (both document-level "Test data" and per-TC), follow the **data completeness rule** from `Cursor-Project/config/template/Test_case_template.md`:
+
+- List the **full data chain** from the top-level entity (e.g. customer) down to the entity under test (e.g. billing run, invoice, payment). Every entity that must exist for the scenario to be valid must be listed.
+- **Specificity principle:** If the test works with any instance (e.g. any customer), write generically: "An active customer exists." If the test depends on a particular type, state, date, amount, or relationship, spell it out: "A private customer with customer manager X and status ACTIVE", "Product contract with entry-into-force date 2025-01-01 and termination date 2025-12-31", "Billing run of type STANDARD for period 2025-01-01 to 2025-01-31."
+- **Dates and amounts:** When test outcome depends on timing (activation/deactivation, billing period boundaries, contract dates) or monetary values (thresholds, rounding, scale boundaries), those MUST appear explicitly in preconditions.
+- **Data layers to consider:** Customer (type, status, manager), POD (identifier, type, dates), Product (term, price components, data delivery: scale/profile), Product contract (status, dates, linked POD/product), Service contract, Billing run (type, period, status), Invoice (status, amount), Payment (amount, linked invoice/package), Payment package (lock status).
+- **Rule of thumb:** If removing a detail would make the test ambiguous or impossible to set up without guessing, that detail MUST be present.
+
+### 4. Generate and save in hierarchical format (comprehensive coverage)
 
 **Coverage (CRITICAL):** Generate **exhaustive** test cases – **not** a random or minimal set. Cover **every scenario that could occur**: all positive (happy path, valid inputs), all negative (invalid inputs, errors, rejections), edge cases, boundaries, and regression from cross_dependency_data (what_could_break). Aim for the **maximum number** of test cases that **fully cover** the task or bug.
 
@@ -70,7 +80,7 @@ Map: entities → Objects; flows → Flows. Regression/impact cases (from what_c
 
 Full spec: `Cursor-Project/docs/TEST_CASES_HIERARCHY_FORMAT.md`.
 
-### 4. Output content
+### 5. Output content
 
 - Confluence references, codebase analysis, mapping of test-case groups to paths (e.g. Object/customer/Create.md, Flows/Billing/Standard/For_volumes/Profile.md).
 

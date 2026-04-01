@@ -10,11 +10,36 @@
 |-------|---------|
 | **Test title** | Issue-style summary: what this case is about (also the text after `TC-N (Positive|Negative):` in the heading). |
 | **Description** | What needs to be checked; the verification goal. |
-| **Preconditions** | Parameters and state that must be true before you run this case (numbered list). |
+| **Preconditions** | **Complete data chain** that must exist before you run this case (numbered list). List every entity, relationship, and attribute that the test depends on — from top-level (customer) down to the entity under test. See **Data completeness rule** below. |
 | **Test steps** | Actions to perform during the test (numbered list). |
 | **Expected test case results** | Correct system/user-visible outcome; what “pass” looks like. |
 
 Optional for bugs: **Actual result** (current wrong behaviour). Optional: **References** (Jira, Confluence, API name).
+
+### Data completeness rule (MANDATORY)
+
+Preconditions MUST describe the **full data chain** required by the test — not just the entity under test, but **every upstream entity** that must exist for the scenario to be valid. Apply the **specificity principle**:
+
+- **Generic:** If the test works with any instance of an entity (e.g. any customer), write a short precondition: *"A customer exists."*
+- **Specific:** If the test depends on a particular type, state, attribute, or relationship, spell it out: *"A private customer exists with customer manager Nika Kevlishvili and status ACTIVE."*
+
+**What to include (when relevant to the test):**
+
+| Data layer | Examples of what to specify |
+|---|---|
+| **Customer** | Type (legal / private), status, customer manager, segment, specific attributes. |
+| **POD (Point of Delivery)** | Identifier, type (electricity / gas), activation date, deactivation date, status, coordinates. |
+| **Product / Tariff** | Product name or code, term (fixed / indefinite), price components (energy, grid, tax), data delivery type (by scale / by profile), specific amounts or rates if the test is sensitive to them. |
+| **Product contract** | Contract number, status, entry-into-force date, termination date, version, linked POD(s), linked product. |
+| **Service contract** | Same as product contract where applicable. |
+| **Billing run** | Type (standard / interim / closing), period (from–to dates), status, linked contracts. |
+| **Invoice** | Invoice number, status (generated / paid / cancelled), amount, currency, linked billing run. |
+| **Payment** | Amount, status, linked invoice, linked payment package. |
+| **Payment package** | Lock status (LOCKED / UNLOCKED), linked payments. |
+| **Dates** | Activation / deactivation dates, contract entry-into-force / termination dates, billing period boundaries — **whenever the test outcome depends on timing or date ranges**. |
+| **Amounts** | Specific monetary values, quantities, scale boundaries — **whenever the test validates calculation, thresholds, or rounding**. |
+
+**Rule of thumb:** If removing a detail from the precondition would make the test ambiguous or impossible to set up without guessing, that detail MUST be present.
 
 **Reference:** `.cursor/rules/workspace/test_cases_structure.mdc`
 
@@ -35,11 +60,14 @@ Optional for bugs: **Actual result** (current wrong behaviour). Optional: **Refe
 
 ## Test data (preconditions)
 
-Shared setup for this file (environment + entities):
+Shared setup for this file (environment + entities). List the **full data chain** from top-level entities down to the entity under test. Be specific where the test demands it; be generic where any instance works.
 
 - **Environment:** {e.g. Test}
-- **{Entity}:**
-- **{Entity}:**
+- **Customer:** {type (legal/private), status, relevant attributes — or "any active customer" if generic}
+- **POD:** {identifier, type, activation/deactivation dates if relevant}
+- **Product:** {name/code, term, price components, data delivery type (scale/profile) if relevant}
+- **Product contract:** {status, entry-into-force date, linked POD, linked product — if relevant}
+- **{Other entities as needed}:** {billing run type/period, invoice status/amount, payment, etc.}
 
 ---
 
@@ -96,7 +124,7 @@ Shared setup for this file (environment + entities):
 | Document `#` title | Short; end with `({JIRA_KEY})`. |
 | **Test title** (in `TC-N` line) | One line; same idea as an issue summary. |
 | **Description** | Verification intent — not a repeat of the title only; say *what* is validated. |
-| **Preconditions** | Numbered; reference **Test data** when setup is already listed there. |
+| **Preconditions** | Numbered; **full data chain** — every entity, type, state, date, and amount the test depends on. Reference **Test data** for shared setup; add TC-specific details here. Apply the specificity principle: generic when any instance works, specific when the test is sensitive to type/state/value. |
 | **Test steps** | One action per step; use “e.g.” if several ways to execute. |
 | **Expected test case results** | Observable outcome; add HTTP code in parentheses only after behaviour is described. |
 
@@ -127,9 +155,13 @@ Shared setup for this file (environment + entities):
 ## Test data (preconditions)
 
 - **Environment:** Test
-- **Customer:** Active.
-- **Invoice:** Paid, not already cancelled.
-- **Payment package:** LOCKED; contains the payment for that invoice.
+- **Customer:** Any active customer (legal or private; type does not affect this flow).
+- **Product:** Any product with at least one price component; term and data delivery type are not relevant to cancellation.
+- **Product contract:** Status ACTIVE, entry-into-force date in the past, linked to the customer and a valid POD.
+- **Billing run:** A standard billing run has been executed for the contract; period covers at least one billing cycle.
+- **Invoice:** Generated by the billing run above; status is PAID (not already cancelled); amount > 0.
+- **Payment:** A payment exists that is linked to the invoice; amount matches the invoice amount.
+- **Payment package:** The payment above belongs to a payment package whose lock status is **LOCKED** (e.g. already reconciled).
 
 ---
 
@@ -138,16 +170,18 @@ Shared setup for this file (environment + entities):
 **Description:** Check that cancellation succeeds and the service does not require an UNLOCKED payment package.
 
 **Preconditions:**
-1. Test data above is present.
-2. Package lock status is LOCKED.
+1. Customer, product contract, billing run, invoice, payment, and payment package exist as described in Test data above.
+2. Invoice status is PAID.
+3. Payment package lock status is **LOCKED**.
+4. No prior cancellation exists for this invoice.
 
 **Test steps:**
-1. Submit invoice cancellation for that invoice (UI or API per your harness).
-2. Read response and check cancellation / invoice state.
+1. Submit invoice cancellation for the paid invoice (UI or `POST /invoice-cancellation` with the invoice identifier).
+2. Read response and check cancellation record / invoice state.
 
-**Expected test case results:** Cancellation is recorded; no error demanding UNLOCKED lock status.
+**Expected test case results:** The invoice cancellation is created successfully. The system does not require the payment package to be UNLOCKED for this flow. No error message referencing lock status.
 
-**Actual result (if bug):** Error mentions package not found / UNLOCKED requirement; cancellation blocked.
+**Actual result (if bug):** Error: "Payment package not found with id … and lock status in UNLOCKED"; cancellation blocked.
 
 **References:** NT-1.
 
@@ -158,22 +192,23 @@ Shared setup for this file (environment + entities):
 **Description:** Check that invalid or missing invoice reference is rejected clearly and no cancellation is stored.
 
 **Preconditions:**
-1. Caller can reach the cancel operation (same auth as normal tests).
+1. A user with invoice-cancellation permissions exists and can call the cancel endpoint.
+2. No invoice exists with the identifier that will be used in this test (e.g. use a non-existent or malformed invoice number).
 
 **Test steps:**
-1. Call cancel with empty, malformed, or unknown invoice id.
-2. Inspect response and verify no new cancellation for valid invoices.
+1. Call `POST /invoice-cancellation` with an empty, malformed, or non-existent invoice identifier.
+2. Inspect response status and body; verify no cancellation record was created for any valid invoice.
 
-**Expected test case results:** Validation or not-found error; message explains the problem; no orphan or wrong cancellation row.
+**Expected test case results:** Validation or not-found error (e.g. HTTP 400 or 404); message explains the problem; no orphan or incorrect cancellation row in the database.
 
-**References:** Cancel API validation.
+**References:** Invoice cancellation API input validation.
 
 ---
 
 ## References
 
 - **Jira:** NT-1 – Locked package blocks cancellation.
-- **Related:** Invoice cancel service; payment package lock.
+- **Related:** Invoice cancellation service; payment package lock; PaymentService.cancel.
 ````
 
 ---
