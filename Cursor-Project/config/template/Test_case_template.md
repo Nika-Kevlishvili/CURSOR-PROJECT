@@ -1,10 +1,10 @@
 # Test case document template
 
-**Scope:** All `.md` files under `Cursor-Project/test_cases/` MUST follow this structure. Use **plain English**, full sentences where helpful, no unexplained jargon.
+**Scope:** All `.md` files under `Cursor-Project/test_cases/Backend/` and `Cursor-Project/test_cases/Frontend/` MUST follow this structure. Use **plain English**, full sentences where helpful, no unexplained jargon.
 
-**Backend / Frontend split (mandatory):** Each document MUST contain two sections: **Backend Test Cases** and **Frontend Test Cases**. Backend TCs use prefix `TC-BE-N`, frontend TCs use `TC-FE-N`. If a section is not applicable, keep the heading with a note: *"No backend/frontend test cases applicable for this scope."*
+**Two-folder layout (mandatory):** Each topic produces **two separate files** — one in `Backend/` (TC-BE-N only) and one in `Frontend/` (TC-FE-N only). A Backend file MUST NOT contain Frontend test cases, and vice versa. See `.cursor/rules/workspace/test_cases_structure.mdc`.
 
-**Positive and negative (mandatory):** Each section (Backend and Frontend) MUST include at least one **(Positive)** and one **(Negative)** scenario (when the section is applicable). Label every TC in its heading: `TC-BE-1 (Positive): …` or `TC-FE-2 (Negative): …`.
+**Positive and negative (mandatory):** Each file MUST include at least one **(Positive)** and one **(Negative)** scenario (when the layer is applicable). Label every TC in its heading: `TC-BE-1 (Positive): …` or `TC-FE-2 (Negative): …`.
 
 **Per test case — use exactly these blocks (in this order):**
 
@@ -12,42 +12,58 @@
 |-------|---------|
 | **Test title** | Issue-style summary: what this case is about (also the text after `TC-BE-N (Positive|Negative):` in the heading). |
 | **Description** | What needs to be checked; the verification goal. |
-| **Preconditions** | **Complete data chain** that must exist before you run this case (numbered list). List every entity, relationship, and attribute that the test depends on — from top-level (customer) down to the entity under test. See **Data completeness rule** below. |
+| **Preconditions** | **Complete creation-step chain** that must be executed before this test (numbered list). Describe HOW to create every entity — not just that it "exists." See **Mandatory creation-step precondition rule** below. |
 | **Test steps** | Actions to perform during the test (numbered list). |
 | **Expected test case results** | Correct system/user-visible outcome; what "pass" looks like. |
 
 Optional for bugs: **Actual result** (current wrong behaviour). Optional: **References** (Jira, Confluence, API name).
 
-### Data completeness rule (MANDATORY)
+---
 
-Preconditions MUST describe the **full data chain** required by the test — not just the entity under test, but **every upstream entity** that must exist for the scenario to be valid. Apply the **specificity principle**:
+### Mandatory creation-step precondition rule (CRITICAL)
 
-- **Generic:** If the test works with any instance of an entity (e.g. any customer), write a short precondition: *"A customer exists."*
-- **Specific:** If the test depends on a particular type, state, attribute, or relationship, spell it out: *"A private customer exists with customer manager Nika Kevlishvili and status ACTIVE."*
+Preconditions MUST describe the **full data creation chain** required by the test — **step-by-step instructions on HOW to create every upstream entity**, not just that entities "exist."
 
-**What to include (when relevant to the test):**
+**NEVER write "an entity exists" — ALWAYS write "create an entity via [endpoint/action] with [parameters]."**
 
-| Data layer | Examples of what to specify |
+| BAD (FORBIDDEN) | GOOD (REQUIRED) |
 |---|---|
-| **Customer** | Type (legal / private), status, customer manager, segment, specific attributes. |
-| **POD (Point of Delivery)** | Identifier, type (electricity / gas), activation date, deactivation date, status, coordinates. |
-| **Product / Tariff** | Product name or code, term (fixed / indefinite), price components (energy, grid, tax), data delivery type (by scale / by profile), specific amounts or rates if the test is sensitive to them. |
-| **Product contract** | Contract number, status, entry-into-force date, termination date, version, linked POD(s), linked product. |
-| **Service contract** | Same as product contract where applicable. |
-| **Billing run** | Type (standard / interim / closing), period (from–to dates), status, linked contracts. |
-| **Invoice** | Invoice number, status (generated / paid / cancelled), amount, currency, linked billing run. |
-| **Payment** | Amount, status, linked invoice, linked payment package. |
-| **Payment package** | Lock status (LOCKED / UNLOCKED), linked payments. |
-| **Dates** | Activation / deactivation dates, contract entry-into-force / termination dates, billing period boundaries — **whenever the test outcome depends on timing or date ranges**. |
-| **Amounts** | Specific monetary values, quantities, scale boundaries — **whenever the test validates calculation, thresholds, or rounding**. |
+| "An active customer exists." | "Create a customer via `POST /customer` (type: PRIVATE, status: ACTIVE, customerIdentifier: auto-generated)." |
+| "A product contract is linked to the customer." | "Create a product contract via `POST /product-contract` linking customer ID from step 1, POD ID from step 2, and product ID from step 3 (status: ACTIVE, entry-into-force date: 2025-01-01)." |
+| "A billing run has been executed." | "Create a billing run via `POST /billing-run` (type: STANDARD, period: 2025-01-01 to 2025-01-31, linked to the product contract from step 6). Execute the billing run to completion — the run generates an invoice with total amount > 0." |
 
-**Rule of thumb:** If removing a detail from the precondition would make the test ambiguous or impossible to set up without guessing, that detail MUST be present.
+**Every entity in the chain MUST have its own numbered precondition step with:**
+1. The **API endpoint** (for backend) or **UI action** (for frontend) used to create or set up the entity.
+2. The **key parameters/attributes** required (type, status, amount, dates, linked entities).
+3. **References to earlier precondition steps** when linking entities (e.g. "customer ID from step 1", "invoice from step 9").
+
+**Data layers to always include when relevant to the test:**
+
+| Data layer | What to specify in the creation step |
+|---|---|
+| **Customer** | `POST /customer` — type (legal / private), status, customerIdentifier, segment. |
+| **POD (Point of Delivery)** | `POST /pod` — type (electricity / gas), activation date, status. |
+| **Product / Tariff** | `POST /product` — term (fixed / indefinite), data delivery type (by scale / by profile). |
+| **Terms** | `POST /terms` — linked to product from previous step. |
+| **Price component** | `POST /price-component` — type (energy / grid / tax), rate, currency, linked product. |
+| **Product contract** | `POST /product-contract` — linked customer, POD, product; status, entry-into-force date, termination date. |
+| **Service contract** | Same pattern as product contract where applicable. |
+| **Energy data / billing profile** | Create via energy data endpoint — linked to contract-POD combination. |
+| **Billing run** | `POST /billing-run` — type (standard / interim / closing), period (from–to dates), linked contracts. |
+| **Invoice** | Generated by billing run execution; specify expected status, amount, currency. |
+| **Payment** | `POST /payment` — amount, linked invoice or liability. |
+| **Payment package** | Specify lock status (LOCKED / UNLOCKED), linked payments. |
+| **Deposit** | `POST /deposit` — amount, linked customer. |
+| **Dates** | Activation / deactivation, contract entry-into-force / termination, billing period boundaries. |
+| **Amounts** | Specific monetary values, rates, quantities — whenever the test validates calculation or thresholds. |
+
+**Rule of thumb:** Every entity that must exist for the test to run MUST have its own creation step with endpoint and key parameters. If a tester cannot set up the test without guessing how to create an entity, the precondition is incomplete.
 
 **Reference:** `.cursor/rules/workspace/test_cases_structure.mdc`
 
 ---
 
-## Copy-paste blank
+## Copy-paste blank — Backend file (`test_cases/Backend/<Topic_name>.md`)
 
 ````markdown
 # {Document title} – {Short scope} ({JIRA_KEY})
@@ -62,14 +78,16 @@ Preconditions MUST describe the **full data chain** required by the test — not
 
 ## Test data (preconditions)
 
-Shared setup for this file (environment + entities). List the **full data chain** from top-level entities down to the entity under test. Be specific where the test demands it; be generic where any instance works.
+Shared setup for this file (environment + entity creation chain). Describe step-by-step HOW to create every entity needed.
 
 - **Environment:** {e.g. Test}
-- **Customer:** {type (legal/private), status, relevant attributes — or "any active customer" if generic}
-- **POD:** {identifier, type, activation/deactivation dates if relevant}
-- **Product:** {name/code, term, price components, data delivery type (scale/profile) if relevant}
-- **Product contract:** {status, entry-into-force date, linked POD, linked product — if relevant}
-- **{Other entities as needed}:** {billing run type/period, invoice status/amount, payment, etc.}
+1. Create a customer via `POST /customer` ({type, status, key attributes}).
+2. Create a POD via `POST /pod` ({type, activation date, status}).
+3. Create a product via `POST /product` ({term, data delivery type}).
+4. Create terms via `POST /terms` (linked to product from step 3).
+5. Create a price component via `POST /price-component` ({type, rate, currency}, linked to product from step 3).
+6. Create a product contract via `POST /product-contract` (linking customer from step 1, POD from step 2, product from step 3; {status, entry-into-force date}).
+7. {Continue with billing run, invoice, payment, etc. as needed for the topic.}
 
 ---
 
@@ -80,8 +98,8 @@ Shared setup for this file (environment + entities). List the **full data chain*
 **Description:** {What needs to be checked.}
 
 **Preconditions:**
-1. {…}
-2. {…}
+1. Complete steps 1–N from Test data above.
+2. {Any TC-specific additional setup — create via endpoint with parameters.}
 
 **Test steps:**
 1. {…}
@@ -100,7 +118,7 @@ Shared setup for this file (environment + entities). List the **full data chain*
 **Description:** {What needs to be checked.}
 
 **Preconditions:**
-1. {…}
+1. {Step-by-step entity creation chain for this negative scenario.}
 
 **Test steps:**
 1. {…}
@@ -113,6 +131,35 @@ Shared setup for this file (environment + entities). List the **full data chain*
 
 ---
 
+## References
+
+- **Jira:** {JIRA_KEY} – {short title}.
+- **Related:** {…}
+````
+
+## Copy-paste blank — Frontend file (`test_cases/Frontend/<Topic_name>.md`)
+
+````markdown
+# {Document title} – {Short scope} ({JIRA_KEY})
+
+**Jira:** {JIRA_KEY} ({Board})  
+**Type:** {Task | Bug | Feature}  
+**Summary:** {What this file tests and why it matters — 1–2 sentences.}
+
+**Scope:** {Area/flow in plain language; expected behaviour; if bug — what fails today.}
+
+---
+
+## Test data (preconditions)
+
+Shared setup for this file (environment + entity creation chain). Describe step-by-step HOW to create every entity needed (via UI navigation or pre-existing data).
+
+- **Environment:** {e.g. Test}
+1. Log into the portal with {role/permissions}.
+2. {Create or navigate to the required entities — describe full chain.}
+
+---
+
 ## Frontend Test Cases
 
 ### TC-FE-1 (Positive): {Test title — issue summary stating the test purpose}
@@ -120,8 +167,8 @@ Shared setup for this file (environment + entities). List the **full data chain*
 **Description:** {What needs to be checked.}
 
 **Preconditions:**
-1. {…}
-2. {…}
+1. {Step-by-step setup: create entities via UI or ensure they exist from backend setup.}
+2. User is logged into the portal with {required permissions}.
 
 **Test steps:**
 1. {…}
@@ -140,7 +187,7 @@ Shared setup for this file (environment + entities). List the **full data chain*
 **Description:** {What needs to be checked.}
 
 **Preconditions:**
-1. {…}
+1. {Step-by-step setup for this negative scenario.}
 
 **Test steps:**
 1. {…}
@@ -168,7 +215,7 @@ Shared setup for this file (environment + entities). List the **full data chain*
 | Document `#` title | Short; end with `({JIRA_KEY})`. |
 | **Test title** (in `TC-BE-N` / `TC-FE-N` line) | One line; same idea as an issue summary. |
 | **Description** | Verification intent — not a repeat of the title only; say *what* is validated. |
-| **Preconditions** | Numbered; **full data chain** — every entity, type, state, date, and amount the test depends on. Reference **Test data** for shared setup; add TC-specific details here. Apply the specificity principle: generic when any instance works, specific when the test is sensitive to type/state/value. |
+| **Preconditions** | Numbered; **step-by-step creation chain** — every entity described with its creation endpoint/action, key parameters, and links to earlier steps. NEVER just "entity X exists." |
 | **Test steps** | One action per step; use "e.g." if several ways to execute. |
 | **Expected test case results** | Observable outcome; add HTTP code in parentheses only after behaviour is described. |
 
@@ -183,7 +230,7 @@ Shared setup for this file (environment + entities). List the **full data chain*
 
 ---
 
-## Example (filled)
+## Example (filled) — Backend file
 
 ````markdown
 # Invoice cancellation – paid invoice, locked payment package (NT-1)
@@ -199,13 +246,17 @@ Shared setup for this file (environment + entities). List the **full data chain*
 ## Test data (preconditions)
 
 - **Environment:** Test
-- **Customer:** Any active customer (legal or private; type does not affect this flow).
-- **Product:** Any product with at least one price component; term and data delivery type are not relevant to cancellation.
-- **Product contract:** Status ACTIVE, entry-into-force date in the past, linked to the customer and a valid POD.
-- **Billing run:** A standard billing run has been executed for the contract; period covers at least one billing cycle.
-- **Invoice:** Generated by the billing run above; status is PAID (not already cancelled); amount > 0.
-- **Payment:** A payment exists that is linked to the invoice; amount matches the invoice amount.
-- **Payment package:** The payment above belongs to a payment package whose lock status is **LOCKED** (e.g. already reconciled).
+1. Create a customer via `POST /customer` (type: PRIVATE, status: ACTIVE, customerIdentifier: auto-generated).
+2. Create a POD (Point of Delivery) via `POST /pod` (type: ELECTRICITY, status: ACTIVE, activation date: 2024-01-01).
+3. Create a product via `POST /product` (term: INDEFINITE, data delivery type: BY_PROFILE).
+4. Create terms for the product via `POST /terms` (linked to product from step 3).
+5. Create a price component via `POST /price-component` (type: ENERGY, rate: 0.15 BGN/kWh, currency: BGN, linked to product from step 3).
+6. Create a product contract via `POST /product-contract` (linking customer from step 1, POD from step 2, product from step 3; status: ACTIVE, entry-into-force date: 2025-01-01, no termination date).
+7. Create energy data / billing profile for the contract-POD combination via the energy data endpoint (linked to contract from step 6 and POD from step 2).
+8. Create a billing run via `POST /billing-run` (type: STANDARD, period: 2025-01-01 to 2025-01-31, linked to product contract from step 6).
+9. Execute the billing run to completion — the run generates an invoice with total amount > 0, status: GENERATED.
+10. Create a payment via `POST /payment` (amount matching the invoice total from step 9, linked to the invoice). After payment, invoice status becomes PAID.
+11. The payment from step 10 belongs to a payment package with lock status: **LOCKED**.
 
 ---
 
@@ -216,13 +267,13 @@ Shared setup for this file (environment + entities). List the **full data chain*
 **Description:** Check that the cancellation API succeeds and the service does not require an UNLOCKED payment package.
 
 **Preconditions:**
-1. Customer, product contract, billing run, invoice, payment, and payment package exist as described in Test data above.
-2. Invoice status is PAID.
-3. Payment package lock status is **LOCKED**.
+1. Complete steps 1–11 from Test data above.
+2. Invoice status is PAID (confirmed after step 10).
+3. Payment package lock status is **LOCKED** (step 11).
 4. No prior cancellation exists for this invoice.
 
 **Test steps:**
-1. Submit invoice cancellation via `POST /invoice-cancellation` with the invoice identifier.
+1. Submit invoice cancellation via `POST /invoice-cancellation` with the invoice identifier from step 9.
 2. Read response status and body; check cancellation record / invoice state.
 
 **Expected test case results:** The invoice cancellation is created successfully (HTTP 200/201). The system does not require the payment package to be UNLOCKED for this flow. No error message referencing lock status.
@@ -238,8 +289,8 @@ Shared setup for this file (environment + entities). List the **full data chain*
 **Description:** Check that invalid or missing invoice reference is rejected clearly and no cancellation is stored.
 
 **Preconditions:**
-1. A user with invoice-cancellation permissions exists and can call the cancel endpoint.
-2. No invoice exists with the identifier that will be used in this test (e.g. use a non-existent or malformed invoice number).
+1. A user with invoice-cancellation permissions can call the cancel endpoint.
+2. No invoice exists with the identifier that will be used in this test (e.g. use a non-existent UUID or malformed invoice number).
 
 **Test steps:**
 1. Call `POST /invoice-cancellation` with an empty, malformed, or non-existent invoice identifier.
@@ -248,47 +299,6 @@ Shared setup for this file (environment + entities). List the **full data chain*
 **Expected test case results:** Validation or not-found error (HTTP 400 or 404); message explains the problem; no orphan or incorrect cancellation row in the database.
 
 **References:** Invoice cancellation API input validation.
-
----
-
-## Frontend Test Cases
-
-### TC-FE-1 (Positive): Cancel paid invoice from invoice detail page
-
-**Description:** Check that the UI allows cancellation of a paid invoice with a locked payment package and shows a success confirmation.
-
-**Preconditions:**
-1. Same data as Test data above (paid invoice, locked payment package).
-2. User is logged into the portal with invoice-cancellation permissions.
-
-**Test steps:**
-1. Navigate to the invoice detail page for the paid invoice.
-2. Click the "Cancel invoice" button.
-3. Confirm the cancellation in the confirmation dialog.
-
-**Expected test case results:** The cancellation is submitted successfully. The UI shows a success message (e.g. "Invoice cancelled"). The invoice status updates to CANCELLED on the detail page.
-
-**Actual result (if bug):** Error toast: "Payment package not found with id … and lock status in UNLOCKED"; invoice remains PAID.
-
-**References:** NT-1.
-
----
-
-### TC-FE-2 (Negative): Cancel button disabled for already-cancelled invoice
-
-**Description:** Check that the UI prevents double cancellation of an already-cancelled invoice.
-
-**Preconditions:**
-1. An invoice exists with status CANCELLED (already cancelled previously).
-2. User is logged into the portal with invoice-cancellation permissions.
-
-**Test steps:**
-1. Navigate to the invoice detail page for the already-cancelled invoice.
-2. Observe the state of the "Cancel invoice" button.
-
-**Expected test case results:** The "Cancel invoice" button is disabled or not visible. No cancellation can be submitted for an already-cancelled invoice.
-
-**References:** Invoice cancellation UI validation.
 
 ---
 
@@ -302,4 +312,7 @@ Shared setup for this file (environment + entities). List the **full data chain*
 
 ## File layout
 
-Files live directly under `Cursor-Project/test_cases/<Topic_name>.md`. Update `test_cases/README.md` when adding new files.
+- **Backend files:** `Cursor-Project/test_cases/Backend/<Topic_name>.md`
+- **Frontend files:** `Cursor-Project/test_cases/Frontend/<Topic_name>.md`
+
+Update `test_cases/README.md`, `test_cases/Backend/README.md`, and `test_cases/Frontend/README.md` when adding new files.

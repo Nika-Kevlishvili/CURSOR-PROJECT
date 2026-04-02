@@ -51,16 +51,17 @@ Downstream **energo-ts-test** also reads this folder; keep cases consistent with
 - Use this data so test cases cover: integration points, upstream/downstream behaviour, data entities, and **what_could_break** (regression and impact risks).
 - See `.cursor/agents/cross-dependency-finder.md` and `Cursor-Project/docs/CROSS_DEPENDENCY_FINDER_AGENT.md`.
 
-### 4. Precondition data completeness (MANDATORY)
+### 4. Precondition data completeness (MANDATORY — creation-step rule)
 
-When writing preconditions (document-level "Test data" and per-TC "Preconditions"), you MUST provide the **complete data chain** — every entity from the top level down to the entity under test. Follow the **specificity principle** from `Cursor-Project/config/template/Test_case_template.md`:
+When writing preconditions (document-level "Test data" and per-TC "Preconditions"), you MUST describe **HOW to create every entity** in the data chain — NEVER just write "entity X exists."
 
-- **Generic** (test works with any instance): "An active customer exists."
-- **Specific** (test depends on type/state/date/amount): "A legal customer with status ACTIVE", "Product with term FIXED, price component: energy 0.15 EUR/kWh, data delivery by profile", "Product contract entry-into-force 2025-01-01, linked to POD GE-EL-001."
+- Every precondition step MUST include: the **API endpoint** (or UI action), **key parameters** (type, status, amount, dates, linked entities), and **references to earlier steps** (e.g. "customer ID from step 1").
+- **FORBIDDEN:** "An active customer exists.", "A product contract is linked to the customer.", "A billing run has been executed." — these are too vague.
+- **REQUIRED:** "Create a customer via `POST /customer` (type: PRIVATE, status: ACTIVE).", "Create a product contract via `POST /product-contract` linking customer from step 1, POD from step 2, product from step 3 (status: ACTIVE, entry-into-force date: 2025-01-01)."
+- **Data layers (include when relevant):** Customer → POD → Product → Terms → Price component → Product contract → Service contract → Energy data / billing profile → Billing run (type, period) → Invoice (status, amount) → Payment → Payment package (lock status) → Deposit. Each entity gets its own numbered creation step with endpoint and parameters.
+- **Rule:** If a tester cannot set up the test without guessing how to create an entity, the precondition is incomplete.
 
-**Data layers (include when relevant):** Customer → POD → Product/Tariff → Product contract → Service contract → Billing run (type, period) → Invoice (status, amount) → Payment → Payment package (lock status). Also: specific dates (activation, deactivation, billing period boundaries), amounts (thresholds, scale boundaries), and any attribute whose value affects the test outcome.
-
-**Rule:** If removing a detail from the precondition would make the test ambiguous or impossible to set up without guessing, that detail MUST be present.
+See `Cursor-Project/config/template/Test_case_template.md` for the full mandatory creation-step rule, examples, and data layer table.
 
 ### 5. Generate test cases (comprehensive coverage – mandatory)
 
@@ -71,34 +72,37 @@ When writing preconditions (document-level "Test data" and per-TC "Preconditions
   - **Regression:** every scenario from cross_dependency_data (what_could_break, integration points).
   Aim for the **maximum number** of test cases needed so that **any scenario that could occur** is covered (positive and negative).
 - **Preferred:** Use TestCaseGeneratorAgent with Confluence + codebase data + cross_dependency_data.
-  - Implement in chat: build test cases from Confluence + codebase + `cross_dependency_data` and **write** a single `.md` file under **`Cursor-Project/test_cases/<Topic_name>.md`** with **Backend Test Cases** (`TC-BE-N`) and **Frontend Test Cases** (`TC-FE-N`) sections (per `workspace/test_cases_structure.mdc`). Do not import `get_test_case_generator_agent`.
+  - Implement in chat: build test cases from Confluence + codebase + `cross_dependency_data` and **write two separate `.md` files** — one in **`Cursor-Project/test_cases/Backend/<Topic_name>.md`** (TC-BE-N only) and one in **`Cursor-Project/test_cases/Frontend/<Topic_name>.md`** (TC-FE-N only) — per `workspace/test_cases_structure.mdc`. Do not import `get_test_case_generator_agent`.
   - `result = agent.generate_test_cases(prompt=..., prompt_type='bug'|'task', confluence_data=..., context={'codebase_findings': ..., 'cross_dependency_data': ...})`
 - If Python agent is not run in this context: **output** a structured test-case spec with **all** positive/negative/edge/regression cases (Confluence refs, code refs, integration points, and tests for every item in what_could_break) so the user or another tool can use it.
 
 ## Output format – template and human-readable (MANDATORY)
 
-**Content:** Every test case document MUST follow the **Test Case Template**: **`Cursor-Project/config/template/Test_case_template.md`**. Use that template’s structure and placeholders. Write in **maximally detailed**, **human-readable** language: full sentences where they help, no unexplained jargon, plain English. Each file has two main sections: **Backend Test Cases** (`TC-BE-N`) and **Frontend Test Cases** (`TC-FE-N`). Each scenario MUST have: Test title (in the TC heading), Description, Preconditions (numbered), Test steps (numbered), Expected test case results, and—for bugs—Actual result. See the template for the exact sections and the human-readable language rules.
+**Content:** Every test case document MUST follow the **Test Case Template**: **`Cursor-Project/config/template/Test_case_template.md`**. Use that template's structure and placeholders. Write in **maximally detailed**, **human-readable** language: full sentences where they help, no unexplained jargon, plain English. Each scenario MUST have: Test title (in the TC heading), Description, Preconditions (numbered — using mandatory creation-step format), Test steps (numbered), Expected test case results, and—for bugs—Actual result. See the template for the exact sections and the human-readable language rules.
 
-**Folder (flat single-file):** Save as a single `.md` file per topic directly under `Cursor-Project/test_cases/`.
+**Folder (two-folder layout):** Save as **two separate `.md` files** per topic:
 
 **Root folder:** `Cursor-Project/test_cases/`
 
 **Structure:**
-- **Path:** `Cursor-Project/test_cases/<Topic_name>.md` (e.g. `Invoice_cancellation.md`, `Product_contract_create.md`).
-- **Internal split:** Each file has **Backend Test Cases** (`TC-BE-N`) and **Frontend Test Cases** (`TC-FE-N`) sections.
+- **Backend file:** `Cursor-Project/test_cases/Backend/<Topic_name>.md` — contains ONLY **Backend Test Cases** (`TC-BE-N`).
+- **Frontend file:** `Cursor-Project/test_cases/Frontend/<Topic_name>.md` — contains ONLY **Frontend Test Cases** (`TC-FE-N`).
+- Both files share the same `<Topic_name>` (e.g. `Invoice_cancellation.md`).
+- Each file must have at least one Positive and one Negative TC. If a layer is not applicable, create the file with an N/A note.
 - Use underscores for multi-word topic names.
 
 **Rules:**
-- One `.md` file per topic (task, bug, feature) — all test cases in that single file.
-- Each file MUST follow **`Cursor-Project/config/template/Test_case_template.md`**: document title, Jira, Type, Summary, Scope, Test data (preconditions), then Backend Test Cases (TC-BE-1, TC-BE-2, …) and Frontend Test Cases (TC-FE-1, TC-FE-2, …). Each TC has Description, Preconditions, Test steps, Expected test case results, Actual result (if bug), References.
-- **Include both positive and negative test cases** in each section: at least one **(Positive)** and one **(Negative)** per section (Backend and Frontend). If a section is not applicable, keep the heading with a note.
-- Regression/impact cases (from cross_dependency_data) go in the most relevant section (Backend or Frontend).
+- Two `.md` files per topic (task, bug, feature) — Backend TCs in Backend/, Frontend TCs in Frontend/.
+- Each file MUST follow **`Cursor-Project/config/template/Test_case_template.md`**: document title, Jira, Type, Summary, Scope, Test data (preconditions with creation-step format), then test case scenarios. Backend file has only TC-BE-N; Frontend file has only TC-FE-N.
+- Regression/impact cases (from cross_dependency_data) go in the most relevant file (Backend or Frontend).
 - Content spec: **`Cursor-Project/config/template/Test_case_template.md`**.
 
 **Also include in output (e.g. in a summary or index):**
 - Confluence references – relevant Confluence pages.
 - Codebase analysis – code references (paths, snippets).
-- File path where test cases were saved (e.g. `test_cases/Invoice_cancellation.md`).
+- File paths where test cases were saved (e.g. `test_cases/Backend/Invoice_cancellation.md` and `test_cases/Frontend/Invoice_cancellation.md`).
+
+Update `test_cases/README.md`, `test_cases/Backend/README.md`, and `test_cases/Frontend/README.md` when adding new files.
 
 ## Constraints
 
@@ -108,5 +112,5 @@ When writing preconditions (document-level "Test data" and per-TC "Preconditions
 
 ## Output
 
-- Return the generated test cases (and file path if saved).
+- Return the generated test cases (and file paths if saved).
 - End with **Agents involved: TestCaseGeneratorAgent, PhoenixExpert** (if consulted) or **Agents involved: TestCaseGeneratorAgent**.

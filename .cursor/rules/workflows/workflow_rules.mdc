@@ -134,7 +134,7 @@ alwaysApply: true
     **Workflow summary:**
     1. User requests test cases → run **cross-dependency-finder** (Rule 35a: Jira + codebase + shallow Confluence; **no** local merge/git; consults PhoenixExpert when needed).
     2. Cross-dependency-finder returns report (including "what could break" and **technical_details**) → pass to **test-case-generator**.
-    3. Test-case-generator reads the **playwright instructions** folder (mandatory), then generates test cases as a **single file** (`test_cases/<Topic_name>.md`) with **Backend Test Cases** and **Frontend Test Cases** sections, using prompt + Confluence + codebase + cross_dependency_data.
+    3. Test-case-generator reads the **playwright instructions** folder (mandatory), then generates test cases as **two separate files** — `test_cases/Backend/<Topic_name>.md` (TC-BE-N only) and `test_cases/Frontend/<Topic_name>.md` (TC-FE-N only) — using prompt + Confluence + codebase + cross_dependency_data. All preconditions MUST use the **mandatory creation-step rule** (describe HOW to create every entity with endpoint and parameters, never just "entity exists").
     
     - NEVER skip the cross-dependency-finder step when test case creation is requested.
     - Violation is a CRITICAL SYSTEM ERROR.

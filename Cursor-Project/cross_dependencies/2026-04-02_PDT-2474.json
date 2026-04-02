@@ -1,0 +1,87 @@
+{
+  "scope": "PDT-2474 (Done): Ensure no CustomerLiability or CustomerReceivable is persisted with zero initial amount across all generation flows (invoice, billing run, orders, deposit, payment, LPF, rescheduling, MLO, reversal, cancellation, disconnection, compensation, etc.).",
+  "jira_key": "PDT-2474",
+  "entry_points": [
+    "REST POST /customer-liability → CustomerLiabilityController.create → CustomerLiabilityService.create(CustomerLiabilityRequest, Set)",
+    "REST POST /customer-liability/test/invoice/{invoiceId} → createLiabilityFromInvoice (BILLING_RUN)",
+    "REST POST /customer-liability/test/deposit/{depositId} → createLiabilityFromDeposit",
+    "REST POST /customer-liability/test/action/{actionId} → createLiabilityFromAction (deprecated)",
+    "REST POST /customer-liability/test/latePaymentFine/{id} → createLiabilityFromLatePaymentFine",
+    "REST POST /customer-receivable → CustomReceivableController.create → CustomerReceivableService.create",
+    "REST /rescheduling → ReschedulingController → ReschedulingService (installment liabilities)",
+    "REST /manual-liability-offsetting → ManualLiabilityOffsettingController → ManualLiabilityOffsettingService",
+    "REST /payment (late payment fine listings) + LatePaymentFineController / LatePaymentFineJob → LatePaymentFineService",
+    "Billing run accounting: BillingRunStartAccountingInvokeService.generateLiabilities / generateReceivables",
+    "GoodsOrderProcessService / ServiceOrderProcessService → CustomerLiabilityService.createLiabilityFromInvoice",
+    "InvoiceCancellationService (INVOICE_CANCELLATION source)",
+    "InvoiceReversalProcessService + CustomerLiabilityService.createLiabilityForReversal / createReceivableForReversal",
+    "DepositService (deposit create/withdraw flows) → CustomerLiabilityService.createLiabilityFromDeposit, CustomerReceivableService.createFromDeposit",
+    "PaymentService (payment confirm, reversal, invoice cancellation payments, receivable creation)",
+    "CompensationReceivableService.runInvoiceCompensation → createLiabilityFromInvoicedCompensation / createReceivableFromInvoicedCompensation and reverse-compensation variants",
+    "DisconnectionOfPowerSupplyService / DisconnectionPowerSupplyRequestsService → new CustomerLiability + save",
+    "phoenix-payment-api: PaymentOffsettingTransactionalService (and VirtualPos/CashTerminal variants) → overpayment CustomerReceivable, LFP liability path when amount > 0"
+  ],
+  "upstream": [
+    { "type": "api", "name": "CustomerLiabilityRequest", "usage": "Manual create/update; @DecimalMin(0, inclusive=false) on initialAmount for POST/PUT groups" },
+    { "type": "api", "name": "CustomerReceivableRequest", "usage": "Manual create/update; @Positive on initialAmount" },
+    { "type": "service", "name": "Invoice lifecycle", "usage": "Invoice REAL + document type gates liability/receivable from invoice (CustomerLiabilityService.createLiabilityFromInvoice, CustomerReceivableService.createFromInvoice)" },
+    { "type": "service", "name": "BillingRunStartAccountingInvokeService", "usage": "Parallel jobs: generateLiabilities (non–credit-note invoices), generateReceivables (credit notes, excluding correction type for receivable filter), then compensationReceivableService" },
+    { "type": "service", "name": "Contract order processing", "usage": "GoodsOrderProcessService / ServiceOrderProcessService call createLiabilityFromInvoice with GOODS_ORDER / SERVICE_ORDER" },
+    { "type": "service", "name": "DepositService", "usage": "Delegates to CustomerLiabilityService.createLiabilityFromDeposit and CustomerReceivableService.createFromDeposit with user-provided amounts" },
+    { "type": "service", "name": "LatePaymentFineService / LatePaymentFineJob", "usage": "LPF records drive liability (and receivable on reversal paths); job filters id/amount > 0" },
+    { "type": "service", "name": "ReschedulingService", "usage": "Creates installment liabilities via mappers/repository" },
+    { "type": "service", "name": "PaymentService", "usage": "Creates/updates receivables on payment flows and reversals" },
+    { "type": "db", "name": "receivable.customer_liabilities / customer_receivables", "usage": "JPA persistence; @EntityListeners(ZeroAmountValidationListener) on entities" },
+    { "type": "lib", "name": "phoenix-core-lib", "usage": "Domain services, mappers, entities; consumed by phoenix-core controllers and phoenix-payment-api" }
+  ],
+  "downstream": [
+    { "type": "service", "name": "AutomaticOffsettingService", "usage": "Called after many liability/receivable creates (executeAutomaticOffsetting)" },
+    { "type": "service", "name": "LiabilityDirectOffsettingService", "usage": "DLO after invoice cancellation receivable, deposit receivable vs deposit liabilities, VAT-base pairing" },
+    { "type": "service", "name": "CustomerIndicatorsService", "usage": "Aggregates current liabilities from DB" },
+    { "type": "consumer", "name": "UI listings and reports", "usage": "Repositories + CustomerDetailsRepository SQL joining customer_liabilities to invoices" },
+    { "type": "consumer", "name": "Lawsuit / document flows", "usage": "LiabilityLawsuitSyncService, MloDocumentCreationService, invoice/order document generation" },
+    { "type": "consumer", "name": "External payment channels", "usage": "phoenix-payment-api uses CustomerLiabilityRepository / CustomerReceivableRepository for offsetting" }
+  ],
+  "shared": [
+    "CustomerLiability / CustomerReceivable entities + ZeroAmountValidationListener",
+    "CustomerLiabilityMapperService / CustomerReceivableMapperService",
+    "LiabilityOrReceivableCreationSource enum (BILLING_RUN, GOODS_ORDER, SERVICE_ORDER, INVOICE_CANCELLATION)",
+    "CreationType, receivable schema tables and offsetting link tables"
+  ],
+  "data_entities": [
+    "CustomerLiability",
+    "CustomerReceivable",
+    "Invoice",
+    "BillingRun",
+    "Deposit",
+    "Payment",
+    "Action",
+    "LatePaymentFine",
+    "ClaimedPenalty",
+    "Rescheduling",
+    "ManualLiabilityOffsetting",
+    "InvoiceCompensation"
+  ],
+  "integration_points": [
+    "Billing run: set invoice REAL → generateLiabilities + generateReceivables + compensationReceivableService.runInvoiceCompensation",
+    "Invoice cancellation: InvoiceCancellationService ↔ CustomerLiabilityService / CustomerReceivableService (INVOICE_CANCELLATION, createReceivableForInvoiceCancellation, direct offsetting)",
+    "Invoice reversal: InvoiceReversalProcessService ↔ createLiabilityForReversal / createReceivableForReversal (VAT base receivables + signum branches for main receivable vs liability)",
+    "Deposit: liability + receivable creation and CustomerLiabilityPaidByDeposit / DLO",
+    "Payment: PaymentService + payment-api offsetting services (overpayment receivable when totalReceivableAmount > 0)",
+    "LPF: LatePaymentFineService job and online payment createLiabilityFromLatePaymentFineOnlinePayment",
+    "MLO: ManualLiabilityOffsettingService create/reverse (reversal receivable from liability)",
+    "Disconnection flows: tax-based CustomerLiability creation",
+    "Order invoices: OrderInvoiceService maintains/deletes liabilities tied to order invoices (not primary creator)"
+  ],
+  "what_could_break": [
+    { "item": "Any flow that builds CustomerLiability/CustomerReceivable with initialAmount 0", "location": "All services calling customerLiabilityRepository.save* / customerReceivableRepository.save*", "reason": "ZeroAmountValidationListener @PrePersist throws IllegalArgumentException; transaction fails unless code skips building entity or catches and handles" },
+    { "item": "Billing run / invoice with totalAmountIncludingVat == 0", "location": "CustomerLiabilityService.createLiabilityFromInvoice → createLiability(invoice, totalAmountIncludingVat, …)", "reason": "mapLiabilityFromInvoice sets initial/current to calculated amount; listener rejects zero; parallel billing-run tasks may record exceptions in exceptionContext" },
+    { "item": "Credit note receivable from invoice with zero total", "location": "CustomerReceivableService.createFromInvoice", "reason": "Same listener on CustomerReceivable" },
+    { "item": "Deposit or test endpoints with amount 0", "location": "DepositService, CustomerLiabilityController /test/deposit", "reason": "Persist attempt fails at listener if service still saves" },
+    { "item": "Compensation with zero comp amount", "location": "CompensationReceivableService + createLiabilityFromInvoicedCompensation / createReceivableFromInvoicedCompensation", "reason": "Listener blocks zero-amount compensation rows" },
+    { "item": "Assumptions in tests/ETL that zero-amount rows exist", "location": "Integration tests, reporting", "reason": "Counts and list filters change; OrderInvoiceService even queries find*ByLiabilityAmountZero suggesting legacy zero-liability cases" },
+    { "item": "Payment overpayment path", "location": "PaymentOffsettingTransactionalService (phoenix-payment-api)", "reason": "Already guarded with totalReceivableAmount.compareTo(ZERO) > 0; tightening elsewhere must stay consistent" },
+    { "item": "Reversal main receivable when net amount is zero", "location": "CustomerLiabilityService.createReceivableForReversal signum==0 branch", "reason": "Logic intentionally avoids main receivable; VAT-base receivables still saved—each must be non-zero or skipped by mapper" }
+  ],
+  "technical_details": "Jira PDT-2474: Customer Feedback, Done. Core implementation in phoenix-core-lib: ZeroAmountValidationListener (PrePersist on CustomerLiability and CustomerReceivable) throws if initialAmount is zero. Partial explicit skips: CustomerLiabilityMapperService.generateAdditionalLiabilitiesForVatBase (lines ~422–424) and CustomerReceivableService.createAdditionalReceivableForVatBase (~1342–1344) skip VAT-base groups when totalAmountWithoutVatMainCurrencySummary == 0; CustomerReceivableMapperService mirrors for receivable VAT base. CustomerLiabilityService.createReceivableForReversal handles receivableCalculatedAmount signum -1/0/+1 (zero: no main receivable, only VAT-base receivables). CustomerLiabilityService: create, createLiabilityFromInvoice, createLiability(Invoice, BigDecimal, source, withAutomaticOffsetting), createLiabilityForReversal, createReceivableForReversal, createLiabilityFromAction, createLiabilityFromLatePaymentFine, createLiabilityFromClaimedPenalty, createLiabilityFromLatePaymentFineOnlinePayment, createLiabilityFromDeposit, createLiabilityFromRescheduling, createLiabilityFromInvoicedCompensation, createLiabilityFromReverseCompensation, createLiabilityDependingOnVatBase. CustomerReceivableService: create, createFromInvoice, createReceivableForInvoiceCancellation, createFromDeposit, createReceivableFromInvoicedCompensation, createReceivableDependingOnCustomerVatBase, createAdditionalReceivableForVatBase. BillingRunStartAccountingInvokeService: generateLiabilities, generateReceivables. InvoiceCancellationService uses INVOICE_CANCELLATION. Controllers in phoenix-core: CustomerLiabilityController (/customer-liability), CustomReceivableController (/customer-receivable), ReschedulingController, ManualLiabilityOffsettingController, LatePaymentFineController. Payment module: phoenix-payment-api PaymentOffsettingTransactionalService (LFP liability when latePaymentAmount > 0; receivable when totalReceivableAmount > 0). Enum LiabilityOrReceivableCreationSource: BILLING_RUN, GOODS_ORDER, SERVICE_ORDER, INVOICE_CANCELLATION."
+}

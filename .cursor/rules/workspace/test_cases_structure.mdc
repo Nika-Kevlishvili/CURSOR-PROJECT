@@ -4,57 +4,66 @@ alwaysApply: true
 
 # TEST CASES FOLDER STRUCTURE [MANDATORY]
 
-## Rule: Test cases MUST use a flat single-file layout under `Cursor-Project/test_cases/`
+## Rule: Test cases MUST use a two-folder layout under `Cursor-Project/test_cases/`
 
 When creating, moving, or organizing test cases, ALWAYS follow this structure. This is the only accepted layout for test case files.
 
 ---
 
-## Root layout (flat — one `.md` per topic)
+## Root layout (Backend/ and Frontend/ sub-folders)
 
 **Path:** `Cursor-Project/test_cases/`
 
-All test case files live **directly** under the root — no sub-folders (no `Objects/`, no `Flows/`).
+Test case files are split into **two sub-folders** by testing layer:
 
-**Path pattern:** `test_cases/<Topic_name>.md`
+| Folder | Contents |
+|--------|----------|
+| **Backend/** | Backend (API) test cases — `TC-BE-N`. One `.md` file per topic. |
+| **Frontend/** | Frontend (UI) test cases — `TC-FE-N`. One `.md` file per topic. |
+
+Each topic produces **two files** with the **same `<Topic_name>`** — one in each folder:
+
+**Path patterns:**
+- `test_cases/Backend/<Topic_name>.md` — contains only **Backend Test Cases** (`TC-BE-N`).
+- `test_cases/Frontend/<Topic_name>.md` — contains only **Frontend Test Cases** (`TC-FE-N`).
 
 - **&lt;Topic_name&gt;** = descriptive name for the task, bug, feature, or flow being tested. Use underscores for multi-word names.
-- One `.md` file per topic. All test cases (backend and frontend) for that topic are inside the single file.
+- The Backend file MUST NOT contain Frontend test cases, and vice versa.
 
 **Examples:**
-- `test_cases/Invoice_cancellation.md`
-- `test_cases/Product_contract_create.md`
-- `test_cases/Contract_termination.md`
-- `test_cases/POD_coordinate_search.md`
-- `test_cases/Billing_credit_note_reversal.md`
+- `test_cases/Backend/Invoice_cancellation.md` + `test_cases/Frontend/Invoice_cancellation.md`
+- `test_cases/Backend/Product_contract_create.md` + `test_cases/Frontend/Product_contract_create.md`
+- `test_cases/Backend/Zero_amount_liability_receivable.md` + `test_cases/Frontend/Zero_amount_liability_receivable.md`
+
+If a topic genuinely has no backend or no frontend test cases, the file in that folder MUST still be created with a note: *"No backend test cases applicable for this scope."* or *"No frontend test cases applicable for this scope."*
 
 ---
 
-## README (index of all test case files)
+## READMEs (index files)
 
-- **test_cases/README.md** — Lists every test case file with a short description (topic, Jira key if applicable). Update this README whenever a new test case file is added.
+- **test_cases/README.md** — Root index listing all topics with links to both Backend and Frontend files.
+- **test_cases/Backend/README.md** — Index of all backend test case files.
+- **test_cases/Frontend/README.md** — Index of all frontend test case files.
 
-No sub-folder READMEs are needed (there are no sub-folders).
+Update all applicable READMEs whenever a new test case file is added.
 
 ---
 
-## Internal structure of each test case file (Backend / Frontend split)
-
-Every test case `.md` file MUST be divided into two main sections: **Backend Test Cases** and **Frontend Test Cases**. Each section has its own numbered test cases.
-
-### TC numbering
+## TC numbering
 
 - **Backend:** `TC-BE-1`, `TC-BE-2`, `TC-BE-3`, …
 - **Frontend:** `TC-FE-1`, `TC-FE-2`, `TC-FE-3`, …
 
 Each TC heading includes its type: `TC-BE-1 (Positive): {title}` or `TC-FE-2 (Negative): {title}`.
 
-### Mandatory coverage per section
+## Mandatory coverage per file
 
-- Each section (Backend and Frontend) MUST include at least one **(Positive)** and one **(Negative)** test case.
-- If a topic genuinely has no backend or no frontend test cases, the section heading MUST still be present with a note: *"No backend test cases applicable for this scope."* or *"No frontend test cases applicable for this scope."*
+- Each file (Backend and Frontend) MUST include at least one **(Positive)** and one **(Negative)** test case (when the section is applicable).
+- If a topic has no applicable test cases for that layer, the file still exists with an N/A note (see above).
 
-### File skeleton
+---
+
+## File skeleton — Backend file (`test_cases/Backend/<Topic_name>.md`)
 
 ```
 # {Document title} – {Short scope} ({JIRA_KEY})
@@ -65,7 +74,7 @@ Each TC heading includes its type: `TC-BE-1 (Positive): {title}` or `TC-FE-2 (Ne
 ---
 
 ## Test data (preconditions)
-{Shared setup — environment, entities, data chain}
+{Shared setup — environment, entities, full data creation chain}
 
 ---
 
@@ -76,6 +85,24 @@ Each TC heading includes its type: `TC-BE-1 (Positive): {title}` or `TC-FE-2 (Ne
 
 ### TC-BE-2 (Negative): {title}
 …
+
+---
+
+## References
+```
+
+## File skeleton — Frontend file (`test_cases/Frontend/<Topic_name>.md`)
+
+```
+# {Document title} – {Short scope} ({JIRA_KEY})
+
+**Jira:** …  **Type:** …  **Summary:** …
+**Scope:** …
+
+---
+
+## Test data (preconditions)
+{Shared setup — environment, entities, full data creation chain}
 
 ---
 
@@ -96,17 +123,17 @@ Each TC heading includes its type: `TC-BE-1 (Positive): {title}` or `TC-FE-2 (Ne
 
 ## Content of test case files (structure and readability)
 
-The **content** of each test case `.md` file MUST follow the **Test Case Template**: **`Cursor-Project/config/template/Test_case_template.md`**. That template defines: document header (title, Jira, Type, Summary, Scope), Test data (preconditions), then Backend and Frontend sections with TC-BE-N / TC-FE-N scenarios. Each scenario has: Test title (in the TC heading), Description, Preconditions, Test steps, Expected test case results, Actual result (if bug), References. Test cases must be **maximally detailed** and **human-readable** (plain English, full sentences where helpful, no unexplained jargon). See the template for placeholders and examples.
+The **content** of each test case `.md` file MUST follow the **Test Case Template**: **`Cursor-Project/config/template/Test_case_template.md`**. That template defines: document header (title, Jira, Type, Summary, Scope), Test data (preconditions), then test case scenarios with TC-BE-N or TC-FE-N numbering. Each scenario has: Test title (in the TC heading), Description, Preconditions, Test steps, Expected test case results, Actual result (if bug), References. Test cases must be **maximally detailed** and **human-readable** (plain English, full sentences where helpful, no unexplained jargon). See the template for placeholders, examples, and the **mandatory creation-step precondition rule**.
 
 ---
 
 ## Summary
 
 1. **Root:** `Cursor-Project/test_cases/`
-2. **Layout:** Flat — one `.md` file per topic directly under root (no sub-folders).
-3. **Naming:** `<Topic_name>.md` with underscores (e.g. `Invoice_cancellation.md`).
-4. **Internal split:** Every file has **Backend Test Cases** (`TC-BE-N`) and **Frontend Test Cases** (`TC-FE-N`) sections.
-5. **Coverage:** Both sections must have positive + negative TCs (or an explicit N/A note).
-6. **README:** Only `test_cases/README.md` — index of all test case files.
+2. **Layout:** Two sub-folders — `Backend/` for TC-BE-N files, `Frontend/` for TC-FE-N files.
+3. **Naming:** `<Topic_name>.md` with underscores — same name in both folders (e.g. `Backend/Invoice_cancellation.md` + `Frontend/Invoice_cancellation.md`).
+4. **Separation:** Backend file contains ONLY backend test cases; Frontend file contains ONLY frontend test cases. No mixing.
+5. **Coverage:** Each file must have positive + negative TCs (or an explicit N/A note).
+6. **READMEs:** `test_cases/README.md` (root index), `test_cases/Backend/README.md`, `test_cases/Frontend/README.md`.
 
-Always use this layout when creating or organizing test cases. Violation: place test case files in sub-folders, omit the Backend/Frontend split, or use the old Objects/Flows structure for new test cases.
+Always use this layout when creating or organizing test cases. Violation: place both backend and frontend TCs in a single file, omit the Backend/Frontend folder split, or use the old flat / Objects / Flows structure for new test cases.
