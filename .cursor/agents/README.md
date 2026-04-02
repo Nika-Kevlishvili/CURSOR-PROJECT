@@ -21,7 +21,7 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 | **shell.md** | Shell / CLI | Delegated terminal + safe git/CLI; hooks + `git_sync_workflow` for multi-repo sync. |
 | **environment-access.md** | Environment access | Dev/Dev2; browser/MCP per subagent doc. |
 | **postman-collection.md** | Postman collections | PhoenixExpert first; save under `postman/`. |
-| **test-case-generator.md** | Test cases (Rule 35) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.md`; Confluence + codebase + `cross_dependency_data`; prefer `test_cases/Objects/` and `test_cases/Flows/`. |
+| **test-case-generator.md** | Test cases (Rule 35) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.md`; Confluence + codebase + `cross_dependency_data`; save as `test_cases/<Topic>.md` with Backend/Frontend split. |
 | **cross-dependency-finder.md** | Cross-dependencies (Rule 35, 35a) | Jira + code + shallow Confluence; **no** local merge/git; hand off to test-case-generator. |
 | **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8.1) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.spec.ts`; Playwright under `EnergoTS/tests/` only. |
 | **energo-ts-run.md** | Playwright runner (Rule 36) | `npx playwright test` from EnergoTS; `cursor` branch only. |

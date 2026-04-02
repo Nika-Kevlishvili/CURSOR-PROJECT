@@ -27,7 +27,7 @@ Use this command when the user asks to:
 3. **Confluence (MCP)** – Search and collect relevant docs (title, content, pageId, spaceId).
 4. **Codebase** – Search for terms from the prompt; collect codebase_findings.
 5. **Generate** – Call TestCaseGeneratorAgent with `prompt`, `prompt_type` ('bug'|'task'), `confluence_data`, and `context={'codebase_findings': ..., 'cross_dependency_data': <from Step 1>}` (generator MUST have loaded the Playwright instruction pack in step 0).
-6. **Save** – Write test cases in the **hierarchical format** to `Cursor-Project/generated_test_cases/` (see below).
+6. **Save** – Write test cases as a **single file** to `Cursor-Project/test_cases/<Topic_name>.md` with Backend/Frontend split (see below).
 7. **Report** – Generate reports (Rule 0.6).
 
 ## Output – Structure and content (MANDATORY)
@@ -39,20 +39,18 @@ Use this command when the user asks to:
 - **Regression/impact:** every scenario from `cross_dependency_data` (what_could_break, integration points) that could be affected.
 Do **not** limit to 2–3 test cases; aim for **all plausible scenarios** so the task or bug is covered entirely.
 
-**Content template:** Every test case document MUST follow the **Test Case Template**: **`Cursor-Project/config/template/Test_case_template.md`**. Use that template’s structure (header, Summary, Scope, Test data, TC-1/TC-2/… with Test title in the heading, Description, Preconditions, Test steps, Expected test case results, Actual result if bug, References). **Include both positive and negative scenarios:** at least one **Positive** (valid input, happy path, expected success) and at least one **Negative** (invalid input, error condition, expected rejection); label each TC as **(Positive)** or **(Negative)**. Write in **maximally detailed**, **human-readable** language (full sentences where helpful, no unexplained jargon, plain English). Same rules apply whether saving under `generated_test_cases/` or `test_cases/Flows/` / `test_cases/Objects/`.
+**Content template:** Every test case document MUST follow the **Test Case Template**: **`Cursor-Project/config/template/Test_case_template.md`**. Use that template’s structure (header, Summary, Scope, Test data, TC-1/TC-2/… with Test title in the heading, Description, Preconditions, Test steps, Expected test case results, Actual result if bug, References). **Include both positive and negative scenarios:** at least one **Positive** (valid input, happy path, expected success) and at least one **Negative** (invalid input, error condition, expected rejection); label each TC as **(Positive)** or **(Negative)**. Write in **maximally detailed**, **human-readable** language (full sentences where helpful, no unexplained jargon, plain English). Each file has **Backend Test Cases** (`TC-BE-N`) and **Frontend Test Cases** (`TC-FE-N`) sections. If a section is not applicable, keep the heading with a note.
 
-**Folder (generic flow):** Save under:
+**Folder:** Save as a single `.md` file per topic under:
 
-**Root:** `Cursor-Project/generated_test_cases/`
+**Root:** `Cursor-Project/test_cases/`
 
 **Structure:**
-- **Object/** – Entities and actions (e.g. customer → Create, Edit, …; contract → …).
-- **Flows/** – Business flows and variants (e.g. Billing → Standard → For_volumes → scale, Profile; interim; …).
-- **Leaf:** One `.md` file per logical group (e.g. `Create.md`, `Profile.md`). Each file follows the template: clear title, Summary, Scope, Test data, then TC-1, TC-2, … with Description, Preconditions, Test steps, Expected test case results (and Actual result if bug).
+- **Path:** `Cursor-Project/test_cases/<Topic_name>.md` (e.g. `Invoice_cancellation.md`, `Product_contract_create.md`).
+- **Internal split:** Each file has **Backend Test Cases** (`TC-BE-N`) and **Frontend Test Cases** (`TC-FE-N`) sections.
+- Use underscores for multi-word topic names.
 
-**Folder (HandsOff):** When generating for HandsOff, save under **`Cursor-Project/test_cases/Flows/<Flow_name>/`** or **`Cursor-Project/test_cases/Objects/<Entity_name>/`** (see `.cursor/rules/workspace/test_cases_structure.mdc`). Content still MUST follow **`Cursor-Project/config/template/Test_case_template.md`**.
-
-Full spec (hierarchy): `Cursor-Project/docs/TEST_CASES_HIERARCHY_FORMAT.md`. Content spec: `Cursor-Project/config/template/Test_case_template.md`.
+This applies to both generic flow and HandsOff — all test cases go to `Cursor-Project/test_cases/<Topic_name>.md`. Content spec: `Cursor-Project/config/template/Test_case_template.md`.
 
 ## Constraints
 
@@ -63,7 +61,7 @@ Full spec (hierarchy): `Cursor-Project/docs/TEST_CASES_HIERARCHY_FORMAT.md`. Con
 ## Response Requirements
 
 - State "**Agent:** TestCaseGeneratorAgent" at beginning when applicable.
-- Return the generated test cases and the paths where they were saved (e.g. Object/customer/Create.md, Flows/Billing/Standard/…).
+- Return the generated test cases and the path where they were saved (e.g. `test_cases/Invoice_cancellation.md`).
 - End with: "Agents involved: TestCaseGeneratorAgent, CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
 
 ## Generate Reports (Rule 0.6)

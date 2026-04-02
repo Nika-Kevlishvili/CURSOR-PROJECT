@@ -1,18 +1,20 @@
 # Test case document template
 
-**Scope:** All `.md` files under `Cursor-Project/test_cases/Objects/` and `Cursor-Project/test_cases/Flows/` MUST follow this structure. Use **plain English**, full sentences where helpful, no unexplained jargon.
+**Scope:** All `.md` files under `Cursor-Project/test_cases/` MUST follow this structure. Use **plain English**, full sentences where helpful, no unexplained jargon.
 
-**Positive and negative (mandatory):** Each document MUST include at least one **(Positive)** and one **(Negative)** scenario. Label every TC in its heading: `TC-1 (Positive): …` or `TC-2 (Negative): …`.
+**Backend / Frontend split (mandatory):** Each document MUST contain two sections: **Backend Test Cases** and **Frontend Test Cases**. Backend TCs use prefix `TC-BE-N`, frontend TCs use `TC-FE-N`. If a section is not applicable, keep the heading with a note: *"No backend/frontend test cases applicable for this scope."*
+
+**Positive and negative (mandatory):** Each section (Backend and Frontend) MUST include at least one **(Positive)** and one **(Negative)** scenario (when the section is applicable). Label every TC in its heading: `TC-BE-1 (Positive): …` or `TC-FE-2 (Negative): …`.
 
 **Per test case — use exactly these blocks (in this order):**
 
 | Block | Meaning |
 |-------|---------|
-| **Test title** | Issue-style summary: what this case is about (also the text after `TC-N (Positive|Negative):` in the heading). |
+| **Test title** | Issue-style summary: what this case is about (also the text after `TC-BE-N (Positive|Negative):` in the heading). |
 | **Description** | What needs to be checked; the verification goal. |
 | **Preconditions** | **Complete data chain** that must exist before you run this case (numbered list). List every entity, relationship, and attribute that the test depends on — from top-level (customer) down to the entity under test. See **Data completeness rule** below. |
 | **Test steps** | Actions to perform during the test (numbered list). |
-| **Expected test case results** | Correct system/user-visible outcome; what “pass” looks like. |
+| **Expected test case results** | Correct system/user-visible outcome; what "pass" looks like. |
 
 Optional for bugs: **Actual result** (current wrong behaviour). Optional: **References** (Jira, Confluence, API name).
 
@@ -71,7 +73,9 @@ Shared setup for this file (environment + entities). List the **full data chain*
 
 ---
 
-## TC-1 (Positive): {Test title — issue summary stating the test purpose}
+## Backend Test Cases
+
+### TC-BE-1 (Positive): {Test title — issue summary stating the test purpose}
 
 **Description:** {What needs to be checked.}
 
@@ -83,7 +87,7 @@ Shared setup for this file (environment + entities). List the **full data chain*
 1. {…}
 2. {…}
 
-**Expected test case results:** {Correct response: what the user sees / system does; what must not happen.}
+**Expected test case results:** {Correct response: what the API returns / system does; status code, body, side effects.}
 
 **Actual result (if bug):** {Omit if not a bug.}
 
@@ -91,7 +95,7 @@ Shared setup for this file (environment + entities). List the **full data chain*
 
 ---
 
-## TC-2 (Negative): {Test title — issue summary stating the test purpose}
+### TC-BE-2 (Negative): {Test title — issue summary stating the test purpose}
 
 **Description:** {What needs to be checked.}
 
@@ -101,7 +105,47 @@ Shared setup for this file (environment + entities). List the **full data chain*
 **Test steps:**
 1. {…}
 
-**Expected test case results:** {Rejection, error, or safe failure — no bad data created.}
+**Expected test case results:** {Rejection, error, or safe failure — no bad data created; expected status code and error message.}
+
+**Actual result (if bug):** {Optional.}
+
+**References:** {Optional.}
+
+---
+
+## Frontend Test Cases
+
+### TC-FE-1 (Positive): {Test title — issue summary stating the test purpose}
+
+**Description:** {What needs to be checked.}
+
+**Preconditions:**
+1. {…}
+2. {…}
+
+**Test steps:**
+1. {…}
+2. {…}
+
+**Expected test case results:** {Correct UI behaviour: what the user sees, form states, navigation, success messages.}
+
+**Actual result (if bug):** {Omit if not a bug.}
+
+**References:** {Optional.}
+
+---
+
+### TC-FE-2 (Negative): {Test title — issue summary stating the test purpose}
+
+**Description:** {What needs to be checked.}
+
+**Preconditions:**
+1. {…}
+
+**Test steps:**
+1. {…}
+
+**Expected test case results:** {UI validation error, disabled button, error toast — no bad data submitted.}
 
 **Actual result (if bug):** {Optional.}
 
@@ -122,10 +166,10 @@ Shared setup for this file (environment + entities). List the **full data chain*
 | Part | Rule |
 |------|------|
 | Document `#` title | Short; end with `({JIRA_KEY})`. |
-| **Test title** (in `TC-N` line) | One line; same idea as an issue summary. |
+| **Test title** (in `TC-BE-N` / `TC-FE-N` line) | One line; same idea as an issue summary. |
 | **Description** | Verification intent — not a repeat of the title only; say *what* is validated. |
 | **Preconditions** | Numbered; **full data chain** — every entity, type, state, date, and amount the test depends on. Reference **Test data** for shared setup; add TC-specific details here. Apply the specificity principle: generic when any instance works, specific when the test is sensitive to type/state/value. |
-| **Test steps** | One action per step; use “e.g.” if several ways to execute. |
+| **Test steps** | One action per step; use "e.g." if several ways to execute. |
 | **Expected test case results** | Observable outcome; add HTTP code in parentheses only after behaviour is described. |
 
 ---
@@ -165,9 +209,11 @@ Shared setup for this file (environment + entities). List the **full data chain*
 
 ---
 
-## TC-1 (Positive): Cancel paid invoice while package stays locked
+## Backend Test Cases
 
-**Description:** Check that cancellation succeeds and the service does not require an UNLOCKED payment package.
+### TC-BE-1 (Positive): Cancel paid invoice while package stays locked
+
+**Description:** Check that the cancellation API succeeds and the service does not require an UNLOCKED payment package.
 
 **Preconditions:**
 1. Customer, product contract, billing run, invoice, payment, and payment package exist as described in Test data above.
@@ -176,10 +222,10 @@ Shared setup for this file (environment + entities). List the **full data chain*
 4. No prior cancellation exists for this invoice.
 
 **Test steps:**
-1. Submit invoice cancellation for the paid invoice (UI or `POST /invoice-cancellation` with the invoice identifier).
-2. Read response and check cancellation record / invoice state.
+1. Submit invoice cancellation via `POST /invoice-cancellation` with the invoice identifier.
+2. Read response status and body; check cancellation record / invoice state.
 
-**Expected test case results:** The invoice cancellation is created successfully. The system does not require the payment package to be UNLOCKED for this flow. No error message referencing lock status.
+**Expected test case results:** The invoice cancellation is created successfully (HTTP 200/201). The system does not require the payment package to be UNLOCKED for this flow. No error message referencing lock status.
 
 **Actual result (if bug):** Error: "Payment package not found with id … and lock status in UNLOCKED"; cancellation blocked.
 
@@ -187,7 +233,7 @@ Shared setup for this file (environment + entities). List the **full data chain*
 
 ---
 
-## TC-2 (Negative): Reject cancel when invoice id is invalid
+### TC-BE-2 (Negative): Reject cancel when invoice id is invalid
 
 **Description:** Check that invalid or missing invoice reference is rejected clearly and no cancellation is stored.
 
@@ -199,9 +245,50 @@ Shared setup for this file (environment + entities). List the **full data chain*
 1. Call `POST /invoice-cancellation` with an empty, malformed, or non-existent invoice identifier.
 2. Inspect response status and body; verify no cancellation record was created for any valid invoice.
 
-**Expected test case results:** Validation or not-found error (e.g. HTTP 400 or 404); message explains the problem; no orphan or incorrect cancellation row in the database.
+**Expected test case results:** Validation or not-found error (HTTP 400 or 404); message explains the problem; no orphan or incorrect cancellation row in the database.
 
 **References:** Invoice cancellation API input validation.
+
+---
+
+## Frontend Test Cases
+
+### TC-FE-1 (Positive): Cancel paid invoice from invoice detail page
+
+**Description:** Check that the UI allows cancellation of a paid invoice with a locked payment package and shows a success confirmation.
+
+**Preconditions:**
+1. Same data as Test data above (paid invoice, locked payment package).
+2. User is logged into the portal with invoice-cancellation permissions.
+
+**Test steps:**
+1. Navigate to the invoice detail page for the paid invoice.
+2. Click the "Cancel invoice" button.
+3. Confirm the cancellation in the confirmation dialog.
+
+**Expected test case results:** The cancellation is submitted successfully. The UI shows a success message (e.g. "Invoice cancelled"). The invoice status updates to CANCELLED on the detail page.
+
+**Actual result (if bug):** Error toast: "Payment package not found with id … and lock status in UNLOCKED"; invoice remains PAID.
+
+**References:** NT-1.
+
+---
+
+### TC-FE-2 (Negative): Cancel button disabled for already-cancelled invoice
+
+**Description:** Check that the UI prevents double cancellation of an already-cancelled invoice.
+
+**Preconditions:**
+1. An invoice exists with status CANCELLED (already cancelled previously).
+2. User is logged into the portal with invoice-cancellation permissions.
+
+**Test steps:**
+1. Navigate to the invoice detail page for the already-cancelled invoice.
+2. Observe the state of the "Cancel invoice" button.
+
+**Expected test case results:** The "Cancel invoice" button is disabled or not visible. No cancellation can be submitted for an already-cancelled invoice.
+
+**References:** Invoice cancellation UI validation.
 
 ---
 
@@ -213,6 +300,6 @@ Shared setup for this file (environment + entities). List the **full data chain*
 
 ---
 
-## Folder layout
+## File layout
 
-Files live under `Cursor-Project/test_cases/Objects/<Entity>/` or `Cursor-Project/test_cases/Flows/<Flow>/`. Update folder `README.md` when adding entities or flows.
+Files live directly under `Cursor-Project/test_cases/<Topic_name>.md`. Update `test_cases/README.md` when adding new files.

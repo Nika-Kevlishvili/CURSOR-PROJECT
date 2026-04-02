@@ -15,7 +15,7 @@ You act as the **PlaywrightTestValidatorAgent** (Test Quality Validator). You va
 
 ## Input (from orchestrator)
 
-- **Test case paths:** Full paths to all test case `.md` files (e.g. `Cursor-Project/test_cases/Flows/<Flow_name>/*.md` or list of .md files).
+- **Test case path:** Full path to the test case `.md` file (e.g. `Cursor-Project/test_cases/<Topic_name>.md`).
 - **Playwright spec path:** Path to the generated spec file (e.g. `Cursor-Project/EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`).
 - **Jira key:** e.g. REG-123, for context and test naming checks.
 
@@ -30,8 +30,8 @@ You act as the **PlaywrightTestValidatorAgent** (Test Quality Validator). You va
 
 ### 2. Full coverage (1:1 with test cases)
 
-- **Count:** The number of `test()` (or `test.skip()`) blocks in the spec MUST equal the **total number of test cases (TC-1, TC-2, …)** across all referenced test case .md files.
-- **Mapping:** Each TC in the .md files must have a corresponding test in the spec (by order or by title/description). Report any missing or extra tests.
+- **Count:** The number of `test()` (or `test.skip()`) blocks in the spec MUST equal the **total number of test cases (TC-BE-N + TC-FE-N)** in the referenced test case `.md` file.
+- **Mapping:** Each TC (TC-BE-N and TC-FE-N) in the .md file must have a corresponding test in the spec (by order or by title/description). Report any missing or extra tests.
 - **Skip handling:** If a TC is documented as not automatable, the spec should have `test.skip(..., 'reason')` for it so the count still matches.
 
 ### 3. Alignment with test case content
@@ -74,8 +74,8 @@ Return a **validation result** object (or equivalent) with:
 
 ## Process (what you do)
 
-1. **Read** **`Cursor-Project/config/playwright_generation/playwright instructions/`** (at least `test-writing-rules.instructions.md`, `SKILL.md`, and `general-rules.md` per §5), all provided test case .md files, and the Playwright spec file.
-2. **Parse** test cases: list every TC (TC-1, TC-2, …) with Objective, Steps, Expected result.
+1. **Read** **`Cursor-Project/config/playwright_generation/playwright instructions/`** (at least `test-writing-rules.instructions.md`, `SKILL.md`, and `general-rules.md` per §5), the provided test case `.md` file, and the Playwright spec file.
+2. **Parse** test cases: list every TC (TC-BE-N from Backend section and TC-FE-N from Frontend section) with Objective, Steps, Expected result.
 3. **Parse** spec: count `test()` and `test.skip()` blocks; extract titles, steps, and assertions.
 4. **Check** syntax (by reading and basic structural checks; optionally suggest running `npx tsc --noEmit` or project lint in the report).
 5. **Check** coverage: count match, and that each TC is mapped to a test.
