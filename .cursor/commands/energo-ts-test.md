@@ -34,10 +34,10 @@ Delegate to **`.cursor/agents/energo-ts-test.md`**. There is **no** Python `get_
 
 ## HandsOff bridge: create Playwright tests FROM test cases [CRITICAL when invoked from HandsOff]
 
-When the **HandsOff** flow invokes the energo-ts-test agent (Step 4), the agent receives **test case .md paths** (e.g. `Cursor-Project/test_cases/Flows/Invoice_cancellation/*.md`) and **Jira key + ticket title**. The agent MUST:
+When the **HandsOff** flow invokes the energo-ts-test agent (Step 4), the agent receives **test case .md paths** (e.g. `Cursor-Project/test_cases/Backend/Invoice_cancellation.md` and `Cursor-Project/test_cases/Frontend/Invoice_cancellation.md`) and **Jira key + ticket title**. The agent MUST:
 
 0. **Read** **`Cursor-Project/config/playwright_generation/playwright instructions/`** (full set per Mandatory Workflow step 0) before writing the spec.
-1. **Read** the test case .md file(s) and parse scenarios (TC-1, TC-2, …), steps, expected results, and entry points (endpoints).
+1. **Read** both test case .md files (Backend and Frontend) and parse scenarios (TC-BE-N from Backend, TC-FE-N from Frontend), steps, expected results, and entry points (endpoints).
 2. **Map** each scenario to a Playwright test: use project **fixtures** (Request, Endpoints, baseFixture, etc.) and **project patterns**; do NOT write custom `getToken()`, `apiRequest()`, or inline auth/request helpers unless they already exist in the framework.
 3. **Produce** a single spec file **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`** with:
    - `test.describe('…')` containing the Jira key and ticket title;

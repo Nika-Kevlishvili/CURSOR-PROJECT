@@ -111,10 +111,10 @@ User: "Create test for REG-1027"
 
 ## When invoked from HandsOff (bridge: test cases → Playwright spec)
 
-You receive **test case .md path** (e.g. `test_cases/Invoice_cancellation.md`) and **Jira key + ticket title**. You MUST:
+You receive **test case .md paths** (e.g. `test_cases/Backend/Invoice_cancellation.md` and `test_cases/Frontend/Invoice_cancellation.md`) and **Jira key + ticket title**. You MUST:
 
 0. **Read** the full **`Cursor-Project/config/playwright_generation/playwright instructions/`** set (see step 0 in **Before Any Task**) if not already loaded this session.
-1. **Read** the .md file and extract scenarios (TC-BE-N and TC-FE-N from Backend and Frontend sections), steps, expected results, and endpoints.
+1. **Read** both .md files (Backend and Frontend) and extract scenarios (TC-BE-N from Backend file, TC-FE-N from Frontend file), steps, expected results, and endpoints.
 2. **Create** the spec using the **EnergoTS framework** (Request, Endpoints, baseFixture, project patterns). Do NOT write custom `getToken()`, `apiRequest()`, or other ad-hoc request helpers; use the project's fixtures and utilities.
 3. **Output** to **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**. One `test()` per main scenario from the .md; describe and test titles must include the Jira key.
 4. **Write** the spec file content directly (no Python API): map .md scenarios to `test()` blocks using the same structure and fixtures as existing EnergoTS tests.

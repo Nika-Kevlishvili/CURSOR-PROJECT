@@ -9,3 +9,4 @@ TC numbering: `TC-FE-1`, `TC-FE-2`, ...
 | File | Topic | Jira | TCs |
 |------|-------|------|-----|
 | `Zero_amount_liability_receivable.md` | Zero-amount prevention — frontend form validation and error display | PDT-2474 | TC-FE-1 through TC-FE-9 |
+| `Correction_data_by_scales_header_period.md` | Correction data by scales — header period validation in UI | PDT-2708 | TC-FE-1 through TC-FE-10 |

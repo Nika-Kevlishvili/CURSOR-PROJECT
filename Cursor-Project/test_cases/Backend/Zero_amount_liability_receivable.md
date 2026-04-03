@@ -13,19 +13,19 @@ The following shared setup applies to test cases that require a full billing cha
 
 ### Shared billing chain (referenced as "Billing Chain Steps 1–9")
 
-1. **Create customer** via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "Test", lastName: "User", identificationNumber: "EGN1234567890", status: "ACTIVE" }`. Note the returned `customerId`.
-2. **Create POD** via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-TEST-001", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. **Create product** via `POST /product` with parameters: `{ name: "Standard Electricity", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. **Create terms** via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`. Note the returned `termsId`.
-5. **Create price component** via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: 0.15, currency: "BGN", unit: "kWh", validFrom: "2024-01-01" }`. Note the returned `priceComponentId`.
-6. **Create product contract** via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. **Create customer** via `POST /customer`. Note the returned `customerId`.
+2. **Create POD** via `POST /pod`. Note the returned `podId`.
+3. **Create terms** via `POST /terms`. Note the returned `termId`.
+4. **Create price component** via `POST /price-component` with parameters: `{ type: "ENERGY", rate: 0.15, currency: "BGN", unit: "kWh" }`. Note the returned `priceComponentId`.
+5. **Create product** via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. **Create product contract** via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. **Create energy data / billing profile** via the energy data endpoint (e.g. `POST /energy-data`) with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 1000, periodFrom: "2025-01-01", periodTo: "2025-01-31" }`.
 8. **Create billing run** via `POST /billing-run` with parameters: `{ type: "STANDARD", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }`. Note the returned `billingRunId`.
 9. **Execute billing run** via `POST /billing-run/{billingRunId}/execute`. Wait for completion. The billing run generates an invoice. Note the returned `invoiceId` and `invoiceTotal`.
 
 ### Shared customer-only setup (referenced as "Customer Setup Step 1")
 
-1. **Create customer** via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "Test", lastName: "User", identificationNumber: "EGN1234567890", status: "ACTIVE" }`. Note the returned `customerId`.
+1. **Create customer** via `POST /customer`. Note the returned `customerId`.
 
 ---
 
@@ -36,7 +36,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that a liability can be created manually via API when the initialAmount is a valid non-zero positive value.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "Manual", lastName: "LiabilityTest", identificationNumber: "EGN0000000001", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 
 **Test steps:**
 1. Send `POST /customer-liability` with payload: `{ customerId: <customerId from precondition step 1>, initialAmount: 150.00, currency: "BGN", description: "Manual test liability" }`.
@@ -57,7 +57,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that attempting to create a liability with initialAmount = 0 is rejected at the request validation level (@DecimalMin(value="0", inclusive=false)).
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "ZeroLiab", lastName: "Test", identificationNumber: "EGN0000000002", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 
 **Test steps:**
 1. Send `POST /customer-liability` with payload: `{ customerId: <customerId from precondition step 1>, initialAmount: 0, currency: "BGN", description: "Zero amount liability" }`.
@@ -78,7 +78,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that a receivable can be created manually via API when the initialAmount is a valid non-zero positive value.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "Manual", lastName: "ReceivableTest", identificationNumber: "EGN0000000003", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 
 **Test steps:**
 1. Send `POST /customer-receivable` with payload: `{ customerId: <customerId from precondition step 1>, initialAmount: 250.00, currency: "BGN", description: "Manual test receivable" }`.
@@ -99,7 +99,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that attempting to create a receivable with initialAmount = 0 is rejected at the request validation level (@Positive).
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "ZeroRecv", lastName: "Test", identificationNumber: "EGN0000000004", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 
 **Test steps:**
 1. Send `POST /customer-receivable` with payload: `{ customerId: <customerId from precondition step 1>, initialAmount: 0, currency: "BGN", description: "Zero amount receivable" }`.
@@ -120,12 +120,12 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that a billing run producing an invoice with a non-zero total correctly generates a liability with the invoice total as initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "BillingPos", lastName: "LiabTest", identificationNumber: "EGN0000000005", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-BILL-001", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "Standard Electricity", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. Create terms via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`.
-5. Create price component via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: 0.15, currency: "BGN", unit: "kWh", validFrom: "2024-01-01" }`.
-6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component` with parameters: `{ type: "ENERGY", rate: 0.15, currency: "BGN", unit: "kWh" }`. Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. Create energy data via energy data endpoint with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 1000, periodFrom: "2025-01-01", periodTo: "2025-01-31" }`.
 8. Create billing run via `POST /billing-run` with parameters: `{ type: "STANDARD", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }`. Note the returned `billingRunId`.
 9. Execute billing run via `POST /billing-run/{billingRunId}/execute`. Wait for status `COMPLETED`. Note the generated `invoiceId` and `invoiceTotal` (expected: 150.00 BGN = 1000 kWh × 0.15 BGN/kWh).
@@ -147,12 +147,12 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that when a billing run produces an invoice with zero total (e.g., consumption is 0 kWh or price components net to zero), no zero-amount liability is created.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "BillingNeg", lastName: "LiabTest", identificationNumber: "EGN0000000006", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-BILL-002", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "Zero Consumption Product", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. Create terms via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`.
-5. Create price component via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: 0.15, currency: "BGN", unit: "kWh", validFrom: "2024-01-01" }`.
-6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component` with parameters: `{ type: "ENERGY", rate: 0.15, currency: "BGN", unit: "kWh" }`. Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. Create energy data via energy data endpoint with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 0, periodFrom: "2025-01-01", periodTo: "2025-01-31" }` (zero consumption).
 8. Create billing run via `POST /billing-run` with parameters: `{ type: "STANDARD", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }`. Note the returned `billingRunId`.
 9. Execute billing run via `POST /billing-run/{billingRunId}/execute`. Wait for status `COMPLETED`. Invoice total should be 0.00 BGN.
@@ -174,12 +174,12 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that a billing run producing an invoice with a non-zero total correctly generates a receivable when the flow produces a receivable (e.g., credit-type invoice).
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "BillingPos", lastName: "RecvTest", identificationNumber: "EGN0000000007", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-BILL-003", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "Credit Product", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. Create terms via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`.
-5. Create price component via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: -0.10, currency: "BGN", unit: "kWh", validFrom: "2024-01-01" }` (negative rate for credit scenario).
-6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component` with parameters: `{ type: "ENERGY", rate: -0.10, currency: "BGN", unit: "kWh" }` (negative rate for credit scenario). Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. Create energy data via energy data endpoint with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 500, periodFrom: "2025-01-01", periodTo: "2025-01-31" }`.
 8. Create billing run via `POST /billing-run` with parameters: `{ type: "STANDARD", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }`. Note the returned `billingRunId`.
 9. Execute billing run via `POST /billing-run/{billingRunId}/execute`. Wait for status `COMPLETED`. Invoice produces receivable with non-zero amount (50.00 BGN = 500 kWh × 0.10 BGN/kWh credit).
@@ -201,12 +201,12 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that when a billing run produces a credit invoice with zero total, no zero-amount receivable is created.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "BillingNeg", lastName: "RecvTest", identificationNumber: "EGN0000000008", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-BILL-004", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "Zero Credit Product", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. Create terms via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`.
-5. Create price component via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: -0.10, currency: "BGN", unit: "kWh", validFrom: "2024-01-01" }`.
-6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component` with parameters: `{ type: "ENERGY", rate: -0.10, currency: "BGN", unit: "kWh" }`. Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. Create energy data via energy data endpoint with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 0, periodFrom: "2025-01-01", periodTo: "2025-01-31" }` (zero consumption → zero credit).
 8. Create billing run via `POST /billing-run` with parameters: `{ type: "STANDARD", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }`. Note the returned `billingRunId`.
 9. Execute billing run via `POST /billing-run/{billingRunId}/execute`. Wait for status `COMPLETED`. Invoice total should be 0.00.
@@ -228,8 +228,8 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that creating a deposit with a non-zero amount correctly generates a corresponding liability.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "DepositPos", lastName: "LiabTest", identificationNumber: "EGN0000000009", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create deposit via `POST /deposit` with parameters: `{ customerId: <customerId from step 1>, amount: 200.00, currency: "BGN", description: "Test deposit" }`. Note the returned `depositId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create deposit via `POST /deposit` with parameters: `{ customerId: <customerId from step 1>, amount: 200.00, currency: "BGN" }`. Note the returned `depositId`.
 
 **Test steps:**
 1. Send `POST /customer-liability/test/deposit/{depositId}` using the `depositId` from precondition step 2.
@@ -248,7 +248,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that creating or processing a deposit with zero amount does not generate a zero-amount liability. DepositService should either reject the request or skip liability creation.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "DepositNeg", lastName: "LiabTest", identificationNumber: "EGN0000000010", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 
 **Test steps:**
 1. Send `POST /deposit` with payload: `{ customerId: <customerId from precondition step 1>, amount: 0, currency: "BGN", description: "Zero deposit" }`.
@@ -267,8 +267,8 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that processing a deposit refund or deposit-related flow with a non-zero amount correctly generates a corresponding receivable.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "DepositPos", lastName: "RecvTest", identificationNumber: "EGN0000000011", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create deposit via `POST /deposit` with parameters: `{ customerId: <customerId from step 1>, amount: 300.00, currency: "BGN", description: "Test deposit for receivable" }`. Note the returned `depositId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create deposit via `POST /deposit` with parameters: `{ customerId: <customerId from step 1>, amount: 300.00, currency: "BGN" }`. Note the returned `depositId`.
 3. Process deposit to generate a receivable (e.g. deposit refund flow or deposit release that creates a receivable with amount 300.00).
 
 **Test steps:**
@@ -287,7 +287,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that processing a deposit with zero amount does not generate a zero-amount receivable. DepositService should skip receivable creation when the calculated amount is zero.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "DepositNeg", lastName: "RecvTest", identificationNumber: "EGN0000000012", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 
 **Test steps:**
 1. Send `POST /deposit` with payload: `{ customerId: <customerId from precondition step 1>, amount: 0, currency: "BGN", description: "Zero deposit for receivable" }`.
@@ -306,12 +306,12 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that a late payment fine (LPF) for an overdue liability generates a LPF liability with a non-zero fine amount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "LPFPos", lastName: "LiabTest", identificationNumber: "EGN0000000013", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-LPF-001", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "LPF Test Product", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. Create terms via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`.
-5. Create price component via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: 0.20, currency: "BGN", unit: "kWh", validFrom: "2024-01-01" }`.
-6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component` with parameters: `{ type: "ENERGY", rate: 0.20, currency: "BGN", unit: "kWh" }`. Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. Create energy data via energy data endpoint with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 500, periodFrom: "2025-01-01", periodTo: "2025-01-31" }`.
 8. Create billing run via `POST /billing-run` with parameters: `{ type: "STANDARD", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }`. Note the returned `billingRunId`.
 9. Execute billing run via `POST /billing-run/{billingRunId}/execute`. Wait for completion. Invoice total = 100.00 BGN. Liability is created with `initialAmount = 100.00`.
@@ -358,12 +358,12 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that creating a rescheduling plan for an existing liability generates installment liabilities each with a non-zero initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "ReschedPos", lastName: "Test", identificationNumber: "EGN0000000015", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-RESCH-001", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "Rescheduling Test Product", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. Create terms via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`.
-5. Create price component via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: 0.20, currency: "BGN", unit: "kWh", validFrom: "2024-01-01" }`.
-6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component` with parameters: `{ type: "ENERGY", rate: 0.20, currency: "BGN", unit: "kWh" }`. Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. Create energy data via energy data endpoint with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 3000, periodFrom: "2025-01-01", periodTo: "2025-01-31" }`.
 8. Create billing run via `POST /billing-run` with parameters: `{ type: "STANDARD", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }`. Note the returned `billingRunId`.
 9. Execute billing run via `POST /billing-run/{billingRunId}/execute`. Wait for completion. Invoice total = 600.00 BGN. Liability created with `initialAmount = 600.00`.
@@ -408,12 +408,12 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that processing a payment with a non-zero amount that generates a related liability (e.g., payment processing fee or unallocated payment liability) creates the liability with the correct non-zero amount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "PaymentPos", lastName: "LiabTest", identificationNumber: "EGN0000000017", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-PAY-001", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "Payment Test Product", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. Create terms via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`.
-5. Create price component via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: 0.10, currency: "BGN", unit: "kWh", validFrom: "2024-01-01" }`.
-6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component` with parameters: `{ type: "ENERGY", rate: 0.10, currency: "BGN", unit: "kWh" }`. Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. Create energy data via energy data endpoint with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 1000, periodFrom: "2025-01-01", periodTo: "2025-01-31" }`.
 8. Create billing run via `POST /billing-run` with parameters: `{ type: "STANDARD", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }`. Note the returned `billingRunId`.
 9. Execute billing run via `POST /billing-run/{billingRunId}/execute`. Wait for completion. Invoice total = 100.00 BGN. Liability created with `initialAmount = 100.00`. Note the `liabilityId`.
@@ -436,7 +436,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that attempting to create a payment with zero amount is rejected or does not produce any zero-amount liability.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "PaymentNeg", lastName: "LiabTest", identificationNumber: "EGN0000000018", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 2–9. Billing chain steps (same as TC-BE-17 preconditions steps 2–9). Liability created with `initialAmount = 100.00`.
 
 **Test steps:**
@@ -456,7 +456,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that when a customer overpays (payment exceeds total liabilities), a receivable is generated for the overpayment difference with a non-zero initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "OverpayPos", lastName: "RecvTest", identificationNumber: "EGN0000000019", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 2–9. Billing chain steps (same as TC-BE-5 preconditions). Invoice total = 100.00 BGN. Liability created with `initialAmount = 100.00`. Note the `liabilityId`.
 10. Create payment via `POST /payment` with parameters: `{ customerId: <customerId from step 1>, amount: 150.00, currency: "BGN" }` (overpayment of 50.00 beyond the 100.00 liability). Note the returned `paymentId`.
 
@@ -477,7 +477,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that when a payment exactly matches the outstanding liability amount, no zero-amount receivable is generated for the zero difference.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "ExactPay", lastName: "RecvTest", identificationNumber: "EGN0000000020", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 2–9. Billing chain steps (same as TC-BE-5 preconditions). Invoice total = 100.00 BGN. Liability created with `initialAmount = 100.00`. Note the `liabilityId`.
 10. Create payment via `POST /payment` with parameters: `{ customerId: <customerId from step 1>, amount: 100.00, currency: "BGN" }` (exact match). Note the returned `paymentId`.
 
@@ -498,7 +498,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that processing an action (deprecated endpoint) with a non-zero charge amount generates a liability with the correct initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "ActionPos", lastName: "LiabTest", identificationNumber: "EGN0000000021", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 2. Create action via `POST /action` with parameters: `{ customerId: <customerId from step 1>, chargeAmount: 75.00, currency: "BGN", type: "SERVICE_CHARGE" }`. Note the returned `actionId`.
 
 **Test steps:**
@@ -518,7 +518,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that processing an action with zero charge amount does not generate a zero-amount liability.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "ActionNeg", lastName: "LiabTest", identificationNumber: "EGN0000000022", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 2. Create action via `POST /action` with parameters: `{ customerId: <customerId from step 1>, chargeAmount: 0, currency: "BGN", type: "SERVICE_CHARGE" }`. Note the returned `actionId` if created.
 
 **Test steps:**
@@ -538,7 +538,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that processing a goods order with a non-zero total generates a liability with the correct initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "GoodsPos", lastName: "LiabTest", identificationNumber: "EGN0000000023", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 2. Create goods order via `POST /goods-order` with parameters: `{ customerId: <customerId from step 1>, items: [{ name: "Electric Meter", quantity: 1, unitPrice: 120.00, currency: "BGN" }] }`. Note the returned `goodsOrderId`.
 3. Process goods order to generate invoice via `POST /goods-order/{goodsOrderId}/process`. Wait for completion. Note the `invoiceId` and `invoiceTotal` (120.00 BGN).
 
@@ -558,7 +558,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that a goods order with a zero total (e.g., free goods or promotional items) does not generate a zero-amount liability.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "GoodsNeg", lastName: "LiabTest", identificationNumber: "EGN0000000024", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 2. Create goods order via `POST /goods-order` with parameters: `{ customerId: <customerId from step 1>, items: [{ name: "Free Promo Item", quantity: 1, unitPrice: 0, currency: "BGN" }] }`. Note the returned `goodsOrderId`.
 3. Process goods order via `POST /goods-order/{goodsOrderId}/process`. Wait for completion.
 
@@ -578,7 +578,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that processing a service order with a non-zero total generates a liability with the correct initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "ServicePos", lastName: "LiabTest", identificationNumber: "EGN0000000025", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 2. Create service order via `POST /service-order` with parameters: `{ customerId: <customerId from step 1>, services: [{ name: "Installation Service", quantity: 1, unitPrice: 85.00, currency: "BGN" }] }`. Note the returned `serviceOrderId`.
 3. Process service order to generate invoice via `POST /service-order/{serviceOrderId}/process`. Wait for completion. Note the `invoiceId` and `invoiceTotal` (85.00 BGN).
 
@@ -598,7 +598,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that a service order with a zero total does not generate a zero-amount liability.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "ServiceNeg", lastName: "LiabTest", identificationNumber: "EGN0000000026", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 2. Create service order via `POST /service-order` with parameters: `{ customerId: <customerId from step 1>, services: [{ name: "Free Consultation", quantity: 1, unitPrice: 0, currency: "BGN" }] }`. Note the returned `serviceOrderId`.
 3. Process service order via `POST /service-order/{serviceOrderId}/process`. Wait for completion.
 
@@ -618,12 +618,12 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that cancelling an invoice with a non-zero total generates a reversal liability with a non-zero initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "InvCancelPos", lastName: "LiabTest", identificationNumber: "EGN0000000027", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-INVCAN-001", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "Invoice Cancel Product", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. Create terms via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`.
-5. Create price component via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: 0.15, currency: "BGN", unit: "kWh", validFrom: "2024-01-01" }`.
-6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component` with parameters: `{ type: "ENERGY", rate: 0.15, currency: "BGN", unit: "kWh" }`. Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. Create energy data via energy data endpoint with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 1000, periodFrom: "2025-01-01", periodTo: "2025-01-31" }`.
 8. Create billing run via `POST /billing-run` with parameters: `{ type: "STANDARD", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }`. Note the returned `billingRunId`.
 9. Execute billing run via `POST /billing-run/{billingRunId}/execute`. Wait for completion. Invoice total = 150.00 BGN. Note the `invoiceId`. Liability created with `initialAmount = 150.00`.
@@ -709,12 +709,12 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that reversing an invoice with a non-zero total generates a reversal liability with a non-zero initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "InvRevPos", lastName: "LiabTest", identificationNumber: "EGN0000000031", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-INVREV-001", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "Invoice Reversal Product", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. Create terms via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`.
-5. Create price component via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: 0.20, currency: "BGN", unit: "kWh", validFrom: "2024-01-01" }`.
-6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component` with parameters: `{ type: "ENERGY", rate: 0.20, currency: "BGN", unit: "kWh" }`. Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. Create energy data via energy data endpoint with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 500, periodFrom: "2025-01-01", periodTo: "2025-01-31" }`.
 8. Create billing run via `POST /billing-run` with parameters: `{ type: "STANDARD", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }`. Note the returned `billingRunId`.
 9. Execute billing run via `POST /billing-run/{billingRunId}/execute`. Wait for completion. Invoice total = 100.00 BGN. Note the `invoiceId`. Liability created with `initialAmount = 100.00`.
@@ -801,12 +801,12 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that reversing a payment generates a liability (to restore the original debt) with a non-zero initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "PayRevPos", lastName: "LiabTest", identificationNumber: "EGN0000000035", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-PAYREV-001", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "Payment Reversal Product", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. Create terms via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`.
-5. Create price component via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: 0.10, currency: "BGN", unit: "kWh", validFrom: "2024-01-01" }`.
-6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component` with parameters: `{ type: "ENERGY", rate: 0.10, currency: "BGN", unit: "kWh" }`. Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. Create energy data via energy data endpoint with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 1000, periodFrom: "2025-01-01", periodTo: "2025-01-31" }`.
 8. Create billing run via `POST /billing-run` with parameters: `{ type: "STANDARD", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }`. Note the returned `billingRunId`.
 9. Execute billing run via `POST /billing-run/{billingRunId}/execute`. Wait for completion. Invoice total = 100.00 BGN. Liability created with `initialAmount = 100.00`. Note the `liabilityId`.
@@ -890,9 +890,9 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that reversing a manual liability offsetting (MLO) restores a liability with a non-zero initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "MLORevPos", lastName: "LiabTest", identificationNumber: "EGN0000000039", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create liability via `POST /customer-liability` with parameters: `{ customerId: <customerId from step 1>, initialAmount: 500.00, currency: "BGN", description: "MLO test liability" }`. Note the returned `liabilityId`.
-3. Create receivable via `POST /customer-receivable` with parameters: `{ customerId: <customerId from step 1>, initialAmount: 300.00, currency: "BGN", description: "MLO test receivable" }`. Note the returned `receivableId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create liability via `POST /customer-liability` with parameters: `{ customerId: <customerId from step 1>, initialAmount: 500.00, currency: "BGN" }`. Note the returned `liabilityId`.
+3. Create receivable via `POST /customer-receivable` with parameters: `{ customerId: <customerId from step 1>, initialAmount: 300.00, currency: "BGN" }`. Note the returned `receivableId`.
 4. Create MLO via `POST /manual-liability-offsetting` with parameters: `{ liabilityId: <liabilityId from step 2>, receivableId: <receivableId from step 3>, amount: 300.00 }`. Note the returned `mloId`.
 5. Reverse MLO via `POST /manual-liability-offsetting/reverse` with parameters: `{ mloId: <mloId from step 4> }`.
 
@@ -913,7 +913,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that reversing an MLO that would produce a zero-amount liability does not create one.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "MLORevNeg", lastName: "LiabTest", identificationNumber: "EGN0000000040", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 2. Create liability via `POST /customer-liability` with parameters: `{ customerId: <customerId from step 1>, initialAmount: 100.00, currency: "BGN" }`. Note the returned `liabilityId`.
 3. Create receivable via `POST /customer-receivable` with parameters: `{ customerId: <customerId from step 1>, initialAmount: 100.00, currency: "BGN" }`. Note the returned `receivableId`.
 4. Create MLO via `POST /manual-liability-offsetting` with parameters configured such that the reversal would produce a zero-amount net liability.
@@ -934,7 +934,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that reversing an MLO restores a receivable with a non-zero initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "MLORevPos", lastName: "RecvTest", identificationNumber: "EGN0000000041", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 2. Create liability via `POST /customer-liability` with parameters: `{ customerId: <customerId from step 1>, initialAmount: 400.00, currency: "BGN" }`. Note the returned `liabilityId`.
 3. Create receivable via `POST /customer-receivable` with parameters: `{ customerId: <customerId from step 1>, initialAmount: 250.00, currency: "BGN" }`. Note the returned `receivableId`.
 4. Create MLO via `POST /manual-liability-offsetting` with parameters: `{ liabilityId: <liabilityId from step 2>, receivableId: <receivableId from step 3>, amount: 250.00 }`. Note the returned `mloId`.
@@ -957,7 +957,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that reversing an MLO that would produce a zero-amount receivable does not create one.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "MLORevNeg", lastName: "RecvTest", identificationNumber: "EGN0000000042", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 2. Create liability via `POST /customer-liability` with parameters: `{ customerId: <customerId from step 1>, initialAmount: 200.00, currency: "BGN" }`. Note the returned `liabilityId`.
 3. Create receivable via `POST /customer-receivable` with parameters: `{ customerId: <customerId from step 1>, initialAmount: 200.00, currency: "BGN" }`. Note the returned `receivableId`.
 4. Create MLO via `POST /manual-liability-offsetting` with parameters configured such that reversal produces zero receivable amount.
@@ -978,12 +978,12 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that reversing a late payment fine generates a receivable (refund of fine) with a non-zero initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "LPFRevPos", lastName: "RecvTest", identificationNumber: "EGN0000000043", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-LPFREV-001", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "LPF Reversal Product", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. Create terms via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`.
-5. Create price component via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: 0.15, currency: "BGN", unit: "kWh", validFrom: "2024-01-01" }`.
-6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component` with parameters: `{ type: "ENERGY", rate: 0.15, currency: "BGN", unit: "kWh" }`. Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. Create energy data via energy data endpoint with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 1000, periodFrom: "2025-01-01", periodTo: "2025-01-31" }`.
 8. Create billing run via `POST /billing-run` with parameters: `{ type: "STANDARD", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }`. Note the returned `billingRunId`.
 9. Execute billing run via `POST /billing-run/{billingRunId}/execute`. Wait for completion. Liability created with `initialAmount = 150.00`. Note the `liabilityId`.
@@ -1028,12 +1028,12 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that reversing a rescheduling plan generates receivables for payments already made on installments, each with a non-zero initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "ReschRevPos", lastName: "RecvTest", identificationNumber: "EGN0000000045", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-RESCHREV-001", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "Rescheduling Reversal Product", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. Create terms via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`.
-5. Create price component via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: 0.20, currency: "BGN", unit: "kWh", validFrom: "2024-01-01" }`.
-6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component` with parameters: `{ type: "ENERGY", rate: 0.20, currency: "BGN", unit: "kWh" }`. Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. Create energy data via energy data endpoint with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 3000, periodFrom: "2025-01-01", periodTo: "2025-01-31" }`.
 8. Create billing run via `POST /billing-run` with parameters: `{ type: "STANDARD", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }`. Note the returned `billingRunId`.
 9. Execute billing run via `POST /billing-run/{billingRunId}/execute`. Liability created with `initialAmount = 600.00`. Note the `liabilityId`.
@@ -1078,12 +1078,12 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that a billing run producing a credit note generates a receivable with a non-zero initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "CreditNotePos", lastName: "RecvTest", identificationNumber: "EGN0000000047", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-CREDIT-001", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "Credit Note Product", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. Create terms via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`.
-5. Create price component via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: 0.15, currency: "BGN", unit: "kWh", validFrom: "2024-01-01" }`.
-6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component` with parameters: `{ type: "ENERGY", rate: 0.15, currency: "BGN", unit: "kWh" }`. Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. Create energy data via energy data endpoint with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 1000, periodFrom: "2025-01-01", periodTo: "2025-01-31" }` (original).
 8. Create corrective billing run via `POST /billing-run` with parameters: `{ type: "CORRECTION", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }` (configured to produce a credit note — e.g., reduced consumption from correction). Note the returned `billingRunId`.
 9. Execute corrective billing run via `POST /billing-run/{billingRunId}/execute`. Wait for completion. Credit note with amount > 0 is generated (e.g., 30.00 BGN credit).
@@ -1123,12 +1123,12 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that the compensation flow generates a receivable with a non-zero initialAmount when there is a genuine compensation amount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "CompPos", lastName: "RecvTest", identificationNumber: "EGN0000000049", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-COMP-001", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "Compensation Product", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. Create terms via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`.
-5. Create price component via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: 0.15, currency: "BGN", unit: "kWh", validFrom: "2024-01-01" }`.
-6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component` with parameters: `{ type: "ENERGY", rate: 0.15, currency: "BGN", unit: "kWh" }`. Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. Create energy data via energy data endpoint with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 800, periodFrom: "2025-01-01", periodTo: "2025-01-31" }`.
 8. Create existing receivable (overpayment) via `POST /customer-receivable` with parameters: `{ customerId: <customerId from step 1>, initialAmount: 50.00, currency: "BGN" }` to provide a balance for compensation.
 9. Create billing run via `POST /billing-run` with parameters: `{ type: "STANDARD", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }` with compensation logic enabled. Note the returned `billingRunId`.
@@ -1170,12 +1170,12 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that a billing run with VAT base adjustment generates a liability with a non-zero initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "VATPos", lastName: "LiabTest", identificationNumber: "EGN0000000051", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-VAT-001", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "VAT Adjustment Product", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE", vatApplicable: true }`. Note the returned `productId`.
-4. Create terms via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`.
-5. Create price component via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: 0.20, currency: "BGN", unit: "kWh", validFrom: "2024-01-01", vatRate: 20 }`.
-6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component` with parameters: `{ type: "ENERGY", rate: 0.20, currency: "BGN", unit: "kWh", vatRate: 20 }`. Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>], vatApplicable: true }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. Create energy data via energy data endpoint with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 1000, periodFrom: "2025-01-01", periodTo: "2025-01-31" }`.
 8. Create billing run via `POST /billing-run` with parameters: `{ type: "STANDARD", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }` with VAT base adjustment applicable. Note the returned `billingRunId`.
 9. Execute billing run via `POST /billing-run/{billingRunId}/execute`. Wait for completion.
@@ -1218,11 +1218,13 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that processing a disconnection request with associated costs generates a liability with a non-zero initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "DisconnPos", lastName: "LiabTest", identificationNumber: "EGN0000000053", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-DISC-001", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "Disconnection Product", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
-5. Submit disconnection request via `POST /disconnection` with parameters: `{ contractPodId: <contractPodId from the contract>, reason: "NON_PAYMENT", disconnectionFee: 50.00, currency: "BGN" }`. Note the returned `disconnectionId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component`. Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
+7. Submit disconnection request via `POST /disconnection` with parameters: `{ contractPodId: <contractPodId from the contract>, reason: "NON_PAYMENT", disconnectionFee: 50.00, currency: "BGN" }`. Note the returned `disconnectionId`.
 
 **Test steps:**
 1. Send `GET /customer-liability?customerId=<customerId>` to list liabilities.
@@ -1240,8 +1242,8 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that when a disconnection is processed with no associated fee (zero invoice total), no zero-amount liability is created.
 
 **Preconditions:**
-1–4. Same as TC-BE-53 preconditions (customer + POD + product + contract).
-5. Submit disconnection request via `POST /disconnection` with parameters: `{ contractPodId: <contractPodId>, reason: "CUSTOMER_REQUEST", disconnectionFee: 0, currency: "BGN" }` (no fee for customer-requested disconnection).
+1–6. Same as TC-BE-53 preconditions (customer + POD + terms + price component + product + contract).
+7. Submit disconnection request via `POST /disconnection` with parameters: `{ contractPodId: <contractPodId>, reason: "CUSTOMER_REQUEST", disconnectionFee: 0, currency: "BGN" }` (no fee for customer-requested disconnection).
 
 **Test steps:**
 1. Send `GET /customer-liability?customerId=<customerId>` to list liabilities.
@@ -1259,7 +1261,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that the ZeroAmountValidationListener (@PrePersist JPA listener on CustomerLiability) throws an IllegalArgumentException when an attempt is made to persist a CustomerLiability entity with initialAmount == 0, regardless of the originating flow.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "ListenerNeg", lastName: "LiabTest", identificationNumber: "EGN0000000055", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 
 **Test steps:**
 1. Attempt to create a liability through any flow that bypasses request-level validation but results in `initialAmount = 0` being set on the entity before persist (e.g., a service-level flow that constructs the entity directly).
@@ -1280,7 +1282,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that the ZeroAmountValidationListener (@PrePersist JPA listener on CustomerReceivable) throws an IllegalArgumentException when an attempt is made to persist a CustomerReceivable entity with initialAmount == 0, regardless of the originating flow.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "ListenerNeg", lastName: "RecvTest", identificationNumber: "EGN0000000056", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 
 **Test steps:**
 1. Attempt to create a receivable through any flow that bypasses request-level validation but results in `initialAmount = 0` being set on the entity before persist (e.g., a service-level flow that constructs the entity directly).
@@ -1301,7 +1303,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that attempting to create a liability with a negative initialAmount is rejected at the request validation level (@DecimalMin(value="0", inclusive=false) rejects values <= 0).
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "NegLiab", lastName: "Test", identificationNumber: "EGN0000000057", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 
 **Test steps:**
 1. Send `POST /customer-liability` with payload: `{ customerId: <customerId from precondition step 1>, initialAmount: -50.00, currency: "BGN", description: "Negative amount liability" }`.
@@ -1322,7 +1324,7 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that attempting to create a receivable with a negative initialAmount is rejected at the request validation level (@Positive rejects values <= 0).
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "NegRecv", lastName: "Test", identificationNumber: "EGN0000000058", status: "ACTIVE" }`. Note the returned `customerId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
 
 **Test steps:**
 1. Send `POST /customer-receivable` with payload: `{ customerId: <customerId from precondition step 1>, initialAmount: -50.00, currency: "BGN", description: "Negative amount receivable" }`.
@@ -1343,12 +1345,12 @@ The following shared setup applies to test cases that require a full billing cha
 **Description:** Verify that a correction billing run that produces a difference from the original invoice generates a receivable with a non-zero initialAmount.
 
 **Preconditions:**
-1. Create customer via `POST /customer` with parameters: `{ type: "PRIVATE", firstName: "InvCorrPos", lastName: "RecvTest", identificationNumber: "EGN0000000059", status: "ACTIVE" }`. Note the returned `customerId`.
-2. Create POD via `POST /pod` with parameters: `{ type: "ELECTRICITY", identifier: "BG-POD-CORR-001", status: "ACTIVE", activationDate: "2024-01-01" }`. Note the returned `podId`.
-3. Create product via `POST /product` with parameters: `{ name: "Invoice Correction Product", term: "INDEFINITE", dataDeliveryType: "BY_PROFILE", status: "ACTIVE" }`. Note the returned `productId`.
-4. Create terms via `POST /terms` with parameters: `{ productId: <productId from step 3>, name: "Standard Terms", validFrom: "2024-01-01" }`.
-5. Create price component via `POST /price-component` with parameters: `{ productId: <productId from step 3>, type: "ENERGY", rate: 0.15, currency: "BGN", unit: "kWh", validFrom: "2024-01-01" }`.
-6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 3>, status: "ACTIVE", entryIntoForceDate: "2025-01-01" }`. Note the returned `contractId`.
+1. Create customer via `POST /customer`. Note the returned `customerId`.
+2. Create POD via `POST /pod`. Note the returned `podId`.
+3. Create terms via `POST /terms`. Note the returned `termId`.
+4. Create price component via `POST /price-component` with parameters: `{ type: "ENERGY", rate: 0.15, currency: "BGN", unit: "kWh" }`. Note the returned `priceComponentId`.
+5. Create product via `POST /product` with parameters: `{ termId: <termId from step 3>, priceComponentIds: [<priceComponentId from step 4>] }`. Note the returned `productId`.
+6. Create product contract via `POST /product-contract` with parameters: `{ customerId: <customerId from step 1>, podId: <podId from step 2>, productId: <productId from step 5> }`. Note the returned `contractId`.
 7. Create energy data via energy data endpoint with parameters: `{ contractId: <contractId from step 6>, podId: <podId from step 2>, consumptionKwh: 1000, periodFrom: "2025-01-01", periodTo: "2025-01-31" }`.
 8. Create original billing run via `POST /billing-run` with parameters: `{ type: "STANDARD", periodFrom: "2025-01-01", periodTo: "2025-01-31", contractId: <contractId from step 6> }`. Note the returned `billingRunId`.
 9. Execute original billing run via `POST /billing-run/{billingRunId}/execute`. Wait for completion. Original invoice total = 150.00 BGN. Note the `originalInvoiceId`.
@@ -1407,4 +1409,4 @@ The following shared setup applies to test cases that require a full billing cha
 - **ServiceOrderProcessService:** Generates liabilities from service order invoices
 - **CompensationReceivableService:** Generates receivables from compensation flows
 - **DisconnectionOfPowerSupplyService:** Generates liabilities from disconnection
-- **Entity dependency order:** Customer → Product → Terms → Price Component → Product Contract → Energy Data → Billing Run
+- **Entity dependency order:** Customer → POD → Terms → Price Component → Product(termId, priceComponentIds) → Product Contract → Energy Data → Billing Run

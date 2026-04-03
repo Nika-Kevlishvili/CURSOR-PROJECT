@@ -14,7 +14,7 @@ Skills guide the Cursor agent for this repo’s workflows. **Location:** workspa
 | **phoenix-database** | PostgreSQL MCP; environments; connect first |
 | **production-data-reader** | Rule PDR.0; PostgreSQLProd MCP readonly |
 | **cross-dependency-finder** | Rule 35 / 35a; output for test-case-generator |
-| **test-case-generator** | Rule 35; prefer `test_cases/Objects/` and `Flows/` |
+| **test-case-generator** | Rule 35; save to `test_cases/Backend/` and `test_cases/Frontend/` |
 | **phoenix-safety-readonly** | GitLab/Confluence read-only; path tiers |
 | **jira-bug-template** | Experiments board bugs only (Rule JIRA.0) |
 | **energo-ts-run** | Rule 36; Playwright from EnergoTS `cursor` branch |
