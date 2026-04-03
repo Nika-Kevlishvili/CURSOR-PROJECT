@@ -1,116 +1,84 @@
 # Git Sync from GitLab
 
-Synchronize Phoenix projects from GitLab using `git_sync_workflow.mdc` rules.
-
-## MANDATORY: Follow git_sync_workflow.mdc Rules
-
-**CRITICAL:** This command MUST follow the workflow defined in `.cursor/rules/git_sync_workflow.mdc`.
-
-**DO NOT use GitLabUpdateAgent class or any Python agent code. Use direct git commands as specified in the rules.**
+Synchronize Phoenix projects from GitLab. READ-ONLY operations only (fetch, checkout, merge locally -- never push).
 
 ## Triggers
 
-- `!sync` - Fetch all Phoenix projects from GitLab
-- `!update <branch>` - Update specified branch (dev, dev2, dev-fix, test, experiment)
-- `!checkout <branch>` - Checkout specified branch
+- `/sync` -- Fetch all Phoenix projects from GitLab
+- `/sync` with `update <branch>` -- Update specified branch (dev, dev2, dev-fix, test, experiment)
+- `/sync` with `checkout <branch>` -- Checkout specified branch
 
-## Workflow Reference
+## Configuration
 
-**ALWAYS read and follow:** `.cursor/rules/git_sync_workflow.mdc`
+- **Git Host:** `git.domain.internal` (GitLab)
+- **Token:** Use `$env:GIT_READONLY_TOKEN` from environment. If not set, use the token stored in `~/.git-credentials`.
+- **Projects path:** `Cursor-Project/Phoenix/` (auto-discovered: all subdirectories containing `.git`)
+- **Known repos:** phoenix-core-lib, phoenix-core, phoenix-billing-run, phoenix-api-gateway, phoenix-payment-api, phoenix-migration, phoenix-ui
 
-### Key Principles (from git_sync_workflow.mdc):
+## Key Principles
 
-1. **Preserve Local Changes:** ALWAYS stash uncommitted changes before operations
-2. **GitLab is Source:** Fetch from GitLab remote (git.domain.internal)
-3. **READ-ONLY:** Only fetch/checkout/merge - NEVER push
-4. **Auto-Discovery:** Process all Git repos in `Cursor-Project/Phoenix/` directory
-5. **Cross-Platform:** Use PowerShell syntax on Windows
-6. **Correct Path:** ALWAYS use `Cursor-Project/Phoenix/` - if doesn't exist, create it and clone projects there
+1. **Stash first:** ALWAYS stash uncommitted changes before operations, unstash after
+2. **READ-ONLY:** Only fetch/checkout/merge locally -- NEVER push, commit, or modify remote
+3. **Auto-discover:** Process all Git repos found in `Cursor-Project/Phoenix/`
+4. **Divergence:** If local and remote branches have diverged, STOP and ask user
+5. **Workspace detection:** Look for `Cursor-Project/Phoenix/` from workspace root; create if missing
+6. **Clone if empty:** If `Phoenix/` has no git repos, clone all known projects using token auth
 
-### Operations:
+## Operations
 
-#### 1. Sync All Projects (`!sync`)
-```
-1. Detect workspace root (find Phoenix/ directory)
-2. For each repo in Phoenix/:
-   - Stash uncommitted changes
-   - git fetch origin --all
-   - git fetch origin --prune
-   - Unstash changes
-```
+### 1. Fetch All (`/sync`)
 
-#### 2. Update Branch (`!update <branch>`)
-```
-1. Detect workspace root
-2. For each repo in Phoenix/:
-   - Stash uncommitted changes
-   - git fetch origin
-   - Check if local is behind remote
-   - If behind: git merge origin/<branch>
-   - If diverged: STOP and ask user
-   - Unstash changes
-```
+For each repo in `Cursor-Project/Phoenix/`:
+1. Stash uncommitted changes
+2. `git fetch origin --all && git fetch origin --prune`
+3. Unstash changes
 
-#### 3. Checkout Branch (`!checkout <branch>`)
-```
-1. Detect workspace root
-2. For each repo in Phoenix/:
-   - Stash uncommitted changes
-   - git fetch origin
-   - git checkout <branch> (or create tracking branch)
-   - Unstash changes
-```
+### 2. Update Branch (`update <branch>`)
 
-## Token Configuration
+For each repo in `Cursor-Project/Phoenix/`:
+1. Stash uncommitted changes
+2. `git fetch origin`
+3. Checkout the branch (create tracking branch if needed: `git checkout -b <branch> origin/<branch>`)
+4. Check divergence: if both ahead and behind, ABORT for that repo and ask user
+5. If behind: `git merge origin/<branch>`
+6. Unstash changes
 
-Token is already configured in `git_sync_workflow.mdc`:
-- **Token:** `glpat-s3G3rmuJUPbsJBns039NRG86MQp1OjNzCA.01.0y0s67eqg`
-- **Host:** `git.domain.internal`
-- **Credentials:** Stored in `~/.git-credentials`
+### 3. Checkout Branch (`checkout <branch>`)
 
-## Usage Examples
+For each repo in `Cursor-Project/Phoenix/`:
+1. Stash uncommitted changes
+2. `git fetch origin`
+3. `git checkout <branch>` (or create tracking branch from `origin/<branch>`)
+4. If branch not on remote, skip and report
+5. Unstash changes
 
-**Fetch all projects:**
-```
-/sync
+## Authentication
 
-Update Phoenix projects from GitLab
+Configure git credential helper with the readonly token before operations:
+
+```powershell
+$env:GIT_READONLY_TOKEN = "<token>"
+git config --global credential.helper store
+$GIT_HOST = "git.domain.internal"
+$CREDENTIALS_FILE = "$env:USERPROFILE\.git-credentials"
+"https://oauth2:$($env:GIT_READONLY_TOKEN)@$GIT_HOST" | Out-File -FilePath $CREDENTIALS_FILE -Encoding ASCII -NoNewline
 ```
 
-**Update dev branch:**
-```
-/sync
+## Error Handling
 
-!update dev
-```
+- **Uncommitted changes:** Auto-stash before, auto-unstash after
+- **Branch diverged:** ABORT that repo, show divergence, ask user (merge/rebase/reset/abort)
+- **Merge conflicts:** Keep stash, report conflicts, wait for user
+- **Auth failure:** Check token value, test with `curl -H "Authorization: Bearer $TOKEN" https://git.domain.internal/api/v4/user`
+- **Branch not found:** Skip repo, report, continue with others
 
-**Checkout dev2 branch:**
-```
-/sync
+## Response Must Include
 
-!checkout dev2
-```
-
-**Checkout experiment branch:**
-```
-/sync
-
-!checkout experiment
-```
-
-## Response Must Include:
 - Projects processed
 - Branch used (if applicable)
-- Status for each repo (success/up-to-date/diverged/failed)
+- Status for each repo (success / up-to-date / diverged / failed)
 - Any stashed changes info
 
-## CRITICAL RULES:
+## Agents Involved
 
-1. **ALWAYS stash local changes first** - never lose local work
-2. **NEVER use force=True or hard reset** - preserve local changes
-3. **If branches diverged** - STOP and ask user how to proceed
-4. **READ-ONLY operations only** - no push, no commit
-5. **Follow git_sync_workflow.mdc exactly** - it has complete implementation
-
-## Agents Involved:
-GitLabUpdateAgent (follows git_sync_workflow.mdc rules)
+GitLabUpdateAgent (git-sync subagent)

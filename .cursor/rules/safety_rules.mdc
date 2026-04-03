@@ -2,97 +2,18 @@
 alwaysApply: true
 ---
 
-# GLOBAL SAFETY & ACCESS RULES [CRITICAL]
+# SAFETY RULES
 
-1. [CRITICAL] GitLab and Confluence are STRICTLY READ-ONLY - NO modifications allowed.
-   - No commits, pushes, merges, edits, or page modifications.
-   - Only IntegrationService can update GitLab pipelines and Jira tickets (NOT Confluence).
-   - Violation is a CRITICAL SECURITY ERROR.
-   
-   1a. [CRITICAL] Confluence Editing Tools are FORBIDDEN - READ-ONLY ONLY.
-      - FORBIDDEN: updateConfluencePage(), createConfluencePage(), createConfluenceFooterComment(), createConfluenceInlineComment()
-      - ALLOWED: getConfluencePage(), getPagesInConfluenceSpace(), getConfluenceSpaces(), search(), searchConfluenceUsingCql(), getConfluencePageDescendants(), getConfluencePageFooterComments(), getConfluencePageInlineComments()
-      - Applies to ALL agents, ALL operations, ALL circumstances - NO EXCEPTIONS.
+## Read-Only External Systems
+- GitLab and Confluence are STRICTLY READ-ONLY. No commits, pushes, merges, or page edits.
+- Confluence edit tools are FORBIDDEN: updateConfluencePage, createConfluencePage, createConfluenceFooterComment, createConfluenceInlineComment.
+- Only IntegrationService may update GitLab pipelines and Jira tickets (NOT Confluence).
 
-# SOURCE-OF-TRUTH RULES [CRITICAL]
+## Source of Truth
+PhoenixExpert priority: (1) Codebase (highest), (2) Confluence via MCP (fresh), (3) General knowledge (fallback). Code wins on conflicts.
 
-6. [CRITICAL] PhoenixExpert priority: (1) Codebase (highest), (2) Confluence (via MCP, fresh), (3) General knowledge (fallback)
-   - Code ALWAYS wins if conflicts with Confluence.
+## Code Modification
+Follow Rule 0.8 tiers in core_rules.mdc: Phoenix never edited; EnergoTS only EnergoTSTestAgent in tests/; other paths allowed when user requests.
 
-7. [CRITICAL] Code modification per Rule 0.8 tiers (core_rules.mdc):
-   - **Phoenix (`Cursor-Project/Phoenix/**`):** NEVER modified by Cursor AI.
-   - **EnergoTS:** Only **EnergoTSTestAgent** may write under `EnergoTS/tests/`; rest of EnergoTS is no-write for AI.
-   - **Elsewhere:** Allowed when user requests (provisional).
-   - Violation is a CRITICAL SYSTEM ERROR.
-
-# READ-ONLY OPERATION RULE [CRITICAL]
-
-14. [CRITICAL] PhoenixExpert and knowledge-based agents MUST operate in READ-ONLY mode.
-   - READ-ONLY: explore code, Confluence, documentation.
-   - Do NOT modify, commit, push, merge, delete, or execute.
-   - Write operations ONLY when explicitly commanded by user.
-
-# ERROR HANDLING & RESILIENCE RULE [IMPORTANT]
-
-15. [IMPORTANT] Agents MUST handle errors gracefully with retry logic and proper logging.
-   - Exponential backoff (max 2-3 attempts for transient errors).
-   - Log all errors with full context using AgentLogger.
-   - Retryable: timeout, connection error, 5xx. Non-retryable: 404, 403, auth failed.
-
-# PERFORMANCE & TIMEOUT RULE [RECOMMENDED]
-
-16. [RECOMMENDED] Agents MUST respect timeout limits (30s default) and optimize for performance.
-   - Use caching for consultation results when appropriate.
-
-# NEGATIVE RULES - WHAT MUST NEVER HAPPEN [CRITICAL - ABSOLUTE PROHIBITIONS]
-
-18. [CRITICAL] Agents MUST NEVER work independently without required consultations.
-    - TestAgent, PostmanCollectionGenerator, GitLabUpdateAgent MUST consult PhoenixExpert first.
-    - Violation is a CRITICAL ERROR.
-    
-19. [CRITICAL] Agents MUST NEVER bypass AgentRouter for query routing.
-    - Do NOT manually select agents - use AgentRouter.route_query().
-    - Violation prevents optimal agent selection.
-    
-20. [CRITICAL] Agents MUST NEVER skip IntegrationService.update_before_task() calls.
-    - No task execution without calling IntegrationService first.
-    - Violation is a CRITICAL SYSTEM ERROR.
-    
-21. [CRITICAL] Agents MUST NEVER modify GitLab or Confluence (see Rule 1).
-    - Violation is a CRITICAL SECURITY ERROR.
-    
-22. [CRITICAL] Agents MUST NEVER answer Phoenix questions without PhoenixExpert (see Rule 0.2).
-    - Violation breaks single source of truth principle.
-    
-23. [CRITICAL] Agents MUST NEVER operate outside their domain without PhoenixExpert approval.
-    - Stay within specialization unless explicitly approved.
-    - Violation causes incorrect results.
-    
-24. [CRITICAL] Agents MUST NEVER skip "Agents involved" disclosure (see Rule 0.1).
-    - Violation is a CRITICAL SYSTEM ERROR.
-    
-25. [CRITICAL] Agents MUST NEVER execute destructive operations without explicit user command.
-    - Safety first: when in doubt, ask or don't act.
-    
-26. [CRITICAL] Agents MUST NEVER work in parallel on conflicting tasks.
-    - AgentRouter/AgentRegistry coordinate to prevent conflicts.
-    - If conflict detected, coordinate through PhoenixExpert.
-    
-27. [CRITICAL] Agents MUST NEVER ignore PhoenixExpert rejection or change requests.
-    - Consultation is MANDATORY and binding.
-    - Violation breaks approval workflow.
-    
-28. [CRITICAL] Agents MUST NEVER share or leak sensitive information.
-    - Do NOT log credentials, passwords, API keys, tokens.
-    - Use secure logging and sanitize outputs.
-    - Violation is a CRITICAL SECURITY BREACH.
-    
-29. [CRITICAL] Agents MUST NEVER skip error handling and retry logic.
-    - All errors MUST be logged with full context.
-    - Violation prevents proper error diagnosis.
-    
-30. [CRITICAL] Cursor AI MUST NEVER skip report generation after task completion (see Rule 0.6).
-    - Violation is a CRITICAL SYSTEM ERROR.
-    
-31. [CRITICAL] Cursor AI MUST follow Rule 0.8 path tiers (core_rules.mdc): never edit Phoenix; never edit EnergoTS except EnergoTSTestAgent in `tests/` only; may edit other paths when user requests.
-    - Violation is a CRITICAL SYSTEM ERROR.
+## Absolute Prohibitions
+NEVER: bypass AgentRouter for routing | skip IntegrationService | answer Phoenix questions without PhoenixExpert | skip report generation (Rule 0.6) | skip "Agents involved" footer | log credentials, passwords, API keys, or tokens | execute destructive operations without explicit user command | operate outside domain without PhoenixExpert approval.

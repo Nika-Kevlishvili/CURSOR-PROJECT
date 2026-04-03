@@ -2,79 +2,33 @@
 alwaysApply: true
 ---
 
-# MOST CRITICAL - NEVER FORGET RULES [CRITICAL - ABSOLUTE PRIORITY]
+# CORE RULES [ABSOLUTE PRIORITY]
 
-0. [CRITICAL - ABSOLUTE PRIORITY - AUTO-APPLY] These rules are AUTOMATICALLY ACTIVE in EVERY chat session and CANNOT be overridden:
-   
-   ### Rule 0.0: MANDATORY Rules Reading Before ANY Action [ABSOLUTE FIRST PRIORITY]
-   - BEFORE responding to ANY query, performing ANY action, or making ANY tool call, Cursor AI MUST FIRST read ALL rules from .cursor/rules/ directory
-   - Workflow: (1) FIRST: Call `from agents.Utils.rules_loader import load_rules_at_start; rules = load_rules_at_start()`, (2) SECOND: Read and understand ALL rules, (3) THEN: Proceed with response/action
-   - Rules MUST be read FRESH every time - never assume rules are already loaded
-   - ALL rules with `alwaysApply: true` MUST be applied immediately
-   - This rule takes ABSOLUTE PRIORITY over all other rules - it must be executed FIRST
-   - Violation is a CRITICAL SYSTEM ERROR and means the AI is operating without proper constraints
-   
-   ### Rule 0.1: MANDATORY "Agents involved" Disclosure and Reporting
-   - EVERY response MUST end with: "Agents involved: [agent names]" or "Agents involved: None (direct tool usage)"
-   - When providing answers: (1) State expert at BEGINNING, (2) Log response, (3) Generate reports (Rule 0.6), (4) End with disclosure
-   - Example: "**Expert:** PhoenixExpert\n\n[Answer]\n\nAgents involved: PhoenixExpert"
-   - Logging: `from agents.Utils.ai_response_logger import log_ai_response; log_ai_response(...)`
-   - Violation is a CRITICAL SYSTEM ERROR
-   
-   ### Rule 0.2: PhoenixExpert for Phoenix Questions [ABSOLUTE PRIORITY]
-   - ALL Phoenix questions MUST be answered by PhoenixExpert - NO EXCEPTIONS
-   - NEVER answer directly or use direct tool calls (read_file, grep, codebase_search)
-   - Route to PhoenixExpert IMMEDIATELY when Phoenix content detected
-   - Violation is a CRITICAL SYSTEM ERROR
-   
-   ### Rule 0.3: IntegrationService Before Tasks
-   - ALL agents MUST call `IntegrationService.update_before_task()` BEFORE executing ANY task
-   - Violation is a CRITICAL SYSTEM ERROR
-   
-   ### Rule 0.4: PhoenixExpert Consultation Before Tasks
-   - BEFORE any task, agents MUST consult with PhoenixExpert
-   - Consultation is MANDATORY for ALL tasks
-   - Violation is a CRITICAL ERROR
-   
-   ### Rule 0.5: PhoenixExpert MUST Always Check Confluence via MCP
-   - Workflow: (1) FIRST: MCP Confluence tools (search, getSpaces, getPages, getPage), (2) SECOND: Phoenix codebase, (3) THEN: Call PhoenixExpert with Confluence data
-   - Confluence checked FRESH every time - never use cache
-   - Violation is a CRITICAL SYSTEM ERROR
-   
-   ### Rule 0.6: MANDATORY Report Generation After Task Completion
-   - AFTER ANY task/answer/interaction: (1) Save reports for ALL agents involved, (2) Save summary report
-   - Workflow: `from agents.Services.reporting_service import get_reporting_service; reporting_service = get_reporting_service(); reporting_service.save_agent_report("AgentName"); reporting_service.save_summary_report()`
-   - Reports saved to `Cursor-Project/reports/YYYY-MM-DD/` (use CURRENT date dynamically: `datetime.now().strftime('%Y-%m-%d')`, MUST be in project root)
-   - Report naming: `{AgentName}_{HHMM}.md` (e.g., `PhoenixExpert_1430.md`) and `Summary_{HHMM}.md`
-   - Reports MUST be generated even if: task failed, only one agent used, direct tools used, no code changes made, or just an answer to a question
-   - This ensures complete traceability, accountability, and audit trail for ALL activities
-   - Violation is a CRITICAL SYSTEM ERROR
-   
-   ### Rule 0.7: MANDATORY English Language for All Documentation and Reports
-   - ALL documentation, reports, comments, and written content MUST be in English
-   - This includes: code comments, documentation files, reports, markdown files, README files, user stories, and any other written content
-   - NO exceptions - even if user asks in another language, the output MUST be in English
-   - User queries can be in any language, but ALL responses, documentation, and reports MUST be in English
-   - Violation is a CRITICAL SYSTEM ERROR
-   
-   ### Rule 0.8: Path-Based Code Modification (Phoenix, EnergoTS, everything else)
-   - **Intent:** (1) **Phoenix** — no AI/agent edits, ever. (2) **EnergoTS** — only **EnergoTSTestAgent** (the agent that writes Playwright tests) may add/change code, and **only** under `EnergoTS/tests/`. (3) **All other paths** — Cursor AI may modify when the user requests (**provisional / for now** — `ჯერჯერობით`).
-   - **TIER A — ABSOLUTELY FORBIDDEN (no exceptions, no agent, no user override via AI):**
-     - `Cursor-Project/Phoenix/**` — Cursor AI MUST NEVER create, modify, or delete any file here. Hooks enforce protection. ONLY read, analyze, search, recommend.
-   - **TIER B — EnergoTS (restricted):**
-     - `Cursor-Project/EnergoTS/**` **outside** `Cursor-Project/EnergoTS/tests/**` — Cursor AI MUST NOT modify (fixtures, config, app code, etc.). **No agent** may write here except as forbidden for all.
-     - `Cursor-Project/EnergoTS/tests/**` — ONLY **EnergoTSTestAgent** (and **EnergoTSTestAgentAdapter**) may create/modify/delete files here (see Rule 0.8.1). **Generic Cursor AI, other agents, and direct tool usage** MUST NOT edit this tree even if the user asks.
-   - **TIER C — ALLOWED (default for now):** Any path under the workspace **not** in Tier A or Tier B **non-test EnergoTS** restrictions — including but not limited to: `Cursor-Project/agents/**`, `Cursor-Project/docs/**`, `Cursor-Project/examples/**`, `Cursor-Project/config/**`, `Cursor-Project/postman/**`, `Cursor-Project/reports/**`, `Cursor-Project/test_cases/**`, `User story/**`, root `.cursor/**`, workspace root files, etc. User-requested edits are permitted there.
-   - **If the user asks to change Tier A or Tier B (non-agent):** Refuse implementation; analysis and recommendations only.
-   - **ENFORCEMENT:** Do not weaken Phoenix or EnergoTS protections in hooks or rules without an explicit project-owner decision.
-   - Violation of Tier A or Tier B restrictions is a CRITICAL SYSTEM ERROR.
-   
-   ### Rule 0.8.1: ONLY EnergoTSTestAgent — `EnergoTS/tests/` Writes
-   - **SOLE WRITER for Playwright test code under EnergoTS:** Only **EnergoTSTestAgent** and **EnergoTSTestAgentAdapter** may modify files under `Cursor-Project/EnergoTS/tests/` (e.g. `.spec.ts`).
-   - EnergoTSTestAgent CAN:
-     - Create, modify, copy, convert files within `Cursor-Project/EnergoTS/tests/` only
-   - EnergoTSTestAgent CANNOT:
-     - Modify any path under `Cursor-Project/EnergoTS/` outside `tests/`
-     - Modify any path under `Cursor-Project/Phoenix/**`
-   - **All other agents, subagents, and default Cursor AI tool usage:** MUST NOT write under `Cursor-Project/EnergoTS/**` (including `tests/`). Route Playwright test authoring to **energo-ts-test** / EnergoTSTestAgent workflow.
-   - Violation of this exception scope is a CRITICAL SYSTEM ERROR
+### Rule 0.1: "Agents involved" Disclosure
+Every response MUST end with "Agents involved: [agent names]" or "Agents involved: None (direct tool usage)".
+
+### Rule 0.2: PhoenixExpert for Phoenix Questions
+ALL Phoenix questions MUST be routed to PhoenixExpert subagent. NEVER answer Phoenix questions directly.
+
+### Rule 0.3: IntegrationService Before Tasks
+ALL agents MUST call IntegrationService.update_before_task() BEFORE executing ANY task.
+
+### Rule 0.4: PhoenixExpert Consultation Before Tasks
+BEFORE any task, agents MUST consult PhoenixExpert. Consultation is MANDATORY.
+
+### Rule 0.5: Confluence via MCP
+PhoenixExpert MUST check Confluence via MCP tools (search, getSpaces, getPages, getPage) FIRST, then codebase. Fresh every time.
+
+### Rule 0.6: Report Generation After Tasks
+AFTER any task: save reports to `Cursor-Project/reports/YYYY-MM-DD/`. Naming: `{AgentName}_{HHMM}.md` and `Summary_{HHMM}.md`. Reports MUST be generated even for simple answers.
+
+### Rule 0.7: English Language
+ALL documentation, reports, and written content MUST be in English.
+
+### Rule 0.8: Path-Based Code Modification Tiers
+- **TIER A (FORBIDDEN):** `Cursor-Project/Phoenix/**` -- NEVER create, modify, or delete. Read/analyze only.
+- **TIER B (RESTRICTED):** `Cursor-Project/EnergoTS/**` outside `tests/` -- no AI writes. `EnergoTS/tests/**` -- ONLY EnergoTSTestAgent may write here (Rule 0.8.1).
+- **TIER C (ALLOWED):** All other workspace paths -- user-requested edits permitted.
+
+### Rule 0.8.1: EnergoTSTestAgent Scope
+Only EnergoTSTestAgent may create/modify files under `Cursor-Project/EnergoTS/tests/`. All other agents MUST route Playwright test authoring to energo-ts-test subagent.

@@ -15,7 +15,7 @@ Use this command when the user asks about:
 
 0. **Merge-first and conditional sync (Rule 35a)** – When the user provides a **Jira/bug/task** key:
    - **First** look up **merge history** for that key (local git + GitLab if available): which branch(es), MR(s), merge commit(s), and changed files/modules.
-   - **If a merge exists** for this Jira on a target branch: run a **targeted sync** for that branch only (same safe read-only flow as `!update <branch>` per `git_sync_workflow.mdc`). If no merge found, skip sync.
+   - **If a merge exists** for this Jira on a target branch: run a **targeted sync** for that branch only (same safe read-only flow as `/sync` command). If no merge found, skip sync.
    - Add merge-derived info to the output as **technical_details** (MR/merge, changed files/modules, short summary).
 1. **IntegrationService** – Call `IntegrationService.update_before_task()` FIRST (Rule 11).
 2. **PhoenixExpert** – Consult when you need to study the project or scope (Rule 8). The finder may turn to the expert; return the report to the parent for test-case-generator.

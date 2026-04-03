@@ -1,27 +1,12 @@
-# JIRA BUG AGENT RULE [CRITICAL]
+---
+description: "Jira bug agent: Experiments board only, Phoenix delivery prohibited. Apply when user asks to create or rewrite a Jira bug."
+alwaysApply: false
+---
 
-## Rule JIRA.0: Jira Bug Agent Scope and Phoenix Delivery Prohibition [CRITICAL]
+# JIRA BUG AGENT RULE
 
-**Scope:** The Jira bug agent creates or rewrites Jira bug tickets using the Experiments board template only.
+## Rule JIRA.0: Scope and Prohibition
 
-**Allowed:**
-- Create a new Jira bug on the **Experiments** board.
-- Rewrite or improve an existing Jira bug using the standard template (Summary, Description, Steps to reproduce, Expected result, Actual result, Environment, Technical details, Example).
-- Use command `!jira-bug` or skill/agent when the user asks to create or edit a bug for the **Experiments** board.
+**Allowed:** Create or rewrite Jira bugs on the **Experiments** board only, using the standard template (Summary, Description, Steps to reproduce, Expected result, Actual result, Environment, Technical details, Example).
 
-**PROHIBITED – ABSOLUTE:**
-- Creating or writing Jira bugs in **Phoenix delivery** (Phoenix Delivery board, project, or any Jira space used for Phoenix delivery).
-- Any prompt or command that asks to create, add, or write a bug ticket in Phoenix delivery MUST be blocked.
-- The Jira bug agent MUST NOT operate on Phoenix delivery; use Experiments board only.
-
-**Template (Experiments board):**
-- Summary, Description, Steps to reproduce, Expected result, Actual result.
-- Environment: Board: Experiments, Environment, Browser.
-- Technical details: Endpoint, Payload, Status.
-- Example: (sample data / JSON / logs).
-
-**Enforcement:**
-- Hooks block prompts that request Jira bug creation in Phoenix delivery.
-- Agent and skill refuse and redirect to Experiments board if user mentions Phoenix delivery for bug creation.
-
-Violation is a CRITICAL SYSTEM ERROR.
+**PROHIBITED:** Creating or writing Jira bugs in **Phoenix delivery**. Any such request MUST be blocked. Hooks enforce this.

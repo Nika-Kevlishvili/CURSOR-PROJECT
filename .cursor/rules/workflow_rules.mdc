@@ -2,214 +2,25 @@
 alwaysApply: true
 ---
 
-# WORKFLOW RULES [CRITICAL]
+# WORKFLOW RULES
 
-3. [CRITICAL] Every response MUST end with "Agents involved: [agent names]" or "Agents involved: None (direct tool usage)".
-   - Ensures transparency, accountability, and traceability.
-   - Violation is a CRITICAL ERROR.
+### Rule 3: Agents Involved Footer
+Every response MUST end with "Agents involved: [agent names]" or "Agents involved: None (direct tool usage)".
 
-# BUG VALIDATION RULE [CRITICAL]
+### Rule 32: Bug Validation
+Bug validation requests -> route to bug-validator subagent. READ-ONLY: validate against Confluence first, then codebase. Report to `Cursor-Project/reports/YYYY-MM-DD/BugValidation_*.md`. Follow `.cursor/commands/bug-validate.md`.
 
-32. [CRITICAL] When analyzing bug reports or bug validation requests, ALWAYS use BugFinderAgent and follow this mandatory workflow:
-    
-    **MANDATORY: Use BugFinderAgent**
-    - ALL bug validation requests MUST be handled by BugFinderAgent
-    - Use: `from agents.Main import get_bug_finder_agent; bug_finder = get_bug_finder_agent(); result = bug_finder.validate_bug(bug_description)`
-    - BugFinderAgent automatically follows Rule 32 workflow and integrates with all required services
-    - This ensures consistent, structured bug validation with proper reporting
-    
-    **CRITICAL: READ-ONLY MODE - NO CODE MODIFICATIONS**
-    - When validating bugs, you MUST work in READ-ONLY mode
-    - NEVER modify code during bug validation
-    - NEVER attempt to fix bugs during validation
-    - ONLY analyze, document, and report findings
-    - Code modifications are ONLY allowed if user explicitly requests bug fixing AFTER validation is complete
-    - Violation of this rule is a CRITICAL SYSTEM ERROR
-    
-    **BugFinderAgent Workflow (Rule 32):**
-    
-    **Step 1: Validate Bug Report Against Confluence**
-    - FIRST: Search Confluence using MCP tools (mcp_Confluence_search(), mcp_Confluence_searchConfluenceUsingCql(), mcp_Confluence_getConfluencePage()) for related documentation
-    - Check if bug description matches Confluence documentation
-    - Verify if bug report contains correct information based on Confluence sources
-    - Report findings: "Confluence validation: [correct/incorrect/partially correct] - [explanation]"
-    - Document all Confluence sources found (page IDs, titles, URLs)
-    
-    **Step 2: Validate Code Against Bug Report**
-    - SECOND: Search codebase using codebase_search() and grep() to find relevant code
-    - Analyze code implementation to verify if it satisfies the bug report requirements
-    - Check if code behavior matches expected behavior described in bug report
-    - Report findings: "Code validation: [satisfies/does not satisfy] the bug report - [explanation]"
-    - Include specific file paths, line numbers, and code snippets
-    - Identify exact location of bug in code
-    
-    **Step 3: Provide Comprehensive Analysis**
-    - Combine Confluence findings and code analysis
-    - Provide clear answer about:
-      1. Whether bug report information is correct based on Confluence
-      2. Whether code satisfies the bug report case or not
-      3. Whether bug is VALID or NOT VALID
-    - Include specific code references and line numbers when relevant
-    - Use clear structure: "1. Confluence Validation", "2. Code Analysis", "3. Conclusion"
-    - Format report using: `bug_finder.format_validation_report(result)`
-    
-    **Step 4: Generate Report File**
-    - Create markdown report file in `Cursor-Project/reports/YYYY-MM-DD/BugValidation_[BugName].md` (MUST be in project root)
-    - Include all findings from Confluence and Code analysis
-    - Include bug validity conclusion
-    - Include code references with file paths and line numbers
-    - Include suggested fix (if applicable) but DO NOT implement it
-    
-    **Workflow Requirements:**
-    - ALWAYS use BugFinderAgent for bug validation
-    - ALWAYS check Confluence FIRST (via MCP tools)
-    - ALWAYS check codebase SECOND
-    - ALWAYS provide both validations in response
-    - ALWAYS create report file in `Cursor-Project/reports/` directory (project root)
-    - NEVER skip either step
-    - NEVER modify code during validation (READ-ONLY mode)
-    - NEVER attempt to fix bugs unless explicitly requested AFTER validation
-    - BugFinderAgent automatically handles: IntegrationService calls, PhoenixExpert consultation, and report generation
-    
-    **Example Usage:**
-    ```python
-    from agents.Main import get_bug_finder_agent
-    
-    bug_finder = get_bug_finder_agent()
-    result = bug_finder.validate_bug("Bug description here")
-    
-    # Perform actual validation using MCP tools and codebase search
-    # Then populate result with findings
-    
-    report = bug_finder.format_validation_report(result)
-    ```
-    
-    **Example Response Structure:**
-    ```
-    ## Bug Validation Analysis
-    
-    ### 1. Confluence Validation
-    **Status:** [correct/incorrect/partially correct]
-    **Explanation:** [Detailed explanation]
-    **Sources:** [List of Confluence pages found]
-    
-    ### 2. Code Analysis
-    **Status:** [satisfies/does not satisfy]
-    **Explanation:** [Detailed explanation]
-    **Code References:**
-    - File: [path/to/file.java]
-    - Lines: [123-145]
-    - Issue: [Description of bug]
-    
-    ### 3. Conclusion
-    **Bug Valid:** [YES/NO]
-    **Summary:** [Brief summary]
-    **Details:** [Detailed analysis]
-    ```
-    
-    **Important Notes:**
-    - Report file MUST be saved to `Cursor-Project/reports/YYYY-MM-DD/BugValidation_[DescriptiveName].md` (MUST be in project root)
-    - Report MUST include all code references with file paths and line numbers
-    - Report MUST NOT include code modifications - only analysis and documentation
-    - If user wants to fix the bug, they will request it separately AFTER validation
-    
-    **Why BugFinderAgent:**
-    - Ensures consistent bug validation workflow
-    - Automatically integrates with all required services (IntegrationService, ReportingService)
-    - Provides structured validation results
-    - Generates proper reports following Rule 0.6
-    - Follows all critical rules (0.3, 0.4, 0.6)
-    
-    Violation is a CRITICAL SYSTEM ERROR.
+### Rule 33: Database Queries
+Database queries -> use correct PostgreSQL MCP server for the requested environment. See database_workflow.mdc for connection details and query patterns.
 
-# DATABASE WORKFLOW RULE [CRITICAL]
+### Rule 35: Test Case Generation
+Test case requests -> run cross-dependency-finder FIRST, then pass output as cross_dependency_data to test-case-generator. Follow `.cursor/commands/test-case-generate.md`.
 
-33. [CRITICAL] ALL database queries in Test environment MUST use PostgreSQLTest MCP server.
-    - Connection: Use `mcp_PostgreSQLTest_connect_db()` with credentials (host: 10.236.20.24, port: 5432, database: phoenix, user: postgres)
-    - Queries: Use `mcp_PostgreSQLTest_query()` for SELECT operations
-    - See `.cursor/rules/database_workflow.mdc` for complete workflow, query patterns, and best practices
-    - ALWAYS connect before executing queries
-    - Violation is a CRITICAL SYSTEM ERROR.
+### Rule 35a: Cross-Dependency Merge Workflow
+When user provides a Jira key: (1) look up merge history for that key in local git and GitLab; (2) if merge exists, sync that branch; (3) include technical_details in output. Follow `.cursor/commands/cross-dependency-finder.md`.
 
-# TEST CASE GENERATION WORKFLOW RULE [CRITICAL]
+### Rule 36: Run Playwright Tests
+Run Playwright tests -> energo-ts-run subagent, cursor branch only (Rule ENERGOTS.0). Follow `.cursor/commands/energo-ts-run.md`.
 
-35. [CRITICAL] When the user requests creation of test cases (for a bug, task, or feature), ALWAYS follow this mandatory workflow:
-    
-    **Step 1: Run Cross-Dependency Finder FIRST (MANDATORY)**
-    - Delegate to **cross-dependency-finder** subagent (or run CrossDependencyFinderAgent) for the same scope (bug/task/feature).
-    - Cross-dependency-finder MUST follow the **Merge-first and conditional sync** workflow (see Cross-Dependency Merge Workflow below).
-    - Cross-dependency-finder MAY consult **PhoenixExpert** to study the project, scope, and dependencies (Rule 8).
-    - Cross-dependency-finder identifies: upstream/downstream dependencies, code references, and **what could break as a result of changes** (callers, consumers, contract usage, integration points).
-    - Obtain the structured output (scope, entry_points, upstream, downstream, impact_risk / what_could_break, integration_points, **technical_details** from merges, etc.).
-    
-    **Step 2: Pass result to Test Case Generator**
-    - Call **test-case-generator** (TestCaseGeneratorAgent) with the same prompt and with `context['cross_dependency_data']` set to the cross-dependency-finder output.
-    - Test-case-generator uses this data to produce test cases that cover integration points, regression risks, and anything that could break.
-    
-    **Workflow summary:**
-    1. User requests test cases → run **cross-dependency-finder** (merge lookup → conditional sync → then scope + dependencies; consults PhoenixExpert when needed).
-    2. Cross-dependency-finder returns report (including "what could break" and **technical_details** from merges) → pass to **test-case-generator**.
-    3. Test-case-generator generates test cases using prompt + Confluence + codebase + cross_dependency_data.
-    
-    - NEVER skip the cross-dependency-finder step when test case creation is requested.
-    - Violation is a CRITICAL SYSTEM ERROR.
-
-# CROSS-DEPENDENCY MERGE WORKFLOW [CRITICAL]
-
-35a. [CRITICAL] When the user provides a **Jira/bug/task** for cross-dependencies or test cases, the **CrossDependencyFinderAgent** (and any executor of the cross-dependency-finder command) MUST follow this order. Do NOT rely on local repo only; ensure merge information is considered and local branch is up to date when a merge exists for that Jira.
-    
-    **Step 1: Merge history lookup (first)**
-    - Use the **Jira key** (e.g. BUG-1234, PDT-5678) or task/bug identifier from the user.
-    - Check **merge history** for that key: local git history (commit/merge messages, branch names containing the key) and, where available, GitLab (e.g. MRs mentioning the Jira key, merged state, target branch).
-    - Identify: which branch(es) contain merges for this Jira, which commits/MRs, and which files/modules changed.
-    
-    **Step 2: Conditional sync (only if merge exists for this Jira)**
-    - If a merge/MR is found for this Jira key on a target branch (e.g. dev, dev2):
-      - Run a **targeted sync** for that branch in the relevant repo(s), following the same safe read-only approach as `!sync` / `!update <branch>` (see `.cursor/rules/git_sync_workflow.mdc`): fetch, then merge/rebase as per workflow (no push).
-      - Sync ONLY the branch that contains or will contain the merge for this Jira (e.g. `dev` or the feature branch). Do not sync unrelated branches.
-    - If no merge is found for this Jira key, skip sync; proceed with current local state.
-    
-    **Step 3: Use merge information as technical details**
-    - Add to the cross-dependency output a **technical_details** section (or equivalent) that includes:
-      - Which MR(s) / merge commit(s) were found for this Jira key.
-      - Which files, modules, or services changed in those merges.
-      - Short summary usable for test case generation and impact analysis.
-    - Use this technical_details in the structured payload passed to TestCaseGeneratorAgent (e.g. inside `cross_dependency_data`).
-    
-    **Summary:** First look up merges for the Jira key → if a merge exists, sync that branch so local code reflects it → then run cross-dependency analysis and include merge-derived technical details in the report. This applies in every chat when the user asks for cross-dependencies or test cases for a specific bug/task.
-    
-    - Violation is a CRITICAL SYSTEM ERROR.
-
-# ENERGOTS PLAYWRIGHT TEST RUN RULE [CRITICAL]
-
-36. [CRITICAL] When the user asks to **run** Playwright tests from EnergoTS (e.g. "run newly created test", "run test REG-123", "run test from GitHub"), ALWAYS follow the EnergoTS Playwright Test Run workflow and run tests **only from the `cursor` branch** (Rule ENERGOTS.0).
-    
-    **MANDATORY: Use energo-ts-run workflow**
-    - Route to the **energo-ts-run** agent/command (`.cursor/agents/energo-ts-run.md`, `.cursor/commands/energo-ts-run.md`).
-    - Resolve which test(s) to run from the user prompt (newly created, Jira key, file path, or domain).
-    - **Cursor branch only:** Before running, in `Cursor-Project/EnergoTS/` verify current branch; if not `cursor`, run `git checkout cursor`. Tests MUST run only from the `cursor` branch. Never run Playwright tests from main or any other branch in EnergoTS.
-    - Execute: `npx playwright test <target>` from `Cursor-Project/EnergoTS/`.
-    - No code modification; only run tests. Save report to `Cursor-Project/reports/YYYY-MM-DD/` (Rule 0.6).
-    
-    **When to apply**
-    - User asks to run a Playwright test, run the newly created test, run a specific test (by name/Jira key/file), or run tests from EnergoTS/GitHub.
-    
-    **Reference:** Rule ENERGOTS.0 (`.cursor/rules/energots_branch_lock.mdc`) – EnergoTS locked to `cursor` branch only.
-    
-    - Violation is a CRITICAL SYSTEM ERROR.
-
-# HANDSOFF FLOW RULE [CRITICAL]
-
-37. [CRITICAL] When the user provides a **Jira ticket** (link, key e.g. REG-123, or name) and invokes **/HandsOff** or **!HandsOff**, ALWAYS run the full HandsOff flow without user intervention.
-    
-    **MANDATORY: Use hands-off workflow**
-    - Route to the **hands-off** orchestrator (`.cursor/commands/hands-off.md`, `.cursor/agents/hands-off.md`).
-    - Execute the full flow in order: (1) Get Jira ticket and description (Jira MCP); (2) Run cross-dependency-finder for the Jira key (Rule 35a); (3) Run test-case-generator with cross_dependency_data; (4) Create Playwright tests from test cases (bridge .md to spec, EnergoTSTestAgent); (4.5) Validate Playwright tests (playwright-test-validator); if validation fails, re-run (3) and/or (4) and re-validate until pass or max iterations; (5) Run Playwright tests (energo-ts-run, cursor branch only); (6) Save report as `Cursor-Project/reports/YYYY-MM-DD/{JIRA_KEY}.md` with pass/fail and reasons; (7) Send that report to Slack to the tester and to the AI report channel (user-slack MCP); (8) After the report, collect questions from each participating agent (as needed), tag each question with the agent name, and send the list of questions to the same Slack recipients.
-    - Do not skip steps. Report must be named after the Jira key and sent to Slack; then agent questions (with attribution) must be sent after the report.
-    
-    **When to apply**
-    - User message contains a Jira ticket identifier and the trigger **/HandsOff** or **!HandsOff** (or "HandsOff for this ticket", "Run HandsOff for REG-123", etc.).
-    
-    **Reference:** `.cursor/commands/hands-off.md`, `.cursor/agents/hands-off.md`. (HandsOff has no project skill entry; trigger via **/HandsOff**, **!HandsOff**, or the **hands-off** slash command only.)
-    
-    - Violation is a CRITICAL SYSTEM ERROR.
+### Rule 37: HandsOff Flow
+Jira ticket + /HandsOff -> full pipeline via hands-off subagent. Follow `.cursor/commands/hands-off.md`. See handsoff_playwright_report.mdc for lessons learned.

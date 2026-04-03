@@ -15,7 +15,7 @@ Subagents delegate work to specialized contexts. Each subagent here maps to this
 | **test-runner.md**  | TestAgent (Rule 8, 17)     | Run tests; consult PhoenixExpert first; report results. |
 | **report-generator.md** | ReportingService (Rule 0.6) | After task: save agent report + summary to `Cursor-Project/reports/YYYY-MM-DD/`. |
 | **database-query.md**  | database_workflow.mdc (Rule DB.0–DB.5) | PostgreSQL MCP: correct env (Dev/Test/Prod), connect first, contract/POD patterns; no credentials in output. |
-| **git-sync.md**        | GitLabUpdateAgent / git_sync_workflow.mdc | Sync/update/checkout Phoenix repos from GitLab; !sync, !update &lt;branch&gt;, !checkout &lt;branch&gt;; READ-ONLY (no push). |
+| **git-sync.md**        | GitLabUpdateAgent / sync command | Sync/update/checkout Phoenix repos from GitLab; /sync; READ-ONLY (no push). |
 | **environment-access.md** | EnvironmentAccessAgent (Rule 10)     | Access Dev or Dev2: navigation, login, environment selection. |
 | **postman-collection.md** | PostmanCollectionGenerator (Rule 8, 17) | Generate Postman collections; consult PhoenixExpert first; save to postman/. |
 | **test-case-generator.md** | TestCaseGeneratorAgent | Generate test cases from bug/task; Confluence (MCP) + codebase; optional cross_dependency_data for better coverage; save to test_cases/. |
@@ -30,7 +30,7 @@ Subagents delegate work to specialized contexts. Each subagent here maps to this
 
 - **Rules:** `.cursor/rules/*.mdc` (agent_rules, core_rules, workflow_rules, database_workflow, safety_rules, etc.)
 - **Python agents:** `Cursor-Project/agents/` (Main: PhoenixExpert, TestAgent, BugFinderAgent; Support: GitLabUpdateAgent, EnvironmentAccessAgent; Core: AgentRouter, IntegrationService; Services: ReportingService)
-- **Skills:** `.cursor/skills/` (phoenix-agent-workflow, phoenix-bug-validation, phoenix-reporting, phoenix-database, etc.)
+- **Skills:** `.cursor/skills/` (phoenix-core, phoenix-workflows, cross-dependency-finder, test-case-generator, etc.)
 
 Subagent prompts reference these so delegated work follows the same IntegrationService, PhoenixExpert consultation, and reporting requirements.
 

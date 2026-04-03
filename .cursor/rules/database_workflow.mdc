@@ -1,104 +1,33 @@
 ---
-alwaysApply: true
+description: "Database workflow with PostgreSQL MCP: environment selection, connection details, query patterns. Apply when user asks about database, queries, contracts, POD, or specific environments."
+alwaysApply: false
 ---
 
-# DATABASE WORKFLOW RULES [CRITICAL - MANDATORY]
+# DATABASE WORKFLOW RULES
 
-## Rule DB.0: Environment Selection [CRITICAL - ABSOLUTE PRIORITY]
+## Rule DB.0: Environment Selection
 
-**ALWAYS use the EXACT environment that the user requests. NEVER switch to a different environment.**
+**ALWAYS use the EXACT environment the user requests.**
 
-- If user says "Dev" → Use PostgreSQLDev (10.236.20.21)
-- If user says "Dev2" → Use PostgreSQLDev2 (10.236.20.22)
-- If user says "Test" → Use PostgreSQLTest (10.236.20.24)
-- If user says "PreProd" → Use PostgreSQLPreProd (10.236.20.76)
-- If user says "Prod" → Use PostgreSQLProd (10.236.20.78:5000, readonly_user)
+| Environment | MCP Server | Host | Port | User | Database |
+|-------------|-----------|------|------|------|----------|
+| Dev | user-postgres (Dev) | 10.236.20.21 | 5432 | postgres | phoenix |
+| Dev2 | user-postgres (Dev2) | 10.236.20.22 | 5432 | postgres | phoenix |
+| Test | user-postgres (Test) | 10.236.20.24 | 5432 | postgres | phoenix |
+| PreProd | user-postgres (PreProd) | 10.236.20.76 | 5432 | postgres | phoenix |
+| Prod | user-postgres (Prod) | 10.236.20.78 | 5000 | readonly_user | phoenix |
 
-## Rule DB.1: PostgreSQL MCP Connection Details [CRITICAL]
+Credentials are configured in MCP server settings. ALWAYS connect first with `mcp_PostgreSQL{Env}_connect_db()` before querying.
 
-### PostgreSQLDev - Dev Environment
-- **Host:** `10.236.20.21`
-- **Port:** `5432`
-- **Database:** `phoenix`
-- **User:** `postgres`
-- **Password:** `rakX5thB2qO3`
+## Rule DB.2: Standard Query Patterns
 
-### PostgreSQLDev2 - Dev2 Environment
-- **Host:** `10.236.20.22`
-- **Port:** `5432`
-- **Database:** `phoenix`
-- **User:** `postgres`
-- **Password:** `uj6MfFgUkV1R`
-
-### PostgreSQLTest - Test Environment
-- **Host:** `10.236.20.24`
-- **Port:** `5432`
-- **Database:** `phoenix`
-- **User:** `postgres`
-- **Password:** `U&Vd2Ge@nyM1`
-
-### PostgreSQLPreProd - PreProd Environment
-- **Host:** `10.236.20.76`
-- **Port:** `5432`
-- **Database:** `phoenix`
-- **User:** `postgres`
-- **Password:** `U&Vd2Ge@nyM1`
-
-### PostgreSQLProd - Production Environment (READ-ONLY)
-- **Host:** `10.236.20.78`
-- **Port:** `5000`
-- **Database:** `phoenix`
-- **User:** `readonly_user`
-- **Password:** `U$CM)*qr&Zb4JfU@`
-
-### Connection Steps:
-```python
-# Example for Dev environment
-mcp_PostgreSQLDev_connect_db(
-    host="10.236.20.21",
-    port=5432,
-    user="postgres",
-    password="rakX5thB2qO3",
-    database="phoenix"
-)
-
-# Then execute queries
-mcp_PostgreSQLDev_query(sql="SELECT ...")
-```
-
-### Query Execution:
-- **ALWAYS connect first** using the appropriate `mcp_PostgreSQL{Env}_connect_db()` before executing queries
-- Use `mcp_PostgreSQL{Env}_query()` for SELECT queries
-- Use `mcp_PostgreSQL{Env}_execute()` for INSERT/UPDATE/DELETE operations (if needed)
-- Connection persists for the session, but reconnect if connection errors occur
-
-### Available MCP Servers:
-- **PostgreSQLDev** - Dev environment (10.236.20.21:5432/phoenix)
-- **PostgreSQLDev2** - Dev2 environment (10.236.20.22:5432/phoenix)
-- **PostgreSQLTest** - Test environment (10.236.20.24:5432/phoenix)
-- **PostgreSQLPreProd** - PreProd environment (10.236.20.76:5432/phoenix)
-- **PostgreSQLProd** - Production environment (10.236.20.78:5000/phoenix, READ-ONLY)
-
-## Rule DB.2: Standard Query Patterns [IMPORTANT]
-
-### Finding Contracts by POD Identifier:
+### Finding Contracts by POD Identifier
 
 **Product Contracts:**
 ```sql
-SELECT DISTINCT
-    'PRODUCT_CONTRACT' as contract_type,
-    c.id as contract_id,
-    c.contract_number,
-    c.status,
-    c.contract_status,
-    c.create_date,
-    c.entry_into_force_date,
-    c.termination_date,
-    p.identifier as pod_identifier,
-    cp.id as contract_pod_id,
-    cp.activation_date,
-    cp.deactivation_date,
-    cp.status as contract_pod_status
+SELECT DISTINCT 'PRODUCT_CONTRACT' as contract_type, c.id, c.contract_number, c.status,
+  c.contract_status, c.create_date, c.entry_into_force_date, c.termination_date,
+  p.identifier as pod_identifier, cp.id as contract_pod_id, cp.activation_date, cp.deactivation_date
 FROM product_contract.contracts c
 JOIN product_contract.contract_details cd ON cd.contract_id = c.id
 JOIN product_contract.contract_pods cp ON cp.contract_detail_id = cd.id
@@ -110,18 +39,9 @@ ORDER BY c.contract_number, c.id
 
 **Service Contracts:**
 ```sql
-SELECT DISTINCT
-    'SERVICE_CONTRACT' as contract_type,
-    c.id as contract_id,
-    c.contract_number,
-    c.status,
-    c.contract_status,
-    c.create_date,
-    c.entry_into_force_date,
-    c.termination_date,
-    p.identifier as pod_identifier,
-    cp.id as contract_pod_id,
-    cp.status as contract_pod_status
+SELECT DISTINCT 'SERVICE_CONTRACT' as contract_type, c.id, c.contract_number, c.status,
+  c.contract_status, c.create_date, c.entry_into_force_date, c.termination_date,
+  p.identifier as pod_identifier, cp.id as contract_pod_id
 FROM service_contract.contracts c
 JOIN service_contract.contract_details cd ON cd.contract_id = c.id
 JOIN service_contract.contract_pods cp ON cp.contract_detail_id = cd.id
@@ -130,40 +50,33 @@ WHERE p.identifier = 'POD_IDENTIFIER_HERE'
 ORDER BY c.contract_number, c.id
 ```
 
-### Key Schema Relationships:
-- **Product Contracts:** `contracts` → `contract_details` → `contract_pods` → `pod_details` → `pod`
-- **Service Contracts:** `contracts` → `contract_details` → `contract_pods` → `pod` (direct pod_id)
-- **POD Identifier:** Stored in `pod.pod.identifier` (varchar(33))
+### Key Schema Relationships
+- **Product Contracts:** contracts -> contract_details -> contract_pods -> pod_details -> pod
+- **Service Contracts:** contracts -> contract_details -> contract_pods -> pod (direct pod_id)
 
-## Rule DB.3: Query Best Practices [IMPORTANT]
+## Query Best Practices
 
-1. **Always use DISTINCT** when joining multiple tables to avoid duplicate rows
-2. **Include contract_type** in results to distinguish Product vs Service contracts
-3. **Order results** by contract_number and contract_id for consistency
-4. **Include relevant dates** (create_date, entry_into_force_date, termination_date, activation_date, deactivation_date)
-5. **Include status fields** (contract status, contract_pod status) for context
+- Always use DISTINCT when joining multiple tables
+- Include contract_type to distinguish Product vs Service contracts
+- Order by contract_number and contract_id
+- Include status fields and relevant dates
 
-## Rule DB.4: Error Handling [IMPORTANT]
+## Error Handling
 
-- If connection fails, verify credentials and network access
-- If query fails, check SQL syntax and table/schema names
+- Connection fails: verify credentials and network access
+- Query fails: check SQL syntax and table/schema names
 - Always handle empty result sets gracefully
 - Log errors with full context for debugging
 
-## Rule DB.5: Security [CRITICAL]
+## Security
 
-- **NEVER commit database credentials** to version control
-- **NEVER log passwords** in responses or reports
-- Use MCP environment variables for credentials when possible
-- Credentials are stored in MCP configuration, not in code
+- NEVER commit database credentials to version control
+- NEVER log passwords in responses or reports
+- Credentials are stored in MCP server settings, not in rule files or code
 
-## Rule DB.6: Workflow Integration [IMPORTANT]
+## Workflow Integration
 
-When database queries are needed:
-1. Connect using PostgreSQLTest MCP (Rule DB.1)
+1. Connect using the correct MCP server (Rule DB.0) -- always connect before querying
 2. Execute queries using standard patterns (Rule DB.2)
-3. Format results clearly for user
-4. Include all relevant contract and POD information
-5. Follow reporting rules (Rule 0.6) if task involves database queries
-
-**Violation of database workflow rules is a CRITICAL SYSTEM ERROR.**
+3. Format results clearly for user; include all relevant contract and POD information
+4. Follow reporting rules (Rule 0.6) if task involves database queries

@@ -24,7 +24,7 @@ Route to cross-dependency-finder subagent / CrossDependencyFinderAgent. Do not d
 
 - **First:** Use the **Jira key** (e.g. BUG-1234) or task/bug identifier from the user.
 - **Look up merge history** for that key: local git (commit/merge messages, branch names) and, where available, GitLab (MRs for that Jira, merged state, target branch). Identify which branch(es), commits/MRs, and files/modules changed.
-- **If a merge exists for this Jira** on a target branch (e.g. dev, dev2): run a **targeted sync** for that branch only (same safe read-only flow as `!sync` / `!update <branch>` per `git_sync_workflow.mdc`). If no merge found, skip sync.
+- **If a merge exists for this Jira** on a target branch (e.g. dev, dev2): run a **targeted sync** for that branch only (same safe read-only flow as `/sync` command). If no merge found, skip sync.
 - **Technical details:** Add merge-derived info (MR/merge commit, changed files/modules, short summary) to the output as **technical_details** for the report and for test-case-generator.
 
 ### 1. Before running
