@@ -16,33 +16,46 @@ Ensures bug validation follows **Rule 32** in `.cursor/rules/workflows/workflow_
 
 There is **no** `from agents.Main import get_bug_finder_agent` in this workspace. Run the steps below directly.
 
-## Workflow (Rule 32)
+## Workflow (Rule 32) - 5-Verdict System
 
-### Step 1: Confluence validation (first)
+### Step 1: Extract Expected Behavior
+
+- Extract the bug's expected result from the ticket description.
+- Identify the specific behavior that should occur according to the bug reporter.
+- Document the claimed expected behavior clearly.
+
+### Step 2: Confluence validation (evidence strength)
 
 - Use MCP Confluence tools: search, getSpaces, getPages, getConfluencePage.
-- Check if bug description matches Confluence documentation.
-- Report: "Confluence validation: [correct / incorrect / partially correct] - [explanation]".
+- Check for EXACT match: Does Confluence explicitly support the bug's expected behavior?
+- Check for CONTEXTUAL match: Does Confluence provide similar/related rules that suggest the expected behavior?
+- Check for CONTRADICTION: Does Confluence explicitly state different behavior than what the bug expects?
+- Report: "Confluence validation: [exact match / contextual match / no match / contradicts / search failed] - [explanation]".
 - Document Confluence sources (page IDs, titles, URLs).
 
-### Step 2: Code validation (second)
+### Step 3: Code validation (behavior analysis)
 
 - Search codebase (semantic search, grep, read_file) for relevant code.
-- Analyze implementation vs expected behavior in the bug report.
-- Report: "Code validation: [satisfies / does not satisfy] the bug report - [explanation]".
-- Include file paths, line numbers, and code snippets; identify bug location.
+- Analyze actual code implementation behavior.
+- Check if code behavior matches the faulty behavior described in the bug report.
+- Report: "Code validation: [matches reported behavior / does not match reported behavior / could not verify] - [explanation]".
+- Include file paths, line numbers, and code snippets; identify exact implementation.
 
-### Step 3: Combined analysis
+### Step 4: Apply 5-Verdict Decision Matrix
 
-- Confluence findings + code analysis.
-- Clear answers: (1) Is bug report correct per Confluence? (2) Does code satisfy the case? (3) Bug VALID or NOT VALID?
-- Structure: "1. Confluence Validation", "2. Code Analysis", "3. Conclusion".
+- **VALID**: Exact Confluence match + code confirms reported faulty behavior
+- **NEEDS CLARIFICATION**: Contextual Confluence match + code confirms reported behavior  
+- **NEEDS APPROVAL**: No Confluence match + code confirms reported behavior
+- **NOT VALID**: Confluence contradicts expected behavior + code follows Confluence
+- **INSUFFICIENT EVIDENCE**: Cannot access Confluence/code or evidence too weak
 
-### Step 4: Report file
+- Structure: "1. Expected Behavior", "2. Confluence Validation", "3. Code Analysis", "4. Final Verdict".
+
+### Step 5: Report file
 
 - Save markdown to: `Cursor-Project/reports/YYYY-MM-DD/BugValidation_[DescriptiveName].md`.
-- Include Confluence validation, code analysis, conclusion, code references (paths + lines).
-- May include suggested fix as text only; do not implement code changes.
+- Include expected behavior, Confluence validation, code analysis, final verdict with reasoning, code references (paths + lines).
+- Include next steps based on verdict; do not implement code changes during validation.
 
 ## READ-ONLY
 
@@ -55,6 +68,40 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
 - Consult PhoenixExpert for context when needed.
 - Markdown reports per Rule 0.6.
 - End with: "Agents involved: BugFinderAgent (workflow), PhoenixExpert" (or as applicable).
+
+## Decision Matrix Details
+
+### When to use each verdict:
+
+**VALID**
+- Confluence explicitly documents the expected behavior from the bug report
+- Code implementation contradicts that documented expectation  
+- Action: Fix the bug
+
+**NEEDS CLARIFICATION**  
+- Confluence has related/contextual documentation but no exact rule
+- Code behavior matches what the bug describes as faulty
+- Action: Get product clarification on expected behavior, then proceed
+
+**NEEDS APPROVAL**
+- No relevant Confluence documentation found for this specific case
+- Code behavior matches what the bug describes as faulty  
+- Action: Get product owner approval before treating as valid bug
+
+**NOT VALID**
+- Confluence explicitly contradicts the bug report's expected behavior
+- Code correctly implements what Confluence specifies
+- Action: Close bug as "working as designed"
+
+**INSUFFICIENT EVIDENCE**
+- Technical failure: Confluence inaccessible, code unreachable, search failed
+- Evidence too weak or incomplete to make determination
+- Action: Resolve technical issues and retry validation
+
+### Important Notes:
+- Never use vague verdicts like "INCONCLUSIVE"  
+- Always separate evidence quality from business verdict
+- Make recommendations actionable based on verdict type
 
 ## Command reference
 

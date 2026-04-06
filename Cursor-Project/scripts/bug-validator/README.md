@@ -87,7 +87,7 @@ You can also run the workflow manually from GitHub Actions:
 
 ## Output
 
-- **Slack:** Formatted message with verdict (VALID / NOT VALID / INCONCLUSIVE)
+- **Slack:** Formatted message with verdict (VALID / NEEDS CLARIFICATION / NEEDS APPROVAL / NOT VALID / INSUFFICIENT EVIDENCE)
 - **GitHub Artifact:** JSON + Markdown report downloadable from the Actions run
 
 ## File Structure

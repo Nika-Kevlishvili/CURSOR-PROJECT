@@ -13,33 +13,67 @@ You act as the **BugFinderAgent** subagent. Validate bug reports per Rule 32: Co
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. Optionally get context via PhoenixExpert (endpoint/validation rules) if the parent agent provided it.
 
-## Workflow (Rule 32)
+## Workflow (Rule 32) - 5-Verdict System
 
-### Step 1: Confluence validation (first)
+### Step 1: Extract Expected Behavior
+
+- Extract the bug's expected result from the ticket description.
+- Identify the specific behavior that should occur according to the bug reporter.
+- Document the claimed expected behavior clearly.
+
+### Step 2: Confluence validation (evidence strength assessment)
 
 - Use MCP Confluence tools: search, getSpaces, getPages, getConfluencePage.
-- Check if the bug description matches Confluence documentation.
-- Report: "Confluence validation: [correct / incorrect / partially correct] - [explanation]".
+- Assess evidence strength:
+  - **Exact match**: Confluence explicitly supports bug's expected behavior
+  - **Contextual match**: Related/similar rules that suggest expected behavior  
+  - **No match**: No relevant documentation found
+  - **Contradicts**: Confluence explicitly states different behavior
+  - **Search failed**: Technical issue accessing Confluence
+- Report: "Confluence validation: [exact match/contextual match/no match/contradicts/search failed] - [explanation]".
 - List Confluence sources (page IDs, titles, URLs).
 
-### Step 2: Code validation (second)
+### Step 3: Code validation (behavior analysis)
 
 - Search Phoenix codebase (codebase_search, grep) for relevant code.
-- Check if implementation matches expected behavior from the bug report.
-- Report: "Code validation: [satisfies / does not satisfy] the bug report - [explanation]".
-- Include file paths, line numbers, and code snippets; identify bug location.
+- Analyze actual implementation behavior.
+- Check if code behavior matches the faulty behavior described in bug report.
+- Report: "Code validation: [matches reported behavior/does not match reported behavior/could not verify] - [explanation]".
+- Include file paths, line numbers, and code snippets; identify exact implementation.
 
-### Step 3: Conclusion
+### Step 4: Apply 5-Verdict Decision Matrix
 
-- Combine Confluence and code findings.
-- State: (1) Is bug report correct per Confluence? (2) Does code satisfy the case? (3) **Bug VALID or NOT VALID?**
-- Use structure: "1. Confluence Validation", "2. Code Analysis", "3. Conclusion".
+- **VALID**: Exact Confluence match + code confirms reported faulty behavior
+- **NEEDS CLARIFICATION**: Contextual Confluence match + code confirms reported behavior
+- **NEEDS APPROVAL**: No Confluence match + code confirms reported behavior  
+- **NOT VALID**: Confluence contradicts expected behavior + code follows Confluence
+- **INSUFFICIENT EVIDENCE**: Cannot access Confluence/code or evidence too weak
 
-### Step 4: Report file
+- Use structure: "1. Expected Behavior", "2. Confluence Validation", "3. Code Analysis", "4. Final Verdict".
+
+### Step 5: Report file
 
 - Save markdown to **Cursor-Project/reports/YYYY-MM-DD/BugValidation_[DescriptiveName].md** (use current date).
-- Include all findings, code references (paths + lines), and conclusion.
-- You may suggest a fix in text only; do **not** implement code changes.
+- Include expected behavior, Confluence validation, code analysis, final verdict with reasoning.
+- Include code references (paths + lines) and next steps based on verdict.
+- You may suggest next actions based on verdict; do **not** implement code changes during validation.
+
+## 5-Verdict Decision Matrix
+
+**VALID** - Exact Confluence documentation supports expected behavior + code contradicts it
+→ Action: Bug should be fixed
+
+**NEEDS CLARIFICATION** - Contextual Confluence support + code matches reported faulty behavior  
+→ Action: Get product clarification before proceeding
+
+**NEEDS APPROVAL** - No Confluence documentation + code matches reported faulty behavior
+→ Action: Get product owner approval before treating as valid
+
+**NOT VALID** - Confluence contradicts expected behavior + code follows Confluence correctly
+→ Action: Close as "working as designed"  
+
+**INSUFFICIENT EVIDENCE** - Technical access issues or evidence too weak
+→ Action: Resolve technical problems and retry
 
 ## Integration with project agent
 

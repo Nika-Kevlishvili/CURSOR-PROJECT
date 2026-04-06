@@ -24,20 +24,23 @@ class SlackReporter:
 
     def _build_blocks(self, report: dict) -> list[dict]:
         bug = report.get("bug", {})
-        analysis = report.get("analysis", {})
+        expected = report.get("expected_behavior", {})
         confluence = report.get("confluence_validation", {})
         code = report.get("code_validation", {})
+        final_verdict = report.get("final_verdict", {})
 
-        is_valid = analysis.get("is_valid")
-        if is_valid is True:
-            verdict = ":white_check_mark: *VALID*"
-        elif is_valid is False:
-            verdict = ":x: *NOT VALID*"
-        else:
-            verdict = ":question: *INCONCLUSIVE*"
+        verdict_raw = final_verdict.get("verdict", "INSUFFICIENT_EVIDENCE")
+        verdict_emojis = {
+            "VALID": ":white_check_mark: *VALID*",
+            "NEEDS_CLARIFICATION": ":warning: *NEEDS CLARIFICATION*",
+            "NEEDS_APPROVAL": ":hourglass_flowing_sand: *NEEDS APPROVAL*", 
+            "NOT_VALID": ":x: *NOT VALID*",
+            "INSUFFICIENT_EVIDENCE": ":grey_question: *INSUFFICIENT EVIDENCE*"
+        }
+        verdict = verdict_emojis.get(verdict_raw, f":question: *{verdict_raw}*")
 
-        conf_status = confluence.get("status", "N/A")
-        code_status = code.get("status", "N/A")
+        evidence_strength = confluence.get("evidence_strength", "N/A")
+        behavior_match = code.get("behavior_match", "N/A")
 
         blocks = [
             {
@@ -57,8 +60,8 @@ class SlackReporter:
             {
                 "type": "section",
                 "fields": [
-                    {"type": "mrkdwn", "text": f"*Confluence:*\n{conf_status}"},
-                    {"type": "mrkdwn", "text": f"*Code Analysis:*\n{code_status}"},
+                    {"type": "mrkdwn", "text": f"*Confluence:*\n{evidence_strength}"},
+                    {"type": "mrkdwn", "text": f"*Code Analysis:*\n{behavior_match}"},
                 ],
             },
             {"type": "divider"},
@@ -66,25 +69,20 @@ class SlackReporter:
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"*Analysis:*\n{self._truncate(analysis.get('summary', 'No summary'), 500)}",
+                    "text": f"*Reasoning:*\n{self._truncate(final_verdict.get('reasoning', 'No reasoning provided'), 400)}\n\n*Next Steps:*\n{self._truncate(final_verdict.get('next_steps', 'No next steps provided'), 300)}",
                 },
             },
         ]
 
         refs = code.get("references", [])
         if refs:
-            ref_lines = [f"• `{r.get('file', '?')}` (L{r.get('lines', '?')}): {r.get('note', '')}" for r in refs[:5]]
+            ref_lines = [f"• `{r.get('file', '?')}` (L{r.get('lines', '?')}): {r.get('implementation', '')}" for r in refs[:5]]
             blocks.append({
                 "type": "section",
-                "text": {"type": "mrkdwn", "text": f"*Code References:*\n{''.join(ref_lines)}"},
+                "text": {"type": "mrkdwn", "text": f"*Code References:*\n" + "\n".join(ref_lines)},
             })
 
-        suggestion = analysis.get("suggested_fix")
-        if suggestion:
-            blocks.append({
-                "type": "section",
-                "text": {"type": "mrkdwn", "text": f"*Suggested Fix:*\n{self._truncate(suggestion, 300)}"},
-            })
+        # Next steps are now included in the main reasoning section above
 
         blocks.append({
             "type": "context",

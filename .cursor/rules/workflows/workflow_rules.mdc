@@ -27,70 +27,112 @@ alwaysApply: true
     
     **BugFinderAgent Workflow (Rule 32) — implement in chat:**
     
-    **Step 1: Validate Bug Report Against Confluence**
+    **Step 1: Extract Expected Behavior**
+    - Extract the bug's expected result from the ticket description
+    - Identify the specific behavior that should occur according to the bug reporter
+    - Document the claimed expected behavior clearly
+    
+    **Step 2: Validate Expected Behavior Against Confluence**
     - FIRST: Search Confluence using MCP tools (mcp_Confluence_search(), mcp_Confluence_searchConfluenceUsingCql(), mcp_Confluence_getConfluencePage()) for related documentation
-    - Check if bug description matches Confluence documentation
-    - Verify if bug report contains correct information based on Confluence sources
-    - Report findings: "Confluence validation: [correct/incorrect/partially correct] - [explanation]"
+    - Check for EXACT match: Does Confluence explicitly support the bug's expected behavior?
+    - Check for CONTEXTUAL match: Does Confluence provide similar/related rules that suggest the expected behavior?
+    - Check for CONTRADICTION: Does Confluence explicitly state different behavior than what the bug expects?
+    - Report findings: "Confluence validation: [exact match / contextual match / no match / contradicts] - [explanation]"
     - Document all Confluence sources found (page IDs, titles, URLs)
     
-    **Step 2: Validate Code Against Bug Report**
+    **Step 3: Validate Code Behavior**
     - SECOND: Search codebase using semantic codebase search, `grep`/ripgrep, `read_file`, etc. to find relevant code
-    - Analyze code implementation to verify if it satisfies the bug report requirements
-    - Check if code behavior matches expected behavior described in bug report
-    - Report findings: "Code validation: [satisfies/does not satisfy] the bug report - [explanation]"
+    - Analyze actual code implementation behavior
+    - Check if code behavior matches the faulty behavior described in the bug report
+    - Report findings: "Code validation: [matches reported behavior / does not match reported behavior / could not verify] - [explanation]"
     - Include specific file paths, line numbers, and code snippets
-    - Identify exact location of bug in code
+    - Identify exact location of implementation
     
-    **Step 3: Provide Comprehensive Analysis**
-    - Combine Confluence findings and code analysis
-    - Provide clear answer about:
-      1. Whether bug report information is correct based on Confluence
-      2. Whether code satisfies the bug report case or not
-      3. Whether bug is VALID or NOT VALID
+    **Step 4: Apply Decision Matrix**
+    - Use the 5-verdict decision matrix based on Confluence evidence strength and code behavior:
+      - **VALID**: Exact Confluence match + code confirms reported faulty behavior
+      - **NEEDS CLARIFICATION**: Contextual Confluence match + code confirms reported behavior  
+      - **NEEDS APPROVAL**: No Confluence match + code confirms reported behavior
+      - **NOT VALID**: Confluence contradicts expected behavior + code follows Confluence
+      - **INSUFFICIENT EVIDENCE**: Cannot access Confluence/code or evidence too weak
     - Include specific code references and line numbers when relevant
-    - Use clear structure: "1. Confluence Validation", "2. Code Analysis", "3. Conclusion"
+    - Use clear structure: "1. Expected Behavior", "2. Confluence Validation", "3. Code Analysis", "4. Final Verdict"
     - Format the report in markdown using the structure in **Example Response Structure** below (no Python formatter)
     
-    **Step 4: Generate Report File**
+    **Step 5: Generate Report File**
     - Create markdown report file in `Cursor-Project/reports/YYYY-MM-DD/BugValidation_[BugName].md` (MUST be in project root)
-    - Include all findings from Confluence and Code analysis
-    - Include bug validity conclusion
+    - Include all findings from Expected Behavior, Confluence and Code analysis
+    - Include final verdict with reasoning
     - Include code references with file paths and line numbers
-    - Include suggested fix (if applicable) but DO NOT implement it
+    - Include next steps but DO NOT implement code changes during validation
+    
+    **DECISION MATRIX - 5 VERDICTS:**
+    
+    **VALID** - Use when:
+    - Confluence explicitly supports the bug's expected behavior (exact match), AND
+    - Code behavior matches the faulty behavior described in bug report
+    - Meaning: Bug is confirmed valid, should be fixed
+    
+    **NEEDS CLARIFICATION** - Use when:  
+    - Confluence provides contextual/related support but no exact rule, AND
+    - Code behavior matches the faulty behavior described in bug report
+    - Meaning: Bug may be valid but product expectation needs clarification
+    
+    **NEEDS APPROVAL** - Use when:
+    - No relevant Confluence documentation found for this specific case, AND  
+    - Code behavior matches the faulty behavior described in bug report
+    - Meaning: Technical issue exists but expected behavior is undocumented, needs product approval
+    
+    **NOT VALID** - Use when:
+    - Confluence explicitly contradicts the bug's expected behavior, AND
+    - Code behavior follows Confluence specification correctly  
+    - Meaning: Bug report expectation is incorrect, code is working as designed
+    
+    **INSUFFICIENT EVIDENCE** - Use when:
+    - Confluence search failed or returned no usable results, OR
+    - Code analysis could not be completed, OR  
+    - Evidence is too weak to make any determination
+    - Meaning: Validation could not be completed due to technical/access issues
     
     **Workflow Requirements:**
-    - ALWAYS run this full workflow for bug validation (not a Python import)
-    - ALWAYS check Confluence FIRST (via MCP tools)
-    - ALWAYS check codebase SECOND
-    - ALWAYS provide both validations in response
+    - ALWAYS run this full 5-step workflow for bug validation (not a Python import)
+    - ALWAYS extract expected behavior FIRST
+    - ALWAYS check Confluence SECOND (via MCP tools)
+    - ALWAYS check codebase THIRD  
+    - ALWAYS apply the 5-verdict decision matrix FOURTH
+    - ALWAYS provide all validations in response with clear verdict
     - ALWAYS create report file in `Cursor-Project/reports/` directory (project root)
-    - NEVER skip either step
+    - NEVER skip any step
     - NEVER modify code during validation (READ-ONLY mode)
     - NEVER attempt to fix bugs unless explicitly requested AFTER validation
+    - NEVER use vague verdicts like "INCONCLUSIVE" - use the 5-verdict system
     - Apply PhoenixExpert consultation and reporting per other rules (no Python IntegrationService/ReportingService in this workspace)
     
     **Example Response Structure:**
     ```
     ## Bug Validation Analysis
     
-    ### 1. Confluence Validation
-    **Status:** [correct/incorrect/partially correct]
-    **Explanation:** [Detailed explanation]
-    **Sources:** [List of Confluence pages found]
+    ### 1. Expected Behavior
+    **Bug Claims:** [What the bug report says should happen]
+    **Context:** [Relevant business context or user scenario]
     
-    ### 2. Code Analysis
-    **Status:** [satisfies/does not satisfy]
-    **Explanation:** [Detailed explanation]
+    ### 2. Confluence Validation  
+    **Evidence Strength:** [exact match / contextual match / no match / contradicts / search failed]
+    **Explanation:** [Detailed explanation of Confluence findings]
+    **Sources:** [List of Confluence pages found with page IDs, titles, URLs]
+    
+    ### 3. Code Analysis
+    **Behavior Match:** [matches reported behavior / does not match reported behavior / could not verify]
+    **Explanation:** [Detailed explanation of actual code behavior]
     **Code References:**
     - File: [path/to/file.java]
     - Lines: [123-145]
-    - Issue: [Description of bug]
+    - Implementation: [Description of what code actually does]
     
-    ### 3. Conclusion
-    **Bug Valid:** [YES/NO]
-    **Summary:** [Brief summary]
-    **Details:** [Detailed analysis]
+    ### 4. Final Verdict
+    **Verdict:** [VALID / NEEDS CLARIFICATION / NEEDS APPROVAL / NOT VALID / INSUFFICIENT EVIDENCE]
+    **Reasoning:** [Why this verdict was chosen based on evidence matrix]
+    **Next Steps:** [What should be done next - fix bug, get clarification, seek approval, etc.]
     ```
     
     **Important Notes:**
