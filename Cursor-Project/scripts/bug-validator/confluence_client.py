@@ -27,11 +27,11 @@ class ConfluenceClient:
         Probe the instance to find the working REST API prefix.
         Handles cases where base_url is:
           - https://company.atlassian.net         (Cloud, needs /wiki/rest/api)
-          - https://company.atlassian.net/wiki     (Cloud, needs /rest/api)
+          - https://company.atlassian.net/wiki     (Cloud, needs /rest/api relative to base)
           - https://confluence.internal.com        (Server/DC, needs /rest/api)
         """
-        base = self.base_url
-        has_wiki = base.rstrip("/").endswith("/wiki") or "/wiki/" in base
+        base = self.base_url.rstrip("/")
+        has_wiki = base.endswith("/wiki")
 
         if has_wiki:
             candidates = [f"{base}/rest/api"]
@@ -47,8 +47,8 @@ class ConfluenceClient:
                     params={"limit": 1},
                     timeout=10,
                 )
-                if resp.status_code < 400:
-                    print(f"  Confluence REST prefix detected: {prefix}")
+                if resp.status_code in (200, 401, 403):
+                    print(f"  Confluence REST prefix detected: {prefix} (HTTP {resp.status_code})")
                     return prefix
                 print(f"  Confluence probe {prefix}/space -> HTTP {resp.status_code}")
             except requests.RequestException as e:
@@ -99,14 +99,14 @@ class ConfluenceClient:
         }
 
     def _cql_search(self, query: str, space_keys: list[str] | None = None) -> list[dict]:
-        """Search Confluence using CQL. Tries /search then /content/search."""
+        """Search Confluence using CQL. Tries /content/search (primary) then /search."""
         cql = f'type = "page" AND text ~ "{query}"'
         if space_keys:
             spaces = " OR ".join(f'space = "{s}"' for s in space_keys)
             cql = f'({cql}) AND ({spaces})'
 
         prefix = self.rest_prefix
-        endpoints = [f"{prefix}/search", f"{prefix}/content/search"]
+        endpoints = [f"{prefix}/content/search", f"{prefix}/search"]
         params = {"cql": cql, "limit": 5}
 
         for url in endpoints:
