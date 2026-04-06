@@ -1,0 +1,67 @@
+name: Bug Validator
+
+on:
+  repository_dispatch:
+    types: [bug-validation]
+
+  workflow_dispatch:
+    inputs:
+      jira_key:
+        description: "Jira issue key (e.g. REG-456)"
+        required: true
+        type: string
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  validate-bug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: pip install -r Cursor-Project/scripts/bug-validator/requirements.txt
+
+      - name: Extract Jira key
+        id: jira
+        run: |
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            echo "key=${{ github.event.client_payload.jira_key }}" >> $GITHUB_OUTPUT
+          else
+            echo "key=${{ github.event.inputs.jira_key }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Bug Validator
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          GITLAB_URL: ${{ secrets.GITLAB_URL }}
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          GITLAB_PROJECT_IDS: ${{ secrets.GITLAB_PROJECT_IDS }}
+          CONFLUENCE_BASE_URL: ${{ secrets.CONFLUENCE_BASE_URL }}
+          CONFLUENCE_EMAIL: ${{ secrets.CONFLUENCE_EMAIL }}
+          CONFLUENCE_API_TOKEN: ${{ secrets.CONFLUENCE_API_TOKEN }}
+          CONFLUENCE_SPACE_KEYS: ${{ secrets.CONFLUENCE_SPACE_KEYS }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          python Cursor-Project/scripts/bug-validator/main.py \
+            --jira-key "${{ steps.jira.outputs.key }}"
+
+      - name: Upload validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bug-validation-report
+          path: Cursor-Project/scripts/bug-validator/output/
+          retention-days: 30
