@@ -53,25 +53,32 @@ class ConfluenceClient:
         }
 
     def _cql_search(self, query: str, space_keys: list[str] | None = None) -> list[dict]:
-        """Search Confluence using CQL."""
-        cql = f'text ~ "{query}"'
+        """Search Confluence using CQL via the /search endpoint (Atlassian Cloud)."""
+        cql = f'type = "page" AND text ~ "{query}"'
         if space_keys:
             spaces = " OR ".join(f'space = "{s}"' for s in space_keys)
             cql = f'({cql}) AND ({spaces})'
 
-        url = f"{self.base_url}/wiki/rest/api/content/search"
+        url = f"{self.base_url}/wiki/rest/api/search"
         params = {"cql": cql, "limit": 5}
 
         try:
             resp = requests.get(url, headers=self.headers, auth=self.auth, params=params, timeout=15)
+            if resp.status_code == 401:
+                print(f"  ERROR: Confluence auth failed (401). Check CONFLUENCE_EMAIL and CONFLUENCE_API_TOKEN.")
+                return []
+            if resp.status_code == 403:
+                print(f"  ERROR: Confluence forbidden (403). Token may lack read permissions.")
+                return []
             resp.raise_for_status()
             data = resp.json()
             results = []
             for item in data.get("results", []):
+                content = item.get("content", item)
                 results.append({
-                    "id": item.get("id", ""),
-                    "title": item.get("title", ""),
-                    "url": f"{self.base_url}/wiki{item.get('_links', {}).get('webui', '')}",
+                    "id": content.get("id", ""),
+                    "title": content.get("title", item.get("title", "")),
+                    "url": f"{self.base_url}/wiki{content.get('_links', {}).get('webui', '')}",
                 })
             return results
         except requests.RequestException as e:
@@ -103,11 +110,21 @@ class ConfluenceClient:
     def _extract_keywords(summary: str, description: str) -> list[str]:
         import re
         combined = f"{summary} {description}"
+
+        url_paths = re.findall(r"/[\w/.-]+", combined)
+
         words = re.findall(r"[A-Za-z_][A-Za-z0-9_]{3,}", combined)
         stop = {"the", "that", "this", "with", "from", "should", "would", "could",
-                "have", "been", "when", "after", "before", "does", "into"}
+                "have", "been", "when", "after", "before", "does", "into",
+                "while", "returns", "expects", "fully", "system"}
         seen = set()
         result = []
+
+        for path in url_paths:
+            if path not in seen:
+                seen.add(path)
+                result.append(path)
+
         for w in words:
             low = w.lower()
             if low not in stop and low not in seen:
