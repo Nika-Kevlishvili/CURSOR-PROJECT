@@ -79,10 +79,16 @@ class GitLabClient:
 
     def _extract_search_terms(self, summary: str, description: str) -> list[str]:
         """
-        Extract meaningful search terms: CamelCase class names, method names,
-        technical terms from bug summary and description.
+        Extract meaningful search terms: URL paths, CamelCase class names,
+        method names, technical terms from bug summary and description.
         """
         combined = f"{summary} {description}"
+
+        url_paths = re.findall(r"/[\w/.-]+", combined)
+        path_segments = []
+        for path in url_paths:
+            segments = [s for s in path.strip("/").split("/") if len(s) > 2]
+            path_segments.extend(segments)
 
         camel_case = re.findall(r"\b[A-Z][a-z]+(?:[A-Z][a-z]+)+\b", combined)
 
@@ -91,8 +97,13 @@ class GitLabClient:
         technical = re.findall(r"\b(?:service|controller|handler|repository|entity|dto|mapper|"
                                r"endpoint|api|invoice|contract|payment|liability|receivable|"
                                r"deposit|customer|pod|cancel|create|update|delete|reverse|"
-                               r"offset|amount|status|validation|scheduler)\b",
+                               r"offset|amount|status|validation|scheduler|health|actuator|"
+                               r"monitoring|configuration|indicator)\b",
                                combined, re.IGNORECASE)
 
-        all_terms = list(dict.fromkeys(camel_case + dotted + technical))
+        http_codes = re.findall(r"\b[1-5]\d{2}\b", combined)
+
+        all_terms = list(dict.fromkeys(
+            url_paths + path_segments + camel_case + dotted + technical + http_codes
+        ))
         return all_terms[:15] if all_terms else [summary.split()[0]] if summary else ["bug"]

@@ -188,6 +188,8 @@ def main():
     confluence_result = {"status": "skipped", "explanation": "Confluence not configured.", "sources": []}
 
     if config.get("CONFLUENCE_BASE_URL") and config.get("CONFLUENCE_API_TOKEN"):
+        print(f"  Confluence URL: {config['CONFLUENCE_BASE_URL']}")
+        print(f"  Confluence spaces: {config['CONFLUENCE_SPACE_KEYS'] or '(all)'}")
         confluence = ConfluenceClient(
             base_url=config["CONFLUENCE_BASE_URL"],
             email=config["CONFLUENCE_EMAIL"],
@@ -198,7 +200,11 @@ def main():
             description=bug["description"],
             space_keys=config["CONFLUENCE_SPACE_KEYS"],
         )
+    else:
+        print(f"  Confluence NOT configured (BASE_URL={bool(config.get('CONFLUENCE_BASE_URL'))}, TOKEN={bool(config.get('CONFLUENCE_API_TOKEN'))})")
     print(f"  Confluence status: {confluence_result['status']}")
+    if confluence_result.get("sources"):
+        print(f"  Confluence pages found: {len(confluence_result['sources'])}")
 
     # --- Step 3: Search codebase via GitLab API ---
     print("\n[3/5] Analyzing codebase via GitLab API (read-only)...")
