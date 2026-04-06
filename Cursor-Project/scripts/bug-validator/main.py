@@ -2,7 +2,7 @@
 Bug Validator — CI entry point.
 
 Triggered by GitHub Actions when a Jira bug reaches a specific status.
-Flow: Jira → Confluence → GitLab code → Claude analysis → Slack report.
+Flow: Jira → Confluence → GitLab code → Gemini analysis → Slack report.
 """
 
 import argparse
@@ -30,7 +30,7 @@ def load_env():
         "GITLAB_URL": "GitLab base URL (e.g. https://gitlab.example.com)",
         "GITLAB_TOKEN": "GitLab read-only access token",
         "GITLAB_PROJECT_IDS": "Comma-separated GitLab project IDs",
-        "ANTHROPIC_API_KEY": "Anthropic (Claude) API key",
+        "GEMINI_API_KEY": "Google Gemini API key (free tier)",
         "SLACK_WEBHOOK_URL": "Slack incoming webhook URL",
     }
     optional = {
@@ -218,9 +218,9 @@ def main():
     )
     print(f"  Found {len(code_results['files'])} relevant files across {len(config['GITLAB_PROJECT_IDS'])} projects")
 
-    # --- Step 4: Analyze with Claude ---
-    print("\n[4/5] Running AI analysis (Claude)...")
-    analyzer = BugAnalyzer(api_key=config["ANTHROPIC_API_KEY"])
+    # --- Step 4: Analyze with Gemini ---
+    print("\n[4/5] Running AI analysis (Gemini)...")
+    analyzer = BugAnalyzer(api_key=config["GEMINI_API_KEY"])
     analysis = analyzer.analyze(
         bug=bug,
         confluence_data=confluence_result,
