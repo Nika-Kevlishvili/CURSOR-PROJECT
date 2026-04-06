@@ -5,37 +5,58 @@ Validate bug reports using BugFinderAgent (Rule 32 - MANDATORY workflow).
 ## ALWAYS Use BugFinderAgent:
 ALL bug validation requests MUST be handled by BugFinderAgent - NO EXCEPTIONS.
 
-## Mandatory 3-Step Workflow:
+## Mandatory 5-Step Workflow:
 
-### Step 1: Confluence Validation
+### Step 1: Extract Expected Behavior
+- Extract bug's expected result from ticket description  
+- Identify specific behavior claimed by bug reporter
+- Document expected behavior clearly
+
+### Step 2: Confluence Validation (Evidence Strength)
 - Search Confluence using MCP tools FIRST
-- Check if bug description matches documentation
-- Verify bug report accuracy against Confluence sources
-- Report: "Confluence validation: [correct/incorrect/partially correct] - [explanation]"
+- Assess evidence strength: exact match / contextual match / no match / contradicts / search failed
+- Report: "Confluence validation: [evidence strength] - [explanation]"
 
-### Step 2: Code Validation
+### Step 3: Code Validation (Behavior Analysis)
 - Search codebase using code search tools
-- Analyze code implementation
-- Check if code behavior matches expected behavior
-- Report: "Code validation: [satisfies/does not satisfy] - [explanation]"
+- Analyze actual implementation behavior
+- Check if code matches faulty behavior described in bug
+- Report: "Code validation: [matches reported behavior/does not match/could not verify] - [explanation]"
 
-### Step 3: Comprehensive Analysis
-- Combine Confluence and code findings
-- Provide clear conclusion
+### Step 4: Apply 5-Verdict Decision Matrix
+- Use evidence + behavior to determine verdict
+- Apply one of 5 verdicts: VALID / NEEDS CLARIFICATION / NEEDS APPROVAL / NOT VALID / INSUFFICIENT EVIDENCE
+
+### Step 5: Generate Report with Verdict
+- Combine all findings with clear verdict and reasoning
+- Include actionable next steps based on verdict
 
 ## Response Structure:
 
 ```markdown
 ## Bug Validation Analysis
 
-### 1. Confluence Validation
-[Findings from Confluence search]
+### 1. Expected Behavior
+**Bug Claims:** [What the bug report says should happen]
+**Context:** [Relevant business context or user scenario]
 
-### 2. Code Analysis
-[Findings from codebase analysis]
+### 2. Confluence Validation  
+**Evidence Strength:** [exact match / contextual match / no match / contradicts / search failed]
+**Explanation:** [Detailed explanation of Confluence findings]
+**Sources:** [List of Confluence pages found with page IDs, titles, URLs]
 
-### 3. Conclusion
-[Summary: Is bug report accurate? Does code satisfy requirements?]
+### 3. Code Analysis
+**Behavior Match:** [matches reported behavior / does not match reported behavior / could not verify]
+**Explanation:** [Detailed explanation of actual code behavior]
+**Code References:**
+- File: [path/to/file.java]
+- Lines: [123-145]
+- Implementation: [Description of what code actually does]
+
+### 4. Final Verdict
+**Verdict:** [VALID / NEEDS CLARIFICATION / NEEDS APPROVAL / NOT VALID / INSUFFICIENT EVIDENCE]
+**Reasoning:** [Why this verdict was chosen based on evidence matrix]
+**Next Steps:** [What should be done next based on verdict]
 ```
 
 ## Workflow Requirements:
@@ -43,6 +64,14 @@ ALL bug validation requests MUST be handled by BugFinderAgent - NO EXCEPTIONS.
 - Consult PhoenixExpert for context
 - Use READ-ONLY mode (no code modifications)
 - Generate reports (Rule 0.6)
+
+## 5-Verdict Decision Matrix:
+
+- **VALID**: Exact Confluence match + code confirms reported faulty behavior → Fix the bug
+- **NEEDS CLARIFICATION**: Contextual Confluence match + code confirms reported behavior → Get product clarification  
+- **NEEDS APPROVAL**: No Confluence match + code confirms reported behavior → Get product approval
+- **NOT VALID**: Confluence contradicts expected behavior + code follows Confluence → Close as "working as designed"
+- **INSUFFICIENT EVIDENCE**: Cannot access Confluence/code or evidence too weak → Resolve technical issues
 
 ## Response Must End With:
 "Agents involved: BugFinderAgent, PhoenixExpert"

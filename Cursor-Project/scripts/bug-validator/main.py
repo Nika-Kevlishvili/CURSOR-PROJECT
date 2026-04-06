@@ -86,13 +86,11 @@ def save_report(report: dict, jira_key: str):
 def format_markdown_report(report: dict) -> str:
     """Format the validation report as readable Markdown."""
     bug = report.get("bug", {})
+    expected = report.get("expected_behavior", {})
     confluence = report.get("confluence_validation", {})
     code = report.get("code_validation", {})
-    analysis = report.get("analysis", {})
+    verdict = report.get("final_verdict", {})
     ts = report.get("timestamp", datetime.now(timezone.utc).isoformat())
-
-    valid_emoji = {True: "VALID", False: "NOT VALID", None: "INCONCLUSIVE"}
-    is_valid = analysis.get("is_valid")
 
     lines = [
         f"# Bug Validation Report: {bug.get('key', 'N/A')}",
@@ -111,8 +109,14 @@ def format_markdown_report(report: dict) -> str:
         "",
         "---",
         "",
-        "## 1. Confluence Validation",
-        f"**Status:** {confluence.get('status', 'N/A')}",
+        "## 1. Expected Behavior",
+        f"**Bug Claims:** {expected.get('bug_claims', 'N/A')}",
+        f"**Context:** {expected.get('context', 'N/A')}",
+        "",
+        "---",
+        "",
+        "## 2. Confluence Validation",
+        f"**Evidence Strength:** {confluence.get('evidence_strength', 'N/A')}",
         "",
         confluence.get("explanation", "_No Confluence analysis performed._"),
         "",
@@ -128,8 +132,8 @@ def format_markdown_report(report: dict) -> str:
     lines.extend([
         "---",
         "",
-        "## 2. Code Analysis",
-        f"**Status:** {code.get('status', 'N/A')}",
+        "## 3. Code Analysis",
+        f"**Behavior Match:** {code.get('behavior_match', 'N/A')}",
         "",
         code.get("explanation", "_No code analysis performed._"),
         "",
@@ -139,29 +143,20 @@ def format_markdown_report(report: dict) -> str:
     if refs:
         lines.append("**Code References:**")
         for ref in refs:
-            lines.append(f"- `{ref.get('file', '?')}` (lines {ref.get('lines', '?')}): {ref.get('note', '')}")
+            lines.append(f"- `{ref.get('file', '?')}` (lines {ref.get('lines', '?')}): {ref.get('implementation', '')}")
         lines.append("")
 
     lines.extend([
         "---",
         "",
-        "## 3. Conclusion",
-        f"**Bug Valid:** {valid_emoji.get(is_valid, 'INCONCLUSIVE')}",
+        "## 4. Final Verdict",
+        f"**Verdict:** {verdict.get('verdict', 'INSUFFICIENT_EVIDENCE')}",
         "",
-        analysis.get("summary", "_No analysis summary._"),
+        f"**Reasoning:** {verdict.get('reasoning', 'No reasoning provided.')}",
         "",
-        "### Detailed Analysis",
-        analysis.get("details", ""),
+        f"**Next Steps:** {verdict.get('next_steps', 'No next steps provided.')}",
         "",
     ])
-
-    suggestion = analysis.get("suggested_fix")
-    if suggestion:
-        lines.extend([
-            "### Suggested Fix (not implemented)",
-            suggestion,
-            "",
-        ])
 
     return "\n".join(lines)
 
@@ -226,15 +221,17 @@ def main():
         confluence_data=confluence_result,
         code_data=code_results,
     )
-    print(f"  Verdict: {'VALID' if analysis['analysis']['is_valid'] else 'NOT VALID' if analysis['analysis']['is_valid'] is False else 'INCONCLUSIVE'}")
+    verdict = analysis.get('final_verdict', {}).get('verdict', 'INSUFFICIENT_EVIDENCE')
+    print(f"  Verdict: {verdict}")
 
     # --- Step 5: Build report and send to Slack ---
     report = {
         "timestamp": timestamp,
         "bug": bug,
+        "expected_behavior": analysis.get("expected_behavior", {}),
         "confluence_validation": analysis.get("confluence_validation", confluence_result),
         "code_validation": analysis.get("code_validation", {}),
-        "analysis": analysis.get("analysis", {}),
+        "final_verdict": analysis.get("final_verdict", {"verdict": "INSUFFICIENT_EVIDENCE", "reasoning": "Analysis failed", "next_steps": "Check technical issues"}),
     }
 
     md_path = save_report(report, jira_key)
