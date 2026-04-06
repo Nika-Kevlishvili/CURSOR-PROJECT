@@ -32,6 +32,7 @@ class ConfluenceClient:
         """
         base = self.base_url.rstrip("/")
         has_wiki = base.endswith("/wiki")
+        print(f"  [debug] base_url length={len(base)}, has_wiki={has_wiki}")
 
         if has_wiki:
             candidates = [f"{base}/rest/api"]
@@ -39,20 +40,24 @@ class ConfluenceClient:
             candidates = [f"{base}/wiki/rest/api", f"{base}/rest/api"]
 
         for prefix in candidates:
+            probe_url = f"{prefix}/space"
+            print(f"  [debug] probing: length={len(probe_url)}, ends_with=...{probe_url[-30:]}")
             try:
                 resp = requests.get(
-                    f"{prefix}/space",
+                    probe_url,
                     headers=self.headers,
                     auth=self.auth,
                     params={"limit": 1},
                     timeout=10,
                 )
                 if resp.status_code in (200, 401, 403):
-                    print(f"  Confluence REST prefix detected: {prefix} (HTTP {resp.status_code})")
+                    print(f"  Confluence REST prefix detected: (HTTP {resp.status_code})")
                     return prefix
-                print(f"  Confluence probe {prefix}/space -> HTTP {resp.status_code}")
+                print(f"  Confluence probe -> HTTP {resp.status_code}")
+                if resp.status_code == 404 and resp.text:
+                    print(f"  [debug] 404 body snippet: {resp.text[:200]}")
             except requests.RequestException as e:
-                print(f"  Confluence probe {prefix}/space -> error: {e}")
+                print(f"  Confluence probe -> error: {e}")
 
         fallback = candidates[0]
         print(f"  WARNING: Could not auto-detect Confluence REST prefix; falling back to {fallback}")
