@@ -17,9 +17,10 @@ alwaysApply: false
 
 ## Authentication
 
-1. **Token:** Read-only GitLab PAT in **`GIT_READONLY_TOKEN`** (never paste into chat or store in rules).
+1. **Token:** Read-only GitLab PAT in **`GIT_READONLY_TOKEN`** (never paste into chat, rules, or GitHub — use `~/.git-credentials` or local env only).
 2. **Optional — write `~/.git-credentials` once:** derive `GIT_HOST` from `git remote get-url origin` (hostname only), then line: `https://oauth2:${GIT_READONLY_TOKEN}@${GIT_HOST}`.
-3. **Verify (optional):** Bash: `curl -H "Authorization: Bearer $GIT_READONLY_TOKEN" "https://${GIT_HOST}/api/v4/user"`. PowerShell: use `Invoke-RestMethod` with the same header.
+3. **Credential helper:** If `credential.helper` is `store`, git reads `~/.git-credentials` automatically (Windows: `%USERPROFILE%\.git-credentials`).
+4. **Verify (optional):** Bash: `curl -H "Authorization: Bearer $GIT_READONLY_TOKEN" "https://${GIT_HOST}/api/v4/user"`. PowerShell: use `Invoke-RestMethod` with the same header.
 
 ## Resolve workspace directory
 
@@ -116,4 +117,4 @@ echo "https://oauth2:${GIT_READONLY_TOKEN}@${GIT_HOST}" > "$f"
 | `!update b` | Ensure `b`, merge `origin/b` if behind; stop if diverged |
 | `!checkout b` | Checkout or track `origin/b` |
 
-**Token:** `GIT_READONLY_TOKEN` only. **No push** to GitLab.
+**Token:** `GIT_READONLY_TOKEN` only (local env or credentials file). **No push** to GitLab.
