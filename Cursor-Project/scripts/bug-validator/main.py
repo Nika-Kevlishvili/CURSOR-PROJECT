@@ -188,8 +188,11 @@ def main():
     confluence_result = {"status": "skipped", "explanation": "Confluence not configured.", "sources": []}
 
     if config.get("CONFLUENCE_BASE_URL") and config.get("CONFLUENCE_API_TOKEN"):
-        print(f"  Confluence URL: {config['CONFLUENCE_BASE_URL']}")
+        _c_url = config['CONFLUENCE_BASE_URL']
+        print(f"  Confluence URL: {_c_url}")
+        print(f"  Confluence URL length: {len(_c_url)}, ends_with_wiki: {_c_url.rstrip('/').endswith('/wiki')}, last_10_chars: '{_c_url[-10:]}'")
         print(f"  Confluence spaces: {config['CONFLUENCE_SPACE_KEYS'] or '(all)'}")
+        print(f"  Confluence email set: {bool(config.get('CONFLUENCE_EMAIL'))}, token length: {len(config.get('CONFLUENCE_API_TOKEN', ''))}")
         confluence = ConfluenceClient(
             base_url=config["CONFLUENCE_BASE_URL"],
             email=config["CONFLUENCE_EMAIL"],
