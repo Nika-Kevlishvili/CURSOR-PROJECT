@@ -217,7 +217,10 @@ def main():
         summary=bug["summary"],
         description=bug["description"],
     )
-    print(f"  Found {len(code_results['files'])} relevant files across {len(config['GITLAB_PROJECT_IDS'])} projects")
+    if code_results.get("status") == "unreachable":
+        print(f"  GitLab UNREACHABLE — code analysis skipped ({code_results.get('error', 'unknown')})")
+    else:
+        print(f"  Found {len(code_results['files'])} relevant files across {len(config['GITLAB_PROJECT_IDS'])} projects")
 
     # --- Step 4: Analyze with Gemini ---
     print("\n[4/5] Running AI analysis (Gemini)...")
