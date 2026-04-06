@@ -1,10 +1,10 @@
 """
-Bug Analyzer — uses Claude API to validate a bug against
-Confluence documentation and codebase findings.
+Bug Analyzer — uses Google Gemini API (free tier) to validate a bug
+against Confluence documentation and codebase findings.
 """
 
 import json
-import anthropic
+import requests
 
 
 SYSTEM_PROMPT = """You are a senior QA engineer and bug validator for the Phoenix project (Java/Spring Boot).
@@ -43,26 +43,44 @@ Rules:
 - If Confluence data is missing, note it but continue with code analysis
 - ALWAYS return valid JSON, nothing else"""
 
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+
 
 class BugAnalyzer:
-    def __init__(self, api_key: str, model: str = "claude-sonnet-4-20250514"):
-        self.client = anthropic.Anthropic(api_key=api_key)
+    def __init__(self, api_key: str, model: str = "gemini-2.5-flash"):
+        self.api_key = api_key
         self.model = model
 
     def analyze(self, bug: dict, confluence_data: dict, code_data: dict) -> dict:
-        """
-        Send bug + evidence to Claude and get structured validation.
-        """
+        """Send bug + evidence to Gemini and get structured validation."""
         user_prompt = self._build_prompt(bug, confluence_data, code_data)
 
-        message = self.client.messages.create(
-            model=self.model,
-            max_tokens=4096,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": user_prompt}],
-        )
+        url = GEMINI_API_URL.format(model=self.model)
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {"text": f"{SYSTEM_PROMPT}\n\n---\n\n{user_prompt}"}
+                    ]
+                }
+            ],
+            "generationConfig": {
+                "temperature": 0.2,
+                "maxOutputTokens": 4096,
+                "responseMimeType": "application/json",
+            },
+        }
 
-        raw = message.content[0].text.strip()
+        resp = requests.post(
+            url,
+            params={"key": self.api_key},
+            json=payload,
+            timeout=60,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+
+        raw = data["candidates"][0]["content"]["parts"][0]["text"].strip()
         return self._parse_response(raw)
 
     def _build_prompt(self, bug: dict, confluence_data: dict, code_data: dict) -> str:
@@ -107,7 +125,7 @@ class BugAnalyzer:
         return "\n".join(sections)
 
     def _parse_response(self, raw: str) -> dict:
-        """Parse Claude's JSON response, handling markdown code blocks."""
+        """Parse Gemini's JSON response."""
         text = raw
         if "```json" in text:
             text = text.split("```json", 1)[1]
