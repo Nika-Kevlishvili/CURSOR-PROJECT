@@ -1,8 +1,13 @@
 """
 GitLab REST API client — read-only code search and file retrieval.
+
+Includes a connectivity pre-check so that when the GitLab host is
+unreachable (e.g. internal network, VPN required) the validator gets
+a clear "unreachable" status instead of dozens of timeout warnings.
 """
 
 import re
+import socket
 import urllib.parse
 import requests
 
@@ -14,11 +19,46 @@ class GitLabClient:
         self.project_ids = project_ids
         self.headers = {"PRIVATE-TOKEN": token}
 
+    def _check_connectivity(self) -> str | None:
+        """
+        Verify that the GitLab host is reachable.
+        Returns None on success, or a human-readable error string on failure.
+        """
+        try:
+            from urllib.parse import urlparse
+            parsed = urlparse(self.base_url)
+            host = parsed.hostname or ""
+            port = parsed.port or (443 if parsed.scheme == "https" else 80)
+            socket.create_connection((host, port), timeout=5).close()
+            return None
+        except socket.gaierror:
+            return (
+                f"DNS resolution failed for '{host}'. "
+                f"The GitLab server appears to be on an internal/private network. "
+                f"A self-hosted runner with VPN/network access is required."
+            )
+        except (socket.timeout, OSError) as e:
+            return (
+                f"Cannot connect to GitLab at {host}:{port} — {e}. "
+                f"The server may be behind a firewall or VPN."
+            )
+
     def search_for_bug(self, summary: str, description: str) -> dict:
         """
         Search across all configured projects for code related to the bug.
-        Returns dict with 'files' (list of relevant file hits) and 'snippets'.
+        Returns dict with 'files', 'snippets', 'keywords_used', and 'status'.
         """
+        connectivity_error = self._check_connectivity()
+        if connectivity_error:
+            print(f"  ERROR: GitLab unreachable — {connectivity_error}")
+            return {
+                "files": [],
+                "snippets": [],
+                "keywords_used": [],
+                "status": "unreachable",
+                "error": connectivity_error,
+            }
+
         keywords = self._extract_search_terms(summary, description)
         all_files = []
         all_snippets = []
@@ -51,6 +91,7 @@ class GitLabClient:
             "files": all_files,
             "snippets": all_snippets,
             "keywords_used": keywords,
+            "status": "ok" if all_files else "no_results",
         }
 
     def _search_blobs(self, project_id: str, query: str) -> list[dict]:

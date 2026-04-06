@@ -47,7 +47,11 @@ You MUST return a structured JSON response with the following schema:
 - NEEDS_CLARIFICATION: Contextual Confluence match + code confirms reported behavior → Get product clarification  
 - NEEDS_APPROVAL: No Confluence match + code confirms reported behavior → Get product approval
 - NOT_VALID: Confluence contradicts expected behavior + code follows Confluence → Close as "working as designed"
-- INSUFFICIENT_EVIDENCE: Cannot access Confluence/code or evidence too weak → Resolve technical issues
+- INSUFFICIENT_EVIDENCE: Cannot access BOTH Confluence AND code, or evidence too weak from BOTH sources → Resolve technical issues
+
+IMPORTANT: If ONLY ONE source is unreachable (e.g. GitLab unreachable but Confluence has data), do NOT default to INSUFFICIENT_EVIDENCE.
+Use the available evidence to reach a more specific verdict (NEEDS_APPROVAL, NEEDS_CLARIFICATION, etc.).
+INSUFFICIENT_EVIDENCE should be reserved for when NEITHER source provides usable data.
 
 EVIDENCE STRENGTH DEFINITIONS:
 - exact_match: Confluence explicitly supports the bug's expected behavior
@@ -130,19 +134,32 @@ class BugAnalyzer:
             sections.append("_No Confluence documentation found._")
 
         sections.append("\n## Source Code (from GitLab)")
-        snippets = code_data.get("snippets", [])
-        if snippets:
-            for snippet in snippets[:10]:
-                sections.append(f"\n### File: {snippet.get('file', '?')}")
-                sections.append(f"```\n{snippet.get('content', '')}\n```")
+        gitlab_status = code_data.get("status", "")
+        if gitlab_status == "unreachable":
+            sections.append(
+                "**IMPORTANT: GitLab is UNREACHABLE from the CI runner.** "
+                f"Reason: {code_data.get('error', 'network unreachable')}. "
+                "This is an infrastructure limitation — the runner cannot access the internal GitLab server. "
+                "Code analysis COULD NOT be performed. "
+                "When determining your verdict, treat the code_validation as 'could_not_verify' "
+                "due to infrastructure, NOT due to the code being absent or irrelevant. "
+                "If Confluence provides sufficient evidence, you may still issue a verdict "
+                "other than INSUFFICIENT_EVIDENCE (e.g. NEEDS_APPROVAL or NEEDS_CLARIFICATION)."
+            )
         else:
-            files = code_data.get("files", [])
-            if files:
-                sections.append("Files found (no content retrieved):")
-                for f in files[:15]:
-                    sections.append(f"- {f.get('file', '?')} (line {f.get('startline', '?')})")
+            snippets = code_data.get("snippets", [])
+            if snippets:
+                for snippet in snippets[:10]:
+                    sections.append(f"\n### File: {snippet.get('file', '?')}")
+                    sections.append(f"```\n{snippet.get('content', '')}\n```")
             else:
-                sections.append("_No relevant code found._")
+                files = code_data.get("files", [])
+                if files:
+                    sections.append("Files found (no content retrieved):")
+                    for f in files[:15]:
+                        sections.append(f"- {f.get('file', '?')} (line {f.get('startline', '?')})")
+                else:
+                    sections.append("_No relevant code found._")
 
         sections.append(f"\nKeywords used for search: {', '.join(code_data.get('keywords_used', []))}")
         sections.append("\n---\nAnalyze the above and return your validation as JSON.")
