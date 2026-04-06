@@ -10,13 +10,21 @@ on:
         description: "Jira issue key (e.g. REG-456)"
         required: true
         type: string
+      runner:
+        description: "Runner to use (self-hosted for VPN/internal access)"
+        required: false
+        type: choice
+        options:
+          - ubuntu-latest
+          - self-hosted
+        default: self-hosted
 
 env:
   PYTHON_VERSION: "3.11"
 
 jobs:
   validate-bug:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.inputs.runner || 'self-hosted' }}
     timeout-minutes: 15
 
     steps:

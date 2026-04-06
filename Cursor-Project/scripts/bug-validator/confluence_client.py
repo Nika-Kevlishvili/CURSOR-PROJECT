@@ -1,5 +1,8 @@
 """
 Confluence REST API client — read-only documentation search.
+
+Supports both Atlassian Cloud and Server/Data Center instances.
+Auto-detects the correct REST API prefix by probing /wiki/rest/api and /rest/api.
 """
 
 import requests
@@ -11,6 +14,49 @@ class ConfluenceClient:
         self.base_url = base_url.rstrip("/")
         self.auth = HTTPBasicAuth(email, api_token)
         self.headers = {"Accept": "application/json"}
+        self._rest_prefix: str | None = None
+
+    @property
+    def rest_prefix(self) -> str:
+        if self._rest_prefix is None:
+            self._rest_prefix = self._detect_rest_prefix()
+        return self._rest_prefix
+
+    def _detect_rest_prefix(self) -> str:
+        """
+        Probe the instance to find the working REST API prefix.
+        Handles cases where base_url is:
+          - https://company.atlassian.net         (Cloud, needs /wiki/rest/api)
+          - https://company.atlassian.net/wiki     (Cloud, needs /rest/api)
+          - https://confluence.internal.com        (Server/DC, needs /rest/api)
+        """
+        base = self.base_url
+        has_wiki = base.rstrip("/").endswith("/wiki") or "/wiki/" in base
+
+        if has_wiki:
+            candidates = [f"{base}/rest/api"]
+        else:
+            candidates = [f"{base}/wiki/rest/api", f"{base}/rest/api"]
+
+        for prefix in candidates:
+            try:
+                resp = requests.get(
+                    f"{prefix}/space",
+                    headers=self.headers,
+                    auth=self.auth,
+                    params={"limit": 1},
+                    timeout=10,
+                )
+                if resp.status_code < 400:
+                    print(f"  Confluence REST prefix detected: {prefix}")
+                    return prefix
+                print(f"  Confluence probe {prefix}/space -> HTTP {resp.status_code}")
+            except requests.RequestException as e:
+                print(f"  Confluence probe {prefix}/space -> error: {e}")
+
+        fallback = candidates[0]
+        print(f"  WARNING: Could not auto-detect Confluence REST prefix; falling back to {fallback}")
+        return fallback
 
     def search_for_bug(self, summary: str, description: str, space_keys: list[str] | None = None) -> dict:
         """
@@ -53,41 +99,54 @@ class ConfluenceClient:
         }
 
     def _cql_search(self, query: str, space_keys: list[str] | None = None) -> list[dict]:
-        """Search Confluence using CQL via the /search endpoint (Atlassian Cloud)."""
+        """Search Confluence using CQL. Tries /search then /content/search."""
         cql = f'type = "page" AND text ~ "{query}"'
         if space_keys:
             spaces = " OR ".join(f'space = "{s}"' for s in space_keys)
             cql = f'({cql}) AND ({spaces})'
 
-        url = f"{self.base_url}/wiki/rest/api/search"
+        prefix = self.rest_prefix
+        endpoints = [f"{prefix}/search", f"{prefix}/content/search"]
         params = {"cql": cql, "limit": 5}
 
-        try:
-            resp = requests.get(url, headers=self.headers, auth=self.auth, params=params, timeout=15)
-            if resp.status_code == 401:
-                print(f"  ERROR: Confluence auth failed (401). Check CONFLUENCE_EMAIL and CONFLUENCE_API_TOKEN.")
-                return []
-            if resp.status_code == 403:
-                print(f"  ERROR: Confluence forbidden (403). Token may lack read permissions.")
-                return []
-            resp.raise_for_status()
-            data = resp.json()
-            results = []
-            for item in data.get("results", []):
-                content = item.get("content", item)
-                results.append({
-                    "id": content.get("id", ""),
-                    "title": content.get("title", item.get("title", "")),
-                    "url": f"{self.base_url}/wiki{content.get('_links', {}).get('webui', '')}",
-                })
-            return results
-        except requests.RequestException as e:
-            print(f"  WARNING: Confluence search failed for '{query}': {e}")
-            return []
+        for url in endpoints:
+            try:
+                resp = requests.get(url, headers=self.headers, auth=self.auth, params=params, timeout=15)
+                if resp.status_code == 401:
+                    print(f"  ERROR: Confluence auth failed (401). Check CONFLUENCE_EMAIL and CONFLUENCE_API_TOKEN.")
+                    return []
+                if resp.status_code == 403:
+                    print(f"  ERROR: Confluence forbidden (403). Token may lack read permissions.")
+                    return []
+                if resp.status_code == 404:
+                    continue
+                resp.raise_for_status()
+                data = resp.json()
+                results = []
+                for item in data.get("results", []):
+                    content = item.get("content", item)
+                    webui = content.get("_links", {}).get("webui", "")
+                    if webui:
+                        page_url = f"{self.base_url}{webui}" if webui.startswith("/") else webui
+                    else:
+                        page_url = ""
+                    results.append({
+                        "id": content.get("id", ""),
+                        "title": content.get("title", item.get("title", "")),
+                        "url": page_url,
+                    })
+                if results or data.get("results") is not None:
+                    return results
+            except requests.RequestException as e:
+                print(f"  WARNING: Confluence search failed for '{query}' at {url}: {e}")
+                continue
+
+        print(f"  WARNING: All Confluence search endpoints returned 404 for '{query}'")
+        return []
 
     def _get_page_content(self, page_id: str) -> str | None:
         """Get page body content as plain-ish text."""
-        url = f"{self.base_url}/wiki/rest/api/content/{page_id}"
+        url = f"{self.rest_prefix}/content/{page_id}"
         params = {"expand": "body.storage"}
 
         try:
