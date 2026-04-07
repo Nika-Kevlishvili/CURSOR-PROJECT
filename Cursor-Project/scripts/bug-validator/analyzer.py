@@ -133,16 +133,16 @@ class BugAnalyzer:
         else:
             sections.append("_No Confluence documentation found._")
 
-        sections.append("\n## Source Code (from GitLab)")
-        gitlab_status = code_data.get("status", "")
-        if gitlab_status == "unreachable":
+        sections.append("\n## Source Code (from Local Phoenix)")
+        phoenix_status = code_data.get("status", "")
+        if phoenix_status == "unreachable":
             sections.append(
-                "**IMPORTANT: GitLab is UNREACHABLE from the CI runner.** "
-                f"Reason: {code_data.get('error', 'network unreachable')}. "
-                "This is an infrastructure limitation — the runner cannot access the internal GitLab server. "
+                "**IMPORTANT: Local Phoenix codebase is NOT AVAILABLE.** "
+                f"Reason: {code_data.get('error', 'directory not found')}. "
+                "This means the Phoenix directory was not found at the expected location. "
                 "Code analysis COULD NOT be performed. "
                 "When determining your verdict, treat the code_validation as 'could_not_verify' "
-                "due to infrastructure, NOT due to the code being absent or irrelevant. "
+                "due to missing local codebase, NOT due to the code being irrelevant to the bug. "
                 "If Confluence provides sufficient evidence, you may still issue a verdict "
                 "other than INSUFFICIENT_EVIDENCE (e.g. NEEDS_APPROVAL or NEEDS_CLARIFICATION)."
             )

@@ -2,7 +2,7 @@
 Bug Validator — CI entry point.
 
 Triggered by GitHub Actions when a Jira bug reaches a specific status.
-Flow: Jira → Confluence → GitLab code → Gemini analysis → Slack report.
+Flow: Jira → Confluence → Local Phoenix code → Gemini analysis → Slack report.
 """
 
 import argparse
@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from jira_client import JiraClient
-from gitlab_client import GitLabClient
+from local_phoenix_client import create_client as create_local_phoenix_client
 from confluence_client import ConfluenceClient
 from analyzer import BugAnalyzer
 from slack_reporter import SlackReporter
@@ -27,9 +27,6 @@ def load_env():
         "JIRA_BASE_URL": "Jira base URL (e.g. https://yourorg.atlassian.net)",
         "JIRA_EMAIL": "Jira account email",
         "JIRA_API_TOKEN": "Jira API token",
-        "GITLAB_URL": "GitLab base URL (e.g. https://gitlab.example.com)",
-        "GITLAB_TOKEN": "GitLab read-only access token",
-        "GITLAB_PROJECT_IDS": "Comma-separated GitLab project IDs",
         "GEMINI_API_KEY": "Google Gemini API key (free tier)",
         "SLACK_WEBHOOK_URL": "Slack incoming webhook URL",
     }
@@ -56,9 +53,6 @@ def load_env():
     for key in optional:
         config[key] = os.environ.get(key)
 
-    config["GITLAB_PROJECT_IDS"] = [
-        pid.strip() for pid in config["GITLAB_PROJECT_IDS"].split(",") if pid.strip()
-    ]
     if config.get("CONFLUENCE_SPACE_KEYS"):
         config["CONFLUENCE_SPACE_KEYS"] = [
             s.strip() for s in config["CONFLUENCE_SPACE_KEYS"].split(",") if s.strip()
@@ -209,21 +203,19 @@ def main():
     if confluence_result.get("sources"):
         print(f"  Confluence pages found: {len(confluence_result['sources'])}")
 
-    # --- Step 3: Search codebase via GitLab API ---
-    print("\n[3/5] Analyzing codebase via GitLab API (read-only)...")
-    gitlab = GitLabClient(
-        base_url=config["GITLAB_URL"],
-        token=config["GITLAB_TOKEN"],
-        project_ids=config["GITLAB_PROJECT_IDS"],
-    )
-    code_results = gitlab.search_for_bug(
+    # --- Step 3: Search local Phoenix codebase ---
+    print("\n[3/5] Analyzing local Phoenix codebase...")
+    phoenix_client = create_local_phoenix_client()
+    code_results = phoenix_client.search_for_bug(
         summary=bug["summary"],
         description=bug["description"],
     )
     if code_results.get("status") == "unreachable":
-        print(f"  GitLab UNREACHABLE — code analysis skipped ({code_results.get('error', 'unknown')})")
+        print(f"  Phoenix UNAVAILABLE — code analysis skipped ({code_results.get('error', 'unknown')})")
+    elif code_results.get("status") == "no_results":
+        print(f"  No relevant Phoenix code found for this bug")
     else:
-        print(f"  Found {len(code_results['files'])} relevant files across {len(config['GITLAB_PROJECT_IDS'])} projects")
+        print(f"  Found {len(code_results['files'])} relevant files in local Phoenix codebase")
 
     # --- Step 4: Analyze with Gemini ---
     print("\n[4/5] Running AI analysis (Gemini)...")

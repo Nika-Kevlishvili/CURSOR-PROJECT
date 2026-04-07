@@ -1,6 +1,6 @@
 # Bug Validator — GitHub Actions Pipeline
 
-Automated bug validation triggered by Jira automation. Validates bug reports against Confluence documentation and Phoenix codebase (via GitLab API, read-only), then sends results to Slack.
+Automated bug validation triggered by Jira automation. Validates bug reports against Confluence documentation and local Phoenix codebase, then sends results to Slack.
 
 ## Architecture
 
@@ -12,8 +12,8 @@ Jira Bug (status change) → Jira Automation (webhook) → GitHub Actions → Bu
 
 1. **Jira** — Fetches bug details (summary, description, priority)
 2. **Confluence** — Searches documentation for related pages, validates bug description
-3. **GitLab** — Searches Phoenix codebase via REST API (read-only token)
-4. **Claude AI** — Analyzes bug + documentation + code, determines validity
+3. **Local Phoenix Code** — Searches local Cursor-Project/Phoenix directory for relevant code
+4. **Gemini AI** — Analyzes bug + documentation + code, determines validity
 5. **Slack** — Sends structured report with verdict
 
 ## Setup
@@ -27,27 +27,57 @@ Add these secrets in your GitHub repository (Settings → Secrets → Actions):
 | `JIRA_BASE_URL` | Jira Cloud base URL | `https://yourorg.atlassian.net` |
 | `JIRA_EMAIL` | Jira account email | `user@example.com` |
 | `JIRA_API_TOKEN` | Jira API token | [Create here](https://id.atlassian.com/manage-profile/security/api-tokens) |
-| `GITLAB_URL` | GitLab instance URL | `https://gitlab.example.com` |
-| `GITLAB_TOKEN` | GitLab read-only access token | Project Access Token (Reporter role, `read_api` + `read_repository`) |
-| `GITLAB_PROJECT_IDS` | Comma-separated project IDs | `42,43` |
-| `ANTHROPIC_API_KEY` | Claude API key | [Get from Anthropic Console](https://console.anthropic.com/) |
+| `GEMINI_API_KEY` | Google Gemini API key (free tier) | [Get from Google AI Studio](https://makersuite.google.com/) |
 | `SLACK_WEBHOOK_URL` | Slack incoming webhook | [Create here](https://api.slack.com/messaging/webhooks) |
 | `CONFLUENCE_BASE_URL` | *(optional)* Confluence base URL | `https://yourorg.atlassian.net` |
 | `CONFLUENCE_EMAIL` | *(optional)* Confluence email | `user@example.com` |
 | `CONFLUENCE_API_TOKEN` | *(optional)* Confluence API token | Same as Jira token if Atlassian Cloud |
 | `CONFLUENCE_SPACE_KEYS` | *(optional)* Comma-separated space keys | `PHOENIX,DEV` |
+| `PHOENIX_LOCAL_ROOT` | *(optional)* Custom Phoenix directory path | `/path/to/your/phoenix/code` |
 
-### 2. GitLab Access Token
+### 2. Self-hosted GitHub Runner Setup
 
-Create a **Project Access Token** in GitLab:
+The bug validator now uses a self-hosted runner to access local Phoenix code and VPN resources.
 
-1. Go to your Phoenix project → Settings → Access Tokens
-2. Name: `bug-validator-readonly`
-3. Role: **Reporter**
-4. Scopes: `read_api`, `read_repository`
-5. Copy the token → add as `GITLAB_TOKEN` in GitHub Secrets
+**Prerequisites:**
+- Windows machine with VPN access to internal GitLab
+- Python 3.11+ installed
+- Local `Cursor-Project/Phoenix` directory with Phoenix projects
+- Git and PowerShell available
 
-Repeat for each project or use a Group Access Token if projects are in the same group.
+**Setup Steps:**
+
+1. **GitHub Repository Settings:**
+   - Go to `Settings` → `Actions` → `Runners`
+   - Click `New self-hosted runner`
+   - Select `Windows`
+   - Follow the download and configuration instructions
+
+2. **Runner Installation:**
+   ```powershell
+   # Download runner (GitHub provides exact commands)
+   Invoke-WebRequest -Uri https://github.com/actions/runner/releases/... 
+   
+   # Extract and configure
+   Expand-Archive -Path runner.zip -DestinationPath runner
+   cd runner
+   ./config.cmd --url https://github.com/YOUR_USERNAME/YOUR_REPO --token YOUR_TOKEN
+   
+   # Run as a service (recommended)
+   ./svc.sh install
+   ./svc.sh start
+   ```
+
+3. **Phoenix Directory:**
+   - Ensure `Cursor-Project/Phoenix` exists on the runner machine
+   - Contains your local Phoenix projects (phoenix-core, phoenix-payment-api, etc.)
+   - **Custom Path (Optional):** Set `PHOENIX_LOCAL_ROOT` environment variable
+
+**Benefits:**
+- ✅ Full VPN access to GitLab and internal resources
+- ✅ Local Phoenix code scanning without uploading to GitHub
+- ✅ Complete automation: Jira → GitHub Actions → Local Analysis → Slack
+- ✅ No cloud storage or security concerns
 
 ### 3. Slack Webhook
 
@@ -94,12 +124,12 @@ You can also run the workflow manually from GitHub Actions:
 
 ```
 Cursor-Project/scripts/bug-validator/
-├── main.py               # Entry point — orchestrates the pipeline
-├── jira_client.py         # Jira REST API — fetch bug details
-├── gitlab_client.py       # GitLab REST API — read-only code search
-├── confluence_client.py   # Confluence REST API — documentation search
-├── analyzer.py            # Claude AI — bug analysis and validation
-├── slack_reporter.py      # Slack webhook — send report
-├── requirements.txt       # Python dependencies
-└── README.md              # This file
+├── main.py                 # Entry point — orchestrates the pipeline
+├── jira_client.py          # Jira REST API — fetch bug details
+├── local_phoenix_client.py # Local Phoenix filesystem scanner
+├── confluence_client.py    # Confluence REST API — documentation search
+├── analyzer.py             # Gemini AI — bug analysis and validation
+├── slack_reporter.py       # Slack webhook — send report
+├── requirements.txt        # Python dependencies
+└── README.md               # This file
 ```
