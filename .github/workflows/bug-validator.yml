@@ -35,6 +35,18 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+        if: runner.os == 'Linux'
+        
+      - name: Setup Python (Windows self-hosted)
+        run: |
+          $pythonVersion = "${{ env.PYTHON_VERSION }}"
+          if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
+            Write-Host "Python not found. Please ensure Python $pythonVersion is installed on the self-hosted runner."
+            exit 1
+          }
+          python --version
+        shell: powershell
+        if: runner.os == 'Windows'
 
       - name: Install dependencies
         run: pip install -r Cursor-Project/scripts/bug-validator/requirements.txt
@@ -53,9 +65,6 @@ jobs:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-          GITLAB_URL: ${{ secrets.GITLAB_URL }}
-          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
-          GITLAB_PROJECT_IDS: ${{ secrets.GITLAB_PROJECT_IDS }}
           CONFLUENCE_BASE_URL: ${{ secrets.CONFLUENCE_BASE_URL }}
           CONFLUENCE_EMAIL: ${{ secrets.CONFLUENCE_EMAIL }}
           CONFLUENCE_API_TOKEN: ${{ secrets.CONFLUENCE_API_TOKEN }}
