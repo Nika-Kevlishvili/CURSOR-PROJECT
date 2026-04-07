@@ -125,6 +125,7 @@ You can also run the workflow manually from GitHub Actions:
 ```
 Cursor-Project/scripts/bug-validator/
 ├── main.py                 # Entry point — orchestrates the pipeline
+├── extract_jira_key.py     # CI helper — writes GITHUB_OUTPUT key (no bash on Windows)
 ├── jira_client.py          # Jira REST API — fetch bug details
 ├── local_phoenix_client.py # Local Phoenix filesystem scanner
 ├── confluence_client.py    # Confluence REST API — documentation search
