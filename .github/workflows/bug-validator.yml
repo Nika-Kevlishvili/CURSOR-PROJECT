@@ -15,16 +15,17 @@ on:
         required: false
         type: choice
         options:
-          - ubuntu-latest
           - self-hosted
-        default: ubuntu-latest
+          - ubuntu-latest
+        default: self-hosted
 
 env:
   PYTHON_VERSION: "3.11"
 
 jobs:
   validate-bug:
-    runs-on: ${{ github.event.inputs.runner || 'ubuntu-latest' }}
+    # Jira repository_dispatch has no inputs → use self-hosted runner when available
+    runs-on: ${{ github.event.inputs.runner || 'self-hosted' }}
     timeout-minutes: 15
 
     steps:
@@ -53,11 +54,12 @@ jobs:
 
       - name: Extract Jira key
         id: jira
+        shell: bash
         run: |
           if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
-            echo "key=${{ github.event.client_payload.jira_key }}" >> $GITHUB_OUTPUT
+            echo "key=${{ github.event.client_payload.jira_key }}" >> "$GITHUB_OUTPUT"
           else
-            echo "key=${{ github.event.inputs.jira_key }}" >> $GITHUB_OUTPUT
+            echo "key=${{ github.event.inputs.jira_key }}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Run Bug Validator
@@ -71,9 +73,9 @@ jobs:
           CONFLUENCE_SPACE_KEYS: ${{ secrets.CONFLUENCE_SPACE_KEYS }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: |
-          python Cursor-Project/scripts/bug-validator/main.py \
-            --jira-key "${{ steps.jira.outputs.key }}"
+          # Optional: absolute path to Phoenix on self-hosted runner (if Phoenix is not in the repo checkout)
+          PHOENIX_LOCAL_ROOT: ${{ secrets.PHOENIX_LOCAL_ROOT }}
+        run: python Cursor-Project/scripts/bug-validator/main.py --jira-key "${{ steps.jira.outputs.key }}"
 
       - name: Upload validation report
         if: always()
