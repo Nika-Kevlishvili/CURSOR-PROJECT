@@ -42,31 +42,18 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-        if: runner.os == 'Linux'
-        
-      - name: Setup Python (Windows self-hosted)
-        run: |
-          $pythonVersion = "${{ env.PYTHON_VERSION }}"
-          if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
-            Write-Host "Python not found. Please ensure Python $pythonVersion is installed on the self-hosted runner."
-            exit 1
-          }
-          python --version
-        shell: powershell
-        if: runner.os == 'Windows'
 
       - name: Install dependencies
         run: pip install -r Cursor-Project/scripts/bug-validator/requirements.txt
 
+      # Use Python (not bash): Windows self-hosted runners often have no bash on PATH
       - name: Extract Jira key
         id: jira
-        shell: bash
-        run: |
-          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
-            echo "key=${{ github.event.client_payload.jira_key }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "key=${{ github.event.inputs.jira_key }}" >> "$GITHUB_OUTPUT"
-          fi
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          KEY_DISPATCH: ${{ github.event.client_payload.jira_key }}
+          KEY_INPUT: ${{ github.event.inputs.jira_key }}
+        run: python Cursor-Project/scripts/bug-validator/extract_jira_key.py
 
       - name: Run Bug Validator
         env:
