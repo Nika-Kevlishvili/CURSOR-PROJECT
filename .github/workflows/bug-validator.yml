@@ -29,6 +29,12 @@ jobs:
     timeout-minutes: 15
 
     steps:
+      # Windows MAX_PATH: deep paths (e.g. __MACOSX, nested deps) fail checkout without this
+      - name: Enable Git long paths (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: git config --global core.longpaths true
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
