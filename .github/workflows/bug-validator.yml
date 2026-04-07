@@ -11,19 +11,20 @@ on:
         required: true
         type: string
       runner:
-        description: "Runner to use"
+        description: "Runner to use (ubuntu-latest = GitHub-hosted; self-hosted for VPN/internal GitLab)"
         required: false
         type: choice
         options:
+          - ubuntu-latest
           - self-hosted
-        default: self-hosted
+        default: ubuntu-latest
 
 env:
   PYTHON_VERSION: "3.11"
 
 jobs:
   validate-bug:
-    runs-on: [self-hosted, Windows, X64]
+    runs-on: ${{ github.event.inputs.runner || 'ubuntu-latest' }}
     timeout-minutes: 15
 
     steps:
