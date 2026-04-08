@@ -19,6 +19,7 @@ from analyzer import BugAnalyzer
 from slack_reporter import SlackReporter
 from slack_report_template import (
     build_confluence_basis_markdown,
+    build_sources_and_alignment_markdown,
     humanize_behavior_match,
     humanize_evidence_strength,
     merge_confluence_validation,
@@ -112,6 +113,10 @@ def format_markdown_report(report: dict) -> str:
         "## 1. Expected Behavior",
         f"**Bug Claims:** {expected.get('bug_claims', 'N/A')}",
         f"**Context:** {expected.get('context', 'N/A')}",
+        "",
+        "---",
+        "",
+        build_sources_and_alignment_markdown(report),
         "",
         "---",
         "",
@@ -265,6 +270,7 @@ def main():
             "status": code_results.get("status"),
             "error": code_results.get("error"),
             "files_found": len(code_results.get("files") or []),
+            "snippets_sent": len(code_results.get("snippets") or []),
             "phoenix_root": str(phoenix_client.phoenix_root),
         },
         "final_verdict": analysis.get("final_verdict", {"verdict": "INSUFFICIENT_EVIDENCE", "reasoning": "Analysis failed", "next_steps": "Check technical issues"}),

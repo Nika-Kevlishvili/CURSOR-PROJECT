@@ -78,6 +78,161 @@ def _fallback_title(raw: str) -> str:
     return cleaned.title()
 
 
+def _yes_no_token(used: bool, slack: bool) -> str:
+    if slack:
+        return ":white_check_mark: *Yes*" if used else ":x: *No*"
+    return "**Yes**" if used else "**No**"
+
+
+def describe_confluence_input(cv: dict, *, slack: bool = True) -> str:
+    """Factual: was Confluence queried and did we get pages/excerpts."""
+    status = (cv.get("status") or "").strip()
+    pages = cv.get("page_contents") or []
+    sources = cv.get("sources") or []
+
+    if status == "skipped":
+        return f"{_yes_no_token(False, slack)} — not configured (missing Confluence URL/token)."
+
+    if status == "no_results":
+        return f"{_yes_no_token(True, slack)} — search ran; **0** pages matched."
+
+    if pages:
+        return (
+            f"{_yes_no_token(True, slack)} — **{len(pages)}** page excerpt(s); "
+            f"**{len(sources)}** link(s) in search results."
+        )
+
+    if sources:
+        return (
+            f"{_yes_no_token(True, slack)} — **{len(sources)}** page link(s); "
+            "excerpts were not loaded."
+        )
+
+    if status == "found":
+        return f"{_yes_no_token(True, slack)} — search reported hits but no excerpt payload."
+
+    return f"{_yes_no_token(True, slack)} — API status `{status or 'unknown'}`."
+
+
+def describe_code_input(scan: dict | None, *, slack: bool = True) -> str:
+    """Factual: did we scan local Phoenix and how many hits/snippets."""
+    if not scan:
+        return "_Scan metadata missing._"
+
+    st = (scan.get("status") or "").strip()
+    root = (scan.get("phoenix_root") or "").strip()
+    nf = scan.get("files_found")
+    ns = scan.get("snippets_sent")
+    err = (scan.get("error") or "").strip()
+
+    root_short = _truncate(root, 100) if root else "n/a"
+
+    if st == "unreachable":
+        return (
+            f"{_yes_no_token(False, slack)} — Phoenix path not available. "
+            f"{_truncate(err, 200)}"
+        )
+
+    if st == "no_results":
+        return (
+            f"{_yes_no_token(True, slack)} — scan ran; **0** files matched keywords. "
+            f"Path: `{root_short}`"
+        )
+
+    if st == "ok":
+        snip_part = f", **{ns}** snippet(s) sent to the model" if ns is not None else ""
+        return (
+            f"{_yes_no_token(True, slack)} — **{nf}** file(s) matched{snip_part}. "
+            f"Path: `{root_short}`"
+        )
+
+    return f"_Unknown scan status:_ `{st or 'n/a'}` Path: `{root_short}`"
+
+
+def documentation_alignment_line(evidence_strength: str | None) -> str:
+    """
+    AI layer: how documentation supports the bug's expected behavior.
+    Not a percentage — ordinal strength from the model's evidence_strength enum.
+    """
+    if not evidence_strength or str(evidence_strength).strip() in ("", "N/A"):
+        return "_Not assessed_ — the model did not return `evidence_strength`."
+
+    key = str(evidence_strength).strip().lower().replace(" ", "_")
+    label = humanize_evidence_strength(evidence_strength)
+    tier = {
+        "exact_match": "Strong alignment",
+        "contextual_match": "Partial alignment",
+        "no_match": "Weak / no supporting documentation for this case",
+        "contradicts": "Contradicts the bug's expectation",
+        "search_failed": "Documentation check failed (access/search error)",
+    }.get(key, "See label")
+
+    return f"*{tier}* — {label}"
+
+
+def code_alignment_line(behavior_match: str | None) -> str:
+    """AI layer: does code behavior match what the bug claims is wrong."""
+    if not behavior_match or str(behavior_match).strip() in ("", "N/A"):
+        return "_Not assessed_ — the model did not return `behavior_match`."
+
+    key = str(behavior_match).strip().lower().replace(" ", "_")
+    label = humanize_behavior_match(behavior_match)
+    tier = {
+        "matches_reported_behavior": "Supports the bug report",
+        "does_not_match_reported_behavior": "Does not support the bug report",
+        "could_not_verify": "Inconclusive from available code evidence",
+    }.get(key, "See label")
+
+    return f"*{tier}* — {label}"
+
+
+def build_sources_and_alignment_mrkdwn(report: dict) -> str:
+    """Slack mrkdwn: factual inputs + AI match summary."""
+    confluence = report.get("confluence_validation") or {}
+    code = report.get("code_validation") or {}
+    code_scan = report.get("code_scan") if isinstance(report.get("code_scan"), dict) else {}
+
+    lines = [
+        "*1) What was actually used*",
+        f"• Confluence API: {describe_confluence_input(confluence, slack=True)}",
+        f"• Local Phoenix scan: {describe_code_input(code_scan, slack=True)}",
+        "",
+        "*2) Match vs bug description (AI assessment)*",
+        f"• Documentation ↔ bug: {documentation_alignment_line(confluence.get('evidence_strength'))}",
+        f"• Code ↔ bug: {code_alignment_line(code.get('behavior_match'))}",
+    ]
+
+    extra = _format_code_analysis_field(code, code_scan if code_scan else None)
+    if "\n" in extra.strip():
+        lines.extend(["", "*Code scan / model notes:*", extra])
+
+    return "\n".join(lines)
+
+
+def build_sources_and_alignment_markdown(report: dict) -> str:
+    """Saved .md report section (no Slack emoji)."""
+    confluence = report.get("confluence_validation") or {}
+    code = report.get("code_validation") or {}
+    code_scan = report.get("code_scan") if isinstance(report.get("code_scan"), dict) else {}
+
+    return "\n".join(
+        [
+            "## Input sources and match vs bug report",
+            "",
+            "### 1) What was actually used",
+            "",
+            f"- **Confluence API:** {describe_confluence_input(confluence, slack=False)}",
+            f"- **Local Phoenix scan:** {describe_code_input(code_scan, slack=False)}",
+            "",
+            "### 2) Match vs bug description (AI assessment)",
+            "",
+            f"- **Documentation ↔ bug:** {documentation_alignment_line(confluence.get('evidence_strength'))}",
+            f"- **Code ↔ bug:** {code_alignment_line(code.get('behavior_match'))}",
+            "",
+        ]
+    ).rstrip() + "\n"
+
+
 def _format_code_analysis_field(code: dict, code_scan: dict | None) -> str:
     """
     Human-readable code verdict plus concrete reason when local scan failed or found nothing.
@@ -230,12 +385,7 @@ def build_slack_blocks(report: dict) -> list[dict]:
     verdict_raw = final_verdict.get("verdict", "INSUFFICIENT_EVIDENCE")
     verdict = VERDICT_EMOJIS.get(verdict_raw, f":question: *{verdict_raw}*")
 
-    confluence = report.get("confluence_validation", {})
-    code = report.get("code_validation", {})
-    code_scan = report.get("code_scan")
-
-    evidence_label = humanize_evidence_strength(confluence.get("evidence_strength"))
-    behavior_label = _format_code_analysis_field(code, code_scan if isinstance(code_scan, dict) else None)
+    usage_text = build_sources_and_alignment_mrkdwn(report)
 
     blocks: list[dict] = [
         {
@@ -254,10 +404,10 @@ def build_slack_blocks(report: dict) -> list[dict]:
         },
         {
             "type": "section",
-            "fields": [
-                {"type": "mrkdwn", "text": f"*Confluence:*\n{evidence_label}"},
-                {"type": "mrkdwn", "text": f"*Code Analysis:*\n{behavior_label}"},
-            ],
+            "text": {
+                "type": "mrkdwn",
+                "text": _truncate(usage_text, 2950),
+            },
         },
     ]
 
