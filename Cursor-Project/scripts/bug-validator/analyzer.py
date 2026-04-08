@@ -4,6 +4,7 @@ against Confluence documentation and codebase findings.
 """
 
 import json
+import time
 import requests
 
 
@@ -100,17 +101,46 @@ class BugAnalyzer:
             },
         }
 
-        resp = requests.post(
-            url,
-            params={"key": self.api_key},
-            json=payload,
-            timeout=60,
-        )
-        resp.raise_for_status()
-        data = resp.json()
+        data = self._request_with_retry(url, payload)
 
         raw = data["candidates"][0]["content"]["parts"][0]["text"].strip()
         return self._parse_response(raw)
+
+    def _request_with_retry(self, url: str, payload: dict) -> dict:
+        """
+        Retry transient Gemini API failures (timeouts, 5xx, 429) with backoff.
+        """
+        max_attempts = 4
+        backoff_seconds = [2, 4, 8]
+        last_error = None
+
+        for attempt in range(1, max_attempts + 1):
+            try:
+                resp = requests.post(
+                    url,
+                    params={"key": self.api_key},
+                    json=payload,
+                    timeout=60,
+                )
+                if resp.status_code in (429, 500, 502, 503, 504):
+                    if attempt < max_attempts:
+                        wait_s = backoff_seconds[min(attempt - 1, len(backoff_seconds) - 1)]
+                        print(f"  Gemini transient error HTTP {resp.status_code}; retrying in {wait_s}s (attempt {attempt}/{max_attempts})")
+                        time.sleep(wait_s)
+                        continue
+                resp.raise_for_status()
+                return resp.json()
+            except requests.RequestException as exc:
+                last_error = exc
+                if attempt < max_attempts:
+                    wait_s = backoff_seconds[min(attempt - 1, len(backoff_seconds) - 1)]
+                    print(f"  Gemini request failed: {exc}; retrying in {wait_s}s (attempt {attempt}/{max_attempts})")
+                    time.sleep(wait_s)
+                    continue
+                raise
+
+        # Safety fallback (the loop should always return or raise before this line).
+        raise RuntimeError(f"Gemini request failed after {max_attempts} attempts: {last_error}")
 
     def _build_prompt(self, bug: dict, confluence_data: dict, code_data: dict) -> str:
         sections = []
