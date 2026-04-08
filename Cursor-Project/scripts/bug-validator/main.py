@@ -140,6 +140,20 @@ def format_markdown_report(report: dict) -> str:
         "## 3. Code Analysis",
         f"**Behavior Match:** {humanize_behavior_match(code.get('behavior_match'))}",
         "",
+    ])
+
+    scan = report.get("code_scan") or {}
+    if isinstance(scan, dict) and scan.get("status"):
+        lines.append(f"**Local Phoenix scan:** `{scan.get('status')}`")
+        if scan.get("phoenix_root"):
+            lines.append(f"**Phoenix path:** `{scan['phoenix_root']}`")
+        if scan.get("files_found") is not None:
+            lines.append(f"**Files matched:** {scan['files_found']}")
+        if scan.get("error"):
+            lines.append(f"**Scan note:** {scan['error']}")
+        lines.append("")
+
+    lines.extend([
         code.get("explanation", "_No code analysis performed._"),
         "",
     ])
@@ -247,6 +261,12 @@ def main():
         "expected_behavior": analysis.get("expected_behavior", {}),
         "confluence_validation": confluence_for_report,
         "code_validation": analysis.get("code_validation", {}),
+        "code_scan": {
+            "status": code_results.get("status"),
+            "error": code_results.get("error"),
+            "files_found": len(code_results.get("files") or []),
+            "phoenix_root": str(phoenix_client.phoenix_root),
+        },
         "final_verdict": analysis.get("final_verdict", {"verdict": "INSUFFICIENT_EVIDENCE", "reasoning": "Analysis failed", "next_steps": "Check technical issues"}),
     }
 

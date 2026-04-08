@@ -78,6 +78,45 @@ def _fallback_title(raw: str) -> str:
     return cleaned.title()
 
 
+def _format_code_analysis_field(code: dict, code_scan: dict | None) -> str:
+    """
+    Human-readable code verdict plus concrete reason when local scan failed or found nothing.
+    """
+    label = humanize_behavior_match(code.get("behavior_match"))
+    scan = code_scan or {}
+    status = (scan.get("status") or "").strip()
+    err = (scan.get("error") or "").strip()
+    n_files = scan.get("files_found")
+    root = (scan.get("phoenix_root") or "").strip()
+
+    notes: list[str] = []
+    if status == "unreachable":
+        detail = _truncate(err or "Phoenix directory missing or not readable on runner.", 220)
+        notes.append(f"_Local code scan skipped:_ {detail}")
+    elif status == "no_results":
+        notes.append("_Local code scan:_ no matching source files for extracted keywords.")
+    elif status == "ok" and (n_files is not None) and n_files == 0:
+        notes.append("_Local code scan:_ no files collected.")
+
+    if root and status in ("unreachable", "no_results", "ok"):
+        notes.append(f"_Phoenix path:_ `{_truncate(root, 120)}`")
+
+    # Model said it could not verify despite snippets — nudge reader to Reasoning
+    if (
+        (code.get("behavior_match") or "").strip().lower().replace(" ", "_") == "could_not_verify"
+        and status == "ok"
+        and isinstance(n_files, int)
+        and n_files > 0
+    ):
+        notes.append(
+            "_Note:_ snippets were sent to the model, but it did not confirm the reported faulty behavior vs code — see Reasoning."
+        )
+
+    if notes:
+        return label + "\n" + "\n".join(notes)
+    return label
+
+
 def _truncate(text: str, max_len: int) -> str:
     text = text.strip()
     if len(text) <= max_len:
@@ -193,9 +232,10 @@ def build_slack_blocks(report: dict) -> list[dict]:
 
     confluence = report.get("confluence_validation", {})
     code = report.get("code_validation", {})
+    code_scan = report.get("code_scan")
 
     evidence_label = humanize_evidence_strength(confluence.get("evidence_strength"))
-    behavior_label = humanize_behavior_match(code.get("behavior_match"))
+    behavior_label = _format_code_analysis_field(code, code_scan if isinstance(code_scan, dict) else None)
 
     blocks: list[dict] = [
         {

@@ -5,8 +5,37 @@ Supports both Atlassian Cloud and Server/Data Center instances.
 Auto-detects the correct REST API prefix by probing /wiki/rest/api and /rest/api.
 """
 
+import html
 import requests
 from requests.auth import HTTPBasicAuth
+
+
+def _normalize_confluence_page_url(base_url: str, webui: str) -> str:
+    """
+    Build a browser-openable page URL from REST `_links.webui` and configured base URL.
+
+    Fixes common Atlassian Cloud mis-joins:
+    - base ends with `/wiki` but `webui` already starts with `/wiki/...` → avoid `/wiki/wiki/...`
+    - base is `*.atlassian.net` without `/wiki` but `webui` is `/spaces/...` → prepend `/wiki`
+    """
+    base = (base_url or "").rstrip("/")
+    w = (webui or "").strip()
+    if not w:
+        return ""
+    if w.startswith("http://") or w.startswith("https://"):
+        return w
+    if not w.startswith("/"):
+        w = "/" + w
+
+    base_lower = base.lower()
+    if base_lower.endswith("/wiki") and w.startswith("/wiki/"):
+        w = w[len("/wiki") :]  # keep leading slash on remainder e.g. /spaces/...
+
+    if "atlassian.net" in base_lower and not base_lower.endswith("/wiki"):
+        if w.startswith("/spaces/") or w.startswith("/x/"):
+            w = "/wiki" + w
+
+    return f"{base}{w}"
 
 
 class ConfluenceClient:
@@ -132,7 +161,7 @@ class ConfluenceClient:
                     content = item.get("content", item)
                     webui = content.get("_links", {}).get("webui", "")
                     if webui:
-                        page_url = f"{self.base_url}{webui}" if webui.startswith("/") else webui
+                        page_url = _normalize_confluence_page_url(self.base_url, webui)
                     else:
                         page_url = ""
                     results.append({
@@ -163,10 +192,11 @@ class ConfluenceClient:
             return None
 
     @staticmethod
-    def _strip_html(html: str) -> str:
+    def _strip_html(raw_html: str) -> str:
         """Rough HTML tag removal for readable text."""
         import re
-        text = re.sub(r"<[^>]+>", " ", html)
+        text = re.sub(r"<[^>]+>", " ", raw_html)
+        text = html.unescape(text)
         text = re.sub(r"\s+", " ", text)
         return text.strip()
 
