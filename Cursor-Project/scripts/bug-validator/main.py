@@ -17,6 +17,12 @@ from local_phoenix_client import create_client as create_local_phoenix_client
 from confluence_client import ConfluenceClient
 from analyzer import BugAnalyzer
 from slack_reporter import SlackReporter
+from slack_report_template import (
+    build_confluence_basis_markdown,
+    humanize_behavior_match,
+    humanize_evidence_strength,
+    merge_confluence_validation,
+)
 
 OUTPUT_DIR = Path(__file__).parent / "output"
 
@@ -110,7 +116,7 @@ def format_markdown_report(report: dict) -> str:
         "---",
         "",
         "## 2. Confluence Validation",
-        f"**Evidence Strength:** {confluence.get('evidence_strength', 'N/A')}",
+        f"**Evidence Strength:** {humanize_evidence_strength(confluence.get('evidence_strength'))}",
         "",
         confluence.get("explanation", "_No Confluence analysis performed._"),
         "",
@@ -123,11 +129,16 @@ def format_markdown_report(report: dict) -> str:
             lines.append(f"- {src}")
         lines.append("")
 
+    basis_md = build_confluence_basis_markdown({"confluence_validation": confluence})
+    if basis_md:
+        lines.append(basis_md)
+        lines.append("")
+
     lines.extend([
         "---",
         "",
         "## 3. Code Analysis",
-        f"**Behavior Match:** {code.get('behavior_match', 'N/A')}",
+        f"**Behavior Match:** {humanize_behavior_match(code.get('behavior_match'))}",
         "",
         code.get("explanation", "_No code analysis performed._"),
         "",
@@ -229,11 +240,12 @@ def main():
     print(f"  Verdict: {verdict}")
 
     # --- Step 5: Build report and send to Slack ---
+    confluence_for_report = merge_confluence_validation(confluence_result, analysis)
     report = {
         "timestamp": timestamp,
         "bug": bug,
         "expected_behavior": analysis.get("expected_behavior", {}),
-        "confluence_validation": analysis.get("confluence_validation", confluence_result),
+        "confluence_validation": confluence_for_report,
         "code_validation": analysis.get("code_validation", {}),
         "final_verdict": analysis.get("final_verdict", {"verdict": "INSUFFICIENT_EVIDENCE", "reasoning": "Analysis failed", "next_steps": "Check technical issues"}),
     }

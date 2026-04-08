@@ -130,7 +130,10 @@ Cursor-Project/scripts/bug-validator/
 ├── local_phoenix_client.py # Local Phoenix filesystem scanner
 ├── confluence_client.py    # Confluence REST API — documentation search
 ├── analyzer.py             # Gemini AI — bug analysis and validation
-├── slack_reporter.py       # Slack webhook — send report
+├── slack_report_template.py # Slack message layout, labels, Confluence basis section
+├── slack_reporter.py       # Slack webhook — send report (uses template)
 ├── requirements.txt        # Python dependencies
 └── README.md               # This file
 ```
+
+To change how Slack reports look (section order, human-readable labels, Confluence excerpt limits), edit **`slack_report_template.py`**.
