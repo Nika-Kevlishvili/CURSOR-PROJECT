@@ -437,6 +437,7 @@ def build_slack_blocks(report: dict) -> list[dict]:
         }
     )
 
+    code = report.get("code_validation", {}) or {}
     refs = code.get("references", [])
     if refs:
         ref_lines = [
