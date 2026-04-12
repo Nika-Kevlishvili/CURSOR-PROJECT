@@ -22,7 +22,7 @@ Use this skill when the user wants to **run** (execute) Playwright tests from th
    - File path/name → run that path relative to `EnergoTS/`.
    - Domain (e.g. "billing") → run `tests/billing/` or equivalent.
 3. **Execute** from `Cursor-Project/EnergoTS/`: `npx playwright test <path|grep|dir>`.
-4. **Report** results; save report to `Cursor-Project/reports/YYYY-MM-DD/`; end with "Agents involved: EnergoTS Playwright Test Runner".
+4. **Report** results; optional save under **Chat reports** per **`Cursor-Project/reports/README.md`**; end with "Agents involved: EnergoTS Playwright Test Runner".
 
 ## Agent / Command
 
@@ -33,4 +33,4 @@ Use this skill when the user wants to **run** (execute) Playwright tests from th
 
 - **Rule 0.3:** no Python IntegrationService in this workspace; follow MCP/Jira when needed.
 - No code modification; only run tests (Rule 0.8).
-- Reports in English; save reports (Rule 0.6, 0.7).
+- Summarize test run in chat (English). Save a file under `reports/` only if the user requests it (Rule 0.6 default, Rule 0.7 for on-disk text).

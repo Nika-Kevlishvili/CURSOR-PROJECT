@@ -19,6 +19,5 @@ Route ALL Phoenix-related questions to PhoenixExpert agent (Rule 0.2 - ABSOLUTE 
 - Provide comprehensive answer
 - End with: "Agents involved: PhoenixExpert"
 
-## Generate Reports (Rule 0.6):
-- Save to **`Cursor-Project/reports/YYYY-MM-DD/PhoenixExpert_{HHMM}.md`**
-- Save summary to **`Cursor-Project/reports/YYYY-MM-DD/Summary_{HHMM}.md`**
+## Reports (Rule 0.6 — optional):
+- **Default:** answer in chat only; do **not** create files under **`Cursor-Project/reports/`** unless the user asks for a saved report or uses **`/report`** (paths per **`Cursor-Project/reports/README.md`**).

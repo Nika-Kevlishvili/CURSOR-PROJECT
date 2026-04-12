@@ -13,7 +13,7 @@ The **`Cursor-Project/agents/`** directory (Main, Support, Core, Adapters, Servi
 
 The following **`Cursor-Project/docs/*.md`** files were written for the old package and may still contain `from agents...`, `AgentRouter`, `IntegrationService`, `ReportingService`, or `get_*_agent()`:
 
-- `AGENTS_README.md`, `AGENT_REPORTING_GUIDE.md`, `GLOBAL_RULES_AND_ROUTING.md`
+- `AGENTS_README.md`, `GLOBAL_RULES_AND_ROUTING.md` (historical; `AGENT_REPORTING_GUIDE.md` removed — use **`Cursor-Project/reports/README.md`**)
 - `BUG_FINDER_AGENT.md`, `TEST_CASE_GENERATOR_AGENT.md`, `JIRA_DESCRIPTION_WRITER_AGENT.md`, `EnergoTSTestAgent_README.md`
 - `GITLAB_UPDATE_AGENT.md`, `INTEGRATION_SERVICE_CONFIG.md`, `ENVIRONMENT_SETUP.md` (IntegrationService sections)
 - `POSTMAN_COLLECTION_GENERATOR.md`, `README_TEST_AGENT.md`, `Q&A_MODE_ASSESSMENT.md`

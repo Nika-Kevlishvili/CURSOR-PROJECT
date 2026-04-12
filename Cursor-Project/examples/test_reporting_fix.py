@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-LEGACY: Requires removed Cursor-Project/agents/. Reports: Cursor-Project/reports/YYYY-MM-DD/ (AGENT_SUBAGENT_MAP.md).
+LEGACY: Requires removed Cursor-Project/agents/. Reports: Cursor-Project/reports/ per README (AGENT_SUBAGENT_MAP.md).
 
 Test script to verify automatic report generation fixes
 """

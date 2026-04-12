@@ -17,9 +17,9 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 | Subagent | File | Maps to | Purpose |
 |----------|------|---------|---------|
 | **Phoenix Q&A** | `phoenix-qa.md` | PhoenixExpert (Rule 0.2) | Answer Phoenix questions from Confluence (MCP) + codebase. READ-ONLY. |
-| **Bug Validator** | `bug-validator.md` | BugFinderAgent (Rule 32) | Validate bug: Confluence first, then codebase; save report to **`Cursor-Project/reports/YYYY-MM-DD/BugValidation_*.md`**. READ-ONLY. |
+| **Bug Validator** | `bug-validator.md` | BugFinderAgent (Rule 32) | Validate bug: Confluence first, then codebase; save under **Chat reports** per **`Cursor-Project/reports/README.md`**. READ-ONLY. |
 | **Test Runner** | `test-runner.md` | TestAgent (Rule 8, 17) | Run tests; consult PhoenixExpert first; report results. |
-| **Report Generator** | `report-generator.md` | Rule 0.6 | Save agent report + summary to `Cursor-Project/reports/YYYY-MM-DD/` (markdown via file tools; no Python ReportingService). |
+| **Report Generator** | `report-generator.md` | Rule 0.6 | Save markdown per **`Cursor-Project/reports/README.md`** (no Python ReportingService). |
 | **Database Query** | `database-query.md` | database_workflow.mdc | Run PostgreSQL MCP queries; correct env (Dev/Test/Prod); connect first; contract/POD patterns. |
 | **Production Data Reader** | `production-data-reader.md` | ProductionDataReaderAgent (Rule PDR.0) | Read production database data; analyze liability offsets, receivable history; explain step-by-step creation process. READ-ONLY. |
 | **Git Sync** | `git-sync.md` | GitLabUpdateAgent / git_sync_workflow.mdc | Sync/update/checkout Phoenix repos from GitLab; READ-ONLY (fetch/checkout/merge only). |
@@ -36,7 +36,7 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 - **PhoenixExpert** → Cursor subagent **phoenix-qa**: same “Phoenix Q&A” role; subagent runs in isolated context.
 - **BugFinderAgent** → Cursor subagent **bug-validator**: same Rule 32 workflow (Confluence → code → report).
 - **TestAgent** → Cursor subagent **test-runner**: same “run tests + consult PhoenixExpert” pattern.
-- **Rule 0.6 reporting** → Cursor subagent **report-generator**: save markdown report + summary under `Cursor-Project/reports/YYYY-MM-DD/`.
+- **Rule 0.6 reporting** → Cursor subagent **report-generator**: save markdown per **`Cursor-Project/reports/README.md`**.
 - **Database workflow** (Rule DB.0–DB.5) → Cursor subagent **database-query**: same env selection and query patterns.
 - **GitLabUpdateAgent** / **git_sync_workflow.mdc** → Cursor subagent **git-sync**: same sync/update/checkout workflow; read-only.
 - **Delegated CLI / Task `shell`** → Cursor subagent **shell**: terminal work in isolation; use **git-sync** when the task is full Phoenix GitLab sync.

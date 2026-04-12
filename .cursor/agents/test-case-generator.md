@@ -108,7 +108,7 @@ Update `test_cases/README.md`, `test_cases/Backend/README.md`, and `test_cases/F
 
 - **READ-ONLY** for Phoenix code: only read Confluence and codebase; do not modify production code.
 - All output in **English** (Rule 0.7).
-- If Rule 0.6 applies, save markdown reports under `Cursor-Project/reports/YYYY-MM-DD/` after generation.
+- Save markdown under **Chat reports** per **`Cursor-Project/reports/README.md`** only if the user asks for a run log (Rule 0.6 default: not required).
 
 ## Output
 

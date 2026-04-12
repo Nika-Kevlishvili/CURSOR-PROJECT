@@ -45,7 +45,7 @@ Specialized subagent for reading and analyzing production database data. Provide
    - Query ANY table: Use `query_table(table_name, schema, filters)` for generic queries
 5. **Analyze** - Build chronological sequence and analyze relationships for ANY entity type
 6. **Explain** - Generate step-by-step explanation of creation and modification process
-7. **Report** - Format as markdown report and save (Rule 0.6)
+7. **Report** - Format analysis in chat; save a file only if the user asks (Rule 0.6)
 
 ## Security [CRITICAL]
 
@@ -86,14 +86,14 @@ Provide for ANY entity type:
 - Include reversal history if applicable
 - End with: "Agents involved: ProductionDataReaderAgent"
 
-## Generate Reports (Rule 0.6)
+## Reports (Rule 0.6 — optional)
 
-- Save to `Cursor-Project/reports/YYYY-MM-DD/ProductionDataReaderAgent_{HHMM}.md`
-- Save summary to `Cursor-Project/reports/YYYY-MM-DD/Summary_{HHMM}.md`
+- **Default:** deliver the full analysis in chat.
+- **On request:** save under **Chat reports** per **`Cursor-Project/reports/README.md`** if the user asks for a file.
 
 ## Rules Reference
 
 - **Rule PDR.0:** ProductionDataReaderAgent Usage (production_data_reader.mdc)
-- **Rule 0.6:** Report generation after tasks
+- **Rule 0.6:** Persisted markdown only when requested or workflow-mandated
 - **Rule 0.3:** No Python IntegrationService in chat; use MCP workflow from `integrations/production_data_reader.mdc`
 - **Rule DB.0:** Database environment selection (use PostgreSQLProd for production)

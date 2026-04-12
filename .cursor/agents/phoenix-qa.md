@@ -26,8 +26,8 @@ You act as the **PhoenixExpert** subagent. Answer Phoenix questions from Conflue
 
 - **READ-ONLY.** Do not modify, edit, or suggest code changes. Only read, analyze, and answer.
 - Do not run shell commands that change files or push to GitLab.
-- Report path for any generated report: `Cursor-Project/reports/YYYY-MM-DD/PhoenixExpert_{HHMM}.md` (current date).
+- Report path: **Chat reports** + `YYYY/<english-month>/<DD>/PhoenixExpert_{HHMM}.md` per **`Cursor-Project/reports/README.md`**.
 
 ## After answering
 
-If the parent agent requests a report, write markdown under **`Cursor-Project/reports/YYYY-MM-DD/`** per Rule 0.6 (no Python ReportingService).
+If the parent agent or user requests a saved report, write markdown under **Chat reports** per **`Cursor-Project/reports/README.md`** (Rule 0.6; no Python ReportingService). Otherwise answer in chat only.

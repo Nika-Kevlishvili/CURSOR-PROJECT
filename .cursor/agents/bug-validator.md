@@ -53,7 +53,7 @@ You act as the **BugFinderAgent** subagent. Validate bug reports per Rule 32: Co
 
 ### Step 5: Report file
 
-- Save markdown to **Cursor-Project/reports/YYYY-MM-DD/BugValidation_[DescriptiveName].md** (use current date).
+- Save markdown to **Chat reports** as `…/YYYY/<english-month>/<DD>/BugValidation_[DescriptiveName].md` per **`Cursor-Project/reports/README.md`**.
 - Include expected behavior, Confluence validation, code analysis, final verdict with reasoning.
 - Include code references (paths + lines) and next steps based on verdict.
 - You may suggest next actions based on verdict; do **not** implement code changes during validation.

@@ -28,7 +28,7 @@ Use this command when the user asks to:
 4. **Codebase** – Search for terms from the prompt; collect codebase_findings.
 5. **Generate** – Call TestCaseGeneratorAgent with `prompt`, `prompt_type` ('bug'|'task'), `confluence_data`, and `context={'codebase_findings': ..., 'cross_dependency_data': <from Step 1>}` (generator MUST have loaded the Playwright instruction pack in step 0).
 6. **Save** – Write test cases as **two separate files**: `Cursor-Project/test_cases/Backend/<Topic_name>.md` (TC-BE-N only) and `Cursor-Project/test_cases/Frontend/<Topic_name>.md` (TC-FE-N only).
-7. **Report** – Generate reports (Rule 0.6).
+7. **Report (optional)** – Save markdown under `reports/` only if the user asks for a run log; otherwise summarize in chat (Rule 0.6 default).
 
 ## Output – Structure and content (MANDATORY)
 
@@ -66,11 +66,6 @@ This applies to both generic flow and HandsOff — all test cases go to `Cursor-
 - State "**Agent:** TestCaseGeneratorAgent" at beginning when applicable.
 - Return the generated test cases and the paths where they were saved (e.g. `test_cases/Backend/Invoice_cancellation.md` and `test_cases/Frontend/Invoice_cancellation.md`).
 - End with: "Agents involved: TestCaseGeneratorAgent, CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
-
-## Generate Reports (Rule 0.6)
-
-- Save to `Cursor-Project/reports/YYYY-MM-DD/TestCaseGeneratorAgent_{HHMM}.md`
-- Save summary to `Cursor-Project/reports/YYYY-MM-DD/Summary_{HHMM}.md`
 
 ## Example Triggers
 

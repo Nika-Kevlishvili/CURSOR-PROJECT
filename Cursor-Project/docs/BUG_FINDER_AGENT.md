@@ -1,6 +1,6 @@
 # BugFinderAgent - Bug Validation Agent
 
-> **Current locations:** Cursor → **`.cursor/agents/bug-validator.md`**, **`.cursor/skills/phoenix-bug-validation/SKILL.md`**. Reports → **`Cursor-Project/reports/YYYY-MM-DD/BugValidation_*.md`**. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. The following sections describe the **removed** Python agent; behavior is implemented in chat per Rule 32.
+> **Current locations:** Cursor → **`.cursor/agents/bug-validator.md`**, **`.cursor/skills/phoenix-bug-validation/SKILL.md`**. Reports → **`Cursor-Project/reports/README.md`** (Chat reports + `YYYY/<english-month>/<DD>/`). Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. The sections below describe the **removed** Python agent; behavior is implemented in chat per Rule 32.
 
 ## Overview
 
@@ -28,7 +28,7 @@ The agent follows a strict 4-step workflow (Rule 32):
    - Provide detailed analysis with conclusions
 
 4. **Report Generation**
-   - Create markdown report file in **`Cursor-Project/reports/YYYY-MM-DD/BugValidation_[BugName].md`**
+   - Create markdown report file under **Chat reports** per **`Cursor-Project/reports/README.md`**: `…/BugValidation_[BugName].md`
    - Include all findings, code references, and conclusions
    - **CRITICAL: READ-ONLY mode - NO code modifications during validation**
 
@@ -151,4 +151,4 @@ BugFinderAgent is located in `agents/Main/` as it's a primary agent providing co
 
 ## Reporting
 
-In this workspace, reports are **markdown files** under **`Cursor-Project/reports/YYYY-MM-DD/`** (Rule 0.6), not a Python ReportingService.
+In this workspace, reports are **markdown files** under **`Cursor-Project/reports/`** per **`Cursor-Project/reports/README.md`** (Rule 0.6), not a Python ReportingService.

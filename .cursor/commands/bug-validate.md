@@ -63,7 +63,7 @@ ALL bug validation requests MUST be handled by BugFinderAgent - NO EXCEPTIONS.
 - **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed
 - Consult PhoenixExpert for context
 - Use READ-ONLY mode (no code modifications)
-- Generate reports (Rule 0.6)
+- Save **`BugValidation_[DescriptiveName].md`** under **Chat reports** with `YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`** (Rule 32 — Rule 0.6 **exception**). No extra Summary/agent files unless the user requests them.
 
 ## 5-Verdict Decision Matrix:
 

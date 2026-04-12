@@ -91,8 +91,9 @@ alwaysApply: true
     - All errors MUST be logged with full context.
     - Violation prevents proper error diagnosis.
     
-30. [CRITICAL] Cursor AI MUST NEVER skip report generation after task completion (see Rule 0.6).
-    - Violation is a CRITICAL SYSTEM ERROR.
+30. [CRITICAL] Cursor AI MUST NEVER skip **mandated** report-file steps when Rule 0.6 **exceptions** apply (e.g. Rule 32 → BugValidation under **Chat reports** with `YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`**, Rule 37 → `{JIRA_KEY}.md` under **HandsOff reports** with the same date hierarchy) or when the user explicitly requested a saved report.
+    - Omitting **optional** disk reports after routine tasks is **not** a violation (see Rule 0.6 default).
+    - Violation is a CRITICAL SYSTEM ERROR only when a required workflow artifact or explicit user file request is skipped.
     
 31. [CRITICAL] Cursor AI MUST follow Rule 0.8 path tiers (`.cursor/rules/main/core_rules.mdc`): never edit Phoenix; never edit EnergoTS except EnergoTSTestAgent in `tests/` only; may edit other paths when user requests.
     - Violation is a CRITICAL SYSTEM ERROR.

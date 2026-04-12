@@ -95,7 +95,7 @@ Regression/impact cases (from what_could_break) go in whichever file (Backend or
 
 - **Rule 0.3:** no Python IntegrationService here.
 - PhoenixExpert if needed (reuse context from cross-dependency-finder when provided).
-- Markdown reports after generation if Rule 0.6 applies (no Python ReportingService).
+- Optional markdown under `reports/` only if the user requests a saved run log (Rule 0.6 default; no Python ReportingService).
 - End with: "Agents involved: TestCaseGeneratorAgent, CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
 
 ## Command and references

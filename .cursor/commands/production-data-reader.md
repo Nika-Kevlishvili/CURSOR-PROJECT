@@ -36,10 +36,10 @@ Route ALL production database data questions to ProductionDataReaderAgent (Rule 
 - Include reversal history if applicable
 - End with: "Agents involved: ProductionDataReaderAgent"
 
-## Generate Reports (Rule 0.6):
+## Reports (Rule 0.6 — optional):
 
-- Save to `Cursor-Project/reports/YYYY-MM-DD/ProductionDataReaderAgent_{HHMM}.md`
-- Save summary to `Cursor-Project/reports/YYYY-MM-DD/Summary_{HHMM}.md`
+- **Default:** full analysis in chat only.
+- **On request:** save to **Chat reports** per **`Cursor-Project/reports/README.md`** if the user asks for a persisted report.
 
 ## Example Queries:
 

@@ -88,7 +88,7 @@ Return a **validation result** object (or equivalent) with:
 
 - **READ-ONLY:** Do not modify the spec or any test case files. Only read and analyze.
 - All output (issues, summary, suggestions) in **English** (Rule 0.7).
-- If reporting is required (Rule 0.6), the orchestrator is responsible for saving the validator’s result in the report; you may return the structured result only.
+- If the HandsOff orchestrator (Rule 37) or the user requires a saved report, the orchestrator saves the validator’s result in `{JIRA_KEY}.md`; you may return the structured result only.
 
 ## After Validation
 

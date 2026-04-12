@@ -41,7 +41,7 @@ Use this file as the **single map** from “agent role” to **where it lives to
 
 | Artifact | Path |
 |----------|------|
-| Reports (Rule 0.6) | **`Cursor-Project/reports/YYYY-MM-DD/`** |
+| Reports (Rule 0.6) | **`Cursor-Project/reports/README.md`** — each area uses **`YYYY/<english-month>/<DD>/`** before filenames |
 | Test cases | **`Cursor-Project/test_cases/Objects/`**, **`Cursor-Project/test_cases/Flows/`** |
 | Playwright (automation branch) | **`Cursor-Project/EnergoTS/tests/cursor/`** |
 | Templates | **`Cursor-Project/config/template/`** |

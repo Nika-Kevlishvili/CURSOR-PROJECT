@@ -134,7 +134,7 @@ Reference: `.cursor/commands/energo-ts-test.md` (HandsOff bridge section); `.cur
 ## After Task Completion
 
 1. Summarize what was done (test created/modified/analyzed).
-2. If Rule 0.6 applies, write markdown under **Cursor-Project/reports/YYYY-MM-DD/** (no Python ReportingService).
+2. Optional: write markdown under **Chat reports** per **`Cursor-Project/reports/README.md`** if the user requests a file (Rule 0.6 default: summarize in chat only; no Python ReportingService).
 3. End with **Agents involved: EnergoTSTestAgent** (and PhoenixExpert if consulted).
 
 ## Constraints

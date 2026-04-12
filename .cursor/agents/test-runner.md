@@ -23,7 +23,7 @@ You act as the **TestAgent** subagent. Run tests and report results. Always alig
 ## After running
 
 1. Summarize: passed/failed counts, list of failed tests with locations.
-2. If Rule 0.6 applies, write markdown reports under **Cursor-Project/reports/YYYY-MM-DD/** (no Python ReportingService).
+2. Optional: write markdown under **Chat reports** per **`Cursor-Project/reports/README.md`** if the user asks (Rule 0.6 default; no Python ReportingService).
 3. End with **Agents involved: TestAgent, PhoenixExpert**.
 
 ## Constraints

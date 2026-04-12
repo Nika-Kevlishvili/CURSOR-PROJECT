@@ -24,7 +24,7 @@ Use this command when the user asks about:
 3. **Define scope** – From bug/task/feature description: entry points, modules, services in scope.
 4. **Find cross-dependencies** – Codebase (imports, API clients, DB, callers, consumers) + **Confluence (MCP) shallow only:** one search/CQL, snippets/titles; at most **one** full page if clearly primary — **no** deep wiki walks. Identify **what could break** (callers, consumers, contract usage).
 5. **Output** – Structured report: scope, entry_points, upstream, downstream, shared, data_entities, integration_points, **what_could_break**, **technical_details** (from merges when Jira/bug/task was provided).
-6. **Report** – If Rule 0.6 applies, save markdown under `Cursor-Project/reports/YYYY-MM-DD/` after the run (no Python ReportingService).
+6. **Report (optional)** – Save markdown under **Chat reports** (`YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`**) only if the user asks for a file; otherwise return the structured output in chat (Rule 0.6 default; no Python ReportingService).
 
 ## Output Format
 
@@ -48,11 +48,6 @@ This output is passed to **test-case-generator** as `context['cross_dependency_d
 - State "**Agent:** CrossDependencyFinderAgent" at beginning when applicable.
 - Return the cross-dependency report (and file path if saved).
 - End with: "Agents involved: CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
-
-## Generate Reports (Rule 0.6)
-
-- Save to `Cursor-Project/reports/YYYY-MM-DD/CrossDependencyFinderAgent_{HHMM}.md`
-- Save summary to `Cursor-Project/reports/YYYY-MM-DD/Summary_{HHMM}.md` when required.
 
 ## Example Triggers
 

@@ -104,7 +104,7 @@ The agent is exposed as a Cursor subagent in:
 
 - **READ-ONLY:** No modification of production code; only read Confluence and codebase.
 - All output in **English** (Rule 0.7).
-- Reporting per Rule 0.6 when required: save markdown under **`Cursor-Project/reports/YYYY-MM-DD/`** (no Python ReportingService).
+- Reporting per Rule 0.6 when required: save markdown under **Chat reports** per **`Cursor-Project/reports/README.md`** (no Python ReportingService).
 
 ## File organisation
 

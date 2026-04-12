@@ -91,12 +91,12 @@ Reference: `.cursor/commands/energo-ts-run.md`, Rule 36, `.cursor/rules/workflow
 ### Step 6: Build and save report (Step 9 – part 1)
 
 1. **Report filename** = `{JIRA_KEY}.md` (e.g. `REG-123.md`).
-2. **Report content** (English, Rule 0.7) – **ONLY Playwright test results** (see `.cursor/rules/workflows/handsoff_playwright_report.mdc`). For the **Slack message** (Step 7), build content using the **Slack report template**: **`Cursor-Project/config/template/Slack_report_template.md`**. The template defines: header (`{JIRA_KEY} – Playwright test results`), Jira/Title/Date/Assignee/Tester, Total passed/failed/skipped, separator, then per test: Test N, Test description, Expected result, Actual result, Test result. Fill all placeholders from Jira and Playwright run. The saved file **`Cursor-Project/reports/YYYY-MM-DD/{JIRA_KEY}.md`** may use the same structure (recommended so Slack and file stay in sync).
+2. **Report content** (English, Rule 0.7) – **ONLY Playwright test results** (see `.cursor/rules/workflows/handsoff_playwright_report.mdc`). For the **Slack message** (Step 7), build content using the **Slack report template**: **`Cursor-Project/config/template/Slack_report_template.md`**. The template defines: header (`{JIRA_KEY} – Playwright test results`), Jira/Title/Date/Assignee/Tester, Total passed/failed/skipped, separator, then per test: Test N, Test description, Expected result, Actual result, Test result. Fill all placeholders from Jira and Playwright run. The saved file **`Cursor-Project/reports/HandsOff reports/…/YYYY/<english-month>/<DD>/{JIRA_KEY}.md`** (segments per **`Cursor-Project/reports/README.md`**) may use the same structure (recommended so Slack and file stay in sync).
    - Optional in file: spec path and how to run (e.g. `npx playwright test --grep "<JIRA_KEY>"`).
    - Do NOT fill the report with cross-deps, artifact lists, or long non–test-result sections.
-3. **Save** the report to `Cursor-Project/reports/YYYY-MM-DD/{JIRA_KEY}.md` (use current date).
+3. **Save** the report to **`HandsOff reports`** under **`YYYY/<english-month>/<DD>/{JIRA_KEY}.md`** per **`Cursor-Project/reports/README.md`**.
 
-Reference: `Cursor-Project/config/template/Slack_report_template.md`; save reports as markdown under **`Cursor-Project/reports/YYYY-MM-DD/`** per Rule 0.6 (no Python `ReportingService` in this workspace).
+Reference: `Cursor-Project/config/template/Slack_report_template.md`; Rule 37 — Rule 0.6 exception; no Python `ReportingService` in this workspace.
 
 ### Step 7: Send report to Slack (Step 9 – part 2)
 
@@ -135,10 +135,10 @@ Reference: `.cursor/rules/workflows/handsoff_playwright_report.mdc` §7.
 - At the end, summarize: Jira key, tests run, pass/fail counts, report path, and that the report was sent to Slack only to Tester (DM) and #ai-report (never to Assignee or anyone else; or only to #ai-report if no Tester).
 - End with: **"Agents involved: HandsOff (orchestrator), CrossDependencyFinderAgent, TestCaseGeneratorAgent, EnergoTSTestAgent, PlaywrightTestValidatorAgent, EnergoTS Playwright Test Runner"** (and PhoenixExpert if consulted).
 
-## Generate Reports (Rule 0.6)
+## Report file (Rule 37 / Rule 0.6 exception)
 
-- The HandsOff run report is saved as `Cursor-Project/reports/YYYY-MM-DD/{JIRA_KEY}.md` with test results.
-- Optionally save an agent/summary report for the orchestrator run to the same date folder (e.g. `HandsOff_Summary_{HHMM}.md`) using markdown file tools — no Python ReportingService.
+- **Required:** `HandsOff reports/…/YYYY/<english-month>/<DD>/{JIRA_KEY}.md` per **`Cursor-Project/reports/README.md`** with Playwright test results (for Slack and audit).
+- **Optional:** extra orchestrator notes in the same folder only if useful — no Python ReportingService.
 
 ## Example Triggers
 
