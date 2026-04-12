@@ -10,7 +10,7 @@ All paths: **`Cursor-Project/reports/Chat reports/YYYY/<english-month>/<DD>/…`
 
 - User asks for a report, export, or “save to reports”.
 - This **`/report`** command is invoked.
-- A workflow **mandates** a file (e.g. Rule 32 BugValidation, Rule 37 HandsOff — those follow the same README layout under their area).
+- **Rule 37 (HandsOff)** mandates **`{JIRA_KEY}.md`** under **HandsOff reports** (not via this command — see `hands-off.md`). Rule 32 bug validation does **not** mandate a disk file; use this command or an explicit save request if the user wants `BugValidation_*.md` in **Chat reports**.
 
 **Do not** create `Summary_*.md` / per-agent files after every routine task unless the user wants them.
 

@@ -27,9 +27,10 @@ ALL bug validation requests MUST be handled by BugFinderAgent - NO EXCEPTIONS.
 - Use evidence + behavior to determine verdict
 - Apply one of 5 verdicts: VALID / NEEDS CLARIFICATION / NEEDS APPROVAL / NOT VALID / INSUFFICIENT EVIDENCE
 
-### Step 5: Generate Report with Verdict
-- Combine all findings with clear verdict and reasoning
-- Include actionable next steps based on verdict
+### Step 5: Deliver verdict (chat; file only on request)
+- Combine all findings with clear verdict and reasoning in the **chat reply** (full structured markdown).
+- Include actionable next steps based on verdict.
+- **Disk:** Save `BugValidation_[DescriptiveName].md` under **Chat reports** only if the user runs **`/report`** or explicitly asks to save; otherwise no file (Rule 0.6).
 
 ## Response Structure:
 
@@ -63,7 +64,7 @@ ALL bug validation requests MUST be handled by BugFinderAgent - NO EXCEPTIONS.
 - **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed
 - Consult PhoenixExpert for context
 - Use READ-ONLY mode (no code modifications)
-- Save **`BugValidation_[DescriptiveName].md`** under **Chat reports** with `YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`** (Rule 32 — Rule 0.6 **exception**). No extra Summary/agent files unless the user requests them.
+- Do **not** save a BugValidation file unless the user runs **`/report`** or explicitly requests a saved report under **Chat reports** (per **`Cursor-Project/reports/README.md`**). No Summary/agent files unless explicitly requested.
 
 ## 5-Verdict Decision Matrix:
 

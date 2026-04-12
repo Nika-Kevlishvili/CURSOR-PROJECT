@@ -13,7 +13,7 @@ alwaysApply: true
 32. [CRITICAL] When analyzing bug reports or bug validation requests, ALWAYS follow the **BugFinder workflow** below (same behavior as the former BugFinderAgent; no Python package in this workspace).
     
     **MANDATORY: BugFinder workflow**
-    - ALL bug validation requests MUST follow this workflow in Cursor (Confluence MCP + codebase + report file)
+    - ALL bug validation requests MUST follow this workflow in Cursor (Confluence MCP + codebase + full analysis **in chat**; disk file only if the user runs **`/report`** or explicitly asks to save under **Chat reports** — Rule 0.6)
     - Do **not** rely on `from agents.Main import get_bug_finder_agent` — `Cursor-Project/agents/` was removed
     - Execute the steps yourself; this ensures consistent, structured bug validation with proper reporting
     
@@ -59,12 +59,9 @@ alwaysApply: true
     - Use clear structure: "1. Expected Behavior", "2. Confluence Validation", "3. Code Analysis", "4. Final Verdict"
     - Format the report in markdown using the structure in **Example Response Structure** below (no Python formatter)
     
-    **Step 5: Generate Report File**
-    - Create markdown report file under **Chat reports** using layout `YYYY/<english-month>/<DD>/BugValidation_[BugName].md` per **`Cursor-Project/reports/README.md`**
-    - Include all findings from Expected Behavior, Confluence and Code analysis
-    - Include final verdict with reasoning
-    - Include code references with file paths and line numbers
-    - Include next steps but DO NOT implement code changes during validation
+    **Step 5: Deliver results (chat; optional disk)**
+    - **Required:** Reply in chat with the full structured analysis (same content as the former report file): Expected Behavior, Confluence validation, Code analysis, verdict, code references (paths + lines), next steps. Do **not** implement code changes during validation.
+    - **Optional disk file:** Only if the user runs **`/report`** or **explicitly** asks to save the validation to **Chat reports** — then write `…/YYYY/<english-month>/<DD>/BugValidation_[BugName].md` per **`Cursor-Project/reports/README.md`**. Otherwise do **not** create `BugValidation_*.md` automatically.
     
     **DECISION MATRIX - 5 VERDICTS:**
     
@@ -101,7 +98,7 @@ alwaysApply: true
     - ALWAYS check codebase THIRD  
     - ALWAYS apply the 5-verdict decision matrix FOURTH
     - ALWAYS provide all validations in response with clear verdict
-    - ALWAYS create the BugValidation report file under **Chat reports** per **`Cursor-Project/reports/README.md`** (reuse `…/YYYY/<english-month>/<DD>/` when that **real save-day** folder already exists)
+    - Do **NOT** automatically create a BugValidation file on disk; chat output satisfies Step 5 unless the user requests **`/report`** or an explicit save (Rule 0.6)
     - NEVER skip any step
     - NEVER modify code during validation (READ-ONLY mode)
     - NEVER attempt to fix bugs unless explicitly requested AFTER validation
@@ -136,14 +133,14 @@ alwaysApply: true
     ```
     
     **Important Notes:**
-    - Report file MUST be saved under **Chat reports** with path segments per **`Cursor-Project/reports/README.md`**: `…/BugValidation_[DescriptiveName].md`
-    - Report MUST include all code references with file paths and line numbers
-    - Report MUST NOT include code modifications - only analysis and documentation
+    - If (and only if) the user requested a saved file or **`/report`**: write **`…/BugValidation_[DescriptiveName].md`** under **Chat reports** per **`Cursor-Project/reports/README.md`**, with the same content quality as the chat analysis
+    - Chat (or file, when written) MUST include code references with file paths and line numbers
+    - Do NOT include code modifications — analysis and documentation only
     - If user wants to fix the bug, they will request it separately AFTER validation
     
     **Why this workflow:**
     - Ensures consistent bug validation
-    - Integrates Confluence + codebase + mandatory BugValidation report file (Rule 32; Rule 0.6 exception)
+    - Integrates Confluence + codebase + mandatory written analysis in chat (Rule 32); disk file only on user **`/report`** or explicit save request (Rule 0.6)
     - Follows all critical rules (0.3, 0.4) as applicable in Cursor chat
     
     Violation is a CRITICAL SYSTEM ERROR.

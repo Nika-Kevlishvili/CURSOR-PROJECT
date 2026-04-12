@@ -164,6 +164,6 @@ When database queries are needed:
 2. Execute queries using standard patterns (Rule DB.2)
 3. Format results clearly for user
 4. Include all relevant contract and POD information
-5. Save a markdown file under `reports/` only if the user asks or a workflow mandates it (Rule 0.6 — optional by default)
+5. Save a markdown file under `reports/` only if the user asks or runs **`/report`** — not automatically (Rule 0.6; HandsOff reports are separate from DB queries)
 
 **Violation of database workflow rules is a CRITICAL SYSTEM ERROR.**

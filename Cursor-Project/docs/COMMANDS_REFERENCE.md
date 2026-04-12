@@ -156,7 +156,7 @@ This document lists every Cursor command and what it can do in detail.
 - Save summary: **`…/Chat reports/<segment>/Summary_{HHMM}.md`**.
 - Use **`Cursor-Project/reports/README.md`** for folder reuse vs creation.
 
-**When to use:** When you want a persisted run log or summary — **not** automatically after every chat task. Workflow-mandated files (e.g. BugValidation, HandsOff `{JIRA_KEY}.md`) follow their own rules.
+**When to use:** When you want a persisted run log or summary — **not** automatically after every chat task. **HandsOff** alone mandates `{JIRA_KEY}.md` under **HandsOff reports**. Bug validation does **not** auto-save `BugValidation_*.md`; use **`/report`** or ask explicitly.
 
 ---
 
@@ -169,7 +169,7 @@ This document lists every Cursor command and what it can do in detail.
 - **Step 1 – Confluence:** Search Confluence via MCP; check if bug description matches docs; report correct/incorrect/partially correct.
 - **Step 2 – Code:** Search codebase; check if implementation matches expected behavior; report satisfies/does not satisfy.
 - **Step 3 – Conclusion:** Combine findings; conclude if bug is valid; suggest fix but do not implement (read-only).
-- Save report to **Chat reports** `…/<segment>/BugValidation_{Name}.md` per **`Cursor-Project/reports/README.md`**.
+- Full analysis in chat; save **`BugValidation_{Name}.md`** under **Chat reports** only if the user runs **`/report`** or explicitly requests a file (per **`Cursor-Project/reports/README.md`**).
 
 **When to use:** Validate a bug report against Confluence and code before any fix.
 

@@ -5,7 +5,7 @@ description: Validates bug reports using Rule 32 workflow: Confluence first, the
 
 # Phoenix Bug Validation
 
-Ensures bug validation follows **Rule 32** in `.cursor/rules/workflows/workflow_rules.mdc`: Confluence → codebase → analysis → report. **READ-ONLY** — no code changes during validation.
+Ensures bug validation follows **Rule 32** in `.cursor/rules/workflows/workflow_rules.mdc`: Confluence → codebase → analysis → **full reply in chat**. **READ-ONLY** — no code changes during validation. Persisted `BugValidation_*.md` only if the user runs **`/report`** or explicitly asks to save.
 
 ## When to Apply
 
@@ -51,11 +51,10 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
 
 - Structure: "1. Expected Behavior", "2. Confluence Validation", "3. Code Analysis", "4. Final Verdict".
 
-### Step 5: Report file
+### Step 5: Results (chat; optional file)
 
-- Save markdown under **Chat reports**: `…/YYYY/<english-month>/<DD>/BugValidation_[DescriptiveName].md` per **`Cursor-Project/reports/README.md`**.
-- Include expected behavior, Confluence validation, code analysis, final verdict with reasoning, code references (paths + lines).
-- Include next steps based on verdict; do not implement code changes during validation.
+- **Required:** Post the full structured analysis in **chat** (expected behavior, Confluence validation, code analysis, verdict, paths/lines, next steps). Do not implement code changes during validation.
+- **Optional:** If the user runs **`/report`** or explicitly asks to save → write `…/YYYY/<english-month>/<DD>/BugValidation_[DescriptiveName].md` under **Chat reports** per **`Cursor-Project/reports/README.md`**.
 
 ## READ-ONLY
 
@@ -66,7 +65,7 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
 
 - **Rule 0.3:** follow MCP/Jira when needed — no Python IntegrationService here.
 - Consult PhoenixExpert for context when needed.
-- Persisted **`BugValidation_*.md`** per Rule 32 (Rule 0.6 workflow exception).
+- **Rule 0.6:** No automatic `BugValidation_*.md`; file only on **`/report`** or explicit save request.
 - End with: "Agents involved: BugFinderAgent (workflow), PhoenixExpert" (or as applicable).
 
 ## Decision Matrix Details

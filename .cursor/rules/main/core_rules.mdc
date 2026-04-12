@@ -43,16 +43,15 @@ alwaysApply: true
    - Confluence checked FRESH every time - never use cache
    - Violation is a CRITICAL SYSTEM ERROR
    
-   ### Rule 0.6: Report Files (Optional by Default; Exceptions)
-   - **Default:** Do **NOT** automatically create markdown report files (`Summary_{HHMM}.md`, `{AgentName}_{HHMM}.md`, or similar) after routine tasks, Q&A, or general chat interactions. Summarize in the chat reply instead.
-   - **When you MUST still write a report file:** When a **specific workflow** or user request mandates a persisted artifact under **`Cursor-Project/reports/`**, including at least:
-     - **Rule 32 (bug validation):** BugFinder → `BugValidation_[DescriptiveName].md` under **Chat reports** (path layout below)
-     - **Rule 37 (HandsOff):** `{JIRA_KEY}.md` under **HandsOff reports** (path layout below; Slack steps use that file)
-     - **User explicit request** or **`/report`** → default area **Chat reports/**
-     - **Feedback** exports (when the user asks) → **Feedback/** area
-   - **Optional ad-hoc reports:** If the user asks for a written run log, analysis export, or “save this to reports”, use editor/file tools — **no** Python `ReportingService` in this workspace
-   - **Path layout (MANDATORY):** `Cursor-Project/reports/<Chat reports|HandsOff reports|Feedback>/YYYY/<english-month>/<DD>/<filename>.md` — resolve `YYYY`, `<english-month>`, and **`<DD>`** (real calendar day of save, zero-padded) **only** per **`Cursor-Project/reports/README.md`** (reuse existing `YYYY/month/DD` folders for that same day; create missing segments otherwise). Filenames: e.g. `{AgentName}_{HHMM}.md`, `Summary_{HHMM}.md`, `BugValidation_*.md`, `{JIRA_KEY}.md` for HandsOff
-   - **Violation:** Treat as critical only when a **mandated workflow step** (e.g. Rule 32/37) or an **explicit user request** for a file is skipped — not when you omit optional post-task summaries on disk
+   ### Rule 0.6: Report Files (Disk Only When Explicit or HandsOff)
+   - **Default:** Do **NOT** create markdown report files under **`Cursor-Project/reports/`** after routine tasks, Q&A, bug validation, test runs, or general chat. Put the full answer in the chat reply.
+   - **When you MUST write a persisted `.md` report file (narrow list):**
+     - **Rule 37 (HandsOff):** `{JIRA_KEY}.md` under **HandsOff reports** (path layout below; Slack/orchestrator steps use that file).
+     - **Chat reports area:** **Only** when the user runs **`/report`**, or **explicitly** asks to save/export/write a report to disk (same intent in any language). Then use **Chat reports** (or **Feedback/** if the user names that area). No other workflow may require a new report file on disk by default.
+   - **Bug validation (Rule 32):** Full analysis and verdict **in chat only** unless the user also runs **`/report`** or explicitly asks to save (e.g. `BugValidation_*.md` under **Chat reports**). Rule 32 does **not** mandate a disk file.
+   - **Optional other exports:** If the user explicitly asks for a written run log or “save this to reports”, use editor/file tools — **no** Python `ReportingService` in this workspace
+   - **Path layout (when a file is written):** `Cursor-Project/reports/<Chat reports|HandsOff reports|Feedback>/YYYY/<english-month>/<DD>/<filename>.md` — resolve segments per **`Cursor-Project/reports/README.md`** (reuse same-day folders; create missing segments only when writing a file). Example names: `Summary_{HHMM}.md`, `{JIRA_KEY}.md` (HandsOff), `BugValidation_*.md` (only if user requested persistence)
+   - **Violation:** Critical only if **Rule 37** file is skipped when HandsOff was run, or if the user ran **`/report`** / explicitly requested a saved file and it was omitted — not when you omit optional on-disk summaries
    
    ### Rule 0.7: MANDATORY English for Project Artifacts (Not Chat)
    - **In scope (English REQUIRED):** Anything **created or modified on disk** in this workspace — file/folder names, paths, code comments, repo docs, reports under `Cursor-Project/reports/`, test cases, user stories in `User story/`, config/templates, **`.cursor/`** content, and other **persisted** project text

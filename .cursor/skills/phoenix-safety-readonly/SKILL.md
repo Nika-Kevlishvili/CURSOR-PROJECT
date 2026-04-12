@@ -45,6 +45,6 @@ Summarizes what must never happen and what is read-only. Prevents Confluence/Git
 - Never answer Phoenix questions without PhoenixExpert (Rule 22).
 - Never skip "Agents involved" at end of response (Rule 24).
 - Never run destructive operations without explicit user command (Rule 25).
-- Never skip **mandated** report-file steps when Rule 30 applies (workflow exceptions or explicit user request); optional post-task disk reports are not required (Rule 0.6).
+- Never skip **mandated** report-file steps when Rule 30 applies (**Rule 37** HandsOff file, **`/report`**, or explicit save request); optional post-task disk reports are not required (Rule 0.6).
 
 Full list: `.cursor/rules/safety/safety_rules.mdc` and `.cursor/rules/main/core_rules.mdc` (Rule 0.8).

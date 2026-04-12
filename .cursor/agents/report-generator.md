@@ -1,7 +1,7 @@
 ---
 name: report-generator
 model: default
-description: Saves markdown reports under Cursor-Project/reports/ per Cursor-Project/reports/README.md when the user or parent requests a file or a workflow mandates it.
+description: Saves markdown under Cursor-Project/reports/ per reports/README.md only when the user/parent invokes **`/report`**, an explicit save request, or **Rule 37 (HandsOff)** — not after routine tasks or Rule 32 alone.
 ---
 
 # Report Generator Subagent
@@ -18,7 +18,7 @@ Write files under **`Cursor-Project/reports/`** using:
 
 - User or parent asks to save a report.
 - **`/report`** or equivalent.
-- Workflow mandates a file (BugValidation → **Chat reports**; HandsOff `{JIRA_KEY}.md` → **HandsOff reports**).
+- **Rule 37 (HandsOff)** mandates `{JIRA_KEY}.md` → **HandsOff reports**.
 
 **Do not** run automatically after every generic task.
 

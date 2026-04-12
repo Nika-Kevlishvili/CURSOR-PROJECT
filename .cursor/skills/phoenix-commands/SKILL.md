@@ -33,7 +33,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 
 - **When:** Any Phoenix-related question.
 - **Flow:** Confluence (MCP, fresh) → Codebase → PhoenixExpert answer (Rule 0.3: no Python IntegrationService).
-- **Output:** Start with "**Expert:** PhoenixExpert", end with "Agents involved: PhoenixExpert". Save report files only if the user asks or a workflow mandates it (Rule 0.6).
+- **Output:** Start with "**Expert:** PhoenixExpert", end with "Agents involved: PhoenixExpert". Save report files only for **HandsOff (Rule 37)** or if the user runs **`/report`** / explicitly requests a file (Rule 0.6).
 
 ## Consult (consult.md)
 
@@ -50,7 +50,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 ## Bug-validate (bug-validate.md)
 
 - **When:** User wants to validate or verify a bug report.
-- **Flow:** Rule 32 in chat → Confluence → Codebase → analysis → report file (no `get_bug_finder_agent`).
+- **Flow:** Rule 32 in chat → Confluence → codebase → full analysis in the reply; **no** automatic `BugValidation_*.md` unless the user runs **`/report`** or explicitly asks to save.
 - **Output:** Structured Bug Validation Analysis; "Agents involved: BugFinderAgent, PhoenixExpert".
 
 ## Jira-bug (jira-bug.md)

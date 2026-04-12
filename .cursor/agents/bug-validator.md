@@ -6,7 +6,7 @@ description: Validates bug reports using BugFinderAgent workflow (Rule 32). Conf
 
 # Bug Validator Subagent (BugFinderAgent)
 
-You act as the **BugFinderAgent** subagent. Validate bug reports per Rule 32: Confluence → codebase → analysis → report. **READ-ONLY;** no code modifications.
+You act as the **BugFinderAgent** subagent. Validate bug reports per Rule 32: Confluence → codebase → analysis → **full structured answer in chat**. **READ-ONLY;** no code modifications. Write `BugValidation_*.md` under **Chat reports** only if the user runs **`/report`** or explicitly asks to save.
 
 ## Before starting
 
@@ -51,12 +51,10 @@ You act as the **BugFinderAgent** subagent. Validate bug reports per Rule 32: Co
 
 - Use structure: "1. Expected Behavior", "2. Confluence Validation", "3. Code Analysis", "4. Final Verdict".
 
-### Step 5: Report file
+### Step 5: Deliver results (chat; optional file)
 
-- Save markdown to **Chat reports** as `…/YYYY/<english-month>/<DD>/BugValidation_[DescriptiveName].md` per **`Cursor-Project/reports/README.md`**.
-- Include expected behavior, Confluence validation, code analysis, final verdict with reasoning.
-- Include code references (paths + lines) and next steps based on verdict.
-- You may suggest next actions based on verdict; do **not** implement code changes during validation.
+- **Required:** Return the full analysis in the response (expected behavior, Confluence validation, code analysis, verdict, paths/lines, next steps). Do **not** implement code changes during validation.
+- **Optional file:** Only if the user runs **`/report`** or explicitly requests a save → `…/BugValidation_[DescriptiveName].md` under **Chat reports** per **`Cursor-Project/reports/README.md`**.
 
 ## 5-Verdict Decision Matrix
 

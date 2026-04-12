@@ -33,7 +33,7 @@ Ensures new files are saved in the correct directories (Rule 31 under `workspace
 
 ## Reports
 
-- **Chat reports:** optional session files — `{AgentName}_{HHMM}.md`, `Summary_{HHMM}.md`, `BugValidation_[Name].md`.
+- **Chat reports:** only when **`/report`** or explicit save — e.g. `Summary_{HHMM}.md`; `BugValidation_*.md` only if the user asks to persist after bug validation (Rule 32 default = chat only).
 - **HandsOff reports:** only `{JIRA_KEY}.md` (Rule 37).
 - **Feedback:** only when the user asks to save feedback here.
 

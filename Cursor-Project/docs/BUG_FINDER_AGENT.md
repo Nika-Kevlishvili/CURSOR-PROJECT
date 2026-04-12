@@ -27,9 +27,9 @@ The agent follows a strict 4-step workflow (Rule 32):
    - Determine if bug is valid (code differs from description)
    - Provide detailed analysis with conclusions
 
-4. **Report Generation**
-   - Create markdown report file under **Chat reports** per **`Cursor-Project/reports/README.md`**: `…/BugValidation_[BugName].md`
-   - Include all findings, code references, and conclusions
+4. **Deliver results**
+   - Post the full structured analysis in **chat** (findings, code references, verdict, conclusions).
+   - **Optional disk file:** `…/BugValidation_[BugName].md` under **Chat reports** per **`Cursor-Project/reports/README.md`** only if the user runs **`/report`** or explicitly asks to save (Rule 0.6).
    - **CRITICAL: READ-ONLY mode - NO code modifications during validation**
 
 ## Usage

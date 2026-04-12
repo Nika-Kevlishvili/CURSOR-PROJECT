@@ -13,9 +13,9 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 | Subagent file | Role | When to use |
 |---------------|------|-------------|
 | **phoenix-qa.md** | PhoenixExpert (Rule 0.2) | Phoenix Q&A; Confluence MCP + codebase. READ-ONLY. |
-| **bug-validator.md** | Bug validation (Rule 32) | Confluence → codebase → **Chat reports** per **`Cursor-Project/reports/README.md`**. READ-ONLY. |
+| **bug-validator.md** | Bug validation (Rule 32) | Confluence → codebase → full analysis in chat; **Chat reports** file only if **`/report`** or explicit save. READ-ONLY. |
 | **test-runner.md** | TestAgent | Tests; consult PhoenixExpert first; report results. |
-| **report-generator.md** | Reports (Rule 0.6) | On user/parent request or workflow-mandated file: markdown per **`Cursor-Project/reports/README.md`**. |
+| **report-generator.md** | Reports (Rule 0.6) | **`/report`**, explicit save request, or **Rule 37 (HandsOff)** file only — per **`Cursor-Project/reports/README.md`**. |
 | **database-query.md** | DB workflow (Rule DB.0+) | PostgreSQL MCP; connect first; see `integrations/database_workflow.mdc`. |
 | **git-sync.md** | Git sync | `integrations/git_sync_workflow.mdc`; read-only GitLab. |
 | **shell.md** | Shell / CLI | Delegated terminal + safe git/CLI; hooks + `git_sync_workflow` for multi-repo sync. |
@@ -37,7 +37,7 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 - **Rules:** `.cursor/rules/**/*.mdc` — index: **`main/phoenix.mdc`**.
 - **Skills:** `.cursor/skills/` (phoenix-agent-workflow, phoenix-reporting, phoenix-database, etc.)
 
-**Rule 0.3:** No Python `IntegrationService` in chat; use MCP/Jira when external context is needed. **Rule 0.6:** Markdown on disk only when requested or when a workflow mandates it; paths per **`Cursor-Project/reports/README.md`**; not `ReportingService`.
+**Rule 0.3:** No Python `IntegrationService` in chat; use MCP/Jira when external context is needed. **Rule 0.6:** Markdown on disk only for **HandsOff (Rule 37)** or **`/report`** / explicit user request → **Chat reports** (paths per **`Cursor-Project/reports/README.md`**); not `ReportingService`.
 
 ---
 

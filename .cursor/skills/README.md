@@ -7,7 +7,7 @@ Skills guide the Cursor agent for this repo’s workflows. **Location:** workspa
 | Skill | Purpose |
 |-------|---------|
 | **phoenix-agent-workflow** | Rules + subagents + PhoenixExpert; Rule 0.3 (no `agents.*`); reports |
-| **phoenix-bug-validation** | Rule 32 in chat (Confluence → codebase → report) |
+| **phoenix-bug-validation** | Rule 32 in chat (Confluence → codebase → analysis in reply; file only if `/report` or explicit save) |
 | **phoenix-file-organization** | Where to put files (`Cursor-Project/`, `.cursor/`, `User story/`) |
 | **phoenix-reporting** | On-demand / workflow-mandated markdown per **`Cursor-Project/reports/README.md`** (Rule 0.6) |
 | **phoenix-commands** | Which slash command / workflow to use |

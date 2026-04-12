@@ -14,11 +14,10 @@ Cursor-Project/reports/<Chat reports|HandsOff reports|Feedback>/YYYY/<english-mo
 ```
 
 - **Reuse** existing `YYYY`, `monthname`, and **`DD`** folders for that same calendar day; **create** only missing path segments.
-- **Rule 32:** `BugValidation_[Name].md` → **Chat reports**
-- **Rule 37:** `{JIRA_KEY}.md` → **HandsOff reports**
-- **`/report` / optional:** → **Chat reports** (unless user names Feedback)
-- **Feedback:** only when the user asks
+- **Rule 37 (HandsOff):** `{JIRA_KEY}.md` → **HandsOff reports** (mandatory when that workflow runs)
+- **`/report` or explicit user request:** → **Chat reports** (or **Feedback/** if the user names it). This is the **only** default path for new session/report `.md` files on disk.
+- **Rule 32 (bug validation):** analysis stays **in chat**; `BugValidation_*.md` under **Chat reports** only if the user also runs **`/report`** or explicitly asks to save.
 
 No Python `ReportingService`. English on disk (Rule 0.7).
 
-**Do not:** create `Summary_*.md` or agent run logs after routine chat/tasks unless the user asks, `/report`, or a workflow mandates it (Rule 0.6 default). **Do not** use `Cursor-Project/reports/YYYY-MM-DD/` as a report root — only the three named areas above.
+**Do not:** create `Summary_*.md`, `BugValidation_*.md`, or other report files after routine tasks, bug validation, or tests without **`/report`** or an explicit save request — except **HandsOff** → **HandsOff reports** per Rule 37. **Do not** use `Cursor-Project/reports/YYYY-MM-DD/` as a report root.
