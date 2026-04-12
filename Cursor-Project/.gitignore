@@ -35,6 +35,9 @@ reports/**
 !reports/Feedback/**
 !reports/HandsOff reports/
 !reports/HandsOff reports/**
+# Rule 0.6 agent reports: any top-level YYYY-MM-DD folder (not date-specific in rules)
+!reports/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/
+!reports/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/**
 !reports/Chat reports/
 reports/Chat reports/**
 !reports/Chat reports/**/
