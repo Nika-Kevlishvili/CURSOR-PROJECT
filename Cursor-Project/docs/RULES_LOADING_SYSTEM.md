@@ -13,7 +13,7 @@ Project constraints live in **`.cursor/rules/`** (including thematic subfolders:
 ## What the assistant must do (Rule 0.0)
 
 - **Before** responding or using tools: load and apply applicable rules from `.cursor/rules/` (including integrations, workflows, commands registry).
-- **After** tasks when Rule 0.6 applies: write markdown reports under **`Cursor-Project/reports/YYYY-MM-DD/`** using file tools — not a Python `ReportingService`.
+- When Rule 0.6 requires a file: write markdown under **`Cursor-Project/reports/`** per **`Cursor-Project/reports/README.md`** — not a Python `ReportingService`.
 
 ## Adding or changing rules
 

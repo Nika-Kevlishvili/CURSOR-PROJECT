@@ -6,7 +6,7 @@ Phoenix / QA / reporting / GitLab flows are driven from **Cursor**:
 
 - Subagents: **`<workspace-root>/.cursor/agents/*.md`**
 - Rules: **`<workspace-root>/.cursor/rules/**/*.mdc`**
-- Reports: **`Cursor-Project/reports/YYYY-MM-DD/`** (Rule 0.6)
+- Reports: **`Cursor-Project/reports/README.md`** (Rule 0.6)
 
 **Canonical map:** `Cursor-Project/docs/AGENT_SUBAGENT_MAP.md`
 

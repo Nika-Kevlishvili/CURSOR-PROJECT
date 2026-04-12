@@ -1,6 +1,6 @@
 ---
 name: phoenix-agent-workflow
-description: Guides Phoenix-related work in Cursor using rules, subagents, skills, PhoenixExpert consultation (Rule 8), Rule 0.3 (no Python agents package), and markdown reporting (Rule 0.6). Use for multi-step Phoenix tasks, routing questions, or report footers.
+description: Guides Phoenix-related work in Cursor using rules, subagents, skills, PhoenixExpert consultation (Rule 8), Rule 0.3 (no Python agents package). Markdown reports only when requested or when Rule 0.6 exceptions apply. Use for multi-step Phoenix tasks, routing questions, or report footers.
 ---
 
 # Phoenix Agent Workflow (Cursor)
@@ -20,7 +20,7 @@ Guides the assistant to follow **`.cursor/rules/`**, **`.cursor/agents/*.md`**, 
 | 1 | **Rule 0.3:** no `agents.*` imports; use MCP/Jira/GitLab steps when needed | `main/core_rules.mdc` |
 | 2 | Route via **subagents/skills/rules** — no Python AgentRouter | `agents/agent_rules.mdc` Rule 13 |
 | 3 | Consult PhoenixExpert before task (in chat / role) | Rule 8 |
-| 4 | After task: save markdown reports under `Cursor-Project/reports/YYYY-MM-DD/` | Rule 0.6 |
+| 4 | Save markdown under `Cursor-Project/reports/` only if user asks, `/report`, or workflow mandates — layout **`reports/README.md`** (Rule 0.6) | Rule 0.6 |
 | 5 | End with **Agents involved:** | Rule 0.1 |
 
 ## Consultation (Rule 8)
@@ -30,7 +30,7 @@ Guides the assistant to follow **`.cursor/rules/`**, **`.cursor/agents/*.md`**, 
 
 ## Reporting (Rule 0.6)
 
-- Write markdown files with file tools; no `get_reporting_service()`.
+- Optional by default; write markdown with file tools only when requested or when Rule 32/37 (etc.) requires an artifact. No `get_reporting_service()`.
 
 ## Collaboration Patterns (chat)
 

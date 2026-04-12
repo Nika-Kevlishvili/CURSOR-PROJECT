@@ -48,10 +48,9 @@ alwaysApply: true
    - Explain step-by-step creation and modification process
    - Provide detailed traceability for ANY entity type
 
-5. **Generate Report:**
-   - Format analysis as markdown report
-   - Include liability/receivable details, offset sequence, step-by-step explanation
-   - Save report under `Cursor-Project/reports/YYYY-MM-DD/` per Rule 0.6
+5. **Generate Report (optional unless requested):**
+   - Format analysis in chat; include liability/receivable details, offset sequence, step-by-step explanation
+   - Save a file under **Chat reports** with `YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`** only if the user asks for a persisted report (Rule 0.6 default: no automatic file)
 
 ## Security [CRITICAL]
 
@@ -63,7 +62,7 @@ alwaysApply: true
 ## Integration with Other Agents
 
 - **PhoenixExpert Consultation:** May consult PhoenixExpert for business logic understanding
-- **Rule 0.3 / 0.6:** No Python IntegrationService or ReportingService here — follow MCP workflow and save markdown reports after analysis
+- **Rule 0.3 / 0.6:** No Python IntegrationService or ReportingService here — follow MCP workflow; markdown on disk only when user or workflow requests it
 
 ## Output Format
 

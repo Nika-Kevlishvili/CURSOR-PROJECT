@@ -79,7 +79,7 @@ Save to **Cursor-Project/cross_dependencies/** (e.g. `YYYY-MM-DD_<scope_slug>.js
 
 - **READ-ONLY:** Only read Confluence and codebase; do not modify production code.
 - All output in **English** (Rule 0.7).
-- If Rule 0.6 applies, save markdown under `Cursor-Project/reports/YYYY-MM-DD/` after the run.
+- Optional: save markdown under **Chat reports** (`YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`**) if the user requests a file (Rule 0.6 default: not required).
 
 ## Output
 

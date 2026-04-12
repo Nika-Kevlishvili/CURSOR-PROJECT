@@ -73,7 +73,7 @@ Optionally save to `Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope_slug>.js
 ## Integration
 
 - PhoenixExpert when studying project/scope.
-- Save markdown reports after run if Rule 0.6 applies (no Python ReportingService).
+- Optional: save markdown under `reports/` if the user asks; not required after every run (Rule 0.6; no Python ReportingService).
 - End with: "Agents involved: CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
 
 ## Command reference

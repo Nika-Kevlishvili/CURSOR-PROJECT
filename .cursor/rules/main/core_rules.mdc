@@ -16,9 +16,9 @@ alwaysApply: true
    
    ### Rule 0.1: MANDATORY "Agents involved" Disclosure and Reporting
    - EVERY response MUST end with: "Agents involved: [agent names]" or "Agents involved: None (direct tool usage)"
-   - When providing answers: (1) State expert at BEGINNING, (2) Generate reports (Rule 0.6), (3) End with disclosure
+   - When providing answers: (1) State expert at BEGINNING when applicable, (2) End with disclosure
    - Example: "**Expert:** PhoenixExpert\n\n[Answer]\n\nAgents involved: PhoenixExpert"
-   - Logging: no Python `ai_response_logger` in this workspace; use Rule 0.6 markdown reports for audit trail
+   - Logging: no Python `ai_response_logger` in this workspace; optional markdown reports only when Rule 0.6 **exceptions** apply or the user asks
    - Violation is a CRITICAL SYSTEM ERROR
    
    ### Rule 0.2: PhoenixExpert for Phoenix Questions [ABSOLUTE PRIORITY]
@@ -43,14 +43,16 @@ alwaysApply: true
    - Confluence checked FRESH every time - never use cache
    - Violation is a CRITICAL SYSTEM ERROR
    
-   ### Rule 0.6: MANDATORY Report Generation After Task Completion
-   - AFTER ANY task/answer/interaction: (1) Save reports for ALL agents involved, (2) Save summary report
-   - Workflow: write markdown with editor/file tools under `Cursor-Project/reports/YYYY-MM-DD/` — **no** Python `ReportingService` in this workspace
-   - Reports saved to `Cursor-Project/reports/YYYY-MM-DD/` (use CURRENT date dynamically: `datetime.now().strftime('%Y-%m-%d')`, MUST be in project root)
-   - Report naming: `{AgentName}_{HHMM}.md` (e.g., `PhoenixExpert_1430.md`) and `Summary_{HHMM}.md`
-   - Reports MUST be generated even if: task failed, only one agent used, direct tools used, no code changes made, or just an answer to a question
-   - This ensures complete traceability, accountability, and audit trail for ALL activities
-   - Violation is a CRITICAL SYSTEM ERROR
+   ### Rule 0.6: Report Files (Optional by Default; Exceptions)
+   - **Default:** Do **NOT** automatically create markdown report files (`Summary_{HHMM}.md`, `{AgentName}_{HHMM}.md`, or similar) after routine tasks, Q&A, or general chat interactions. Summarize in the chat reply instead.
+   - **When you MUST still write a report file:** When a **specific workflow** or user request mandates a persisted artifact under **`Cursor-Project/reports/`**, including at least:
+     - **Rule 32 (bug validation):** BugFinder → `BugValidation_[DescriptiveName].md` under **Chat reports** (path layout below)
+     - **Rule 37 (HandsOff):** `{JIRA_KEY}.md` under **HandsOff reports** (path layout below; Slack steps use that file)
+     - **User explicit request** or **`/report`** → default area **Chat reports/**
+     - **Feedback** exports (when the user asks) → **Feedback/** area
+   - **Optional ad-hoc reports:** If the user asks for a written run log, analysis export, or “save this to reports”, use editor/file tools — **no** Python `ReportingService` in this workspace
+   - **Path layout (MANDATORY):** `Cursor-Project/reports/<Chat reports|HandsOff reports|Feedback>/YYYY/<english-month>/<DD>/<filename>.md` — resolve `YYYY`, `<english-month>`, and **`<DD>`** (real calendar day of save, zero-padded) **only** per **`Cursor-Project/reports/README.md`** (reuse existing `YYYY/month/DD` folders for that same day; create missing segments otherwise). Filenames: e.g. `{AgentName}_{HHMM}.md`, `Summary_{HHMM}.md`, `BugValidation_*.md`, `{JIRA_KEY}.md` for HandsOff
+   - **Violation:** Treat as critical only when a **mandated workflow step** (e.g. Rule 32/37) or an **explicit user request** for a file is skipped — not when you omit optional post-task summaries on disk
    
    ### Rule 0.7: MANDATORY English for Project Artifacts (Not Chat)
    - **In scope (English REQUIRED):** Anything **created or modified on disk** in this workspace — file/folder names, paths, code comments, repo docs, reports under `Cursor-Project/reports/`, test cases, user stories in `User story/`, config/templates, **`.cursor/`** content, and other **persisted** project text

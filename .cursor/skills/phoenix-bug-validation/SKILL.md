@@ -53,7 +53,7 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
 
 ### Step 5: Report file
 
-- Save markdown to: `Cursor-Project/reports/YYYY-MM-DD/BugValidation_[DescriptiveName].md`.
+- Save markdown under **Chat reports**: `…/YYYY/<english-month>/<DD>/BugValidation_[DescriptiveName].md` per **`Cursor-Project/reports/README.md`**.
 - Include expected behavior, Confluence validation, code analysis, final verdict with reasoning, code references (paths + lines).
 - Include next steps based on verdict; do not implement code changes during validation.
 
@@ -66,7 +66,7 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
 
 - **Rule 0.3:** follow MCP/Jira when needed — no Python IntegrationService here.
 - Consult PhoenixExpert for context when needed.
-- Markdown reports per Rule 0.6.
+- Persisted **`BugValidation_*.md`** per Rule 32 (Rule 0.6 workflow exception).
 - End with: "Agents involved: BugFinderAgent (workflow), PhoenixExpert" (or as applicable).
 
 ## Decision Matrix Details

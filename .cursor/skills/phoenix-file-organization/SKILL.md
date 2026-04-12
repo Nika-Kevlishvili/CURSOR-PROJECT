@@ -5,7 +5,7 @@ description: Places new files in the correct project directories (docs, User sto
 
 # Phoenix File Organization
 
-Ensures new files are saved in the correct directories (Rule 31 under `workspace/file_organization_rules.mdc`). Reports use current date; stories and flows go in `User story/`.
+Ensures new files are saved in the correct directories (Rule 31 under `workspace/file_organization_rules.mdc`). Reports go under **`Cursor-Project/reports/`** subfolders (`Chat reports/`, `HandsOff reports/`, `Feedback/`); stories and flows go in `User story/`.
 
 ## When to Apply
 
@@ -24,7 +24,7 @@ Ensures new files are saved in the correct directories (Rule 31 under `workspace
 | Config, templates, swagger | `Cursor-Project/config/` | Templates: `config/template/` |
 | Documentation | `Cursor-Project/docs/` | |
 | User stories, flows | **`User story/`** (project root) | **Mandatory** for story/flow files |
-| Reports | **`Cursor-Project/reports/YYYY-MM-DD/`** | Current date |
+| Reports | **`Cursor-Project/reports/`** → `Chat reports/`, `HandsOff reports/`, `Feedback/` | See `reports/README.md` |
 | Postman | `Cursor-Project/postman/` | |
 | Test cases | **`Cursor-Project/test_cases/Backend/<Topic>.md`** + **`test_cases/Frontend/<Topic>.md`** (two-folder layout) | Per `test_cases_structure.mdc` |
 | Phoenix code | `Cursor-Project/Phoenix/**` | AI: read-only (Rule 0.8) |
@@ -33,8 +33,9 @@ Ensures new files are saved in the correct directories (Rule 31 under `workspace
 
 ## Reports
 
-- Path: `Cursor-Project/reports/YYYY-MM-DD/` with **today’s** date.
-- Naming: `{AgentName}_{HHMM}.md`, `Summary_{HHMM}.md`, `BugValidation_[Name].md`.
+- **Chat reports:** optional session files — `{AgentName}_{HHMM}.md`, `Summary_{HHMM}.md`, `BugValidation_[Name].md`.
+- **HandsOff reports:** only `{JIRA_KEY}.md` (Rule 37).
+- **Feedback:** only when the user asks to save feedback here.
 
 ## User Stories and Flows
 
@@ -43,9 +44,9 @@ Ensures new files are saved in the correct directories (Rule 31 under `workspace
 
 ## Examples
 
-- ✅ `Cursor-Project/reports/2026-03-28/Summary_1200.md`
+- ✅ `Cursor-Project/reports/Chat reports/2026/april/12/Summary_1200.md` (per `reports/README.md`; day = real save date)
 - ✅ `User story/MY_USER_STORY.txt`
 - ✅ `.cursor/agents/phoenix-qa.md`
-- ❌ Report in workspace-only `reports/` instead of `Cursor-Project/reports/YYYY-MM-DD/`
+- ❌ Report in workspace-only `reports/` instead of `Cursor-Project/reports/<area>/YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`**
 
 Full rules: `.cursor/rules/workspace/file_organization_rules.mdc`.

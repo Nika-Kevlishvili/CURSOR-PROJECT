@@ -128,7 +128,7 @@ This document lists every Cursor command and what it can do in detail.
 - Search Confluence via MCP (fresh, no cache).
 - Search Phoenix codebase (primary source).
 - Answer with source priority: codebase > Confluence > general knowledge.
-- Save reports to **`Cursor-Project/reports/YYYY-MM-DD/PhoenixExpert_{HHMM}.md`** and Summary.
+- Optional save: **`Cursor-Project/reports/Chat reports/YYYY/<english-month>/<DD>/PhoenixExpert_{HHMM}.md`** per **`Cursor-Project/reports/README.md`**.
 
 **When to use:** Any question about Phoenix backend, APIs, business logic, or documentation.
 
@@ -149,14 +149,14 @@ This document lists every Cursor command and what it can do in detail.
 
 ## 11. Report (Task report generation)
 
-**Trigger:** After any task (Rule 0.6)
+**Trigger:** User request, **`/report`**, or other explicit need (Rule 0.6 — optional by default)
 
 **What it can do:**
-- Save agent-specific report: **`Cursor-Project/reports/YYYY-MM-DD/{AgentName}_{HHMM}.md`**.
-- Save summary: **`Cursor-Project/reports/YYYY-MM-DD/Summary_{HHMM}.md`**.
-- Use current date; required even if task failed or only one agent was used.
+- Save agent-specific report: **`Cursor-Project/reports/Chat reports/<segment>/{AgentName}_{HHMM}.md`** (`<segment>` = `YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`**).
+- Save summary: **`…/Chat reports/<segment>/Summary_{HHMM}.md`**.
+- Use **`Cursor-Project/reports/README.md`** for folder reuse vs creation.
 
-**When to use:** Automatically after every task; or when you explicitly request a report.
+**When to use:** When you want a persisted run log or summary — **not** automatically after every chat task. Workflow-mandated files (e.g. BugValidation, HandsOff `{JIRA_KEY}.md`) follow their own rules.
 
 ---
 
@@ -169,7 +169,7 @@ This document lists every Cursor command and what it can do in detail.
 - **Step 1 – Confluence:** Search Confluence via MCP; check if bug description matches docs; report correct/incorrect/partially correct.
 - **Step 2 – Code:** Search codebase; check if implementation matches expected behavior; report satisfies/does not satisfy.
 - **Step 3 – Conclusion:** Combine findings; conclude if bug is valid; suggest fix but do not implement (read-only).
-- Save report to `Cursor-Project/reports/YYYY-MM-DD/BugValidation_{Name}.md`.
+- Save report to **Chat reports** `…/<segment>/BugValidation_{Name}.md` per **`Cursor-Project/reports/README.md`**.
 
 **When to use:** Validate a bug report against Confluence and code before any fix.
 
@@ -184,7 +184,7 @@ This document lists every Cursor command and what it can do in detail.
 - Analyze any entity: liability, receivable, payment, deposit, invoice, contract, customer, etc.
 - Use **PostgreSQLProd MCP**: `connect_db` then `query` with SELECT-only SQL; build analysis manually (no bundled `analyze_entity` helpers in this workspace).
 - Explain step-by-step how data was created; offset sequence; reversals; relationships.
-- Save report to `Cursor-Project/reports/YYYY-MM-DD/ProductionDataReaderAgent_{HHMM}.md`.
+- Save report to **Chat reports** `…/<segment>/ProductionDataReaderAgent_{HHMM}.md` per **`Cursor-Project/reports/README.md`**.
 - Read-only; no writes.
 
 **When to use:** “How was X created?”, “What is liability X offset with?”, “What is the offset sequence?”, any Prod data or traceability question.
@@ -255,7 +255,7 @@ This document lists every Cursor command and what it can do in detail.
 3. **Test cases** – Run test-case-generator with ticket description and cross_dependency_data; save under `Cursor-Project/test_cases/Flows/` or `Objects/` (per template).
 4. **Playwright tests** – Follow **`.cursor/agents/energo-ts-test.md`**: map test case `.md` → spec with EnergoTS framework; output **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**; stay on **`cursor`** branch (Rule ENERGOTS.0). No Python `get_energo_ts_test_agent()` in this workspace.
 5. **Run tests** – Run Playwright tests (e.g. by Jira key or newly created file); capture pass/fail and failure reasons.
-6. **Report (Step 9)** – Save report as `Cursor-Project/reports/YYYY-MM-DD/{JIRA_KEY}.md` with: Jira key, title, tests run, per-test pass/fail and reason.
+6. **Report (Step 9)** – Save report as **`HandsOff reports/…/YYYY/<english-month>/<DD>/{JIRA_KEY}.md`** per **`Cursor-Project/reports/README.md`** with: Jira key, title, tests run, per-test pass/fail and reason.
 7. **Slack** – Send **full** report per **`Slack_report_template.md`** to **Tester** (Jira custom field `customfield_10095`, DM via `slack_search_users`) and **#ai-report** (`C0AK96S1D7X`) only — see **`handsoff_playwright_report.mdc`**.
 
 **When to use:** Run the full pipeline automatically for a Jira ticket: fetch → cross-deps → test cases → create Playwright tests → run → report (save + send to Slack). No user intervention after providing the ticket and /HandsOff.

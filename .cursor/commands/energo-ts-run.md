@@ -19,7 +19,7 @@ Use this command when the user asks to:
    - Jira key (e.g. REG-123) → grep in tests, then run matching file(s) or `npx playwright test --grep "REG-123"`
    - File path/name → run that path relative to `EnergoTS/`
 4. **Execute** – From `Cursor-Project/EnergoTS/`: `npx playwright test <path|grep|dir>`
-5. **Report** – Summarize results; save report to `Cursor-Project/reports/YYYY-MM-DD/` (Rule 0.6); end with "Agents involved: EnergoTS Playwright Test Runner".
+5. **Report** – Summarize results in chat; save a markdown file under **Chat reports** per **`Cursor-Project/reports/README.md`** only if the user asks (Rule 0.6 default); end with "Agents involved: EnergoTS Playwright Test Runner".
 
 ## Important
 

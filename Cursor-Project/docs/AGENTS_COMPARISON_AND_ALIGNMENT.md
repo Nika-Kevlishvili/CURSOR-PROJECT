@@ -11,7 +11,7 @@
 | **Skills** | `.cursor/skills/**/SKILL.md` | When/how to trigger workflows from the main agent |
 | **Commands** | `.cursor/commands/*.md` (+ `.ps1` where present) | Slash / `!` command procedures |
 | **MCP** | Jira, Confluence, PostgreSQL*, Slack, … | External read/query integrations (with safety allowlists) |
-| **Reports** | `Cursor-Project/reports/YYYY-MM-DD/*.md` | Rule 0.6 traceability (markdown files, not a Python service) |
+| **Reports** | `Cursor-Project/reports/<area>/YYYY/<english-month>/<DD>/*.md` per **`reports/README.md`** | Rule 0.6 (markdown files, not a Python service) |
 
 The **`Cursor-Project/agents/`** Python package (Main/Support/Core/Adapters/Services/Utils, `AgentRouter`, `IntegrationService`, `ReportingService`, `get_*_agent()`) is **removed** from this workspace. Do **not** import `agents.*` in Cursor chat workflows.
 
@@ -22,7 +22,7 @@ The **`Cursor-Project/agents/`** Python package (Main/Support/Core/Adapters/Serv
 
 ## Historical docs
 
-Files such as **`AGENTS_README.md`**, **`BUG_FINDER_AGENT.md`**, **`EnergoTSTestAgent_README.md`**, **`GITLAB_UPDATE_AGENT.md`**, **`AGENT_REPORTING_GUIDE.md`**, and similar describe the **old Python layout**. They are kept for reference if the package is reintroduced; behavior for day-to-day Cursor use is defined by **`.cursor/`** + this section.
+Files such as **`AGENTS_README.md`**, **`BUG_FINDER_AGENT.md`**, **`EnergoTSTestAgent_README.md`**, **`GITLAB_UPDATE_AGENT.md`**, and similar describe the **old Python layout** where applicable. Behavior for day-to-day Cursor use is defined by **`.cursor/`**, **`Cursor-Project/reports/README.md`**, and this section.
 
 ## Adding a new “agent” today
 

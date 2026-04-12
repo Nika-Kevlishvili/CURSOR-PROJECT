@@ -58,11 +58,11 @@ Reference: `.cursor/commands/hands-off.md` Step 4.5; `.cursor/agents/playwright-
 ## 3. Report – ONLY Playwright test results (detailed per test)
 
 - **Problem:** Report contained cross-deps, artifacts, test case file lists, etc. User wanted **only** Playwright test results.
-- **Rule:** The HandsOff report saved as **`Cursor-Project/reports/YYYY-MM-DD/{JIRA_KEY}.md`** MUST be focused **only on Playwright test results**:
+- **Rule:** The HandsOff report saved as **`Cursor-Project/reports/HandsOff reports/YYYY/<english-month>/<DD>/{JIRA_KEY}.md`** (segments per **`Cursor-Project/reports/README.md`**) MUST be focused **only on Playwright test results**:
   - **Per test:** (1) Test name/title, (2) **What is verified** (detailed: which endpoint, which assertions, which behaviour), (3) **Steps** (brief list), (4) **Result:** Passed / Failed / Not run, (5) **If failed:** reason (assertion message, status code, response body or error snippet).
 - **Rule:** Do not fill the report with cross-dependency output, test case file listings, or generic "artifacts" sections. Optional: one short line with spec file path and how to run (e.g. `npx playwright test --grep "NT-1"`).
 
-Reference: Rule 0.6 (report generation); `.cursor/commands/hands-off.md` Step 6.
+Reference: Rule 37 (mandatory HandsOff `{JIRA_KEY}.md` under `YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`**); Rule 0.6 default — `.cursor/commands/hands-off.md` Step 6.
 
 ---
 

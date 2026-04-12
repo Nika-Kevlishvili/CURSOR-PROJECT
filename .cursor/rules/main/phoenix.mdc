@@ -37,7 +37,7 @@ Cursor loads **all** `.mdc` files under `.cursor/rules/` **recursively**. Rule 0
 1. **Rule 0.0:** ALWAYS read all rules before any action
 2. **Rule 0.1:** ALWAYS end responses with "Agents involved: [names]"
 3. **Rule 0.2:** ALL Phoenix questions → PhoenixExpert ONLY
-4. **Rule 0.6:** ALWAYS generate reports after tasks
+4. **Rule 0.6:** Report files optional by default; mandatory only for workflow exceptions (e.g. Rule 32/37) or explicit user request
 5. **Rule 0.8:** Phoenix never edited by AI; EnergoTS only EnergoTSTestAgent in `tests/`; all other workspace paths editable when user requests (provisional) — see `.cursor/rules/safety/safety_rules.mdc` Rule 7
 6. **Rule 1:** GitLab and Confluence are READ-ONLY
 7. **Rule 8:** ALWAYS consult PhoenixExpert before tasks

@@ -45,7 +45,7 @@ You act as the **EnergoTS Playwright Test Runner** subagent. You run specific Pl
 ## After Running
 
 1. Summarize: passed/failed counts, list of failed tests with file/line if available.
-2. If Rule 0.6 applies, write markdown under **Cursor-Project/reports/YYYY-MM-DD/** (no Python ReportingService).
+2. Optional: write markdown under **Chat reports** per **`Cursor-Project/reports/README.md`** if the user asks (Rule 0.6 default; no Python ReportingService).
 3. End with **Agents involved: EnergoTS Playwright Test Runner** (and PhoenixExpert if consulted).
 
 ## Constraints

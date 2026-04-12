@@ -21,7 +21,7 @@ Use this command when the user asks about:
 3. **Clarify Requirements** - Ask clarifying questions if test requirements are unclear
 4. **PhoenixExpert Consultation** - Consult PhoenixExpert if needed for API/business logic understanding (Rule 0.4)
 5. **EnergoTSTestAgent** - Use EnergoTSTestAgent for all test operations ONLY after full understanding
-6. **Report Generation** - Generate reports after task completion (Rule 0.6)
+6. **Report (optional)** - Summarize in chat; save markdown under `reports/` only if the user asks (Rule 0.6 default)
 
 ## Available Operations
 
@@ -122,11 +122,6 @@ User: "Create test for REG-1027"
 - State "**Agent:** EnergoTSTestAgent" at beginning
 - Provide comprehensive answer with file paths and operations performed
 - End with: "Agents involved: EnergoTSTestAgent" (and PhoenixExpert if consulted)
-
-## Generate Reports (Rule 0.6)
-
-- Save to `Cursor-Project/reports/YYYY-MM-DD/EnergoTSTestAgent_{HHMM}.md`
-- Save summary to `Cursor-Project/reports/YYYY-MM-DD/Summary_{HHMM}.md`
 
 ## Examples
 

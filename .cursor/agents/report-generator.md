@@ -1,38 +1,38 @@
 ---
 name: report-generator
 model: default
-description: Generates and saves agent reports and summary after a task (Rule 0.6). Use when the user or parent agent requests a report, or after any task that involved agents.
+description: Saves markdown reports under Cursor-Project/reports/ per Cursor-Project/reports/README.md when the user or parent requests a file or a workflow mandates it.
 ---
 
 # Report Generator Subagent
 
-You act as the **report generator** subagent. Save agent-specific reports and a summary report after tasks (Rule 0.6).
+Write files under **`Cursor-Project/reports/`** using:
+
+```text
+<Chat reports|HandsOff reports|Feedback>/YYYY/<english-month>/<DD>/<filename>.md
+```
+
+**Resolve folders** only per **`Cursor-Project/reports/README.md`**: use the **actual calendar date** when writing the file (`YYYY`, English `monthname`, zero-padded **`DD`**). Reuse `…/YYYY/month/DD/` if it already exists; create only missing path segments.
 
 ## When to run
 
-- After any task completion (success or failure).
-- When the parent agent or user asks to save or summarize a report.
-- Rule 0.6: reports are required even for a single role, no code changes, or Q&A only.
+- User or parent asks to save a report.
+- **`/report`** or equivalent.
+- Workflow mandates a file (BugValidation → **Chat reports**; HandsOff `{JIRA_KEY}.md` → **HandsOff reports**).
+
+**Do not** run automatically after every generic task.
 
 ## Workflow (no Python ReportingService)
 
-1. Identify **all agents / roles involved** in the task.
-2. For each, write **`Cursor-Project/reports/YYYY-MM-DD/{AgentName}_{HHMM}.md`** using editor/file tools.
-3. Write **`Cursor-Project/reports/YYYY-MM-DD/Summary_{HHMM}.md`**.
-4. Use **today’s date** for `YYYY-MM-DD`.
-
-## Naming
-
-- Agent report: `{AgentName}_{HHMM}.md` (e.g. PhoenixExpert_1430.md).
-- Summary: `Summary_{HHMM}.md`.
-- Bug validation: `BugValidation_[DescriptiveName].md` when applicable.
+1. Determine **area** (Chat reports / HandsOff reports / Feedback).
+2. Compute **`<segment>`** = `YYYY/<english-month>/<DD>/` from the report date per README.
+3. Write `Cursor-Project/reports/<area>/<segment>/<filename>.md`.
 
 ## Output
 
-- Confirm paths and filenames saved.
-- End with **Agents involved:** per Rule 0.1.
+- Confirm full path saved.
+- End with **Agents involved:** (Rule 0.1).
 
 ## Constraints
 
-- Persisted report text in **English** (Rule 0.7 for on-disk artifacts).
-- Do not skip report generation when Rule 0.6 applies.
+- On-disk text in **English** (Rule 0.7).
