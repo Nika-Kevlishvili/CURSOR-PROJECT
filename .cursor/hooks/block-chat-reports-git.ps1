@@ -25,7 +25,7 @@ function Get-StagedPaths {
     param([string]$RepoRoot)
     Push-Location $RepoRoot
     try {
-        $raw = git diff --cached --name-only 2>$null
+        $raw = git diff --cached --name-only --diff-filter=d 2>$null
         if ($LASTEXITCODE -ne 0) { return @() }
         return @($raw -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ })
     } finally {
