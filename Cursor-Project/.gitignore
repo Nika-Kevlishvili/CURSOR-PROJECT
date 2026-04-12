@@ -28,7 +28,7 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Reports: only these two paths are tracked on GitHub; everything else under reports/ stays local
+# Reports: three dated folders exist in Git; Feedback + HandsOff track full contents; Chat reports folder only (.gitkeep), skip other files there
 reports/**
 !reports/Feedback/
 !reports/Feedback/2026/
@@ -41,4 +41,11 @@ reports/**
 !reports/HandsOff reports/2026/april/
 !reports/HandsOff reports/2026/april/12/
 !reports/HandsOff reports/2026/april/12/**
+
+!reports/Chat reports/
+!reports/Chat reports/2026/
+!reports/Chat reports/2026/april/
+!reports/Chat reports/2026/april/12/
+reports/Chat reports/2026/april/12/**
+!reports/Chat reports/2026/april/12/.gitkeep
 
