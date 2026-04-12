@@ -39,3 +39,5 @@ reports/**
 reports/Chat reports/**
 !reports/Chat reports/**/
 !reports/Chat reports/**/.gitkeep
+# Track markdown chat reports when added (e.g. explicit /report saves).
+!reports/Chat reports/**/*.md
