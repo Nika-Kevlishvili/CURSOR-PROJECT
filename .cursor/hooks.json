@@ -13,7 +13,6 @@
       { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/control-database-write.ps1" }
     ],
     "beforeShellExecution": [
-      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/block-chat-reports-git.ps1" },
       { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/control-git-push.ps1" }
     ]
   }

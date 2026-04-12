@@ -28,14 +28,11 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Reports: Feedback + HandsOff — full tree tracked at any path/date.
-# Chat reports — folder structure allowed; only .gitkeep tracked (all other files skipped).
+# Reports: Feedback, HandsOff, and Chat — full tree tracked at any path/date (see reports layout docs if present).
 reports/**
 !reports/Feedback/
 !reports/Feedback/**
 !reports/HandsOff reports/
 !reports/HandsOff reports/**
 !reports/Chat reports/
-reports/Chat reports/**
-!reports/Chat reports/**/
-!reports/Chat reports/**/.gitkeep
+!reports/Chat reports/**
