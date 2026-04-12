@@ -28,24 +28,14 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Reports: three dated folders exist in Git; Feedback + HandsOff track full contents; Chat reports folder only (.gitkeep), skip other files there
+# Reports: Feedback + HandsOff — full tree tracked at any path/date.
+# Chat reports — folder structure allowed; only .gitkeep tracked (all other files skipped).
 reports/**
 !reports/Feedback/
-!reports/Feedback/2026/
-!reports/Feedback/2026/april/
-!reports/Feedback/2026/april/12/
-!reports/Feedback/2026/april/12/**
-
+!reports/Feedback/**
 !reports/HandsOff reports/
-!reports/HandsOff reports/2026/
-!reports/HandsOff reports/2026/april/
-!reports/HandsOff reports/2026/april/12/
-!reports/HandsOff reports/2026/april/12/**
-
+!reports/HandsOff reports/**
 !reports/Chat reports/
-!reports/Chat reports/2026/
-!reports/Chat reports/2026/april/
-!reports/Chat reports/2026/april/12/
-reports/Chat reports/2026/april/12/**
-!reports/Chat reports/2026/april/12/.gitkeep
-
+reports/Chat reports/**
+!reports/Chat reports/**/
+!reports/Chat reports/**/.gitkeep
