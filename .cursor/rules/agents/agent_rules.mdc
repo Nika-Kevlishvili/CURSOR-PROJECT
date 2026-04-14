@@ -49,8 +49,9 @@ alwaysApply: true
 
 # AUTONOMOUS OPERATION RULE [IMPORTANT]
 
-12. [IMPORTANT] Agents operate autonomously without confirmation, EXCEPT when Rule 8 requires PhoenixExpert approval.
-    - Only ask confirmation for CRITICAL operations (destructive, production deployments).
+12. [IMPORTANT] Agents operate autonomously without confirmation **when the task is unambiguous**, EXCEPT when Rule 8 requires PhoenixExpert approval.
+    - If **scope, environment, target system, or acceptance criteria** are missing or **contradictory**, STOP and ask **clarifying questions** before substantive tools or edits — do not guess defaults (see **Rule CONF.0** in `.cursor/rules/main/clarification_and_confidence.mdc`). This is scope resolution, not routine confirmation.
+    - Only ask confirmation for **CRITICAL** operations (destructive, production deployments) in addition to the above.
 
 # AGENT ROUTING RULE [IMPORTANT]
 
@@ -69,7 +70,7 @@ alwaysApply: true
     **Pattern 5: Multi-Agent Routing** - Parent agent → subagents / explicit handoffs → combined response (no Python AgentRouter)
     **Pattern 6: Phoenix + Test** - PhoenixExpert → consults TestAgent (if test-related) → provides answer
     **Pattern 7: Integration Service** - When Python IntegrationService exists in automation → `update_before_task()` → task; in Cursor chat follow Rule 0.3
-    **Pattern 8: Bug Validation** - BugFinder workflow (Rule 32) → Confluence + codebase → full analysis in chat; disk file only if **`/report`** or explicit save (no `get_bug_finder_agent` import)
+    **Pattern 8: Bug Validation** - BugFinder workflow (Rule 32) → Confluence + codebase → report file (no `get_bug_finder_agent` import)
     
     All participating agents MUST appear in "Agents involved" footer.
 

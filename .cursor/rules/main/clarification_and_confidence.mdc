@@ -1,0 +1,58 @@
+---
+description: Require clarifying questions when task scope, environment, or success criteria are ambiguous—do not guess or improvise defaults.
+alwaysApply: true
+---
+
+# CLARIFICATION BEFORE ACTION (CONFIDENCE GATE) [CRITICAL]
+
+## Rule CONF.0: Confidence gate before substantive work
+
+**Intent:** If the model is **not confident** it understood the user or has every **parameter needed to act safely and correctly**, it MUST ask **targeted clarifying questions** before running tools that change state, run environment-specific commands, or connect to external systems. **Do not pick a silent default** (e.g. wrong DB environment) to “keep moving.”
+
+**Violation:** Proceeding with substantive tools or edits while **scope, environment, target, or success criteria** are missing or contradictory without asking first — treated as a **CRITICAL** reliability/safety failure for this workspace.
+
+---
+
+## When to ask (triggers)
+
+Before substantive tool use or file edits, verify you know:
+
+1. **What** — exact deliverable (fix, doc, test, query, refactor scope).
+2. **Where** — repo, path, subsystem, or workflow (when the prompt could mean more than one).
+3. **Which environment / branch / target** — when the answer changes commands or MCP servers (see `database_workflow.mdc` for Dev / Dev2 / Test / PreProd / Prod; `energots_branch_lock.mdc` for EnergoTS branch expectations).
+4. **How success is judged** — when “done” is unclear (e.g. “fix the bug” with no repro, ticket, or log).
+
+**Ask if any of the above is missing, vague, or conflicting** — including:
+
+- Database or production data work **without** the user naming the environment (never infer Prod vs Test from habit).
+- “Run tests” / “run the query” **without** which test, which DB, or which app URL/environment.
+- “Fix it” / “update tests” **without** ticket key, file path, failure output, or acceptance hint.
+- **Conflicting** instructions — ask which takes priority.
+
+---
+
+## How to ask
+
+- Prefer **one short message** with **1–3 concrete questions**; use **AskQuestion** when choices are discrete.
+- After asking, **pause** heavy execution (shell, MCP writes, bulk edits) until ambiguity that would change the approach is resolved — unless the user has explicitly authorized defaults (see below).
+
+---
+
+## Forbidden behaviors
+
+- Inventing environments, repos, branches, or product behavior to avoid a question.
+- Treating **guessing** as safer than **asking**.
+
+---
+
+## Exceptions (narrow)
+
+- User explicitly says to use **your choice** / **defaults** / **same as last time** for the missing dimension — then document the assumption briefly and proceed.
+- **Read-only** Q&A with **no** environment-specific data and **no** ambiguity about topic — answering without extra questions is allowed.
+
+---
+
+## Relation to other rules
+
+- **Autonomous operation** (`agent_rules.mdc` Rule 12): applies when the task is **already unambiguous**. Ambiguity → **clarify first**; that is not optional “confirmation spam,” it is **scope resolution**.
+- Environment selection for DB → **always** follow `database_workflow.mdc` (exact environment the user names; if none named → **ask**).

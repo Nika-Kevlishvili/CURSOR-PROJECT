@@ -10,7 +10,7 @@ This file is the **main index** for workspace rules under **`.cursor/rules/`**. 
 
 | Folder | Path | Contents |
 |--------|------|----------|
-| **main** | `.cursor/rules/main/` | `core_rules.mdc` (Rule 0.x), `phoenix.mdc` (this index) |
+| **main** | `.cursor/rules/main/` | `core_rules.mdc` (Rule 0.x), `clarification_and_confidence.mdc` (Rule CONF.0), `phoenix.mdc` (this index) |
 | **safety** | `.cursor/rules/safety/` | `safety_rules.mdc` |
 | **agents** | `.cursor/rules/agents/` | `agent_rules.mdc` |
 | **workflows** | `.cursor/rules/workflows/` | `workflow_rules.mdc`, `handsoff_playwright_report.mdc` |
@@ -26,6 +26,7 @@ Cursor loads **all** `.mdc` files under `.cursor/rules/` **recursively**. Rule 0
 ## Quick reference (canonical paths)
 
 - **Rule 0.x:** `.cursor/rules/main/core_rules.mdc`
+- **Clarification / confidence gate:** `.cursor/rules/main/clarification_and_confidence.mdc` (Rule CONF.0)
 - **Agents:** `.cursor/rules/agents/agent_rules.mdc`
 - **Safety:** `.cursor/rules/safety/safety_rules.mdc`
 - **Workflows:** `.cursor/rules/workflows/workflow_rules.mdc`, `.cursor/rules/workflows/handsoff_playwright_report.mdc`
@@ -34,10 +35,10 @@ Cursor loads **all** `.mdc` files under `.cursor/rules/` **recursively**. Rule 0
 
 ## ⚠️ CRITICAL REMINDERS
 
-1. **Rule 0.0:** ALWAYS read all rules before any action
+1. **Rule 0.0:** ALWAYS read all rules before any action. **Rule CONF.0:** If scope/environment/target/success criteria are ambiguous → ask before substantive action; do not guess (`clarification_and_confidence.mdc`).
 2. **Rule 0.1:** ALWAYS end responses with "Agents involved: [names]"
 3. **Rule 0.2:** ALL Phoenix questions → PhoenixExpert ONLY
-4. **Rule 0.6:** No automatic report files; persisted `.md` only for **Rule 37 (HandsOff)** → **HandsOff reports**, or **`/report`** / explicit user request → **Chat reports** (Rule 32 = chat-only unless user asks to save)
+4. **Rule 0.6:** ALWAYS generate reports after tasks
 5. **Rule 0.8:** Phoenix never edited by AI; EnergoTS only EnergoTSTestAgent in `tests/`; all other workspace paths editable when user requests (provisional) — see `.cursor/rules/safety/safety_rules.mdc` Rule 7
 6. **Rule 1:** GitLab and Confluence are READ-ONLY
 7. **Rule 8:** ALWAYS consult PhoenixExpert before tasks
