@@ -154,6 +154,9 @@ alwaysApply: true
     - ALWAYS connect before executing queries
     - Violation is a CRITICAL SYSTEM ERROR.
 
+34. [CRITICAL] If the user requests Phoenix database access (query, check, contract/POD lookup, billing data, etc.) but does **not** explicitly name the environment (**Dev**, **Dev2**, **Test**, **PreProd**, **Prod**), **ask which environment to use** before connecting to any PostgreSQL MCP. Do **not** assume Test or any other default. Full wording: `.cursor/rules/integrations/database_workflow.mdc` (Rule DB.0 unspecified-environment clause and Rule DB.6).
+    - Violation is a CRITICAL SYSTEM ERROR.
+
 # TEST CASE GENERATION WORKFLOW RULE [CRITICAL]
 
 35. [CRITICAL] When the user requests creation of test cases (for a bug, task, or feature), ALWAYS follow this mandatory workflow:

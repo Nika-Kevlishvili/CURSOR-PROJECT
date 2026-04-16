@@ -14,6 +14,14 @@ alwaysApply: true
 - If user says "PreProd" → Use PostgreSQLPreProd (10.236.20.76)
 - If user says "Prod" → Use PostgreSQLProd (10.236.20.78:5000, readonly_user)
 
+### Unspecified environment [CRITICAL — same priority as DB.0]
+
+If the user asks for a database query or data check but does **not** explicitly name one of: **Dev**, **Dev2**, **Test**, **PreProd**, **Prod** (or equivalent unambiguous wording):
+
+- **Do not connect** to any PostgreSQL MCP until the environment is confirmed.
+- **Ask** which environment to use (one short question listing the five options).
+- **Never** assume Test, Dev, Prod, or any other environment as a default. Silent defaults contradict DB.0 and have caused wrong-environment queries.
+
 ## Rule DB.1: PostgreSQL MCP Connection Details [CRITICAL]
 
 ### PostgreSQLDev - Dev Environment
@@ -160,10 +168,11 @@ ORDER BY c.contract_number, c.id
 ## Rule DB.6: Workflow Integration [IMPORTANT]
 
 When database queries are needed:
-1. Connect using PostgreSQLTest MCP (Rule DB.1)
-2. Execute queries using standard patterns (Rule DB.2)
-3. Format results clearly for user
-4. Include all relevant contract and POD information
-5. Save a markdown file under `reports/` only if the user asks or runs **`/report`** — not automatically (Rule 0.6; HandsOff reports are separate from DB queries)
+1. **Resolve the environment** per Rule DB.0, including the **unspecified environment** rule above. If the user did not name an environment, ask and wait for an answer before connecting.
+2. **Connect** using the matching `mcp_PostgreSQL{Env}_connect_db(...)` from Rule DB.1 (e.g. Test → PostgreSQLTest only **after** the user chose Test).
+3. Execute queries using standard patterns (Rule DB.2)
+4. Format results clearly for user
+5. Include all relevant contract and POD information when applicable
+6. Save a markdown file under `reports/` only if the user asks or runs **`/report`** — not automatically (Rule 0.6; HandsOff reports are separate from DB queries)
 
 **Violation of database workflow rules is a CRITICAL SYSTEM ERROR.**

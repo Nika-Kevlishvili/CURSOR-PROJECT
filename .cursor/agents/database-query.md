@@ -11,7 +11,7 @@ You run **PostgreSQL** queries for the Phoenix project via MCP. Use the environm
 ## Before querying
 
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed if the task requires external context.
-2. **Choose environment** from user/parent request only:
+2. **Choose environment** from user/parent request only. If neither the user nor the parent message names Dev, Dev2, Test, PreProd, or Prod, **stop and ask** which environment to use — do **not** default to Test (Rule 34, `database_workflow.mdc` DB.0 / DB.6).
    - Dev → PostgreSQLDev
    - Dev2 → PostgreSQLDev2
    - Test → PostgreSQLTest

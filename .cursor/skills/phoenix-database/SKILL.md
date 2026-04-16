@@ -25,11 +25,14 @@ Use the **exact** environment the user asks for. Do not switch.
 | PreProd | PostgreSQLPreProd |
 | Prod | PostgreSQLProd (read-only user) |
 
+**If the user does not name an environment:** ask which of Dev / Dev2 / Test / PreProd / Prod to use, then connect. **Never** pick Test (or any env) as a silent default — see `database_workflow.mdc` (unspecified-environment rule and DB.6).
+
 ## Workflow
 
-1. **Connect first** with the chosen MCP: `mcp_PostgreSQL{Env}_connect_db(...)` using credentials from `database_workflow.mdc`.
-2. **Then run queries:** `mcp_PostgreSQL{Env}_query(sql="SELECT ...")` or `mcp_PostgreSQL{Env}_execute(...)` for writes if allowed.
-3. Reconnect if the session drops.
+1. **Confirm environment** per the section above; if missing, ask before any connection.
+2. **Connect first** with the chosen MCP: `mcp_PostgreSQL{Env}_connect_db(...)` using credentials from `database_workflow.mdc`.
+3. **Then run queries:** `mcp_PostgreSQL{Env}_query(sql="SELECT ...")` or `mcp_PostgreSQL{Env}_execute(...)` for writes if allowed.
+4. Reconnect if the session drops.
 
 ## Standard Patterns (Rule DB.2)
 
@@ -44,4 +47,4 @@ Use the **exact** environment the user asks for. Do not switch.
 
 ## Rules Source
 
-Full connection details, credentials, and SQL patterns: `.cursor/rules/integrations/database_workflow.mdc`. Rule 33: Test environment queries use PostgreSQLTest MCP.
+Full connection details, credentials, and SQL patterns: `.cursor/rules/integrations/database_workflow.mdc`. Rule 33 (`workflow_rules.mdc`): when the user chose **Test**, use PostgreSQLTest MCP. Rule 34: if they did not choose any environment, ask first.
