@@ -69,6 +69,17 @@ Example:
 - **Command:** `.cursor/commands/jira-bug.md`
 - **Triggers:** `!jira-bug`, "create Jira bug (Experiments)", "rewrite this Jira bug with the template".
 
+## Confidence Score (Rule CONF.1) [MANDATORY]
+
+Your final response MUST include a **Confidence Score** (0–100%) at the end. Format:
+
+```
+**Confidence: XX%**
+Reason: <1-2 sentences explaining what raised or lowered confidence>
+```
+
+Scoring: 90–100% = all template fields filled from verified data; 70–89% = most fields filled but some assumptions made (list them); 50–69% = significant gaps in bug details; <50% = template is incomplete, recommend user fills missing parts. Be honest — a lower accurate score is more valuable than an inflated one.
+
 ## Output
 
 - Return the completed template ready to paste into Jira.

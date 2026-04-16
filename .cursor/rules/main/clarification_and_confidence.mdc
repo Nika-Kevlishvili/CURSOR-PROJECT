@@ -52,6 +52,49 @@ Before substantive tool use or file edits, verify you know:
 
 ---
 
+## Rule CONF.1: Confidence score in results [REQUIRED]
+
+**Intent:** After completing substantive work, the agent MUST include a **Confidence Score** (0–100%) in its final output so the user can gauge how reliable the result is.
+
+### When to show
+
+Show a confidence score whenever the agent produces a **deliverable** — including but not limited to:
+
+- Test cases or test scenarios
+- Bug validation verdicts
+- Database query results / analysis
+- Code fixes or refactoring suggestions
+- Playwright test scripts
+- Postman collections
+- Reports or summaries
+
+### Format
+
+At the end of the result, include a clearly visible block:
+
+```
+**Confidence: XX%**
+Reason: <1-2 sentence explanation of why this score>
+```
+
+### Scoring guidelines
+
+| Range | Meaning |
+|-------|---------|
+| **90–100%** | High confidence — based on verified data, clear requirements, strong evidence (e.g. Confluence docs, DB results, explicit user specs) |
+| **70–89%** | Moderate confidence — reasonable inference but some assumptions were made (list them) |
+| **50–69%** | Low confidence — significant gaps in information; result is a best-effort draft that needs user review |
+| **Below 50%** | Very low — flag prominently; recommend the user verify before acting on the result |
+
+### Rules
+
+1. **Be honest** — do not inflate the score to look competent. A lower honest score is more valuable than a high fake one.
+2. **Explain the score** — always state what factors raised or lowered confidence (e.g. "requirements were clear" vs "no Confluence page found, inferred from ticket title only").
+3. **Per-item scores** — when producing a list of items (e.g. multiple test cases), you MAY give an overall score plus per-item scores if confidence varies significantly across items.
+4. **Subagents** — subagents MUST also include confidence scores in their results returned to the parent agent.
+
+---
+
 ## Relation to other rules
 
 - **Autonomous operation** (`agent_rules.mdc` Rule 12): applies when the task is **already unambiguous**. Ambiguity → **clarify first**; that is not optional “confirmation spam,” it is **scope resolution**.

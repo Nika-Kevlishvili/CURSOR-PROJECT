@@ -29,6 +29,10 @@ Use this skill when the user wants to **run** (execute) Playwright tests from th
 - **Agent**: `.cursor/agents/energo-ts-run.md` (EnergoTS Playwright Test Runner).
 - **Command**: `.cursor/commands/energo-ts-run.md`.
 
+## Confidence Score (Rule CONF.1) [MANDATORY]
+
+The final output MUST include a **Confidence Score** (0–100%). Format: `**Confidence: XX%** Reason: <explanation>`. Scoring: 90–100% = tests ran cleanly, results deterministic; 70–89% = tests ran but some flakiness/environment issues; 50–69% = partial execution or unclear failures; <50% = execution incomplete, recommend re-run. Be honest — do not inflate.
+
 ## Rules
 
 - **Rule 0.3:** no Python IntegrationService in this workspace; follow MCP/Jira when needed.

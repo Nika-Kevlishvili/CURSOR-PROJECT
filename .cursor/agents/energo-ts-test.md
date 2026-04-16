@@ -131,11 +131,23 @@ Reference: `.cursor/commands/energo-ts-test.md` (HandsOff bridge section); `.cur
 - **Assertions**: `await expect(response).CheckResponse()`
 - **Payloads**: Domain-segregated payload generators in `jsons/payloadGenerators/domains/`
 
+## Confidence Score (Rule CONF.1) [MANDATORY]
+
+Your final response MUST include a **Confidence Score** (0–100%) at the end. Format:
+
+```
+**Confidence: XX%**
+Reason: <1-2 sentences explaining what raised or lowered confidence>
+```
+
+Scoring: 90–100% = requirements clear, framework patterns matched, all TCs mapped; 70–89% = reasonable but some assumptions on test steps or fixtures; 50–69% = significant gaps in requirements or framework understanding; <50% = spec is best-effort draft, recommend manual review. Be honest — a lower accurate score is more valuable than an inflated one.
+
 ## After Task Completion
 
 1. Summarize what was done (test created/modified/analyzed).
-2. Optional: write markdown under **Chat reports** per **`Cursor-Project/reports/README.md`** if the user requests a file (Rule 0.6 default: summarize in chat only; no Python ReportingService).
-3. End with **Agents involved: EnergoTSTestAgent** (and PhoenixExpert if consulted).
+2. Include **Confidence Score** per Rule CONF.1.
+3. Optional: write markdown under **Chat reports** per **`Cursor-Project/reports/README.md`** if the user requests a file (Rule 0.6 default: summarize in chat only; no Python ReportingService).
+4. End with **Agents involved: EnergoTSTestAgent** (and PhoenixExpert if consulted).
 
 ## Constraints
 

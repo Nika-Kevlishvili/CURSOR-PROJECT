@@ -45,10 +45,21 @@ Follow **exactly** the steps in **`.cursor/commands/hands-off.md`**. Summary:
 - **Rule 35/35a** – cross-dependency-finder runs first (Jira + codebase + shallow Confluence; **no** local merge/git); **technical_details** when Jira key provided.
 - All report and user-facing content in **English** (Rule 0.7).
 
+## Confidence Score (Rule CONF.1) [MANDATORY]
+
+Each subagent you invoke MUST return its own **Confidence Score** (0–100%). In the final HandsOff report, include an **aggregated confidence summary** listing each agent's score and an overall pipeline confidence. Format per agent:
+
+```
+**Confidence: XX%**
+Reason: <1-2 sentences>
+```
+
+Overall pipeline confidence = lowest individual agent score (weakest link). Include the aggregated table in the report and Slack message.
+
 ## Output
 
 - Confirm each step briefly as the flow runs.
-- Final summary: Jira key, tests run, pass/fail counts, report path, Slack delivery status.
+- Final summary: Jira key, tests run, pass/fail counts, report path, Slack delivery status, **aggregated confidence scores**.
 - End with: **Agents involved: HandsOff (orchestrator), CrossDependencyFinderAgent, TestCaseGeneratorAgent, EnergoTSTestAgent, PlaywrightTestValidatorAgent, EnergoTS Playwright Test Runner** (and PhoenixExpert if consulted).
 
 ## Reference

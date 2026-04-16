@@ -81,6 +81,17 @@ Save to **Cursor-Project/cross_dependencies/** (e.g. `YYYY-MM-DD_<scope_slug>.js
 - All output in **English** (Rule 0.7).
 - Optional: save markdown under **Chat reports** (`YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`**) if the user requests a file (Rule 0.6 default: not required).
 
+## Confidence Score (Rule CONF.1) [MANDATORY]
+
+Your final response MUST include a **Confidence Score** (0–100%) at the end. Format:
+
+```
+**Confidence: XX%**
+Reason: <1-2 sentences explaining what raised or lowered confidence>
+```
+
+Scoring: 90–100% = verified data + clear requirements; 70–89% = reasonable inference with some assumptions (list them); 50–69% = significant info gaps, user review needed; <50% = flag prominently, recommend verification. Be honest — a lower accurate score is more valuable than an inflated one.
+
 ## Output
 
 - Return the cross-dependency report (and file path if saved).

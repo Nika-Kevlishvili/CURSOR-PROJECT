@@ -102,6 +102,10 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
 - Always separate evidence quality from business verdict
 - Make recommendations actionable based on verdict type
 
+## Confidence Score (Rule CONF.1) [MANDATORY]
+
+The final output MUST include a **Confidence Score** (0–100%). Format: `**Confidence: XX%** Reason: <explanation>`. Scoring: 90–100% = Confluence exact match + code confirms; 70–89% = contextual match or partial code evidence; 50–69% = significant evidence gaps; <50% = validation incomplete, flag prominently. Be honest — do not inflate.
+
 ## Command reference
 
 - `.cursor/commands/bug-validate.md`

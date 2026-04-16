@@ -90,9 +90,20 @@ Return a **validation result** object (or equivalent) with:
 - All output (issues, summary, suggestions) in **English** (Rule 0.7).
 - If the HandsOff orchestrator (Rule 37) or the user requires a saved report, the orchestrator saves the validator’s result in `{JIRA_KEY}.md`; you may return the structured result only.
 
+## Confidence Score (Rule CONF.1) [MANDATORY]
+
+Your validation result MUST include a **Confidence Score** (0–100%) alongside the passed/issues/summary fields. Format:
+
+```
+**Confidence: XX%**
+Reason: <1-2 sentences explaining what raised or lowered confidence>
+```
+
+Scoring: 90–100% = all criteria clearly checked, no ambiguity; 70–89% = most criteria checked but some aspects could not be fully verified; 50–69% = significant gaps in validation ability; <50% = validation incomplete, recommend manual review. Be honest — a lower accurate score is more valuable than an inflated one.
+
 ## After Validation
 
-- Return the validation result to the caller (HandsOff orchestrator).
+- Return the validation result (including confidence score) to the caller (HandsOff orchestrator).
 - End with **Agents involved: PlaywrightTestValidatorAgent**.
 
 ## Reference

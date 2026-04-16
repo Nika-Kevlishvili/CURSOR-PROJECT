@@ -63,6 +63,10 @@ Example:
 - **Sub-agent:** `.cursor/agents/jira-bug.md`
 - **Rule:** `.cursor/rules/integrations/jira_bug_agent.mdc` (JIRA.0)
 
+## Confidence Score (Rule CONF.1) [MANDATORY]
+
+The final output MUST include a **Confidence Score** (0–100%). Format: `**Confidence: XX%** Reason: <explanation>`. Scoring: 90–100% = all fields filled from verified data; 70–89% = most fields filled with some assumptions; 50–69% = significant gaps in bug details; <50% = template incomplete, recommend user fills missing parts. Be honest — do not inflate.
+
 ## Phoenix delivery prohibition
 
 If the user says "Phoenix delivery" or "create bug in Phoenix delivery", respond with:

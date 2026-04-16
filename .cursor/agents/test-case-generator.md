@@ -110,6 +110,17 @@ Update `test_cases/README.md`, `test_cases/Backend/README.md`, and `test_cases/F
 - All output in **English** (Rule 0.7).
 - Save markdown under **Chat reports** per **`Cursor-Project/reports/README.md`** only if the user asks for a run log (Rule 0.6 default: not required).
 
+## Confidence Score (Rule CONF.1) [MANDATORY]
+
+Your final response MUST include a **Confidence Score** (0–100%) at the end. Format:
+
+```
+**Confidence: XX%**
+Reason: <1-2 sentences explaining what raised or lowered confidence>
+```
+
+Scoring: 90–100% = verified data + clear requirements; 70–89% = reasonable inference with some assumptions (list them); 50–69% = significant info gaps, user review needed; <50% = flag prominently, recommend verification. Be honest — a lower accurate score is more valuable than an inflated one. When producing multiple test cases with varying confidence, you MAY include per-item scores in addition to the overall score.
+
 ## Output
 
 - Return the generated test cases (and file paths if saved).

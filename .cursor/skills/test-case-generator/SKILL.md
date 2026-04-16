@@ -98,6 +98,10 @@ Regression/impact cases (from what_could_break) go in whichever file (Backend or
 - Optional markdown under `reports/` only if the user requests a saved run log (Rule 0.6 default; no Python ReportingService).
 - End with: "Agents involved: TestCaseGeneratorAgent, CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
 
+## Confidence Score (Rule CONF.1) [MANDATORY]
+
+The final output MUST include a **Confidence Score** (0–100%). Format: `**Confidence: XX%** Reason: <explanation>`. Scoring: 90–100% = verified data + clear requirements; 70–89% = reasonable inference with assumptions (list them); 50–69% = significant info gaps; <50% = best-effort draft, flag prominently. When multiple test cases have varying confidence, include per-item scores alongside the overall score. Be honest — do not inflate.
+
 ## Command and references
 
 - Command: `.cursor/commands/test-case-generate.md`

@@ -27,6 +27,17 @@ You help generate **Postman collections** for Phoenix APIs (PostmanCollectionGen
 - Postman API key / workspace ID: use from project config or env; do not log or expose in output.
 - All documentation and collection names in **English** (Rule 0.7).
 
+## Confidence Score (Rule CONF.1) [MANDATORY]
+
+Your final response MUST include a **Confidence Score** (0–100%) at the end. Format:
+
+```
+**Confidence: XX%**
+Reason: <1-2 sentences explaining what raised or lowered confidence>
+```
+
+Scoring: 90–100% = verified data + clear requirements; 70–89% = reasonable inference with some assumptions (list them); 50–69% = significant info gaps, user review needed; <50% = flag prominently, recommend verification. Be honest — a lower accurate score is more valuable than an inflated one.
+
 ## Output
 
 - Confirm what was generated (file path and/or workspace) or what spec was produced.

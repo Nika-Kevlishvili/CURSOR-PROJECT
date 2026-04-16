@@ -80,6 +80,17 @@ When running in this project, prefer using the BugFinderAgent Python API for con
 - Do **not** import `get_bug_finder_agent`. Execute Rule 32 steps in chat (see `.cursor/skills/phoenix-bug-validation/SKILL.md`).
 - Perform Confluence (MCP) and codebase search as above, then `bug_finder.format_validation_report(result)`.
 
+## Confidence Score (Rule CONF.1) [MANDATORY]
+
+Your final response MUST include a **Confidence Score** (0–100%) at the end of the analysis. Format:
+
+```
+**Confidence: XX%**
+Reason: <1-2 sentences explaining what raised or lowered confidence>
+```
+
+Scoring: 90–100% = verified data + clear requirements; 70–89% = reasonable inference with some assumptions (list them); 50–69% = significant info gaps, user review needed; <50% = flag prominently, recommend verification. Be honest — a lower accurate score is more valuable than an inflated one.
+
 ## Output
 
 - End with **Agents involved: BugFinderAgent, PhoenixExpert** (if PhoenixExpert was consulted).

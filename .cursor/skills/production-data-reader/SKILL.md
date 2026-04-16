@@ -21,6 +21,10 @@ description: Production database analysis via PostgreSQLProd MCP (readonly): lia
 
 - READ-ONLY; never write to production.
 
+## Confidence Score (Rule CONF.1) [MANDATORY]
+
+The final output MUST include a **Confidence Score** (0–100%). Format: `**Confidence: XX%** Reason: <explanation>`. Scoring: 90–100% = query results clear and complete; 70–89% = some interpretation needed; 50–69% = partial data or ambiguity; <50% = incomplete, recommend verification. Be honest — do not inflate.
+
 ## Integration
 
 - May consult PhoenixExpert for business logic.
