@@ -35,8 +35,7 @@ def load_env():
         "JIRA_EMAIL": "Jira account email",
         "JIRA_API_TOKEN": "Jira API token",
         "GEMINI_API_KEY": "Google Gemini API key (free tier)",
-        "SLACK_BOT_TOKEN": "Slack bot token (xoxb-...)",
-        "SLACK_CHANNEL_ID": "Slack channel ID (e.g. C0123456789)",
+        "SLACK_WEBHOOK_URL": "Slack incoming webhook URL bound to the target channel",
     }
     optional = {
         "CONFLUENCE_BASE_URL": None,
@@ -280,10 +279,7 @@ def main():
     md_path = save_report(report, jira_key)
 
     print("\n[5/5] Sending report to Slack...")
-    slack = SlackReporter(
-        bot_token=config["SLACK_BOT_TOKEN"],
-        channel=config["SLACK_CHANNEL_ID"],
-    )
+    slack = SlackReporter(webhook_url=config["SLACK_WEBHOOK_URL"])
     slack.send_report(report)
     print("  Slack notification sent.")
 
