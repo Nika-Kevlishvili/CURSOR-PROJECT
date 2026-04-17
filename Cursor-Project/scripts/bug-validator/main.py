@@ -35,11 +35,10 @@ def load_env():
         "JIRA_EMAIL": "Jira account email",
         "JIRA_API_TOKEN": "Jira API token",
         "GEMINI_API_KEY": "Google Gemini API key (free tier)",
+        "SLACK_BOT_TOKEN": "Slack bot token (xoxb-...)",
         "SLACK_CHANNEL_ID": "Slack channel ID (e.g. C0123456789)",
     }
     optional = {
-        "SLACK_WEBHOOK_URL": None,
-        "SLACK_BOT_TOKEN": None,
         "CONFLUENCE_BASE_URL": None,
         "CONFLUENCE_EMAIL": None,
         "CONFLUENCE_API_TOKEN": None,
@@ -61,13 +60,6 @@ def load_env():
 
     for key in optional:
         config[key] = os.environ.get(key)
-
-    if not config.get("SLACK_BOT_TOKEN") and not config.get("SLACK_WEBHOOK_URL"):
-        print("ERROR: Missing Slack notifier credentials.")
-        print("Provide one of:")
-        print("  SLACK_BOT_TOKEN — preferred (forces channel ID routing)")
-        print("  SLACK_WEBHOOK_URL — fallback (may ignore channel override)")
-        sys.exit(1)
 
     if config.get("CONFLUENCE_SPACE_KEYS"):
         config["CONFLUENCE_SPACE_KEYS"] = [
@@ -289,9 +281,8 @@ def main():
 
     print("\n[5/5] Sending report to Slack...")
     slack = SlackReporter(
-        webhook_url=config["SLACK_WEBHOOK_URL"],
+        bot_token=config["SLACK_BOT_TOKEN"],
         channel=config["SLACK_CHANNEL_ID"],
-        bot_token=config.get("SLACK_BOT_TOKEN"),
     )
     slack.send_report(report)
     print("  Slack notification sent.")

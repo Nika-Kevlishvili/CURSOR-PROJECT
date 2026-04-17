@@ -65,7 +65,6 @@ jobs:
           CONFLUENCE_SPACE_KEYS: ${{ secrets.CONFLUENCE_SPACE_KEYS }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_CHANNEL_ID: C0AUEEDVCEL
           PHOENIX_LOCAL_ROOT: ${{ secrets.PHOENIX_LOCAL_ROOT }}
         run: python Cursor-Project/scripts/bug-validator/main.py --jira-key "${{ steps.jira.outputs.key }}"
