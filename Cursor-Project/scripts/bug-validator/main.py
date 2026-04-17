@@ -36,14 +36,13 @@ def load_env():
         "JIRA_API_TOKEN": "Jira API token",
         "GEMINI_API_KEY": "Google Gemini API key (free tier)",
         "SLACK_WEBHOOK_URL": "Slack incoming webhook URL",
+        "SLACK_CHANNEL_ID": "Slack channel ID (e.g. C0123456789)",
     }
     optional = {
         "CONFLUENCE_BASE_URL": None,
         "CONFLUENCE_EMAIL": None,
         "CONFLUENCE_API_TOKEN": None,
         "CONFLUENCE_SPACE_KEYS": None,
-        "SLACK_CHANNEL_ID": None,
-        "SLACK_CHANNEL": "bug-validation",
     }
 
     config = {}
@@ -283,11 +282,7 @@ def main():
     print("\n[5/5] Sending report to Slack...")
     slack = SlackReporter(
         webhook_url=config["SLACK_WEBHOOK_URL"],
-        channel=(
-            config.get("SLACK_CHANNEL_ID")
-            or config.get("SLACK_CHANNEL")
-            or "bug-validation"
-        ),
+        channel=config["SLACK_CHANNEL_ID"],
     )
     slack.send_report(report)
     print("  Slack notification sent.")
