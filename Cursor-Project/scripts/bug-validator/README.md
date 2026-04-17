@@ -29,6 +29,8 @@ Add these secrets in your GitHub repository (Settings → Secrets → Actions):
 | `JIRA_API_TOKEN` | Jira API token | [Create here](https://id.atlassian.com/manage-profile/security/api-tokens) |
 | `GEMINI_API_KEY` | Google Gemini API key (free tier) | [Get from Google AI Studio](https://makersuite.google.com/) |
 | `SLACK_WEBHOOK_URL` | Slack incoming webhook | [Create here](https://api.slack.com/messaging/webhooks) |
+| `SLACK_CHANNEL_ID` | *(optional)* Slack channel ID override (recommended for reliability) | `C0AUEEDVCEL` |
+| `SLACK_CHANNEL` | *(optional)* Slack channel name override (fallback) | `bug-validation` |
 | `CONFLUENCE_BASE_URL` | *(optional)* Confluence base URL | `https://yourorg.atlassian.net` |
 | `CONFLUENCE_EMAIL` | *(optional)* Confluence email | `user@example.com` |
 | `CONFLUENCE_API_TOKEN` | *(optional)* Confluence API token | Same as Jira token if Atlassian Cloud |

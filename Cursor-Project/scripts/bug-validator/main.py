@@ -42,6 +42,8 @@ def load_env():
         "CONFLUENCE_EMAIL": None,
         "CONFLUENCE_API_TOKEN": None,
         "CONFLUENCE_SPACE_KEYS": None,
+        "SLACK_CHANNEL_ID": None,
+        "SLACK_CHANNEL": "bug-validation",
     }
 
     config = {}
@@ -279,7 +281,14 @@ def main():
     md_path = save_report(report, jira_key)
 
     print("\n[5/5] Sending report to Slack...")
-    slack = SlackReporter(webhook_url=config["SLACK_WEBHOOK_URL"])
+    slack = SlackReporter(
+        webhook_url=config["SLACK_WEBHOOK_URL"],
+        channel=(
+            config.get("SLACK_CHANNEL_ID")
+            or config.get("SLACK_CHANNEL")
+            or "bug-validation"
+        ),
+    )
     slack.send_report(report)
     print("  Slack notification sent.")
 
