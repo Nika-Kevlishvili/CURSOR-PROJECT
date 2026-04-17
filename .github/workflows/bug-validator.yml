@@ -24,63 +24,38 @@ env:
 
 jobs:
   validate-bug:
-    # Jira repository_dispatch has no inputs → use self-hosted runner when available
     runs-on: ${{ github.event.inputs.runner || 'self-hosted' }}
     timeout-minutes: 15
 
+    defaults:
+      run:
+        shell: bash
+
     steps:
-      # Windows MAX_PATH: deep paths (e.g. __MACOSX, nested deps) fail checkout without this
       - name: Enable Git long paths (Windows)
         if: runner.os == 'Windows'
-        shell: cmd
         run: git config --global core.longpaths true
 
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python (Non-Windows)
-        if: runner.os != 'Windows'
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Verify Python 3.11 (Windows)
-        if: runner.os == 'Windows'
-        shell: cmd
-        run: py -3.11 --version
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -r Cursor-Project/scripts/bug-validator/requirements.txt
 
-      - name: Install dependencies (Windows)
-        if: runner.os == 'Windows'
-        shell: cmd
-        run: py -3.11 -m pip install -r Cursor-Project/scripts/bug-validator/requirements.txt
-
-      - name: Install dependencies (Non-Windows)
-        if: runner.os != 'Windows'
-        run: python -m pip install -r Cursor-Project/scripts/bug-validator/requirements.txt
-
-      # Use Python (not bash): Windows self-hosted runners often have no bash on PATH
-      - name: Extract Jira key (Windows)
-        if: runner.os == 'Windows'
-        id: jira_win
-        shell: cmd
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          KEY_DISPATCH: ${{ github.event.client_payload.jira_key }}
-          KEY_INPUT: ${{ github.event.inputs.jira_key }}
-        run: py -3.11 Cursor-Project/scripts/bug-validator/extract_jira_key.py
-
-      - name: Extract Jira key (Non-Windows)
-        if: runner.os != 'Windows'
-        id: jira_nix
+      - name: Extract Jira key
+        id: jira
         env:
           EVENT_NAME: ${{ github.event_name }}
           KEY_DISPATCH: ${{ github.event.client_payload.jira_key }}
           KEY_INPUT: ${{ github.event.inputs.jira_key }}
         run: python Cursor-Project/scripts/bug-validator/extract_jira_key.py
 
-      - name: Run Bug Validator (Windows)
-        if: runner.os == 'Windows'
-        shell: cmd
+      - name: Run Bug Validator
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
@@ -92,26 +67,8 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_CHANNEL_ID: C0AUEEDVCEL
-          # Optional: absolute path to Phoenix on self-hosted runner (if Phoenix is not in the repo checkout)
           PHOENIX_LOCAL_ROOT: ${{ secrets.PHOENIX_LOCAL_ROOT }}
-        run: py -3.11 Cursor-Project/scripts/bug-validator/main.py --jira-key "${{ steps.jira_win.outputs.key || steps.jira_nix.outputs.key }}"
-
-      - name: Run Bug Validator (Non-Windows)
-        if: runner.os != 'Windows'
-        env:
-          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-          CONFLUENCE_BASE_URL: ${{ secrets.CONFLUENCE_BASE_URL }}
-          CONFLUENCE_EMAIL: ${{ secrets.CONFLUENCE_EMAIL }}
-          CONFLUENCE_API_TOKEN: ${{ secrets.CONFLUENCE_API_TOKEN }}
-          CONFLUENCE_SPACE_KEYS: ${{ secrets.CONFLUENCE_SPACE_KEYS }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_CHANNEL_ID: C0AUEEDVCEL
-          # Optional: absolute path to Phoenix on self-hosted runner (if Phoenix is not in the repo checkout)
-          PHOENIX_LOCAL_ROOT: ${{ secrets.PHOENIX_LOCAL_ROOT }}
-        run: python Cursor-Project/scripts/bug-validator/main.py --jira-key "${{ steps.jira_win.outputs.key || steps.jira_nix.outputs.key }}"
+        run: python Cursor-Project/scripts/bug-validator/main.py --jira-key "${{ steps.jira.outputs.key }}"
 
       - name: Upload validation report
         if: always()
