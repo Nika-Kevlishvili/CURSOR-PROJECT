@@ -20,14 +20,58 @@ class LocalPhoenixClient:
             phoenix_root: Optional absolute path to Phoenix directory. 
                          If None, defaults to Cursor-Project/Phoenix relative to this script.
         """
-        if phoenix_root:
-            self.phoenix_root = Path(phoenix_root)
+        # Default: Cursor-Project/Phoenix relative to this script location
+        # From: Cursor-Project/scripts/bug-validator/local_phoenix_client.py
+        # To:   Cursor-Project/Phoenix
+        script_dir = Path(__file__).resolve().parent  # bug-validator/
+        default_root = script_dir.parent.parent / "Phoenix"  # Cursor-Project/Phoenix
+
+        self.path_resolution_note = None
+        self.path_resolution_warning = None
+
+        env_root = self._normalize_root(phoenix_root) if phoenix_root else None
+        default_root = self._normalize_root(str(default_root))
+
+        if env_root and env_root.exists() and env_root.is_dir():
+            resolved_root, root_note = self._resolve_scan_root(env_root)
+            self.phoenix_root = resolved_root
+            self.path_resolution_note = root_note
+        elif env_root:
+            self.phoenix_root = default_root
+            self.path_resolution_warning = (
+                f"PHOENIX_LOCAL_ROOT path '{env_root}' is unavailable. "
+                f"Falling back to default '{default_root}'."
+            )
         else:
-            # Default: Cursor-Project/Phoenix relative to this script location
-            # From: Cursor-Project/scripts/bug-validator/local_phoenix_client.py
-            # To:   Cursor-Project/Phoenix
-            script_dir = Path(__file__).resolve().parent  # bug-validator/
-            self.phoenix_root = script_dir.parent.parent / "Phoenix"  # Cursor-Project/Phoenix
+            self.phoenix_root = default_root
+            self.path_resolution_note = "Using default Cursor-Project/Phoenix path."
+
+    def _normalize_root(self, raw_path: str) -> Path:
+        """
+        Normalize user-provided path values from environment variables.
+        Handles quotes, env vars and ~ expansion.
+        """
+        cleaned = raw_path.strip().strip('"').strip("'")
+        expanded = os.path.expandvars(os.path.expanduser(cleaned))
+        return Path(expanded).resolve()
+
+    def _resolve_scan_root(self, env_root: Path) -> tuple[Path, str]:
+        """
+        Resolve best scan root from PHOENIX_LOCAL_ROOT.
+        If a single Phoenix repo path is provided, use its parent Phoenix folder
+        when that parent clearly contains multiple repos.
+        """
+        # Case: env points to a single repo (e.g. .../Phoenix/phoenix-core)
+        parent = env_root.parent
+        if parent.exists() and parent.is_dir() and parent.name.lower() == "phoenix":
+            siblings = [p for p in parent.iterdir() if p.is_dir() and p.name.startswith("phoenix-")]
+            if len(siblings) >= 2:
+                return parent, (
+                    f"PHOENIX_LOCAL_ROOT pointed to single repo '{env_root.name}'. "
+                    f"Using parent '{parent}' to scan all Phoenix repos."
+                )
+
+        return env_root, "Using PHOENIX_LOCAL_ROOT environment override."
         
     def _check_phoenix_availability(self) -> Optional[str]:
         """
@@ -72,6 +116,9 @@ class LocalPhoenixClient:
                 "source": "local_phoenix"
             }
 
+        if self.path_resolution_warning:
+            print(f"  WARNING: {self.path_resolution_warning}")
+
         keywords = self._extract_search_terms(summary, description)
         all_files = []
         all_snippets = []
@@ -104,7 +151,8 @@ class LocalPhoenixClient:
             "snippets": all_snippets,
             "keywords_used": keywords,
             "status": "ok" if all_files else "no_results",
-            "source": "local_phoenix"
+            "source": "local_phoenix",
+            "note": self.path_resolution_warning or self.path_resolution_note,
         }
 
     def _search_files_for_keyword(self, keyword: str) -> List[Dict]:

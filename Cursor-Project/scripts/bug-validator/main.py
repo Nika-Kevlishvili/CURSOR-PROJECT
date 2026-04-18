@@ -156,6 +156,8 @@ def format_markdown_report(report: dict) -> str:
             lines.append(f"**Files matched:** {scan['files_found']}")
         if scan.get("error"):
             lines.append(f"**Scan note:** {scan['error']}")
+        elif scan.get("note"):
+            lines.append(f"**Scan note:** {scan['note']}")
         lines.append("")
 
     lines.extend([
@@ -269,6 +271,7 @@ def main():
         "code_scan": {
             "status": code_results.get("status"),
             "error": code_results.get("error"),
+            "note": code_results.get("note"),
             "files_found": len(code_results.get("files") or []),
             "snippets_sent": len(code_results.get("snippets") or []),
             "phoenix_root": str(phoenix_client.phoenix_root),
