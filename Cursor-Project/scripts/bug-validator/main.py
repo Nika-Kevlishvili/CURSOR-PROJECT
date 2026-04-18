@@ -6,11 +6,18 @@ Flow: Jira → Confluence → Local Phoenix code → Gemini analysis → Slack r
 """
 
 import argparse
+import io
 import json
 import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+# Ensure UTF-8 output on Windows (cp1252 can't handle Georgian/Cyrillic chars)
+if sys.stdout and hasattr(sys.stdout, "buffer"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+if sys.stderr and hasattr(sys.stderr, "buffer"):
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 from jira_client import JiraClient
 from local_phoenix_client import create_client as create_local_phoenix_client
