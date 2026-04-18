@@ -17,6 +17,11 @@ from local_phoenix_client import create_client as create_local_phoenix_client
 from confluence_client import ConfluenceClient
 from analyzer import BugAnalyzer
 from slack_reporter import SlackReporter
+from branch_resolver import (
+    format_switch_summary,
+    resolve_environment,
+    switch_phoenix_repos_to_env,
+)
 from slack_report_template import (
     build_confluence_basis_markdown,
     build_sources_and_alignment_markdown,
@@ -91,6 +96,8 @@ def format_markdown_report(report: dict) -> str:
     confluence = report.get("confluence_validation", {})
     code = report.get("code_validation", {})
     verdict = report.get("final_verdict", {})
+    environment = report.get("environment", {})
+    branch_switch = report.get("branch_switch", {})
     ts = report.get("timestamp", datetime.now(timezone.utc).isoformat())
 
     lines = [
@@ -158,6 +165,24 @@ def format_markdown_report(report: dict) -> str:
             lines.append(f"**Scan note:** {scan['error']}")
         elif scan.get("note"):
             lines.append(f"**Scan note:** {scan['note']}")
+        lines.append("")
+
+    if environment or branch_switch:
+        env_name = environment.get("detected") or branch_switch.get("env") or "?"
+        env_origin = "from bug text" if environment.get("explicit") else "default (no env keyword found)"
+        lines.append(f"**Environment scanned:** `{env_name}` ({env_origin})")
+        repos = branch_switch.get("repos") if isinstance(branch_switch, dict) else None
+        if repos:
+            lines.append("**Repository branches:**")
+            for repo in repos:
+                before = repo.get("before") or "?"
+                after = repo.get("after") or "?"
+                status = repo.get("status", "?")
+                lines.append(
+                    f"- `{repo.get('repo', '?')}`: `{before}` -> `{after}` ({status})"
+                )
+        elif isinstance(branch_switch, dict) and branch_switch.get("error"):
+            lines.append(f"**Branch switch note:** {branch_switch['error']}")
         lines.append("")
 
     lines.extend([
@@ -238,6 +263,29 @@ def main():
     # --- Step 3: Search local Phoenix codebase ---
     print("\n[3/5] Analyzing local Phoenix codebase...")
     phoenix_client = create_local_phoenix_client()
+
+    # 3a. Resolve target environment from bug text and switch every Phoenix repo
+    #     under PHOENIX_LOCAL_ROOT to the matching branch BEFORE scanning.
+    bug_text = f"{bug.get('summary', '')}\n{bug.get('description', '')}"
+    env, env_was_explicit = resolve_environment(bug_text)
+    print(
+        f"  Environment detected: '{env}' "
+        f"({'from bug text' if env_was_explicit else 'default — no env keyword in bug'})"
+    )
+
+    # By default, fetch + merge from origin to get latest code for the target env.
+    # Set BUG_VALIDATOR_SKIP_FETCH=1 to disable fetching (use only local refs).
+    skip_fetch = os.environ.get("BUG_VALIDATOR_SKIP_FETCH", "").lower() in (
+        "1", "true", "yes",
+    )
+    branch_switch = switch_phoenix_repos_to_env(
+        phoenix_root=phoenix_client.phoenix_root,
+        env=env,
+        fetch=not skip_fetch,
+    )
+    for line in format_switch_summary(branch_switch):
+        print(f"  {line}")
+
     code_results = phoenix_client.search_for_bug(
         summary=bug["summary"],
         description=bug["description"],
@@ -265,6 +313,12 @@ def main():
     report = {
         "timestamp": timestamp,
         "bug": bug,
+        "environment": {
+            "detected": env,
+            "explicit": env_was_explicit,
+            "default_used": not env_was_explicit,
+        },
+        "branch_switch": branch_switch,
         "expected_behavior": analysis.get("expected_behavior", {}),
         "confluence_validation": confluence_for_report,
         "code_validation": analysis.get("code_validation", {}),

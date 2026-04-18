@@ -377,6 +377,44 @@ def build_confluence_basis_markdown(report: dict) -> str | None:
     return "\n".join(lines).rstrip() + "\n"
 
 
+def _format_environment_block(report: dict) -> str:
+    """
+    Compact summary of which environment was scanned and which branch was
+    chosen per Phoenix repo. Returns an empty string when no env data exists.
+    """
+    env_info = report.get("environment") or {}
+    branch_switch = report.get("branch_switch") or {}
+    env_name = env_info.get("detected") or branch_switch.get("env")
+    if not env_name:
+        return ""
+
+    explicit = bool(env_info.get("explicit"))
+    origin = "from bug text" if explicit else "default — no env keyword in bug"
+
+    lines = [f"*Environment scanned:* `{env_name}` _({origin})_"]
+    repos = branch_switch.get("repos") if isinstance(branch_switch, dict) else None
+    if repos:
+        repo_lines = []
+        for repo in repos[:12]:
+            name = repo.get("repo", "?")
+            after = repo.get("after") or "?"
+            status = repo.get("status", "?")
+            marker = {
+                "switched": ":arrows_counterclockwise:",
+                "updated": ":arrow_down:",
+                "already_on_branch": ":white_check_mark:",
+                "skipped": ":heavy_minus_sign:",
+                "failed": ":x:",
+            }.get(status, ":grey_question:")
+            repo_lines.append(f"{marker} `{name}` -> `{after}`")
+        if repo_lines:
+            lines.append("\n".join(repo_lines))
+    elif isinstance(branch_switch, dict) and branch_switch.get("error"):
+        lines.append(f"_Branch switch note:_ {_truncate(branch_switch['error'], 200)}")
+
+    return "\n".join(lines)
+
+
 def build_slack_blocks(report: dict) -> list[dict]:
     """Assemble Slack Block Kit payload for the bug validation report."""
     bug = report.get("bug", {})
@@ -386,6 +424,8 @@ def build_slack_blocks(report: dict) -> list[dict]:
     verdict = VERDICT_EMOJIS.get(verdict_raw, f":question: *{verdict_raw}*")
 
     usage_text = build_sources_and_alignment_mrkdwn(report)
+
+    env_block_text = _format_environment_block(report)
 
     blocks: list[dict] = [
         {
@@ -402,14 +442,25 @@ def build_slack_blocks(report: dict) -> list[dict]:
                 {"type": "mrkdwn", "text": f"*Verdict:*\n{verdict}"},
             ],
         },
+    ]
+
+    if env_block_text:
+        blocks.append(
+            {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": env_block_text},
+            }
+        )
+
+    blocks.append(
         {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
                 "text": _truncate(usage_text, 2950),
             },
-        },
-    ]
+        }
+    )
 
     basis = build_confluence_basis_mrkdwn(report)
     if basis:
