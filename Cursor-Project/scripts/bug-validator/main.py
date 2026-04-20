@@ -250,11 +250,35 @@ def main():
     # --- Step 4: Analyze with Gemini ---
     print("\n[4/5] Running AI analysis (Gemini)...")
     analyzer = BugAnalyzer(api_key=config["GEMINI_API_KEY"])
-    analysis = analyzer.analyze(
-        bug=bug,
-        confluence_data=confluence_result,
-        code_data=code_results,
-    )
+    try:
+        analysis = analyzer.analyze(
+            bug=bug,
+            confluence_data=confluence_result,
+            code_data=code_results,
+        )
+    except Exception as exc:
+        print(f"  Gemini analysis failed after retries: {exc}")
+        analysis = {
+            "expected_behavior": {
+                "bug_claims": bug.get("summary", "N/A"),
+                "context": "AI analysis unavailable due to Gemini API outage",
+            },
+            "confluence_validation": {
+                "evidence_strength": "search_failed",
+                "explanation": f"Gemini API was unreachable: {exc}",
+                "sources": [],
+            },
+            "code_validation": {
+                "behavior_match": "could_not_verify",
+                "explanation": f"AI analysis could not run: {exc}",
+                "references": [],
+            },
+            "final_verdict": {
+                "verdict": "INSUFFICIENT_EVIDENCE",
+                "reasoning": f"Gemini API returned persistent errors ({exc}). Manual review required.",
+                "next_steps": "Re-run the validator once the Gemini API is available, or perform manual validation.",
+            },
+        }
     verdict = analysis.get('final_verdict', {}).get('verdict', 'INSUFFICIENT_EVIDENCE')
     print(f"  Verdict: {verdict}")
 

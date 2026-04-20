@@ -108,10 +108,11 @@ class BugAnalyzer:
 
     def _request_with_retry(self, url: str, payload: dict) -> dict:
         """
-        Retry transient Gemini API failures (timeouts, 5xx, 429) with backoff.
+        Retry transient Gemini API failures (timeouts, 5xx, 429) with
+        exponential backoff.  Raises on non-transient errors; raises
+        the last exception when all attempts are exhausted.
         """
-        max_attempts = 4
-        backoff_seconds = [2, 4, 8]
+        max_attempts = 6
         last_error = None
 
         for attempt in range(1, max_attempts + 1):
@@ -120,26 +121,31 @@ class BugAnalyzer:
                     url,
                     params={"key": self.api_key},
                     json=payload,
-                    timeout=60,
+                    timeout=90,
                 )
                 if resp.status_code in (429, 500, 502, 503, 504):
+                    wait_s = min(2 ** attempt, 60)
+                    last_error = requests.exceptions.HTTPError(
+                        f"HTTP {resp.status_code}", response=resp,
+                    )
                     if attempt < max_attempts:
-                        wait_s = backoff_seconds[min(attempt - 1, len(backoff_seconds) - 1)]
-                        print(f"  Gemini transient error HTTP {resp.status_code}; retrying in {wait_s}s (attempt {attempt}/{max_attempts})")
+                        print(f"  Gemini transient error HTTP {resp.status_code}; "
+                              f"retrying in {wait_s}s (attempt {attempt}/{max_attempts})")
                         time.sleep(wait_s)
                         continue
+                    raise last_error
                 resp.raise_for_status()
                 return resp.json()
             except requests.RequestException as exc:
                 last_error = exc
+                wait_s = min(2 ** attempt, 60)
                 if attempt < max_attempts:
-                    wait_s = backoff_seconds[min(attempt - 1, len(backoff_seconds) - 1)]
-                    print(f"  Gemini request failed: {exc}; retrying in {wait_s}s (attempt {attempt}/{max_attempts})")
+                    print(f"  Gemini request failed: {exc}; "
+                          f"retrying in {wait_s}s (attempt {attempt}/{max_attempts})")
                     time.sleep(wait_s)
                     continue
                 raise
 
-        # Safety fallback (the loop should always return or raise before this line).
         raise RuntimeError(f"Gemini request failed after {max_attempts} attempts: {last_error}")
 
     def _build_prompt(self, bug: dict, confluence_data: dict, code_data: dict) -> str:
