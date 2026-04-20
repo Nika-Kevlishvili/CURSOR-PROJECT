@@ -18,6 +18,7 @@ ALL bug validation requests MUST be handled by BugFinderAgent - NO EXCEPTIONS.
 - Report: "Confluence validation: [evidence strength] - [explanation]"
 
 ### Step 3: Code Validation (Behavior Analysis)
+- Rule 38 branch-context first: resolve env from bug text and run `!update <branch>` per `git_sync_workflow.mdc` before reading Phoenix code (default `prod` if env missing)
 - Search codebase using code search tools
 - Analyze actual implementation behavior
 - Check if code matches faulty behavior described in bug

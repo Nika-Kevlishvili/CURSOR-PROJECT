@@ -35,10 +35,10 @@ Downstream **energo-ts-test** also reads this folder; keep cases consistent with
 
 ## Workflow (from TEST_CASE_GENERATOR_AGENT.md)
 
-### 1. Confluence (MCP)
+### 1. Confluence (MCP) — Rule 39 scope applies
 
-- Get cloudId → search Confluence (query from prompt) → get relevant pages.
-- Collect: title, content, pageId, spaceId for relevant docs.
+- **Bug tickets:** Get cloudId → search Confluence (query from prompt) → get relevant pages. Collect: title, content, pageId, spaceId for relevant docs.
+- **Non-bug tickets (task/change/feedback/feature):** Do NOT run broad Confluence search. If the Jira ticket description contains Confluence link(s), fetch **only those specific pages** via `getConfluencePage` (extract page ID from URL). If no Confluence link is in the ticket, skip Confluence entirely — use Jira description + codebase as the sole requirements source.
 
 ### 2. Codebase
 

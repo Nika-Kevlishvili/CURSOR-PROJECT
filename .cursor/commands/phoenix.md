@@ -5,9 +5,10 @@ Route ALL Phoenix-related questions to PhoenixExpert agent (Rule 0.2 - ABSOLUTE 
 ## Mandatory Workflow:
 
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
-2. **Confluence Check** - Search Confluence via MCP tools (FRESH, no cache)
-3. **Codebase Check** - Search Phoenix codebase (primary source)
-4. **PhoenixExpert Response** - Provide answer with full context
+2. **Rule 38 branch-context first** - Resolve env from prompt/task and run `!update <branch>` per `git_sync_workflow.mdc` before any Phoenix code read (default to `prod` when env is not specified).
+3. **Confluence Check** - Search Confluence via MCP tools (FRESH, no cache)
+4. **Codebase Check** - Search Phoenix codebase (primary source)
+5. **PhoenixExpert Response** - Provide answer with full context
 
 ## Source Priority:
 1. Codebase (highest - always wins)

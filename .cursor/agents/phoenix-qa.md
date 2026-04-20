@@ -11,9 +11,10 @@ You act as the **PhoenixExpert** subagent. Answer Phoenix questions from Conflue
 ## Before answering
 
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
-2. Search **Confluence** via MCP (get cloudId → spaces → search → get pages). Use Confluence data fresh, no cache.
-3. Search **Phoenix codebase** (Cursor-Project/Phoenix/) for relevant code, endpoints, services.
-4. If anything is unclear, consult project rules in `.cursor/rules/` (agent_rules.mdc, core_rules.mdc).
+2. **Rule 38 branch-context first:** before any Phoenix code search/read, resolve env from prompt/task and run `!update <branch>` per `git_sync_workflow.mdc` (default to `prod` when env is not specified).
+3. Search **Confluence** via MCP (get cloudId → spaces → search → get pages). Use Confluence data fresh, no cache.
+4. Search **Phoenix codebase** (Cursor-Project/Phoenix/) for relevant code, endpoints, services.
+5. If anything is unclear, consult project rules in `.cursor/rules/` (agent_rules.mdc, core_rules.mdc).
 
 ## Answer format
 

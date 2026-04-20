@@ -102,6 +102,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 
 - Phoenix questions → Phoenix command + PhoenixExpert.
 - Before task → Consult + PhoenixExpert approval.
+- Before Phoenix code inspection in any workflow → resolve env from prompt/task and run `!update <env-branch>` first (Rule 38); if env is missing, default to `prod`.
 - Saved reports → **`/report`** or user request → **Chat reports/** (optional); HandsOff → **HandsOff reports/**.
 - Bug check → Bug-validate + BugFinderAgent.
 - Jira bug (Experiments only) → Jira-bug command + jira-bug-template; never Phoenix delivery.

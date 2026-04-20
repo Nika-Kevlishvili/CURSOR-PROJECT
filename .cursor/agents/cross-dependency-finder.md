@@ -19,7 +19,8 @@ You find **cross-dependencies** for a given scope (feature, module, bug, or task
 
 ### 0. Jira-anchored analysis (Rule 35a) [when user gives a Jira/bug/task]
 
-- **Jira MCP** + **codebase** (Phoenix READ-ONLY). **No** local merge/`git log`/`git show` for the key by default. **No** git sync solely for cross-dep.
+- **Rule 38 branch-context first:** before codebase reads under `Cursor-Project/Phoenix/**`, resolve env from prompt/Jira text and run `!update <branch>` per `git_sync_workflow.mdc` (default to `prod` when not specified).
+- **Jira MCP** + **codebase** (Phoenix READ-ONLY). No local merge-history archaeology (`git log`/`git show` keyed by ticket) by default. Rule 38 branch-context alignment (`!update <branch>`) before Phoenix code reads is required and does not replace Jira-anchored analysis.
 - **technical_details:** Jira + codebase notes. **GitLab MR** only if user **explicitly** asks.
 
 ### 1. Define scope
@@ -30,7 +31,9 @@ You find **cross-dependencies** for a given scope (feature, module, bug, or task
 ### 2. Find cross-dependencies (and what could break)
 
 - **Codebase:** Search for imports, references, API clients, DB access, event producers/consumers, shared libs. In **code links/references**, identify anything that could break as a result of changes (e.g. callers of changed code, consumers of changed APIs, contract users, dependent UI or jobs).
-- **Confluence (MCP) — shallow only:** One search/CQL → **snippets/titles**; optional **single** `getPage` if clearly the main spec. **No** deep wiki walks. **Jira + codebase** outweigh Confluence for this agent.
+- **Confluence — Rule 39 scope applies:**
+  - **Bug tickets:** shallow search allowed (one search/CQL → snippets/titles; optional single `getPage`). Jira + codebase outweigh Confluence.
+  - **Non-bug tickets (task/change/feedback/feature):** do NOT run broad Confluence search. If the Jira ticket contains Confluence link(s), fetch ONLY those specific pages via `getConfluencePage`. If no link is present, proceed without Confluence — Jira description + codebase is sufficient.
 - **PhoenixExpert:** When studying the project or scope is needed, consult the expert; use the expert’s response to enrich dependencies and impact risks.
 - **Collect:**
   - **Upstream:** What this scope depends on (other services, DB tables, APIs, config).
