@@ -18,7 +18,7 @@ You orchestrate the **full HandsOff flow** when the user provides a **Jira ticke
 Follow **exactly** the steps in **`.cursor/commands/hands-off.md`**. Summary:
 
 1. **Get Jira ticket** – Parse issue key from input. Jira MCP getJiraIssue(cloudId, issueKey) → description, summary, tester/assignee. (**Rule 0.3:** no Python IntegrationService here.)
-2. **Cross-dependencies** – Run cross-dependency-finder for this Jira key (Rule 35a: Jira + codebase + shallow Confluence; **no** local merge/git). Pass output as cross_dependency_data.
+2. **Cross-dependencies** – Run cross-dependency-finder for this Jira key (Rule 35a: Jira + codebase + shallow Confluence; no local merge-history archaeology/git-snapshot. **Rule 38 environment branch-context alignment via `!update <branch>` is required before Phoenix code reads**). Pass output as cross_dependency_data.
 3. **Test cases** – **MANDATORY:** test-case-generator MUST load **`Cursor-Project/config/playwright_generation/playwright instructions/`** (full set per `.cursor/commands/test-case-generate.md` step 0) before writing `.md` files. Then run test-case-generator; save as **two separate files** — `Cursor-Project/test_cases/Backend/<Topic_name>.md` (TC-BE-N only) and `Cursor-Project/test_cases/Frontend/<Topic_name>.md` (TC-FE-N only). **Verify** both `.md` files exist on disk; if missing, write them directly. Update `test_cases/README.md`, `test_cases/Backend/README.md`, and `test_cases/Frontend/README.md`.
 4. **Playwright tests** – **MUST** invoke **energo-ts-test agent (EnergoTSTestAgent)** with the **test case .md paths** from Step 3 and Jira key/title. The agent creates the spec from test case content using the EnergoTS framework (fixtures); do NOT write the spec manually or with ad-hoc code. Output **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**. **Verify** file exists; if not, invoke the agent again with explicit paths. Cursor branch only.
 5. **Validate Playwright tests (quality gate)** – **MUST** invoke **playwright-test-validator** agent with test case paths, spec path, and Jira key. Validator checks: syntax, 1:1 coverage with TCs, alignment with test case content, framework usage. **If validation fails:** pass validator issues/suggestions to test-case-generator and/or energo-ts-test; **re-run Step 3 and/or Step 4**, then **re-run Step 5 (validator)**. Repeat until **validation passes** or **max iterations (e.g. 3)**. If max iterations reached with failures, proceed to run tests and **include validation issues in the report**.
@@ -42,7 +42,8 @@ Follow **exactly** the steps in **`.cursor/commands/hands-off.md`**. Summary:
 
 - **READ-ONLY** for Phoenix application code (Rule 0.8). Only create/modify test files in EnergoTS/tests/ (Rule 0.8.1).
 - **EnergoTS** – use only **cursor** branch (Rule ENERGOTS.0).
-- **Rule 35/35a** – cross-dependency-finder runs first (Jira + codebase + shallow Confluence; **no** local merge/git); **technical_details** when Jira key provided.
+- **Rule 35/35a** – cross-dependency-finder runs first (Jira + codebase + shallow Confluence; no local merge-history archaeology/git-snapshot; Rule 38 branch-context alignment is allowed/required before Phoenix code reads); **technical_details** when Jira key provided.
+- **Rule 39** – If the Jira ticket is NOT a Bug (task/change/feedback/feature), cross-dependency-finder and test-case-generator must NOT do broad Confluence search. They use only Confluence links found in the ticket description (fetched via `getConfluencePage`); if no links, proceed without Confluence. Bugs use normal Confluence workflow.
 - All report and user-facing content in **English** (Rule 0.7).
 
 ## Confidence Score (Rule CONF.1) [MANDATORY]

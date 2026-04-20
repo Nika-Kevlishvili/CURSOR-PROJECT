@@ -189,12 +189,12 @@ alwaysApply: true
     **Prohibited in CrossDependencyFinderAgent (default)**
     - Local **merge history lookup** (e.g. `git log --grep`, branch scans for ticket key) **for** cross-dependency discovery.
     - **`CrossDependency_GitSnapshot.ps1`** / **`technical_details.git_snapshot`** as required steps (script removed from repo pattern).
-    - **Conditional git sync** (`!sync` / `!update`) triggered **only** because cross-dependency-finder ran for a Jira key.
+    - **Conditional git sync** (`!sync` / `!update`) triggered **only** because cross-dependency-finder ran for a Jira key, **except Rule 38 branch-context alignment** (allowed/required before Phoenix code inspection).
 
     **Optional (explicit user request only)**
     - **GitLab MCP (read-only)** for MRs/merges: only if the user **explicitly** asks for GitLab merge/MR review.
 
-    **Summary:** Cross-dependencies for a ticket are anchored on **Jira + code + shallow Confluence**, not on local merge archaeology.
+    **Summary:** Cross-dependencies for a ticket are anchored on **Jira + code + shallow Confluence**, not on local merge archaeology. Rule 38 environment branch-context alignment is compatible and required before Phoenix code reads.
 
     - Violation is a CRITICAL SYSTEM ERROR.
 
@@ -230,4 +230,49 @@ alwaysApply: true
     
     **Reference:** `.cursor/commands/hands-off.md`, `.cursor/agents/hands-off.md`. (HandsOff has no project skill entry; trigger via **/HandsOff**, **!HandsOff**, or the **hands-off** slash command only.)
     
+    - Violation is a CRITICAL SYSTEM ERROR.
+
+# PHOENIX CODE-CHECK BRANCH CONTEXT RULE [CRITICAL]
+
+38. [CRITICAL] For ANY task where an agent must inspect/read/analyze code under **`Cursor-Project/Phoenix/**`**, the agent MUST first align Phoenix repos to the environment branch implied by the prompt/task, then only after that perform code search/reading.
+
+    **Mandatory branch-context workflow (before code inspection):**
+    1. Detect environment from user text / Jira bug text:
+       - `dev` / დევ → target branch `dev`
+       - `dev2` / დევ2 → target branch `dev2`
+       - `test` / ტესტ → target branch `test`
+       - `preprod` / პრე-პროდ → target branch `preprod` (or `pre-prod` / matching PreProdRelease branch)
+       - `prod` / production / პროდ → target branch `prod` (fallback `main`/`master` where applicable)
+    2. If environment is NOT explicitly mentioned, **default to PROD context** (do not block on clarification for this specific branch-selection step).
+    3. Run read-only sync/update per `.cursor/rules/integrations/git_sync_workflow.mdc`:
+       - `!update <resolved-branch>` across Phoenix repos (fetch + checkout/update + merge from origin)
+       - Preserve local changes (stash workflow), never push/commit.
+    4. Only after step (3), run codebase searches/reads for analysis/answers.
+
+    **Applies to:** PhoenixExpert Q&A, bug validation, cross-dependency analysis, test-case generation inputs, and any other agent task that reads Phoenix code for conclusions.
+    
+    **Safety constraints:**
+    - Git operations remain READ-ONLY (fetch/checkout/merge only).
+    - If branch is missing in a repo, skip that repo with a note; continue others.
+    - If repo is diverged/conflicted, report and ask user how to proceed for that repo.
+    
+    - Violation is a CRITICAL SYSTEM ERROR.
+
+# CONFLUENCE SCOPE RULE FOR NON-BUG TICKETS [CRITICAL]
+
+39. [CRITICAL] When the Jira item is **not a bug** (task, change request, customer feedback, feature request, improvement), CrossDependencyFinderAgent and TestCaseGeneratorAgent MUST follow a **task-driven Confluence strategy** instead of broad Confluence search.
+
+    **Mandatory task-driven workflow:**
+    1. **Primary source: the Jira ticket itself.** Use the task description, acceptance criteria, and linked items as the main requirements input.
+    2. **Confluence — linked pages only:** If the ticket description or fields contain one or more Confluence links/URLs, fetch **only those specific pages** via MCP (`getConfluencePage` by page ID extracted from the URL). Use their content as context.
+    3. **No broad Confluence search:** Do NOT run `search` / `searchConfluenceUsingCql` for non-bug tickets. The task description and any linked Confluence pages are sufficient context.
+    4. **If no Confluence link is present in the ticket:** proceed without Confluence data — use only the Jira description + codebase for scope, cross-dependencies, and test cases.
+
+    **When this rule does NOT apply (use normal Confluence workflow):**
+    - The Jira item type is **Bug** → use full Confluence search (evidence strength assessment per Rule 32).
+    - The user **explicitly** asks to search Confluence broadly (e.g. "search Confluence for related docs").
+    - PhoenixExpert Q&A questions (Rule 2) — PhoenixExpert always does its own Confluence search.
+
+    **Rationale:** Tasks, changes, and feature requests have their requirements defined in the ticket (and optionally in linked Confluence specs). Broad Confluence search adds noise and slows down analysis without improving accuracy for well-scoped work items.
+
     - Violation is a CRITICAL SYSTEM ERROR.

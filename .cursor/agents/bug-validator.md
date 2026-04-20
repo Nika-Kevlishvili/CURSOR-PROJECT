@@ -35,6 +35,7 @@ You act as the **BugFinderAgent** subagent. Validate bug reports per Rule 32: Co
 
 ### Step 3: Code validation (behavior analysis)
 
+- **Rule 38 branch-context first:** before searching Phoenix code, resolve env from bug text and run `!update <branch>` per `git_sync_workflow.mdc` (default to `prod` when env is missing).
 - Search Phoenix codebase (codebase_search, grep) for relevant code.
 - Analyze actual implementation behavior.
 - Check if code behavior matches the faulty behavior described in bug report.
