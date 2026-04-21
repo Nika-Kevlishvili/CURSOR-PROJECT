@@ -1,6 +1,6 @@
 ---
 name: phoenix-commands
-description: Maps user intent to Cursor commands and workflows (Phoenix query, consult, report, bug-validate, jira-bug, sync, cross-dependency-finder, test-case-generate, energo-ts-run, hands-off command). Use when the user asks how to run a workflow or which command to use. For HandsOff: there is no separate hands-off skill—use slash command **hands-off** or triggers **/HandsOff** / **!HandsOff** per Rule 37 and `.cursor/commands/hands-off.md`.
+description: Maps user intent to Cursor commands and workflows (Phoenix query, consult, report, feedback, bug-validate, jira-bug, sync, cross-dependency-finder, test-case-generate, energo-ts-run, hands-off command). Use when the user asks how to run a workflow or which command to use. For HandsOff: there is no separate hands-off skill—use slash command **hands-off** or triggers **/HandsOff** / **!HandsOff** per Rule 37 and `.cursor/commands/hands-off.md`.
 ---
 
 # Phoenix Commands and Workflows
@@ -10,7 +10,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 ## When to Apply
 
 - User asks how to ask Phoenix a question, consult, generate a report, validate a bug, or sync from GitLab.
-- User mentions a command by name (phoenix, consult, report, bug-validate, sync).
+- User mentions a command by name (phoenix, consult, report, feedback, bug-validate, sync).
 - Need to align a request with the correct workflow.
 
 ## Command → Workflow
@@ -20,6 +20,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 | Phoenix question (how/what/why, endpoints, logic) | **Phoenix** command → Route to PhoenixExpert (Rule 0.2) | phoenix.md |
 | Before doing a task (validation, approval) | **Consult** → PhoenixExpert consultation (Rule 8) | consult.md |
 | User wants a saved report / export | **Report** → Optional markdown under **Chat reports** + `YYYY/<english-month>/<DD>/` (Rule 0.6; **`reports/README.md`**) | report.md |
+| User wants to save session feedback (sentiment + summary) | **Feedback** → Markdown under **Feedback** + `YYYY/<english-month>/<DD>/` as `Feedback_{HHMM}.md` (Rule 0.6; **`reports/README.md`**) | feedback.md |
 | Validate a bug report | **Bug-validate** → BugFinderAgent (Rule 32) | bug-validate.md |
 | Create/rewrite Jira bug (Experiments board only) | **Jira-bug** → jira-bug-template (Rule JIRA.0; NOT Phoenix delivery) | jira-bug.md |
 | Production data analysis (liability offsets, receivable history) | **Production-data-reader** → ProductionDataReaderAgent (Rule PDR.0) | production-data-reader.md, production_data_reader.mdc |
@@ -33,7 +34,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 
 - **When:** Any Phoenix-related question.
 - **Flow:** Confluence (MCP, fresh) → Codebase → PhoenixExpert answer (Rule 0.3: no Python IntegrationService).
-- **Output:** Start with "**Expert:** PhoenixExpert", end with "Agents involved: PhoenixExpert". Save report files only for **HandsOff (Rule 37)** or if the user runs **`/report`** / explicitly requests a file (Rule 0.6).
+- **Output:** Start with "**Expert:** PhoenixExpert", end with "Agents involved: PhoenixExpert". Save report files only for **HandsOff (Rule 37)** or if the user runs **`/report`**, **`/feedback`**, or explicitly requests a file (Rule 0.6).
 
 ## Consult (consult.md)
 
@@ -46,6 +47,12 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 - **When:** User requests a report, runs `/report`, or a workflow explicitly requires a file (Rule 0.6).
 - **Flow:** Write markdown under **Chat reports** with `YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`** (no Python ReportingService).
 - **Location:** See **`Cursor-Project/reports/README.md`** (Chat / HandsOff / Feedback areas).
+
+## Feedback (feedback.md)
+
+- **When:** User runs **`/feedback`** or explicitly asks to save feedback to disk (Rule 0.6).
+- **Flow:** **`AskQuestion`** (liked / disliked / other) → if **other**, collect free text in chat → synthesize session summary and confidence → write **`Feedback_{HHMM}.md`** under **Feedback** with `YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`**. On-disk content in **English** (Rule 0.7).
+- **Location:** **`Cursor-Project/reports/Feedback/`** (see README).
 
 ## Bug-validate (bug-validate.md)
 
@@ -103,7 +110,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 - Phoenix questions → Phoenix command + PhoenixExpert.
 - Before task → Consult + PhoenixExpert approval.
 - Before Phoenix code inspection in any workflow → resolve env from prompt/task and run `!update <env-branch>` first (Rule 38); if env is missing, default to `prod`.
-- Saved reports → **`/report`** or user request → **Chat reports/** (optional); HandsOff → **HandsOff reports/**.
+- Saved reports → **`/report`** or user request → **Chat reports/** (optional); session feedback → **`/feedback`** or explicit request → **Feedback/**; HandsOff → **HandsOff reports/**.
 - Bug check → Bug-validate + BugFinderAgent.
 - Jira bug (Experiments only) → Jira-bug command + jira-bug-template; never Phoenix delivery.
 - Production data → Production-data-reader + ProductionDataReaderAgent.

@@ -17,6 +17,7 @@ Every `.md` file MUST follow **`Cursor-Project/config/template/Test_case_templat
 |-------|---------|----------|------|
 | Zero-amount prevention across all liability and receivable generation flows | `Backend/Zero_amount_liability_receivable.md` | `Frontend/Zero_amount_liability_receivable.md` | PDT-2474 |
 | Correction data by scales — header period must match original | `Backend/Correction_data_by_scales_header_period.md` | `Frontend/Correction_data_by_scales_header_period.md` | PDT-2708 |
+| Get product list (Energy products) — Sales Portal product catalog | `Backend/Get_product_list_energy_products.md` | `Frontend/Get_product_list_energy_products.md` | PHN-2178 |
 
 ## Layout reference
 
