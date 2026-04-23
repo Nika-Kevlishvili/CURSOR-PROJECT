@@ -1,23 +1,16 @@
 # Project Skills
 
-Skills guide the Cursor agent for this repo’s workflows. **Location:** workspace root `.cursor/skills/`.
+Skills guide the Cursor agent for this repo's workflows. **Location:** workspace root `.cursor/skills/`.
 
 ## Skills
 
 | Skill | Purpose |
 |-------|---------|
-| **phoenix-agent-workflow** | Rules + subagents + PhoenixExpert; Rule 0.3 (no `agents.*`); reports |
-| **phoenix-bug-validation** | Rule 32 in chat (Confluence → codebase → analysis in reply; file only if `/report` or explicit save) |
-| **phoenix-file-organization** | Where to put files (`Cursor-Project/`, `.cursor/`, `User story/`) |
-| **phoenix-reporting** | On-demand / workflow-mandated markdown per **`Cursor-Project/reports/README.md`** (Rule 0.6) |
-| **phoenix-commands** | Which slash command / workflow to use |
-| **phoenix-database** | PostgreSQL MCP; environments; connect first |
-| **production-data-reader** | Rule PDR.0; PostgreSQLProd MCP readonly |
-| **cross-dependency-finder** | Rule 35 / 35a; output for test-case-generator |
-| **test-case-generator** | Rule 35; save to `test_cases/Backend/` and `test_cases/Frontend/` |
-| **phoenix-safety-readonly** | GitLab/Confluence read-only; path tiers |
-| **jira-bug-template** | Experiments board bugs only (Rule JIRA.0) |
-| **energo-ts-run** | Rule 36; Playwright from EnergoTS `cursor` branch |
+| **phoenix-database** | PostgreSQL MCP; environments; connect-first; SQL templates in `references/` |
+
+All other workflows in this project (cross-dependency-finder, test-case-generator, production-data-reader, energo-ts-run, jira-bug, etc.) are invoked directly through their `.cursor/agents/*.md` subagent specs (via the `Task` tool) and/or their `.cursor/commands/*.md` slash commands. Cursor's subagent / command discovery handles routing without an extra skill pointer layer.
+
+Always-applied rules in `.cursor/rules/` cover safety / read-only, file organization, reporting (Rule 0.6), and agent workflow (Rule 0.2-0.5).
 
 ## Source
 

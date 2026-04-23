@@ -1,101 +1,44 @@
 ---
-description: Require clarifying questions when task scope, environment, or success criteria are ambiguous—do not guess or improvise defaults.
+description: Require clarifying questions when task scope, environment, or success criteria are ambiguous, and require a confidence score on every deliverable.
 alwaysApply: true
 ---
 
-# CLARIFICATION BEFORE ACTION (CONFIDENCE GATE) [CRITICAL]
+# CLARIFICATION + CONFIDENCE [CRITICAL]
 
-## Rule CONF.0: Confidence gate before substantive work
+## Rule CONF.0: Clarify before substantive action
 
-**Intent:** If the model is **not confident** it understood the user or has every **parameter needed to act safely and correctly**, it MUST ask **targeted clarifying questions** before running tools that change state, run environment-specific commands, or connect to external systems. **Do not pick a silent default** (e.g. wrong DB environment) to “keep moving.”
+If you are not confident you understood the user **or** lack a parameter needed to act safely (especially **environment**, **branch**, **target**, or **success criteria**), ASK 1-3 short questions before running tools that change state, run env-specific commands, or call external systems. Do **not** pick a silent default. Use `AskQuestion` for discrete choices.
 
-**Violation:** Proceeding with substantive tools or edits while **scope, environment, target, or success criteria** are missing or contradictory without asking first — treated as a **CRITICAL** reliability/safety failure for this workspace.
+**Always ask when:**
 
----
+- DB / production work without a named environment (Dev, Dev2, Test, PreProd, Prod) - never infer.
+- "Run tests" / "run the query" without which test, which DB, or which app.
+- "Fix it" / "update tests" without ticket key, file path, failure output, or acceptance hint.
+- Instructions conflict.
 
-## When to ask (triggers)
+**Forbidden:** inventing repos/branches/behavior to avoid asking; treating guessing as safer than asking.
 
-Before substantive tool use or file edits, verify you know:
+**Exceptions:** user explicitly authorizes defaults / "your choice" / "same as last time" (document the assumption); read-only Q&A with no env-specific data and no ambiguity.
 
-1. **What** — exact deliverable (fix, doc, test, query, refactor scope).
-2. **Where** — repo, path, subsystem, or workflow (when the prompt could mean more than one).
-3. **Which environment / branch / target** — when the answer changes commands or MCP servers (see `database_workflow.mdc` for Dev / Dev2 / Test / PreProd / Prod; `energots_branch_lock.mdc` for EnergoTS branch expectations).
-4. **How success is judged** — when “done” is unclear (e.g. “fix the bug” with no repro, ticket, or log).
+## Rule CONF.1: Confidence score on every deliverable
 
-**Ask if any of the above is missing, vague, or conflicting** — including:
-
-- Database or production data work **without** the user naming the environment (never infer Prod vs Test from habit).
-- “Run tests” / “run the query” **without** which test, which DB, or which app URL/environment.
-- “Fix it” / “update tests” **without** ticket key, file path, failure output, or acceptance hint.
-- **Conflicting** instructions — ask which takes priority.
-
----
-
-## How to ask
-
-- Prefer **one short message** with **1–3 concrete questions**; use **AskQuestion** when choices are discrete.
-- After asking, **pause** heavy execution (shell, MCP writes, bulk edits) until ambiguity that would change the approach is resolved — unless the user has explicitly authorized defaults (see below).
-
----
-
-## Forbidden behaviors
-
-- Inventing environments, repos, branches, or product behavior to avoid a question.
-- Treating **guessing** as safer than **asking**.
-
----
-
-## Exceptions (narrow)
-
-- User explicitly says to use **your choice** / **defaults** / **same as last time** for the missing dimension — then document the assumption briefly and proceed.
-- **Read-only** Q&A with **no** environment-specific data and **no** ambiguity about topic — answering without extra questions is allowed.
-
----
-
-## Rule CONF.1: Confidence score in results [REQUIRED]
-
-**Intent:** After completing substantive work, the agent MUST include a **Confidence Score** (0–100%) in its final output so the user can gauge how reliable the result is.
-
-### When to show
-
-Show a confidence score whenever the agent produces a **deliverable** — including but not limited to:
-
-- Test cases or test scenarios
-- Bug validation verdicts
-- Database query results / analysis
-- Code fixes or refactoring suggestions
-- Playwright test scripts
-- Postman collections
-- Reports or summaries
-
-### Format
-
-At the end of the result, include a clearly visible block:
+End every substantive deliverable (test cases, bug verdicts, DB results, code fixes, Playwright specs, Postman collections, reports) with:
 
 ```
 **Confidence: XX%**
-Reason: <1-2 sentence explanation of why this score>
+Reason: <1-2 sentence explanation>
 ```
-
-### Scoring guidelines
 
 | Range | Meaning |
 |-------|---------|
-| **90–100%** | High confidence — based on verified data, clear requirements, strong evidence (e.g. Confluence docs, DB results, explicit user specs) |
-| **70–89%** | Moderate confidence — reasonable inference but some assumptions were made (list them) |
-| **50–69%** | Low confidence — significant gaps in information; result is a best-effort draft that needs user review |
-| **Below 50%** | Very low — flag prominently; recommend the user verify before acting on the result |
+| 90-100% | Verified data + clear requirements + strong evidence |
+| 70-89%  | Reasonable inference + some assumptions (list them) |
+| 50-69%  | Significant info gaps; user review needed |
+| <50%    | Flag prominently; recommend user verification |
 
-### Rules
-
-1. **Be honest** — do not inflate the score to look competent. A lower honest score is more valuable than a high fake one.
-2. **Explain the score** — always state what factors raised or lowered confidence (e.g. "requirements were clear" vs "no Confluence page found, inferred from ticket title only").
-3. **Per-item scores** — when producing a list of items (e.g. multiple test cases), you MAY give an overall score plus per-item scores if confidence varies significantly across items.
-4. **Subagents** — subagents MUST also include confidence scores in their results returned to the parent agent.
-
----
+**Be honest** - a lower accurate score is more valuable than an inflated one. Subagents include confidence in their results back to the parent. For lists, you MAY give per-item scores in addition to the overall.
 
 ## Relation to other rules
 
-- **Autonomous operation** (`agent_rules.mdc` Rule 12): applies when the task is **already unambiguous**. Ambiguity → **clarify first**; that is not optional “confirmation spam,” it is **scope resolution**.
-- Environment selection for DB → **always** follow `database_workflow.mdc` (exact environment the user names; if none named → **ask**).
+- `agent_rules.mdc` Rule 12 (autonomous operation) applies when scope is already unambiguous. Ambiguity always wins - clarify first.
+- DB environment selection: always follow the `phoenix-database` skill (exact env the user names; if none named, ask).

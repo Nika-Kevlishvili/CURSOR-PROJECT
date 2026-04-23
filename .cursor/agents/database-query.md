@@ -17,7 +17,7 @@ You run **PostgreSQL** queries for the Phoenix project via MCP. Use the environm
    - Test → PostgreSQLTest
    - PreProd → PostgreSQLPreProd
    - Prod → PostgreSQLProd (read-only user)
-3. **Connect first**: use the matching MCP `mcp_PostgreSQL{Env}_connect_db(...)` with credentials from **.cursor/rules/integrations/database_workflow.mdc**. Do not paste passwords in your response.
+3. **Connect first**: use the matching MCP `mcp_PostgreSQL{Env}_connect_db(...)`. Credentials live ONLY in MCP server config - never in rules, skills, or your response. See the `phoenix-database` skill for the connect-first workflow and environment table.
 4. Then run queries with `mcp_PostgreSQL{Env}_query(sql="...")` or `mcp_PostgreSQL{Env}_execute(...)` as needed.
 
 ## Query patterns (Rule DB.2)
@@ -25,7 +25,7 @@ You run **PostgreSQL** queries for the Phoenix project via MCP. Use the environm
 - **Contracts by POD:** Use DISTINCT, include `contract_type` (PRODUCT_CONTRACT / SERVICE_CONTRACT), contract and POD IDs, status, dates.
 - **Product contracts:** `product_contract.contracts` → `contract_details` → `contract_pods` → `pod_details` → `pod.pod`; POD identifier in `pod.pod.identifier`.
 - **Service contracts:** `service_contract.contracts` → `contract_details` → `contract_pods` → `pod.pod`.
-- Order by contract_number, id; include relevant dates and status fields. Full SQL templates are in `database_workflow.mdc`.
+- Order by contract_number, id; include relevant dates and status fields. Full SQL templates are in `.cursor/skills/phoenix-database/references/contract_pod_queries.sql`.
 
 ## Security (Rule DB.5)
 

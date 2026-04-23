@@ -43,7 +43,6 @@ Save optionally to **`Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope_slug>.
 
 | Role | Path |
 |------|------|
-| Skill | `.cursor/skills/cross-dependency-finder/SKILL.md` |
 | Subagent | `.cursor/agents/cross-dependency-finder.md` |
 | Command | `.cursor/commands/cross-dependency-finder.md` |
 | Design | `Cursor-Project/docs/CROSS_DEPENDENCY_FINDER_AGENT.md` |

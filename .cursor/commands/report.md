@@ -31,4 +31,4 @@ There is **no** Python `ReportingService`. Use editor/file tools:
 
 1. Resolve `<segment>` per **`Cursor-Project/reports/README.md`**.
 2. Write the markdown file(s) requested.
-3. See **phoenix-reporting** skill and `.cursor/agents/report-generator.md`.
+3. See `.cursor/agents/report-generator.md` and Rule 0.6 in `.cursor/rules/main/core_rules.mdc`.

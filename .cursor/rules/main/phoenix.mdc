@@ -2,55 +2,21 @@
 alwaysApply: true
 ---
 
-# PHOENIX PROJECT RULES - MAIN INDEX
+# CRITICAL REMINDERS
 
-This file is the **main index** for workspace rules under **`.cursor/rules/`**. Files live in **thematic subfolders** (not only the rules root).
+1. **Rule 0.0** - read all `.cursor/rules/**.mdc` before acting. **CONF.0** - if scope/env/target/success is ambiguous, ASK before substantive action; do not guess.
+2. **Rule 0.1** - end every response with `Agents involved: [names]`.
+3. **Rule 0.2** - ALL Phoenix questions go to PhoenixExpert.
+4. **Rule 0.6** - reports per `Cursor-Project/reports/README.md` (chat by default; file on `/report` or workflow mandate).
+5. **Rule 0.8** - Phoenix is NEVER edited by AI; EnergoTS only via EnergoTSTestAgent under `tests/`; other workspace paths editable on user request.
+6. **Rule 1** - GitLab and Confluence are READ-ONLY.
+7. **Rule 8** - consult PhoenixExpert before tasks.
+8. **Rule 32** - bug validation -> `bug-validator` subagent.
+9. **Rule 35 / 35a** - test cases: cross-dependency-finder FIRST (Jira + codebase + shallow Confluence; no local merge/git), then test-case-generator (two files: Backend + Frontend).
+10. **Rule 36 + ENERGOTS.0** - Playwright runs from EnergoTS only on the `cursor` branch via `energo-ts-run`.
+11. **Rule 37** - Jira + `/HandsOff` -> full HandsOff orchestrator; report named after Jira key; Slack to Tester + #ai-report.
+12. **Rule JIRA.0** - Jira bugs go on the **Experiments** board only; never Phoenix delivery.
+13. **Rule PDR.0** - production data -> `production-data-reader` (PostgreSQLProd MCP, readonly).
+14. **Rule CONF.1** - every deliverable ends with `**Confidence: XX%**` + reason.
 
-## Thematic layout
-
-| Folder | Path | Contents |
-|--------|------|----------|
-| **main** | `.cursor/rules/main/` | `core_rules.mdc` (Rule 0.x), `clarification_and_confidence.mdc` (Rule CONF.0), `phoenix.mdc` (this index) |
-| **safety** | `.cursor/rules/safety/` | `safety_rules.mdc` |
-| **agents** | `.cursor/rules/agents/` | `agent_rules.mdc` |
-| **workflows** | `.cursor/rules/workflows/` | `workflow_rules.mdc`, `handsoff_playwright_report.mdc` |
-| **workspace** | `.cursor/rules/workspace/` | `file_organization_rules.mdc`, `test_cases_structure.mdc` |
-| **integrations** | `.cursor/rules/integrations/` | `database_workflow.mdc`, `git_sync_workflow.mdc`, `energots_branch_lock.mdc`, `production_data_reader.mdc`, `jira_bug_agent.mdc` |
-
-**Additional (optional):** `Cursor-Project/config/cursorrules/autonomous_rules.md` — autonomous-operation notes if present.
-
-## Rules loading
-
-Cursor loads **all** `.mdc` files under `.cursor/rules/` **recursively**. Rule 0.0 requires reading **every** applicable `.mdc` under `.cursor/rules/` (including subfolders) before acting.
-
-## Quick reference (canonical paths)
-
-- **Rule 0.x:** `.cursor/rules/main/core_rules.mdc`
-- **Clarification / confidence gate:** `.cursor/rules/main/clarification_and_confidence.mdc` (Rule CONF.0)
-- **Agents:** `.cursor/rules/agents/agent_rules.mdc`
-- **Safety:** `.cursor/rules/safety/safety_rules.mdc`
-- **Workflows:** `.cursor/rules/workflows/workflow_rules.mdc`, `.cursor/rules/workflows/handsoff_playwright_report.mdc`
-- **Files / test cases layout:** `.cursor/rules/workspace/file_organization_rules.mdc`, `.cursor/rules/workspace/test_cases_structure.mdc`
-- **DB / Git / EnergoTS / Prod / Jira bug:** `.cursor/rules/integrations/*.mdc`
-
-## ⚠️ CRITICAL REMINDERS
-
-1. **Rule 0.0:** ALWAYS read all rules before any action. **Rule CONF.0:** If scope/environment/target/success criteria are ambiguous → ask before substantive action; do not guess (`clarification_and_confidence.mdc`).
-2. **Rule 0.1:** ALWAYS end responses with "Agents involved: [names]"
-3. **Rule 0.2:** ALL Phoenix questions → PhoenixExpert ONLY
-4. **Rule 0.6:** ALWAYS generate reports after tasks
-5. **Rule 0.8:** Phoenix never edited by AI; EnergoTS only EnergoTSTestAgent in `tests/`; all other workspace paths editable when user requests (provisional) — see `.cursor/rules/safety/safety_rules.mdc` Rule 7
-6. **Rule 1:** GitLab and Confluence are READ-ONLY
-7. **Rule 8:** ALWAYS consult PhoenixExpert before tasks
-8. **Rule 11 / 0.3:** External automation may use IntegrationService; in Cursor chat follow MCP/Jira/GitLab steps — no `agents.*` imports here
-9. **Rule 32:** ALL bug validation → ALWAYS use BugFinderAgent
-10. **Rule 35/35a:** Test cases → cross-dependency-finder FIRST; Rule 35a: **Jira + codebase + shallow Confluence** — **no** local merge/git or git snapshot for cross-dep (see `workflow_rules.mdc`)
-11. **Rule 36:** Run Playwright tests from EnergoTS → energo-ts-run workflow ONLY; run only from `cursor` branch (Rule ENERGOTS.0)
-12. **Rule 37:** Jira ticket + /HandsOff or !HandsOff → ALWAYS run full HandsOff flow (hands-off command/orchestrator); report named after Jira key + send to Slack to tester
-13. **Rule JIRA.0:** Jira bug agent → Experiments board ONLY; NEVER create bugs in Phoenix delivery
-14. **Rule PDR.0:** Production data questions → ALWAYS use ProductionDataReaderAgent
-15. **Rule 34:** ALL agents MUST be organized in subdirectories
-
----
-
-**Note:** Nested Phoenix repos (e.g. `phoenix-core`, `phoenix-core-lib`) may define **additional** `.cursor/rules/` files; those appear separately in Cursor Settings and apply to their paths — they are not duplicates of this workspace ruleset.
+Rule files live recursively under `.cursor/rules/main|safety|agents|workflows|workspace|integrations/`. Nested Phoenix repos may define their own `.cursor/rules/` - those apply to their paths and are not duplicates.

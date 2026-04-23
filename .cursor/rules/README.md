@@ -9,7 +9,7 @@ Cursor loads all `.mdc` files under `.cursor/rules/` **recursively**.
 | **`agents/`** | `agent_rules.mdc` |
 | **`workflows/`** | `workflow_rules.mdc`, `handsoff_playwright_report.mdc` |
 | **`workspace/`** | `file_organization_rules.mdc`, `test_cases_structure.mdc` |
-| **`integrations/`** | `database_workflow.mdc`, `git_sync_workflow.mdc`, `energots_branch_lock.mdc`, `production_data_reader.mdc`, `jira_bug_agent.mdc` |
+| **`integrations/`** | `git_sync_workflow.mdc`, `energots_branch_lock.mdc`, `production_data_reader.mdc`, `jira_bug_agent.mdc` (DB workflow moved to the `phoenix-database` skill) |
 
 **Start here:** `.cursor/rules/main/phoenix.mdc`
 

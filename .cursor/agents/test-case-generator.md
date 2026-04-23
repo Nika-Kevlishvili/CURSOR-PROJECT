@@ -110,6 +110,20 @@ Update `test_cases/README.md`, `test_cases/Backend/README.md`, and `test_cases/F
 - All output in **English** (Rule 0.7).
 - Save markdown under **Chat reports** per **`Cursor-Project/reports/README.md`** only if the user asks for a run log (Rule 0.6 default: not required).
 
+## Step Log Mode (when parent passes `--step-log`)
+
+If the parent context indicates `--step-log` (user requested per-step trace), include a structured **per-step summary** in your response so the parent can write the log file. Suggested fields per step (you executed):
+
+- Confluence: queries used, page titles + IDs (count)
+- Codebase: search terms, top file paths (cap ~10), count
+- Cross-dependency data received: counts (upstream, downstream, what_could_break)
+- Generation: Backend TC count, Frontend TC count, positive/negative/edge/regression split
+- Save: paths of Backend/Frontend `.md` files
+
+The parent (orchestrator running `/test-case-generate`) writes the log to `Cursor-Project/reports/<YYYY-MM-DD>/test-case-gen-<topic>-steplog.md`. You do not need to write the log file yourself -- just return clean per-step facts. Default mode (no flag) is unchanged: omit the step summary.
+
+See `.cursor/commands/test-case-generate.md` (Step Log Mode section) for the full schema.
+
 ## Confidence Score (Rule CONF.1) [MANDATORY]
 
 Your final response MUST include a **Confidence Score** (0–100%) at the end. Format:

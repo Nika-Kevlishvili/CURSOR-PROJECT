@@ -1,6 +1,6 @@
 # Jira Description Writer Agent
 
-> **Current locations:** Jira/Experiments bug text → **`.cursor/agents/jira-bug.md`**, **`.cursor/skills/jira-bug-template/SKILL.md`**. EnergoTS test authoring → **`.cursor/agents/energo-ts-test.md`**. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. Below: historical Python agent.
+> **Current locations:** Jira/Experiments bug text → **`.cursor/agents/jira-bug.md`** (and **`/jira-bug`** command). EnergoTS test authoring → **`.cursor/agents/energo-ts-test.md`**. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. Below: historical Python agent.
 
 ## Overview
 
