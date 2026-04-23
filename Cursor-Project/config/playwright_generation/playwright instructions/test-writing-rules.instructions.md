@@ -46,6 +46,184 @@ Do not import from `@playwright/test` directly — always use the project's `bas
 - **Create entities in dependency order** — check the payload generator class to see prerequisites
 - Use `FileUploadRequest` (not `Request`) for multipart/form-data uploads
 
+## CRITICAL: Precondition Data Creation Rule (MANDATORY)
+
+**NEVER assume data already exists in the test environment.** Every test MUST create ALL required entities from scratch as part of preconditions.
+
+### Why This Rule Exists
+
+- Tests must be **self-contained** and **repeatable** — they should pass on any clean environment
+- Relying on existing data causes **flaky tests** that fail when data is missing or different
+- Every test must verify the complete data creation chain, not just the final operation
+
+### Implementation Pattern: Helper Functions (PREFERRED)
+
+**DO NOT use `test.beforeAll()`** — some fixtures (like `GeneratePayload`) may not be available there. Instead, use **helper functions** defined at the top of the file and call them within each test.
+
+#### Step 1: Define Helper Functions for Shared Preconditions
+
+```typescript
+import { test, expect } from '../../fixtures/baseFixture';
+import reportGenerator from '../../utils/generateReport';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SHARED PRECONDITION HELPER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function sharedTerm(Request: any, GeneratePayload: any, Responses: any, Endpoints: any) {
+    const payload = GeneratePayload.productAndServices.term();
+    const response = await Request.post(Endpoints.terms, { data: payload });
+    await expect(response).toBeOK();
+    Responses.terms.push(await response.json());
+}
+
+async function sharedPrice(Request: any, GeneratePayload: any, Responses: any, Endpoints: any) {
+    const payload = GeneratePayload.productAndServices.electricity();
+    const response = await Request.post(Endpoints.priceComponent, { data: payload });
+    await expect(response).toBeOK();
+    Responses.priceComponent.push(await response.json());
+}
+
+async function sharedProduct(Request: any, GeneratePayload: any, Responses: any, Endpoints: any) {
+    const payload = GeneratePayload.productAndServices.product();
+    payload.contractTypes = ['SUPPLY_ONLY'];
+    payload.paymentGuarantees = ['NO'];
+    const response = await Request.post(Endpoints.product, { data: payload });
+    await expect(response).toBeOK();
+    Responses.product.push(await response.json());
+}
+```
+
+#### Step 2: Call Helper Functions in Each Test
+
+```typescript
+test('[JIRA-KEY]: TC-BE-1 – Happy path', async ({
+    Request, GeneratePayload, Endpoints, Responses,
+}) => {
+    // Call shared helpers in a precondition step
+    await test.step('Precondition: Create shared entities', async () => {
+        await sharedTerm(Request, GeneratePayload, Responses, Endpoints);
+        await sharedPrice(Request, GeneratePayload, Responses, Endpoints);
+        await sharedProduct(Request, GeneratePayload, Responses, Endpoints);
+    });
+
+    // Test using created data from Responses
+    await test.step('Execute test', async () => {
+        expect(Responses.product[0]).toBeTruthy();
+        const response = await Request.post(`${Endpoints.product}/list`, { data: {} });
+        await expect(response).CheckResponse();
+        const body = await response.json();
+        const found = body.content?.find((p: any) => p.id === Responses.product[0].id);
+        expect(found).toBeTruthy();
+    });
+
+    test.info().attach('[JIRA-KEY] TC-BE-1 response', {
+        body: JSON.stringify(reportGenerator.setLinksToResponses(Responses), null, 2),
+        contentType: 'application/json',
+    });
+});
+```
+
+#### Step 3: For Test-Specific Data, Create Inline
+
+When a test needs **different data** (e.g., INACTIVE status), use shared helpers for dependencies and create the specific entity inline:
+
+```typescript
+test('[JIRA-KEY]: TC-BE-3 – Inactive product is excluded', async ({
+    Request, GeneratePayload, Responses, Endpoints,
+}) => {
+    let inactiveProductId: number;
+
+    // Use shared helpers for common dependencies
+    await test.step('Precondition: Create shared entities', async () => {
+        await sharedTerm(Request, GeneratePayload, Responses, Endpoints);
+        await sharedPrice(Request, GeneratePayload, Responses, Endpoints);
+    });
+
+    // Create test-specific entity
+    await test.step('Create product with INACTIVE status', async () => {
+        const payload = GeneratePayload.productAndServices.product();
+        payload.contractTypes = ['SUPPLY_ONLY'];
+        payload.paymentGuarantees = ['NO'];
+        payload.productStatus = 'INACTIVE';  // ← Test-specific
+        const response = await Request.post(Endpoints.product, { data: payload });
+        await expect(response).CheckResponse();
+        inactiveProductId = (await response.json()).id;
+    });
+
+    await test.step('Verify inactive product excluded from list', async () => {
+        const response = await Request.post(`${Endpoints.product}/list`, { data: {} });
+        await expect(response).CheckResponse();
+        const body = await response.json();
+        const found = body.content?.find((p: any) => p.id === inactiveProductId);
+        expect(found).toBeFalsy();
+    });
+
+    test.info().attach('[JIRA-KEY] TC-BE-3 response', {
+        body: JSON.stringify(reportGenerator.setLinksToResponses(Responses), null, 2),
+        contentType: 'application/json',
+    });
+});
+```
+
+### FORBIDDEN Patterns
+
+```typescript
+// ❌ BAD: Using test.beforeAll() for preconditions (fixtures may not be available)
+test.beforeAll(async ({ GeneratePayload }) => { ... }); // WRONG
+
+// ❌ BAD: Assuming data exists
+const response = await Request.post(`${Endpoints.product}/list`, { data: {} });
+const existingProduct = body.content[0]; // WRONG - don't rely on existing data
+
+// ❌ BAD: Using hardcoded IDs
+const productId = 1234; // WRONG - this product may not exist
+
+// ❌ BAD: Storing IDs in describe-level variables
+test.describe('...', () => {
+    let productId: number; // WRONG - use Responses arrays instead
+});
+```
+
+### REQUIRED Patterns
+
+```typescript
+// ✅ GOOD: Helper function for shared preconditions
+async function sharedProduct(Request: any, GeneratePayload: any, Responses: any, Endpoints: any) {
+    const payload = GeneratePayload.productAndServices.product();
+    const response = await Request.post(Endpoints.product, { data: payload });
+    await expect(response).toBeOK();
+    Responses.product.push(await response.json());
+}
+
+// ✅ GOOD: Call helper in test
+await test.step('Precondition: Create shared entities', async () => {
+    await sharedProduct(Request, GeneratePayload, Responses, Endpoints);
+});
+
+// ✅ GOOD: Use Responses arrays
+expect(Responses.product[0]).toBeTruthy();
+
+// ✅ GOOD: Test-specific data with local variable
+let specificId: number;
+await test.step('Create specific entity', async () => {
+    specificId = (await response.json()).id;
+});
+```
+
+### Data Creation Order (Follow Dependencies)
+
+1. **Nomenclatures / Reference data** — use `envVariables` (already seeded)
+2. **Terms** — `POST /terms` (required before products)
+3. **Price components** — `POST /price-components` (required before products)
+4. **Products** — `POST /products` (requires terms + price components)
+5. **Customers** — `POST /customer`
+6. **PODs** — `POST /pod`
+7. **Contracts** — `POST /product-contract` (requires customer + POD + product)
+8. **Billing runs** — `POST /billing-run` (requires contracts)
+9. **Invoices** — Generated by billing run
+10. **Payments** — `POST /payment` (requires invoice)
+
 ## Report Attachment
 
 Attach response data at the end of each test:

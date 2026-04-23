@@ -55,6 +55,80 @@ Reference: `.cursor/commands/hands-off.md` Step 4.5; `.cursor/agents/playwright-
 
 ---
 
+## 2b. Playwright Precondition Data Creation (MANDATORY – NEVER assume data exists)
+
+- **Problem:** Playwright tests queried existing data instead of creating it, making tests non-repeatable and dependent on environment state. Tests that assume data exists are **FORBIDDEN**.
+- **Rule (CRITICAL):** Every Playwright test MUST **create ALL required entities from scratch**. Tests MUST NOT query existing data, use hardcoded IDs, or assume any entity exists in the test environment.
+- **Implementation (Helper Functions pattern):** **DO NOT use `test.beforeAll()`** — fixtures may not be available there. Instead, create **helper functions** at the top of the file for shared preconditions and call them within each test using `test.step('Precondition: ...')`.
+- **Entity creation order:** Terms → Price components → Products → Customers → PODs → Contracts → Billing runs → Invoices → Payments. This order follows dependencies (e.g., Products require Terms + Price components first).
+- **Rule:** Each precondition step from the test case `.md` file MUST be translated into a helper function (if shared by many tests) or inline code (if test-specific).
+- **Rule (Instructions):** Before creating Playwright specs, read **`Cursor-Project/config/playwright_generation/playwright instructions/precondition-data-creation.instructions.md`** which contains detailed patterns for implementing preconditions.
+
+**FORBIDDEN patterns:**
+```typescript
+// ❌ Using test.beforeAll() for preconditions (fixtures may not be available)
+test.beforeAll(async ({ GeneratePayload }) => { ... }); // WRONG
+
+// ❌ Querying existing data
+const response = await Request.post(`${Endpoints.product}/list`, {});
+const existingProduct = body.content[0]; // WRONG
+
+// ❌ Hardcoded IDs
+const productId = 1234; // WRONG
+
+// ❌ Storing IDs in describe-level variables
+test.describe('...', () => { let productId: number; }); // WRONG
+```
+
+**REQUIRED patterns:**
+```typescript
+// ✅ Helper functions at top of file for shared preconditions
+async function sharedTerm(Request: any, GeneratePayload: any, Responses: any, Endpoints: any) {
+    const payload = GeneratePayload.productAndServices.term();
+    const response = await Request.post(Endpoints.terms, { data: payload });
+    await expect(response).toBeOK();
+    Responses.terms.push(await response.json());
+}
+
+async function sharedProduct(Request: any, GeneratePayload: any, Responses: any, Endpoints: any) {
+    const payload = GeneratePayload.productAndServices.product();
+    payload.contractTypes = ['SUPPLY_ONLY'];
+    payload.paymentGuarantees = ['NO'];
+    const response = await Request.post(Endpoints.product, { data: payload });
+    await expect(response).toBeOK();
+    Responses.product.push(await response.json());
+}
+
+// ✅ Call helpers in each test
+test('[JIRA-KEY]: TC-BE-1 – Happy path', async ({ Request, GeneratePayload, Endpoints, Responses }) => {
+    await test.step('Precondition: Create shared entities', async () => {
+        await sharedTerm(Request, GeneratePayload, Responses, Endpoints);
+        await sharedProduct(Request, GeneratePayload, Responses, Endpoints);
+    });
+    // Use Responses.product[0], Responses.terms[0], etc.
+});
+
+// ✅ For test-specific data, use shared helpers + inline creation
+test('[JIRA-KEY]: TC-BE-3 – Negative case', async ({ Request, GeneratePayload, Endpoints, Responses }) => {
+    let specificId: number;
+    await test.step('Precondition: Create shared dependencies', async () => {
+        await sharedTerm(Request, GeneratePayload, Responses, Endpoints);
+    });
+    await test.step('Create entity with specific state', async () => {
+        const payload = GeneratePayload.productAndServices.product();
+        payload.productStatus = 'INACTIVE'; // Test-specific
+        const response = await Request.post(Endpoints.product, { data: payload });
+        specificId = (await response.json()).id;
+    });
+});
+```
+
+- **Validator check:** The playwright-test-validator (Step 4.5) MUST verify that specs do not query existing data and DO implement precondition creation via helper functions or inline steps.
+
+Reference: `Cursor-Project/config/playwright_generation/playwright instructions/precondition-data-creation.instructions.md`; `test-writing-rules.instructions.md` §Precondition Data Creation Rule.
+
+---
+
 ## 3. Report – ONLY Playwright test results (detailed per test)
 
 - **Problem:** Report contained cross-deps, artifacts, test case file lists, etc. User wanted **only** Playwright test results.
@@ -117,6 +191,7 @@ Reference: `.cursor/commands/hands-off.md` Step 8; user-slack MCP for sending.
 - [ ] Test cases: written to `test_cases/Backend/<Topic_name>.md` (TC-BE-N only) and `test_cases/Frontend/<Topic_name>.md` (TC-FE-N only); both files verified on disk; test_cases/README.md, Backend/README.md, and Frontend/README.md updated.
 - [ ] **Precondition completeness:** Every TC uses mandatory creation-step preconditions — HOW to create every entity with endpoint and parameters (never just "entity exists"); full chain from Customer → POD → Product → Terms → Price component → Contract → Energy data → Billing run → Invoice → Payment etc.; dates and amounts included when they affect the outcome.
 - [ ] Playwright: spec created in `EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts` (or equivalent); file verified on disk; **number of `test()` blocks equals total number of test cases (TC-BE-N from Backend file + TC-FE-N from Frontend file)** – full coverage, 1:1.
+- [ ] **Playwright precondition data creation (CRITICAL):** Spec uses **helper functions** (at file top) for shared preconditions called within each test via `test.step('Precondition: ...')`. **NO `test.beforeAll()` for preconditions.** NO tests query existing data, use hardcoded IDs, or assume entities exist. Entity creation follows dependency order: Terms → Price components → Products → Customers → PODs → Contracts → etc. Test-specific data created inline.
 - [ ] **Validation (Step 4.5):** playwright-test-validator invoked; if failed, re-run test-case-generator and/or energo-ts-test and re-validate until pass or max iterations; only then run tests.
 - [ ] Report: content is **only** Playwright test results (per test: what is verified, steps, result, failure reason); if validation had issues, include a short Validation section.
 - [ ] Slack: report built from **`Cursor-Project/config/template/Slack_report_template.md`**; full report sent **only** to **Tester** (DM) and **#ai-report** (channel_id **C0AK96S1D7X**); **never** to Assignee or anyone else; not a short summary.

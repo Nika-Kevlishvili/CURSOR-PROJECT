@@ -1,981 +1,949 @@
-# Get Product List (Energy Products) – Sales Portal product catalog (PHN-2178)
+# Get Product List (Energy Products) – Backend API Tests (GET-PRODUCT-LIST)
 
-**Jira:** PHN-2178 (Phoenix Phase 2)
-**Type:** Story
-**Summary:** The `GET /product/list` endpoint returns all energy products available for sale via the Sales Portal, applying strict filtering and validation rules per the Confluence specification.
+**Jira:** GET-PRODUCT-LIST (Task description provided)  
+**Type:** Task  
+**Summary:** Backend API tests for `POST /products/list` endpoint that returns all standard products available for sale to customers, applying strict filtering rules per business requirements.
 
-**Scope:** When a customer visits the Sales Portal, they should see only products that are fully configured, active, available for sale via "Portals" sales channel, have ALL areas and ALL segments, use fixed parameters only, and are not individual, deleted, or re-signing products. The endpoint must validate every sub-object (contract type, contract term, terms, payment guarantee, price components, entering into force, start of initial term, supply activation after resigning, advance payments, equal monthly installments) and exclude any product with ambiguous or incomplete configuration.
+**Scope:** When `POST /products/list` is called, Phoenix should return only products that meet ALL requirements: Active, Available for sale, "Portals" sales channel, ALL areas, ALL segments, fixed parameters only, not individual/deleted, single contract type, valid terms/payment guarantee/price components/interim payments/equal installments, and excluding re-signing products. Products failing any validation must NOT appear in the response.
 
 ---
 
 ## Test data (preconditions)
 
-Shared setup for this file (environment + entity creation chain). The endpoint under test is `GET /product/list` which returns products from the Phoenix product catalog. To test various scenarios, products must be pre-created with different configurations.
+Shared setup for this file (environment + entity creation chain).
 
 - **Environment:** Test
-
-1. Create a product type (nomenclature) via `POST /product-types` (name: "Електроснабдяване", status: ACTIVE) — this represents the energy product type.
-2. Create a sales channel nomenclature entry via the nomenclature endpoint (name: "Portals", status: ACTIVE).
-3. Create a standard product via `POST /products` with:
-   - Status: ACTIVE
-   - Available for sale: true
-   - Sales channels: include "Portals" (from step 2)
-   - Areas: ALL
-   - Segments: ALL
-   - Product type: energy product type from step 1
-   - Individual: false
-   - Deleted: false
-   - Period from: 2025-01-01, Period to: 2027-12-31 (current date within range)
-   - Contract type: exactly one (e.g., SUPPLY_ONLY)
-   - Contract term: one payment term, type: Period (not "Certain date"), value filled
-   - Payment guarantee: one option selected (e.g., "Cash Deposit" with amount: 500, currency: BGN)
-   - Entering into force: one value, type not "Exact day" or "Manual"
-   - Start of initial term: one value, type not "Exact day" or "Manual"
-   - Supply activation after contract resigning: one value, type not "Exact day"
-   - Re-signing: not marked as re-signing
-4. Create terms for the product via `POST /terms` (linked to product from step 3; one payment term with value filled).
-5. Create price components via `POST /price-component` (linked to product from step 3; value filled, type: "Active electric energy" or "Fee"; price component added directly or via active group version).
-6. Configure advance payments for the product (if applicable): obligatory, with value type "exact amount" and value filled, date of issue "Match the invoice date", payment term "Matches with the term of the standard invoice".
-7. Configure equal monthly installments: checkbox NOT selected (default).
+1. Create terms via `POST /terms` (type: PERIOD, value: 12, periodType: MONTH, status: ACTIVE).
+2. Create a price component via `POST /price-components` (type: ELECTRICITY, valueType: FIXED, value: 0.235, status: ACTIVE, with resolved formula variables).
+3. Create a product via `POST /products` with the following attributes:
+   - `productStatus`: ACTIVE
+   - `availableForSale`: true
+   - `availableFrom`: null or past date
+   - `availableTo`: null or future date
+   - `globalSalesChannel`: true (ALL channels including "Portals")
+   - `globalSalesArea`: true (ALL areas)
+   - `globalSegment`: true (ALL segments)
+   - `isIndividual`: false
+   - `contractTypes`: single value (e.g., ["SUPPLY_ONLY"])
+   - `productTerms`: single term with type PERIOD (NOT CERTAIN_DATE)
+   - `paymentGuarantees`: single value (e.g., ["NO"] or ["CASH_DEPOSIT"] with amount/currency)
+   - `termId`: linked to terms from step 1
+   - `priceComponentIds`: linked to price component from step 2 (with value filled, NOT value from/to)
+   - `enteringIntoForce`: single value, type NOT 'Exact day' or 'Manual'
+   - `startOfInitialTerm`: single value, type NOT 'Exact day' or 'Manual'
+   - `supplyActivationAfterResigning`: type NOT 'Exact day'
+   - `interimAdvancePayments`: if present, NOT "at least one is selected"; if Obligatory, all validations pass
+   - `equalMonthlyInstallmentsActivation`: false (or true with installmentNumber and amount filled)
+4. Verify product is created successfully (HTTP 200/201, response contains `id`).
 
 ---
 
 ## Backend Test Cases
 
-### TC-BE-1 (Positive): Happy path — return fully configured standard product available via Portals
+### TC-BE-1 (Positive): Happy path – Valid product appears in product list
 
-**Description:** Verify that a standard product meeting all filtering requirements is returned in the `GET /product/list` response with correct attributes.
+**Description:** Verify that a fully configured standard product meeting all requirements is returned by `POST /products/list`.
 
 **Preconditions:**
-1. Complete steps 1–7 from Test data above.
-2. Product is ACTIVE, available for sale, has "Portals" in sales channels, ALL areas, ALL segments, fixed parameters, not individual, not deleted, not re-signing.
+1. Complete steps 1–4 from Test data above.
+2. Product status is ACTIVE, availableForSale is true.
+3. Product has globalSalesChannel, globalSalesArea, globalSegment all set to true.
+4. Product is NOT individual (isIndividual: false).
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Parse the response JSON array and locate the product created in preconditions (match by Product ID).
+1. Call `POST /products/list` with empty filter body `{}`.
+2. Parse the response JSON.
+3. Search for the created product by ID in the response content.
 
-**Expected test case results:** Response returns HTTP 200. The product from preconditions appears in the list. Response contains all required attributes: Product ID, Product Version, PrintingName, Printing name (Transliterated), Text to show in invoices and templates, Text to show in invoices and templates (Transliteration), Short description, Type of points of delivery, Purpose of consumption, Metering type of the points of delivery, Voltage level, Provided capacity limit in kWh, Payment guarantee, Contract type, Contract term array, and Price components array.
-
-**References:** PHN-2178, Confluence page "get product list" (779517953).
+**Expected test case results:** HTTP 200. Response contains a paginated list. The created product appears in the list with all expected attributes (Product ID, Product Version, PrintingName, etc.). The response structure matches the documented JSON format.
 
 ---
 
-### TC-BE-2 (Positive): Verify contract term data structure in response
+### TC-BE-2 (Positive): Product with "Portals" sales channel via globalSalesChannel=true is included
 
-**Description:** Verify that the contract term section in the response contains all required sub-fields: Type of terms, Value, Type, Automatic renewal, Renewal value, Renewal type, Perpetuity clause.
+**Description:** Verify that products with `globalSalesChannel: true` (which includes "Portals") appear in the list.
 
 **Preconditions:**
-1. Complete steps 1–7 from Test data above.
-2. Product has contract term configured with: type FIXED_TERM, value 12, type MONTH, automatic renewal true, renewal value 12, renewal type MONTH, perpetuity clause false.
+1. Create terms via `POST /terms`.
+2. Create price component via `POST /price-components`.
+3. Create product with `globalSalesChannel: true` and all other required attributes.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Locate the product in the response and inspect the "Contract term" array.
+1. Call `POST /products/list` with empty body.
+2. Verify the product appears in the response.
 
-**Expected test case results:** Response returns HTTP 200. The "Contract term" array for the product contains exactly one entry with all fields populated: Type of terms = "FIXED_TERM", Value = 12, Type = "MONTH", Automatic renewal = true, Renewal value = 12, Renewal type = "MONTH", Perpetuity clause = false.
-
-**References:** PHN-2178, Confluence "get product list" — Response Parameters.
+**Expected test case results:** HTTP 200. Product with globalSalesChannel=true is included in the list because "Portals" channel is part of ALL channels.
 
 ---
 
-### TC-BE-3 (Positive): Verify price components filtered by Price Type
+### TC-BE-3 (Negative): Inactive product is excluded from product list
 
-**Description:** Verify that the response includes only price components where Price Type is "Активна електрическа енергия" (Active electric energy) OR "Такса" (Fee), with all sub-attributes populated.
+**Description:** Verify that products with `productStatus: INACTIVE` are NOT returned by the list.
 
 **Preconditions:**
-1. Complete steps 1–7 from Test data above.
-2. Product has three price components: one with Price Type "Active electric energy", one with Price Type "Fee", and one with Price Type "Grid" (a type that should NOT appear in the response).
-3. Each price component has: Name, Name to show in invoices and templates, Value type, Number type, formula X values (Description, Value), Conditions (Parameter, Value, Operator), Price with words, Conditions with words.
-4. The "Active electric energy" price component additionally has an Application model with type "Price application model over time" including Period, Level, ApplicationType.
+1. Create terms and price component.
+2. Create product with `productStatus: INACTIVE`, all other attributes valid.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Locate the product and inspect the "Price components" array.
+1. Call `POST /products/list` with empty body.
+2. Search for the created product by ID in response.
 
-**Expected test case results:** Response returns HTTP 200. Only price components with Price Type "Active electric energy" and "Fee" are present in the response. The "Grid" type price component is excluded. Each returned price component contains: Name, Name to show in invoices and templates, Value type, Number type, X descriptions and values, Conditions with Parameter/Value/Operator, Price with words, Conditions with words. The "Active electric energy" component additionally has an Application model with Period, Level, and ApplicationType.
-
-**References:** PHN-2178, Confluence "get product list" — Response Parameters, section 6.
+**Expected test case results:** HTTP 200. The inactive product does NOT appear in the response list.
 
 ---
 
-### TC-BE-4 (Positive): Product with period from defined and current date after period from
+### TC-BE-4 (Negative): Product with availableForSale=false is excluded
 
-**Description:** Verify that a product with only "Period from" defined (Period to empty) is returned when the current date is after Period from.
+**Description:** Verify that products not available for sale are excluded from the list.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data, but set Period from = 2025-01-01, Period to = empty/null.
-2. Current date is after 2025-01-01.
+1. Create terms and price component.
+2. Create product with `availableForSale: false`, productStatus: ACTIVE.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Check whether the product appears in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product is included in the list because the current date is greater than Period from and Period to is not defined.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, status requirements.
+**Expected test case results:** HTTP 200. Product with availableForSale=false does NOT appear in the list.
 
 ---
 
-### TC-BE-5 (Positive): Product with period to defined and current date before period to
+### TC-BE-5 (Negative): Product outside availability period (current date before availableFrom) is excluded
 
-**Description:** Verify that a product with only "Period to" defined (Period from empty) is returned when the current date is before Period to.
+**Description:** Verify that products with `availableFrom` in the future are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data, but set Period from = empty/null, Period to = 2027-12-31.
-2. Current date is before 2027-12-31.
+1. Create product with `availableFrom`: future date (e.g., 2027-01-01), `availableTo`: null.
+2. Product is ACTIVE and availableForSale: true.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Check whether the product appears in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product is included in the list because the current date is less than Period to and Period from is not defined.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, status requirements.
+**Expected test case results:** HTTP 200. Product is excluded because current date is before availableFrom.
 
 ---
 
-### TC-BE-6 (Positive): Product with empty period from/to
+### TC-BE-6 (Negative): Product outside availability period (current date after availableTo) is excluded
 
-**Description:** Verify that a product with both Period from and Period to empty is returned regardless of the current date.
+**Description:** Verify that products with `availableTo` in the past are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data, but set Period from = empty/null, Period to = empty/null.
+1. Create product with `availableFrom`: null, `availableTo`: past date (e.g., 2025-01-01).
+2. Product is ACTIVE and availableForSale: true.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Check whether the product appears in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product is included in the list because no date restrictions are defined.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, status requirements.
+**Expected test case results:** HTTP 200. Product is excluded because current date is after availableTo.
 
 ---
 
-### TC-BE-7 (Positive): Product with term assigned via group — no additional filtering
+### TC-BE-7 (Positive): Product within availability period is included
 
-**Description:** Verify that when a term group is assigned to the product (rather than a term added directly), the product is returned without additional term validation.
+**Description:** Verify that products with current date within availableFrom/availableTo range are included.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data.
-2. Assign a term group to the product (group contains multiple terms with varying configurations).
-3. No term is added directly to the product.
+1. Create product with `availableFrom`: past date (2024-01-01), `availableTo`: future date (2030-12-31).
+2. Product is ACTIVE, availableForSale: true, all other validations pass.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Check whether the product appears in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product is included. When a term group is assigned, the system displays the group directly without applying the single-payment-term or value-filled validation.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Term requirements.
+**Expected test case results:** HTTP 200. Product appears in the list.
 
 ---
 
-### TC-BE-8 (Positive): Product with payment guarantee "Bank Guarantee" correctly configured
+### TC-BE-8 (Positive): Product with both availableFrom and availableTo null is included
 
-**Description:** Verify that a product with "Bank Guarantee" selected and bank guarantee amount + currency filled is returned.
+**Description:** Verify that products with no date restrictions (both null) are included.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data with: Payment guarantee = "Bank Guarantee", bank guarantee amount = 1000, bank guarantee currency = BGN.
-2. Only the "Bank Guarantee" checkbox is selected (no other payment guarantee checkboxes).
+1. Create product with `availableFrom`: null, `availableTo`: null.
+2. Product is ACTIVE, availableForSale: true, all other validations pass.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Locate the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. Product is included. The "Payment guarantee" field in the response shows "BANK_GUARANTEE".
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Payment guarantee.
+**Expected test case results:** HTTP 200. Product appears in the list (no date restriction applies).
 
 ---
 
-### TC-BE-9 (Positive): Product with payment guarantee "Cash Deposit and Bank Guarantee" fully configured
+### TC-BE-9 (Negative): Individual product (isIndividual=true) is excluded
 
-**Description:** Verify that a product with "Cash Deposit and Bank Guarantee" selected and all amounts/currencies filled is returned.
+**Description:** Verify that individual products are excluded from the standard list.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data with: Payment guarantee = "Cash Deposit and Bank Guarantee", cash deposit amount = 500, cash deposit currency = BGN, bank guarantee amount = 1000, bank guarantee currency = BGN.
-2. Only the "Cash Deposit and Bank Guarantee" checkbox is selected.
+1. Create product with `isIndividual: true`, all other attributes valid.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Locate the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. Product is included in the list with correct payment guarantee configuration.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Payment guarantee.
+**Expected test case results:** HTTP 200. Individual product does NOT appear in the list.
 
 ---
 
-### TC-BE-10 (Positive): Product with supply activation type "Manual" — returned directly
+### TC-BE-10 (Negative): Deleted product is excluded
 
-**Description:** Verify that a product with supply activation after contract resigning type set to "Manual" is returned without additional checks.
+**Description:** Verify that deleted products (status or flag indicating deletion) are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data with: Supply activation after contract resigning type = "Manual".
-2. Only one value is configured for supply activation.
+1. Create a valid product.
+2. Delete the product via `DELETE /products/{id}` or set deletion flag.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Locate the product in the response.
+1. Call `POST /products/list`.
+2. Search for the deleted product by ID.
 
-**Expected test case results:** Response returns HTTP 200. Product is included. Per the specification, when supply activation type is "Manual", the product is returned directly.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Supply activation after contract resigning.
+**Expected test case results:** HTTP 200. Deleted product does NOT appear in the list.
 
 ---
 
-### TC-BE-11 (Positive): Product with supply activation "From first day of month" and single "Wait for old contract" value
+### TC-BE-11 (Negative): Product without globalSalesChannel and missing "Portals" channel is excluded
 
-**Description:** Verify that a product with supply activation type "From first day of the month following the date of signing" and exactly one value for "Wait for old contract term to expire" is returned.
+**Description:** Verify that products without "Portals" in their sales channels are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data with: Supply activation type = "From first day of the month following the date of signing of the contract", "Wait for old contract term to expire (for resigning)" has exactly one value selected.
+1. Create product with `globalSalesChannel: false`, `salesChannelIds`: [some_non_portals_channel_id].
+2. All other attributes valid.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Locate the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. Product is included in the list.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Supply activation after contract resigning.
+**Expected test case results:** HTTP 200. Product does NOT appear because "Portals" channel is required.
 
 ---
 
-### TC-BE-12 (Positive): Product with advance payment obligatory — all sub-validations pass
+### TC-BE-12 (Negative): Product without ALL areas (globalSalesArea=false with specific areas) is excluded
 
-**Description:** Verify that a product with obligatory advance payments is returned when all advance payment sub-validations pass (value type with value filled, date of issue filled, payment term filled).
+**Description:** Verify that products restricted to specific areas (not ALL) are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data.
-2. Add an advance payment to the product (directly or via currently active group): obligatory = true.
-3. Value type = "exact amount", value = 100 BGN.
-4. Date of issue = "Date of the month", value = 15.
-5. Payment term value = 30 days.
-6. No "at least one is selected" flag — all advance payments are obligatory with consistent settings.
+1. Create product with `globalSalesArea: false`, `salesAreasIds`: [specific_area_id].
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Locate the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. Product is included because all advance payment validations pass: value type has a defined value, date of issue has a defined value, payment term has a defined value.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Interim and advance payment.
+**Expected test case results:** HTTP 200. Product is excluded because ALL areas are required.
 
 ---
 
-### TC-BE-13 (Positive): Product with advance payment value type "price component" and price component filled
+### TC-BE-13 (Negative): Product without ALL segments (globalSegment=false) is excluded
 
-**Description:** Verify that a product with advance payment value type "price component" is returned when the price component reference is filled.
+**Description:** Verify that products with specific segments (not ALL) are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data.
-2. Add an advance payment: obligatory = true, value type = "price component", price component = reference to existing price component from step 5.
-3. Date of issue = "Match the invoice date" (no additional check needed).
-4. Payment term = "Matches with the term of the standard invoice" (no additional check needed).
+1. Create product with `globalSegment: false`, `segmentIds`: [specific_segment_id].
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Locate the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. Product is included because the advance payment uses value type "price component" with a filled price component reference.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Interim and advance payment.
+**Expected test case results:** HTTP 200. Product is excluded because ALL segments are required.
 
 ---
 
-### TC-BE-14 (Positive): Product with equal monthly installments selected and values filled
+### TC-BE-14 (Negative): Product with multiple contract types is excluded
 
-**Description:** Verify that a product with equal monthly installments checkbox selected, number of installments filled, and amount value filled is returned.
+**Description:** Verify that products with more than one contract type are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data with: Equal monthly installments = selected/true, number of installments = 12, amount value = 50 BGN.
+1. Create product with `contractTypes`: ["COMBINED", "SUPPLY_ONLY"].
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Locate the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. Product is included because equal monthly installments is selected and both number of installments and amount value are filled.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Equal monthly installments.
+**Expected test case results:** HTTP 200. Product is excluded because only single contract type is allowed.
 
 ---
 
-### TC-BE-15 (Positive): Product with equal monthly installments NOT selected — returned without additional checks
+### TC-BE-15 (Positive): Product with single contract type is included
 
-**Description:** Verify that a product with equal monthly installments checkbox NOT selected is returned without checking installment values.
+**Description:** Verify that products with exactly one contract type are included.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data with: Equal monthly installments = not selected/false, number of installments = empty, amount value = empty.
+1. Create product with `contractTypes`: ["SUPPLY_ONLY"].
+2. All other validations pass.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Locate the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. Product is included in the list. The system does not check installment values when the checkbox is not selected.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Equal monthly installments.
+**Expected test case results:** HTTP 200. Product appears in the list.
 
 ---
 
-### TC-BE-16 (Positive): Product with price components from active group version — returned correctly
+### TC-BE-16 (Negative): Product with contract term type CERTAIN_DATE is excluded
 
-**Description:** Verify that price components added via a group of price components (current active version) are validated and the product is returned when all price component values are filled.
+**Description:** Verify that products with contract term type "CERTAIN_DATE" are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data.
-2. Instead of adding price components directly, create a price component group with an active version containing price components with values filled.
-3. Link the group to the product.
+1. Create product with productTerms containing `typeOfTerms`: "CERTAIN_DATE".
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Locate the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. Product is included. Price components from the currently active group version are considered during validation.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Price component values.
+**Expected test case results:** HTTP 200. Product is excluded because CERTAIN_DATE type is not allowed.
 
 ---
 
-### TC-BE-17 (Positive): Product with advance payment added via currently active group
+### TC-BE-17 (Positive): Product with contract term type PERIOD is included
 
-**Description:** Verify that advance payments added via groups (currently active version) are validated correctly and the product is returned when valid.
+**Description:** Verify that products with contract term type "PERIOD" are included.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data.
-2. Instead of adding advance payments directly, create an advance payment group (currently active version) linked to the product.
-3. Advance payment in the group: obligatory, value type = "% from previous invoice amount", value filled, date of issue = "Periodical" (no additional check), payment term = "Matches with the term of the standard invoice".
+1. Create product with productTerms containing `typeOfTerms`: "PERIOD".
+2. All other validations pass.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Locate the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. Product is included. Advance payments from the currently active group version pass all validation checks.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Interim and advance payment.
+**Expected test case results:** HTTP 200. Product appears in the list.
 
 ---
 
-### TC-BE-18 (Negative): Inactive product is excluded from the list
+### TC-BE-18 (Positive): Product with contract term type WITHOUT_TERM is included
 
-**Description:** Verify that a product with status NOT ACTIVE is excluded from the `GET /product/list` response.
+**Description:** Verify that products with type "without term" are included.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but set status: INACTIVE (or DRAFT).
-2. All other configurations are valid (available for sale, Portals channel, ALL areas/segments, etc.).
+1. Create product with productTerms containing `typeOfTerms`: "WITHOUT_TERM" (or equivalent).
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The inactive product does NOT appear in the list.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Status requirement.
+**Expected test case results:** HTTP 200. Product appears in the list.
 
 ---
 
-### TC-BE-19 (Negative): Product not available for sale is excluded
+### TC-BE-19 (Negative): Product with multiple payment terms is excluded
 
-**Description:** Verify that a product with "Available for sale" flag set to false is excluded from the response.
+**Description:** Verify that products with more than one payment term are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but set Available for sale = false.
-2. Product is ACTIVE with all other configurations valid.
+1. Create product with multiple entries in `productTerms` array.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear in the list because it is not available for sale.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, "Available for sale" requirement.
+**Expected test case results:** HTTP 200. Product is excluded because only one payment term is allowed.
 
 ---
 
-### TC-BE-20 (Negative): Product without "Portals" sales channel is excluded
+### TC-BE-20 (Positive): Product with single payment term is included
 
-**Description:** Verify that a product that does not include "Portals" in its sales channels is excluded from the response.
+**Description:** Verify that products with exactly one payment term are included.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but set sales channels to include only "Direct Sales" (not "Portals").
-2. Product is ACTIVE, available for sale, ALL areas, ALL segments.
+1. Create product with single entry in `productTerms`.
+2. Term has value filled.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear in the list because "Portals" is not included in its sales channels.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, sales channel requirement.
+**Expected test case results:** HTTP 200. Product appears in the list.
 
 ---
 
-### TC-BE-21 (Negative): Product without ALL areas is excluded
+### TC-BE-21 (Negative): Product with multiple payment guarantees selected is excluded
 
-**Description:** Verify that a product where areas are restricted (not ALL) is excluded from the response.
+**Description:** Verify that products with more than one payment guarantee checkbox are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but set areas to a specific region (not ALL).
-2. Product is ACTIVE, available for sale, has "Portals" sales channel, ALL segments.
+1. Create product with `paymentGuarantees`: ["CASH_DEPOSIT", "BANK"].
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because ALL areas is required.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, "All areas" requirement.
+**Expected test case results:** HTTP 200. Product is excluded because only one payment guarantee option should be selected.
 
 ---
 
-### TC-BE-22 (Negative): Product without ALL segments is excluded
+### TC-BE-22 (Positive): Product with single payment guarantee "NO" is included
 
-**Description:** Verify that a product where segments are restricted (not ALL) is excluded from the response.
+**Description:** Verify that products with payment guarantee "NO" (no deposit required) are included.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but set segments to a specific segment (not ALL).
-2. Product is ACTIVE, available for sale, has "Portals" sales channel, ALL areas.
+1. Create product with `paymentGuarantees`: ["NO"].
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because ALL segments is required.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, "All segments" requirement.
+**Expected test case results:** HTTP 200. Product appears in the list.
 
 ---
 
-### TC-BE-23 (Negative): Individual product is excluded
+### TC-BE-23 (Positive): Product with CASH_DEPOSIT and valid amount/currency is included
 
-**Description:** Verify that a product marked as "individual" is excluded from the response.
+**Description:** Verify that products with "Cash Deposit" selected and amount+currency filled are included.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but set individual = true.
-2. All other configurations are valid.
+1. Create product with `paymentGuarantees`: ["CASH_DEPOSIT"], `cashDepositAmount`: 500, `cashDepositCurrencyId`: valid_currency_id.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The individual product does NOT appear in the list.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, "Products are not individual" requirement.
+**Expected test case results:** HTTP 200. Product appears in the list with payment guarantee information.
 
 ---
 
-### TC-BE-24 (Negative): Deleted product is excluded
+### TC-BE-24 (Negative): Product with CASH_DEPOSIT but missing amount is excluded
 
-**Description:** Verify that a deleted product is excluded from the response.
+**Description:** Verify that products with "Cash Deposit" but no amount are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data.
-2. Delete the product (set deleted flag or status to DELETED).
+1. Create product with `paymentGuarantees`: ["CASH_DEPOSIT"], `cashDepositAmount`: null.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The deleted product does NOT appear in the list.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, "not deleted" requirement.
+**Expected test case results:** HTTP 200. Product is excluded because cash deposit amount is required when CASH_DEPOSIT is selected.
 
 ---
 
-### TC-BE-25 (Negative): Product with multiple contract types is excluded
+### TC-BE-25 (Positive): Product with BANK_GUARANTEE and valid amount/currency is included
 
-**Description:** Verify that a product with more than one contract type selected is excluded.
+**Description:** Verify that products with "Bank Guarantee" and filled amount/currency are included.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but select two contract types (e.g., SUPPLY_ONLY and COMBINED).
+1. Create product with `paymentGuarantees`: ["BANK"], `bankGuaranteeAmount`: 1000, `bankGuaranteeCurrencyId`: valid_currency_id.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because the spec requires "Only one option is selected" for contract type.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Contract type.
+**Expected test case results:** HTTP 200. Product appears in the list.
 
 ---
 
-### TC-BE-26 (Negative): Product with multiple payment terms is excluded
+### TC-BE-26 (Negative): Product with BANK_GUARANTEE but missing amount is excluded
 
-**Description:** Verify that a product with more than one payment term in its contract term is excluded.
+**Description:** Verify that products with "Bank Guarantee" but no amount are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but configure two payment terms in the contract term.
+1. Create product with `paymentGuarantees`: ["BANK"], `bankGuaranteeAmount`: null.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because the spec requires the product to have only one payment term.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Contract term.
+**Expected test case results:** HTTP 200. Product is excluded.
 
 ---
 
-### TC-BE-27 (Negative): Product with contract term type "Certain date" is excluded
+### TC-BE-27 (Positive): Product with CASH_DEPOSIT_AND_BANK and both amounts filled is included
 
-**Description:** Verify that a product with contract term type "Certain date" is excluded from the response.
+**Description:** Verify that products with both deposit types and all amounts/currencies filled are included.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but set contract term type = "Certain date".
+1. Create product with `paymentGuarantees`: ["CASH_DEPOSIT_AND_BANK"], cashDepositAmount, cashDepositCurrencyId, bankGuaranteeAmount, bankGuaranteeCurrencyId all filled.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because the spec states "If type is certain date — do not return such product."
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Contract term.
+**Expected test case results:** HTTP 200. Product appears in the list.
 
 ---
 
-### TC-BE-28 (Negative): Product with term added directly but no value filled is excluded
+### TC-BE-28 (Negative): Product with CASH_DEPOSIT_AND_BANK but missing one amount is excluded
 
-**Description:** Verify that a product with a term added directly (not via group) where the payment term value is not filled is excluded.
+**Description:** Verify that partial amounts with CASH_DEPOSIT_AND_BANK exclude the product.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data.
-2. Add a term directly to the product (not via group): one payment term, but value = empty/null.
+1. Create product with `paymentGuarantees`: ["CASH_DEPOSIT_AND_BANK"], `cashDepositAmount`: 500, `bankGuaranteeAmount`: null.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because when a term is added directly, the value must be filled.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Term requirements.
+**Expected test case results:** HTTP 200. Product is excluded.
 
 ---
 
-### TC-BE-29 (Negative): Product with multiple payment guarantee checkboxes selected is excluded
+### TC-BE-29 (Positive): Product with price component having fixed value is included
 
-**Description:** Verify that a product with more than one payment guarantee checkbox selected is excluded.
+**Description:** Verify that products with price components having Value (not value from/to) are included.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but select both "Cash Deposit" and "Bank Guarantee" checkboxes separately (not the combined option).
+1. Create price component with fixed value (e.g., value: 0.235).
+2. Create product linked to this price component.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because the spec requires "Only one checkbox should be selected" for payment guarantee.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Payment guarantee.
+**Expected test case results:** HTTP 200. Product appears with price component details.
 
 ---
 
-### TC-BE-30 (Negative): Product with "Cash Deposit" but amount/currency missing is excluded
+### TC-BE-30 (Negative): Product with price component missing value is excluded
 
-**Description:** Verify that a product with "Cash Deposit" payment guarantee selected but cash deposit amount or currency not filled is excluded.
+**Description:** Verify that products with price components without value are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data with: Payment guarantee = "Cash Deposit", cash deposit amount = empty/null.
+1. Create price component with value: null (or unresolved variable).
+2. Create product linked to this price component.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because "Cash Deposit" requires amount and currency to be filled.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Payment guarantee.
+**Expected test case results:** HTTP 200. Product is excluded because price component value is required.
 
 ---
 
-### TC-BE-31 (Negative): Product with "Bank Guarantee" but amount/currency missing is excluded
+### TC-BE-31 (Negative): Product with entering into force type 'Exact day' is excluded
 
-**Description:** Verify that a product with "Bank Guarantee" payment guarantee selected but bank guarantee amount or currency not filled is excluded.
+**Description:** Verify that products with entering into force type "Exact day" are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data with: Payment guarantee = "Bank Guarantee", bank guarantee amount = empty/null.
+1. Create product with enteringIntoForce configuration having type: "EXACT_DAY".
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because "Bank Guarantee" requires amount and currency to be filled.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Payment guarantee.
+**Expected test case results:** HTTP 200. Product is excluded.
 
 ---
 
-### TC-BE-32 (Negative): Product with price component missing value is excluded
+### TC-BE-32 (Negative): Product with entering into force type 'Manual' is excluded
 
-**Description:** Verify that a product where any price component (directly added, via active group, or via advance payment) has no value filled is excluded.
+**Description:** Verify that products with entering into force type "Manual" are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data.
-2. Add a price component directly to the product but leave its value empty/null.
+1. Create product with enteringIntoForce type: "MANUAL".
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because all price component values must be filled.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Price component values.
+**Expected test case results:** HTTP 200. Product is excluded.
 
 ---
 
-### TC-BE-33 (Negative): Product with entering into force type "Exact day" is excluded
+### TC-BE-33 (Positive): Product with entering into force type other than Exact day/Manual is included
 
-**Description:** Verify that a product with entering into force type set to "Exact day" is excluded.
+**Description:** Verify valid entering into force types allow product inclusion.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but set entering into force type = "Exact day".
-2. Only one entering into force value.
+1. Create product with enteringIntoForce type: "FIRST_DAY_OF_MONTH" (or similar valid type).
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because the spec states "If type is 'Exact day' or 'Manual' — do not return such product" for entering into force.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Entering into force.
+**Expected test case results:** HTTP 200. Product appears in the list.
 
 ---
 
-### TC-BE-34 (Negative): Product with entering into force type "Manual" is excluded
+### TC-BE-34 (Negative): Product with multiple entering into force values is excluded
 
-**Description:** Verify that a product with entering into force type set to "Manual" is excluded.
+**Description:** Verify that only single value is allowed for entering into force.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but set entering into force type = "Manual".
+1. Create product with multiple enteringIntoForce entries.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Entering into force.
+**Expected test case results:** HTTP 200. Product is excluded.
 
 ---
 
-### TC-BE-35 (Negative): Product with multiple entering into force values is excluded
+### TC-BE-35 (Negative): Product with start of initial term type 'Exact day' is excluded
 
-**Description:** Verify that a product with more than one entering into force value is excluded.
+**Description:** Verify that products with start of initial term type "Exact day" are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but configure two entering into force values.
+1. Create product with startOfInitialTerm type: "EXACT_DAY".
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because the spec requires "Check if only one value is added" for entering into force.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Entering into force.
+**Expected test case results:** HTTP 200. Product is excluded.
 
 ---
 
-### TC-BE-36 (Negative): Product with start of initial term type "Exact day" is excluded
+### TC-BE-36 (Negative): Product with start of initial term type 'Manual' is excluded
 
-**Description:** Verify that a product with start of initial term type set to "Exact day" is excluded.
+**Description:** Verify that products with start of initial term type "Manual" are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but set start of initial term type = "Exact day".
+1. Create product with startOfInitialTerm type: "MANUAL".
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Start of the initial term.
+**Expected test case results:** HTTP 200. Product is excluded.
 
 ---
 
-### TC-BE-37 (Negative): Product with start of initial term type "Manual" is excluded
+### TC-BE-37 (Negative): Product with supply activation type 'Exact day' is excluded
 
-**Description:** Verify that a product with start of initial term type set to "Manual" is excluded.
+**Description:** Verify that products with supply activation after resigning type "Exact day" are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but set start of initial term type = "Manual".
+1. Create product with supplyActivationAfterResigning type: "EXACT_DAY".
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Start of the initial term.
+**Expected test case results:** HTTP 200. Product is excluded.
 
 ---
 
-### TC-BE-38 (Negative): Product with supply activation type "Exact day" is excluded
+### TC-BE-38 (Positive): Product with supply activation type 'Manual' is included
 
-**Description:** Verify that a product with supply activation after contract resigning type "Exact day" is excluded.
+**Description:** Verify that type "Manual" for supply activation is allowed (per business rules).
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but set supply activation type = "Exact day".
+1. Create product with supplyActivationAfterResigning type: "MANUAL".
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Supply activation after contract resigning.
+**Expected test case results:** HTTP 200. Product appears in the list.
 
 ---
 
-### TC-BE-39 (Negative): Product with multiple supply activation values is excluded
+### TC-BE-39 (Negative): Product with interim payment "at least one selected" is excluded
 
-**Description:** Verify that a product with more than one supply activation after contract resigning value is excluded.
+**Description:** Verify that "at least one is selected" for interim payments excludes the product.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but configure two supply activation values.
+1. Create product with interimAdvancePayments having selection type: "AT_LEAST_ONE".
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because only one value is allowed for supply activation.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Supply activation after contract resigning.
+**Expected test case results:** HTTP 200. Product is excluded.
 
 ---
 
-### TC-BE-40 (Negative): Product with "at least one is selected" advance payment flag is excluded
+### TC-BE-40 (Positive): Product with obligatory interim payment and valid configuration is included
 
-**Description:** Verify that a product where advance payment has "at least one is selected" is excluded.
+**Description:** Verify that obligatory interim payments with all validations passing are included.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data.
-2. Add an advance payment to the product with "at least one is selected" flag.
+1. Create interim advance payment with: obligatory: true, valueType: "EXACT_AMOUNT", value: 100.
+2. Create product linked to this interim payment.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because the spec states "If 'at least one is selected' do not return such product."
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Interim and advance payment.
+**Expected test case results:** HTTP 200. Product appears in the list.
 
 ---
 
-### TC-BE-41 (Negative): Product with advance payment obligatory but missing value
+### TC-BE-41 (Negative): Product with obligatory interim payment but missing value is excluded
 
-**Description:** Verify that a product with obligatory advance payment where value type is "exact amount" but value is empty is excluded.
+**Description:** Verify that obligatory interim payments with missing value exclude the product.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data.
-2. Add an advance payment: obligatory = true, value type = "exact amount", value = empty/null.
+1. Create interim payment with valueType: "EXACT_AMOUNT", value: null.
+2. Create product linked to this interim payment.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because when value type is "exact amount" or "% from previous invoice amount", the value must be filled.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Interim and advance payment.
+**Expected test case results:** HTTP 200. Product is excluded.
 
 ---
 
-### TC-BE-42 (Negative): Product with advance payment obligatory but missing date of issue value
+### TC-BE-42 (Negative): Product with interim payment having "Days after invoice date" but no value is excluded
 
-**Description:** Verify that a product with obligatory advance payment where date of issue is "Date of the month" but value is empty is excluded.
+**Description:** Verify payment term "Days after invoice date" requires value.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data.
-2. Add an advance payment: obligatory = true, value type = "exact amount" (value filled), date of issue = "Date of the month", date value = empty/null.
+1. Create interim payment with paymentTerm: "DAYS_AFTER_INVOICE_DATE", value: null.
+2. Create product linked to this interim payment.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because when date of issue is "Date of the month" or "Working days after invoice date", the value must be filled.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Interim and advance payment.
+**Expected test case results:** HTTP 200. Product is excluded.
 
 ---
 
-### TC-BE-43 (Negative): Product with advance payment obligatory but missing payment term value
+### TC-BE-43 (Negative): Product with interim payments having different settings is excluded
 
-**Description:** Verify that a product with obligatory advance payment where a custom payment term is added but value is empty is excluded.
+**Description:** Verify that inconsistent interim payment configurations exclude the product.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data.
-2. Add an advance payment: obligatory = true, value type configured and filled, date of issue configured and filled, payment term added (not "Matches with standard"), payment term value = empty/null.
+1. Create two interim payments with different settings (different value types).
+2. Create product linked to both.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because when a payment term is added (not matching standard), the value must be filled.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Interim and advance payment.
+**Expected test case results:** HTTP 200. Product is excluded because interim payments have different settings.
 
 ---
 
-### TC-BE-44 (Negative): Product with "Days after invoice date" advance payment but Value From/To not empty is excluded
+### TC-BE-44 (Positive): Product without equal monthly installments is included
 
-**Description:** Verify that a product with advance payment "Days after invoice date" selected but Value From and/or Value To fields are NOT empty is excluded.
+**Description:** Verify that products with equalMonthlyInstallmentsActivation=false are included without additional checks.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data.
-2. Add an advance payment directly with "Days after invoice date" selected, Value = 15, Value From = 10, Value To = 20.
+1. Create product with `equalMonthlyInstallmentsActivation`: false.
+2. installmentNumber and amount can be null.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because when "Days after invoice date" is selected, the Value must be defined but Value From and Value To must be empty.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Interim and advance payment.
+**Expected test case results:** HTTP 200. Product appears in the list.
 
 ---
 
-### TC-BE-45 (Negative): Product with different advance payment settings is excluded
+### TC-BE-45 (Positive): Product with equal monthly installments enabled and all values filled is included
 
-**Description:** Verify that a product where advance payments have different (inconsistent) settings is excluded.
+**Description:** Verify that enabled installments with filled values are included.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data.
-2. Add two advance payments with different settings (e.g., one obligatory with "exact amount", another obligatory with "% from previous invoice amount" using different date of issue types).
+1. Create product with `equalMonthlyInstallmentsActivation`: true, `installmentNumber`: 12, `amount`: 100.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because the spec states "If interim and advance payment has different settings, then this product shouldn't be returned."
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Interim and advance payment.
+**Expected test case results:** HTTP 200. Product appears in the list.
 
 ---
 
-### TC-BE-46 (Negative): Product with equal monthly installments selected but number of installments missing is excluded
+### TC-BE-46 (Negative): Product with equal monthly installments enabled but missing installmentNumber is excluded
 
-**Description:** Verify that a product with equal monthly installments selected but number of installments not filled is excluded.
+**Description:** Verify that missing installment number excludes the product.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data with: Equal monthly installments = selected/true, number of installments = empty/null, amount value = 50.
+1. Create product with `equalMonthlyInstallmentsActivation`: true, `installmentNumber`: null.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because number of installments must be filled when the checkbox is selected.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Equal monthly installments.
+**Expected test case results:** HTTP 200. Product is excluded.
 
 ---
 
-### TC-BE-47 (Negative): Product with equal monthly installments selected but amount value missing is excluded
+### TC-BE-47 (Negative): Product with equal monthly installments enabled but missing amount is excluded
 
-**Description:** Verify that a product with equal monthly installments selected but amount value not filled is excluded.
+**Description:** Verify that missing amount excludes the product.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data with: Equal monthly installments = selected/true, number of installments = 12, amount value = empty/null.
+1. Create product with `equalMonthlyInstallmentsActivation`: true, `installmentNumber`: 12, `amount`: null.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because amount value must be filled when the checkbox is selected.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Equal monthly installments.
+**Expected test case results:** HTTP 200. Product is excluded.
 
 ---
 
 ### TC-BE-48 (Negative): Re-signing product is excluded
 
-**Description:** Verify that a product marked as "re-signing" is excluded from the response.
+**Description:** Verify that products marked for re-signing are excluded.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but mark it as a re-signing product.
-2. All other configurations are valid.
+1. Create product with re-signing flag/configuration enabled.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Search for the product in response.
 
-**Expected test case results:** Response returns HTTP 200. The re-signing product does NOT appear in the list. The spec explicitly states "No re-signing products."
-
-**References:** PHN-2178, PHN-2614 ("Functionality for marking products as re-signing"), Confluence "get product list" — section 4.
+**Expected test case results:** HTTP 200. Re-signing product does NOT appear in the list.
 
 ---
 
-### TC-BE-49 (Negative): Product with period from/to defined but current date outside range is excluded
+### TC-BE-49 (Positive): Response contains all required product attributes
 
-**Description:** Verify that a product with Period from and Period to defined is excluded when the current date is outside the range.
+**Description:** Verify that the response JSON includes all documented attributes.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but set Period from = 2020-01-01, Period to = 2020-12-31 (both in the past).
-2. Current date is outside this range.
+1. Create a valid product meeting all requirements.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Find the product in response.
+3. Validate presence of: Product ID, Product Version, PrintingName, PrintingName (Transliterated), Text for invoices, Short description, Type of POD, Purpose of consumption, Metering type, Voltage level, Capacity limit, Payment guarantee, Contract type, Contract term details, Price components.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because the current date is not within the period from/to range.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Status requirements.
+**Expected test case results:** HTTP 200. All required attributes are present in the response for the product. No field is null when value exists.
 
 ---
 
-### TC-BE-50 (Negative): Product with only period from defined and current date before period from is excluded
+### TC-BE-50 (Positive): Price components filtered by "Active electric energy" or "Fee" type are returned
 
-**Description:** Verify that a product with only Period from defined is excluded when the current date is less than Period from.
+**Description:** Verify that only price components with Price Type "Active electric energy" OR "Fee" are included in the response.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data but set Period from = 2028-01-01 (in the future), Period to = empty/null.
+1. Create multiple price components with different types.
+2. Create product linked to all price components.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Find the product and inspect price components array.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because the current date is less than Period from.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Status requirements.
+**Expected test case results:** HTTP 200. Only price components with type "Active electric energy" or "Fee" appear in the response. Other types are excluded.
 
 ---
 
-### TC-BE-51 (Negative): Product with advance payment value type "price component" but price component empty is excluded
+### TC-BE-51 (Positive): Contract term with automatic renewal details is returned correctly
 
-**Description:** Verify that a product with advance payment value type "price component" but no price component reference filled is excluded.
+**Description:** Verify that automatic renewal information is included in contract term response.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data.
-2. Add an advance payment: obligatory = true, value type = "price component", price component = empty/null.
+1. Create product with productTerms having automaticRenewal: true, renewalPeriodValue: 12, renewalPeriodType: "MONTH".
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Find the product and check Contract term section.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because when value type is "price component", the price component reference must be filled.
-
-**References:** PHN-2178, Confluence "get product list" — section 4, Interim and advance payment.
+**Expected test case results:** HTTP 200. Contract term includes: automaticRenewal=true, renewalValue, renewalType, perpetuityClause value.
 
 ---
 
-### TC-BE-52 (Negative): Product with "Cash Deposit and Bank Guarantee" but partial amounts missing is excluded
+### TC-BE-52 (Positive): Application model for price components is returned when type is "Price application model over time"
 
-**Description:** Verify that a product with "Cash Deposit and Bank Guarantee" selected but only cash deposit amount filled (bank guarantee amount missing) is excluded.
+**Description:** Verify application model details are returned for applicable price components.
 
 **Preconditions:**
-1. Create a product per steps 1–7 from Test data with: Payment guarantee = "Cash Deposit and Bank Guarantee", cash deposit amount = 500, cash deposit currency = BGN, bank guarantee amount = empty/null.
+1. Create price component with application model type: "PRICE_APPLICATION_MODEL_OVER_TIME", period: "MONTHLY", level: "CONTRACT".
+2. Create product linked to this price component.
 
 **Test steps:**
-1. Send `GET /product/list` request.
-2. Search for the product in the response.
+1. Call `POST /products/list`.
+2. Find the product and inspect price component's Application model.
 
-**Expected test case results:** Response returns HTTP 200. The product does NOT appear because "Cash Deposit and Bank Guarantee" requires both cash deposit and bank guarantee amounts and currencies to be filled.
+**Expected test case results:** HTTP 200. Application model includes: ApplicationModel.Period, ApplicationModel.Level, ApplicationModel.ApplicationType.
 
-**References:** PHN-2178, Confluence "get product list" — section 4, Payment guarantee.
+---
+
+### TC-BE-53 (Positive): Product list returns paginated results
+
+**Description:** Verify that the endpoint supports pagination.
+
+**Preconditions:**
+1. Create multiple valid products (e.g., 25 products).
+
+**Test steps:**
+1. Call `POST /products/list` with pagination parameters (e.g., page=0, size=10).
+2. Call again with page=1.
+
+**Expected test case results:** HTTP 200. First call returns 10 products. Second call returns next set. Response includes totalElements, totalPages, page number.
+
+---
+
+### TC-BE-54 (Negative): Empty list when no products meet criteria
+
+**Description:** Verify empty list is returned when no products qualify.
+
+**Preconditions:**
+1. Ensure all products in the system are either INACTIVE, individual, or fail other criteria.
+
+**Test steps:**
+1. Call `POST /products/list`.
+
+**Expected test case results:** HTTP 200. Response contains empty content array. totalElements is 0.
+
+---
+
+### TC-BE-55 (Positive): Product with term group (not direct term) is included if group passes validation
+
+**Description:** Verify that products using term groups (termGroupId) instead of direct term are included if the group is valid.
+
+**Preconditions:**
+1. Create a term group via `POST /terms-group` containing valid terms.
+2. Create product with `termGroupId`: group_id (termId: null).
+
+**Test steps:**
+1. Call `POST /products/list`.
+2. Search for the product in response.
+
+**Expected test case results:** HTTP 200. Product appears in the list. Term details from the group are displayed.
+
+---
+
+### TC-BE-56 (Positive): Product with price component group is included if group passes validation
+
+**Description:** Verify that products using price component groups are included.
+
+**Preconditions:**
+1. Create price component group with valid price components (current version, values filled).
+2. Create product with `priceComponentGroupIds`: [group_id].
+
+**Test steps:**
+1. Call `POST /products/list`.
+2. Search for the product in response.
+
+**Expected test case results:** HTTP 200. Product appears in the list with price components from the group.
+
+---
+
+### TC-BE-57 (Positive): Product with advance payment group is included if group passes validation
+
+**Description:** Verify that products using advance payment groups are included.
+
+**Preconditions:**
+1. Create advance payment group with valid configuration (currently active version).
+2. Create product with `interimAdvancePaymentGroups`: [group_id].
+
+**Test steps:**
+1. Call `POST /products/list`.
+2. Search for the product in response.
+
+**Expected test case results:** HTTP 200. Product appears in the list.
+
+---
+
+### TC-BE-58 (Positive): NEW status product with valid configuration is handled
+
+**Description:** Verify handling of products with status NEW (may or may not be included based on business rules).
+
+**Preconditions:**
+1. Create product with `productStatus`: "NEW", all other attributes valid.
+
+**Test steps:**
+1. Call `POST /products/list`.
+2. Search for the product in response.
+
+**Expected test case results:** HTTP 200. Product handling matches business requirement (likely excluded as only ACTIVE should appear).
+
+---
 
 ---
 
 ## References
 
-- **Jira:** PHN-2178 – Get: product list (Energy products).
-- **Parent Epic:** PHN-2243 – Sales portal - Product.
-- **Subtask:** PHN-2179 – Backend Get: product list (Energy products).
-- **Subtask:** PHN-2180 – [DB] Get: product list (Energy products).
-- **Linked:** PHN-2614 – Functionality for marking products as "re-signing" (blocks PHN-2178).
-- **Linked:** PHN-2187 – Get: List of products based on pod ID (blocked by PHN-2178).
-- **Confluence:** [get product list](https://asterbit.atlassian.net/wiki/spaces/Phoenix/pages/779517953/get+product+list) (page 779517953).
-- **Codebase:** `ProductsController.java` (POST /products/list, /products/filter), `ProductService.java` (list, filter), `ProductRepository.java` (filter, searchForContract, searchForExpressContract), `ProductContractController.java` (GET /product-contract/list/products).
+- **Jira:** GET-PRODUCT-LIST – Get Product List API test cases.
+- **Related:** ProductService, ProductRepository (searchForExpressContract, filter).
+- **Confluence:** [get product list](https://asterbit.atlassian.net/wiki/spaces/Phoenix/pages/779517953/get+product+list).
+- **Frontend test cases:** `Frontend/Get_product_list_energy_products.md` (TC-FE-1 through TC-FE-12).

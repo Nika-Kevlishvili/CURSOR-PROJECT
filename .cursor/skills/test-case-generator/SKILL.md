@@ -66,6 +66,43 @@ When writing **Preconditions** (both document-level "Test data" and per-TC), fol
 - **Data layers to always include when relevant:** Customer, POD, Product, Terms, Price component, Product contract, Service contract, Energy data / billing profile, Billing run, Invoice, Payment, Payment package, Deposit. Each as its own numbered step with endpoint and parameters.
 - **Rule of thumb:** Every entity that must exist for the test to run MUST have its own creation step. If a tester cannot set up the test without guessing how to create an entity, the precondition is incomplete.
 
+### 3.1 Playwright Automation Compatibility (CRITICAL)
+
+Test cases MUST be written so that Playwright automation can implement them **without assuming any data exists**:
+
+- **NEVER** write preconditions that assume data already exists in the test environment
+- **ALWAYS** include creation steps for ALL entities in the data chain
+- **Follow dependency order:** Terms → Price components → Products → Customers → PODs → Contracts → Billing runs → Invoices → Payments
+- Each entity creation step MUST specify enough detail that Playwright can use `GeneratePayload` methods to create it
+- **Identify shared vs test-specific preconditions:** Mark which preconditions are common to many tests (→ helper functions) vs which are unique to specific tests (→ inline creation)
+
+**Example of Playwright-compatible preconditions:**
+
+```markdown
+**Preconditions (shared across many tests):**
+1. Create terms via `POST /terms` (type: PERIOD, value: 100, periodType: DAY_DAYS).
+2. Create electricity price component via `POST /price-components` (type: ELECTRICITY, vatRateId: from envVariables).
+3. Create product via `POST /products` with:
+   - termId: from step 1
+   - priceComponentIds: [id from step 2]
+   - status: ACTIVE
+   - availableForSale: true
+   - isIndividual: false
+   - globalSalesChannel: true (ALL channels)
+   - globalSalesArea: true (ALL areas)
+   - globalSegment: true (ALL segments)
+   - contractTypes: [SUPPLY_ONLY]
+   - paymentGuarantees: [NO]
+```
+
+**Downstream Playwright code MUST:**
+- Create **helper functions** at the top of the spec file for shared preconditions (e.g., `sharedTerm()`, `sharedProduct()`)
+- Call helper functions within each test via `test.step('Precondition: Create shared entities', ...)`
+- For test-specific data (e.g., INACTIVE product), use shared helpers for dependencies and create the specific entity inline
+- **DO NOT use `test.beforeAll()`** — fixtures may not be available there
+- Store created entities in `Responses` arrays (not describe-level `let` variables)
+- Never query existing data instead of creating new data
+
 ### 4. Generate and save as TWO files — Backend and Frontend (comprehensive coverage)
 
 **Coverage (CRITICAL):** Generate **exhaustive** test cases – **not** a random or minimal set. Cover **every scenario that could occur**: all positive (happy path, valid inputs), all negative (invalid inputs, errors, rejections), edge cases, boundaries, and regression from cross_dependency_data (what_could_break). Aim for the **maximum number** of test cases that **fully cover** the task or bug.
