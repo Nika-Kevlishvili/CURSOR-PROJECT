@@ -16,7 +16,7 @@ Cursor-Project/reports/<Chat reports|HandsOff reports|Feedback>/YYYY/<english-mo
 - **Reuse** existing `YYYY`, `monthname`, and **`DD`** folders for that same calendar day; **create** only missing path segments.
 - **Rule 37 (HandsOff):** `{JIRA_KEY}.md` → **HandsOff reports** (mandatory when that workflow runs)
 - **`/report` or explicit user request:** → **Chat reports** (or **Feedback/** if the user names that area for a generic report).
-- **`/feedback` or explicit save-feedback request:** → **Feedback** as `Feedback_{HHMM}.md` (see `.cursor/commands/feedback.md`).
+- **`/feedback` or explicit save-feedback request:** → **Feedback** as `Feedback_{Slug}_{HHMM}.md` (see `.cursor/commands/feedback.md`).
 - **Rule 32 (bug validation):** analysis stays **in chat**; `BugValidation_*.md` under **Chat reports** only if the user also runs **`/report`** or explicitly asks to save.
 
 No Python `ReportingService`. English on disk (Rule 0.7).

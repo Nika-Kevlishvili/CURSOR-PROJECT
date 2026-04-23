@@ -20,7 +20,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 | Phoenix question (how/what/why, endpoints, logic) | **Phoenix** command → Route to PhoenixExpert (Rule 0.2) | phoenix.md |
 | Before doing a task (validation, approval) | **Consult** → PhoenixExpert consultation (Rule 8) | consult.md |
 | User wants a saved report / export | **Report** → Optional markdown under **Chat reports** + `YYYY/<english-month>/<DD>/` (Rule 0.6; **`reports/README.md`**) | report.md |
-| User wants to save session feedback (sentiment + summary) | **Feedback** → Markdown under **Feedback** + `YYYY/<english-month>/<DD>/` as `Feedback_{HHMM}.md` (Rule 0.6; **`reports/README.md`**) | feedback.md |
+| User wants to save session feedback (sentiment + summary) | **Feedback** → Markdown under **Feedback** + `YYYY/<english-month>/<DD>/` as `Feedback_{Slug}_{HHMM}.md` (Rule 0.6; **`reports/README.md`**) | feedback.md |
 | Validate a bug report | **Bug-validate** → BugFinderAgent (Rule 32) | bug-validate.md |
 | Create/rewrite Jira bug (Experiments board only) | **Jira-bug** → jira-bug-template (Rule JIRA.0; NOT Phoenix delivery) | jira-bug.md |
 | Production data analysis (liability offsets, receivable history) | **Production-data-reader** → ProductionDataReaderAgent (Rule PDR.0) | production-data-reader.md, production_data_reader.mdc |
@@ -51,7 +51,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 ## Feedback (feedback.md)
 
 - **When:** User runs **`/feedback`** or explicitly asks to save feedback to disk (Rule 0.6).
-- **Flow:** **`AskQuestion`** (liked / disliked / other) → if **other**, collect free text in chat → synthesize session summary and confidence → write **`Feedback_{HHMM}.md`** under **Feedback** with `YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`**. On-disk content in **English** (Rule 0.7).
+- **Flow:** **`AskQuestion`** (liked / disliked only) — **question + option labels same language** as chat (see **`feedback.md`**) → optional detail from UI/chat → chat context (prompt → answer) → summary + confidence → **`Feedback_{Slug}_{HHMM}.md`** under **Feedback** (`YYYY/<english-month>/<DD>/`). Saved file in **English** (Rule 0.7). Details: **`feedback.md`**.
 - **Location:** **`Cursor-Project/reports/Feedback/`** (see README).
 
 ## Bug-validate (bug-validate.md)

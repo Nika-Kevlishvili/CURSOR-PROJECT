@@ -4,41 +4,58 @@
 
 ## Layout
 
-Path: **`Cursor-Project/reports/Feedback/YYYY/<english-month>/<DD>/Feedback_{HHMM}.md`** per **`Cursor-Project/reports/README.md`**. **`DD`** = real day-of-month when the file is saved. Reuse `YYYY/month/DD` if it exists; create missing folders only.
+Path: **`Cursor-Project/reports/Feedback/YYYY/<english-month>/<DD>/Feedback_{Slug}_{HHMM}.md`** per **`Cursor-Project/reports/README.md`**. Reuse `YYYY/month/DD` if it exists; create missing folders only.
+
+### Filename slug (required)
+
+`{Slug}` MUST be a short, filesystem-safe hint of what the feedback is about, inferred from **this chat**:
+
+- Use **kebab-case** English: `gitignore-chat-reports`, `hands-off-reporting-rules`, `feedback-ui-language`, `misc`.
+- Keep it **short** (2–5 words) and **avoid** sensitive data, URLs, ticket keys, or usernames.
+- If the session has multiple unrelated topics, prefer the latest or dominant one, otherwise use `misc`.
 
 ## Rule 0.7 (on-disk language)
 
-The **saved `.md` file** MUST be **English** (headings, body, sentiment labels as **Liked** / **Disliked** / **Other**). Chat may use the user’s language.
+The **saved `.md` file** MUST be **English** (headings, body, **`User sentiment:`** as **Liked** / **Disliked** / **Other**). Chat may use the user’s language.
 
 ## Workflow
 
-Execute **in order**. Do **not** write the file until sentiment (and optional detail if **Other**) is collected.
+Execute **in order**. Write the file only after you know **`User sentiment:`** (from **`AskQuestion`** or, if that was skipped, from the user’s **chat** reply).
 
-### Step A — User sentiment (structured choice)
+### Step A — Sentiment
 
-Use the **`AskQuestion`** tool with **one** question and **three** options:
+**Language (critical):** The **`AskQuestion`** **`prompt`** and **both** option **`label`** strings MUST use the **same** language. Do **not** mix English questions with Georgian options (or vice versa). Choose language from **this chat session**:
+- If the user’s messages that led to **`/feedback`** are primarily **Georgian** (or the session is Georgian-heavy) → use **Georgian** for the question **and** both options.
+- Otherwise → use **English** for the question **and** both options.
+- If the session is mixed, follow the language of the **latest user message** before **`/feedback`**. If still unclear, use **English** for the whole card.
 
-- **Option IDs:** `liked`, `disliked`, `other`
-- **Labels:** If the user is writing in **Georgian**, use: **მომეწონა** / **არ მომეწონა** / **სხვა**. Otherwise use: **I liked it** / **I did not like it** / **Other**
+**`AskQuestion`:** one question, **two** options only — sentiment **`liked`** vs **`disliked`** (ids can stay `liked` / `disliked`). **Do not** add a third option in the tool call; if the client UI shows an extra “Other” line, ignore it for counting — map free-text under details to **Other** in the saved file when needed.
 
-**Prompt text (examples):** Ask how they felt about the assistant’s help in **this chat** (adapt to the user’s language).
+| Chat language | `prompt` (example) | Option labels (example) |
+|---------------|--------------------|-------------------------|
+| Georgian | `როგორი იყო ეს სესია შენთვის?` | **მომეწონა** / **არ მომეწონა** |
+| English | `How was this session for you?` | **I liked it** / **I did not like it** |
 
-### Step B — Free text when **Other**
+If **`AskQuestion`** is skipped or the answer is unclear, ask once in **chat** in the **same** language you chose above for **Liked** or **Disliked** (or a short mixed reply → **Other** in the file).
 
-If the user selects **`other`**, ask in chat for a **short free-text** explanation **before** writing the file. Wait for their reply. If they chose **`liked`** or **`disliked`**, skip this step (optional one-line comment in chat is fine but not required for the file).
+### Step B — Optional detail
 
-### Step C — Synthesize from the conversation (English for the file)
+If the Questions card or **chat** has extra text, summarize it in English under **Optional detail**; omit the section if empty.
 
-From **this chat session** only:
+### Step C — Synthesize (English)
 
-1. **Session summary:** Brief bullet or short paragraphs: main **user prompts** → **outcomes** (what was delivered or decided).
-2. **Confidence:** How confident the assistant appeared (or stated). If not stated explicitly, use **high** / **medium** / **low** with **one sentence** rationale and mark as **inferred** if you had to estimate.
+From **this chat** only: include:
 
-### Step D — Write the markdown file
+- A short **session summary**
+- A brief **chat context** section with the key **prompt → answer** pairs (concise; do not dump the whole transcript)
+- **Confidence** (**high** / **medium** / **low**, one sentence; say **inferred** if you guessed)
 
-1. Resolve `<segment>` = `YYYY/<english-month>/<DD>/` from the **current system date at execution time** (same rules as **`/report`**: never use stale session dates).
-2. **`{HHMM}`** = local time when the file is written (24h, zero-padded), e.g. `1430`.
-3. Write **`Cursor-Project/reports/Feedback/<segment>/Feedback_{HHMM}.md`** with **at least** these sections:
+### Step D — Write the file
+
+1. **`<segment>`** = `YYYY/<english-month>/<DD>/` from **current system date** at write time (never stale dates).
+2. **`{HHMM}`** = local time (24h), e.g. `1430`.
+3. Compute **`{Slug}`** (see “Filename slug” above).
+4. Write **`Cursor-Project/reports/Feedback/<segment>/Feedback_{Slug}_{HHMM}.md`**:
 
 ```markdown
 # Feedback — Session notes
@@ -47,27 +64,23 @@ From **this chat session** only:
 **User sentiment:** Liked | Disliked | Other
 
 ## Optional detail
-(Only if Other was selected, or if the user provided extra text — summarize faithfully in English.)
+(Extra user text in English summary, or remove section if none.)
+
+## Chat context (prompt → answer)
+- **Prompt:** ...
+  - **Answer:** ...
 
 ## Session summary
-(Prompts → outcomes.)
 
 ## Confidence
-(Statements from chat and/or inferred assessment.)
 
 ---
 
-Agents involved: (per Rule 0.1 — list agents or "None (direct tool usage)")
+Agents involved: (Rule 0.1 — agents or "None (direct tool usage)")
 ```
 
-**Note:** The line `Agents involved:` belongs **inside the file** as shown; the chat reply should also end with **Agents involved:** per Rule 0.1.
-
-## Date Safety (MANDATORY)
-
-- Always derive folder date from the **current system date at execution time**.
-- Never use remembered or session metadata dates for `YYYY/<english-month>/<DD>`.
+End the **chat** reply with **`Agents involved:`** (Rule 0.1).
 
 ## References
 
-- **phoenix-reporting** skill and `.cursor/agents/report-generator.md` for path conventions.
-- **Rule 0.6:** Feedback disk writes are allowed when **`/feedback`** runs or the user explicitly requests saving feedback here.
+- **`phoenix-reporting`** skill, **`.cursor/agents/report-generator.md`**, **Rule 0.6**.
