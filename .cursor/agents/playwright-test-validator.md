@@ -45,6 +45,7 @@ You act as the **PlaywrightTestValidatorAgent** (Test Quality Validator). You va
 - The spec MUST use the **EnergoTS framework** (fixtures: Request, Endpoints, baseFixture, etc.). No ad-hoc `getToken()`, custom `apiRequest()`, or similar unless they are project utilities.
 - Test titles should include the **Jira key** (e.g. `[REG-123]: ...`) and be meaningful.
 - No obvious anti-patterns: e.g. hardcoded credentials, duplicated logic that should use fixtures.
+- **Strict hook ban:** `test.beforeAll(` / `beforeAll(` for preconditions is forbidden. Presence of these patterns is an automatic validation failure.
 
 ### 5. Playwright instructions (`Cursor-Project/config/playwright_generation/playwright instructions/`)
 
@@ -82,7 +83,8 @@ Return a **validation result** object (or equivalent) with:
 6. **Check** alignment: for each TC, verify the corresponding test implements the intent and assertions.
 7. **Check** framework: fixtures used, no forbidden ad-hoc code.
 8. **Check** **playwright instructions** compliance (§5): steps, assertions, forbidden patterns.
-9. **Build** the result (passed, issues, summary) and return to the orchestrator.
+9. **Check** strict hook ban: search for `test.beforeAll(` and `beforeAll(`; if found, emit issue with `criterion: canon` and suggestion to move setup to helper functions invoked via `test.step('Precondition: ...')`.
+10. **Build** the result (passed, issues, summary) and return to the orchestrator.
 
 ## Constraints
 

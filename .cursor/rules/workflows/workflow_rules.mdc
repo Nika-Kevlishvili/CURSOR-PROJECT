@@ -7,6 +7,13 @@ alwaysApply: true
 3. [CRITICAL] Every response MUST end with "Agents involved: [agent names]" or "Agents involved: None (direct tool usage)".
    - Ensures transparency, accountability, and traceability.
    - Violation is a CRITICAL ERROR.
+4. [CRITICAL] Every response MUST include a Confidence block:
+   - Format:
+     - `**Confidence: XX%**`
+     - `Reason: <1-2 sentence explanation>`
+   - Placement: immediately before the final "Agents involved: ..." line.
+   - Applies to all response types: final answers, progress updates, clarifying questions, and error messages.
+   - Violation is a CRITICAL ERROR.
 
 # BUG VALIDATION RULE [CRITICAL]
 
@@ -274,5 +281,26 @@ alwaysApply: true
     - PhoenixExpert Q&A questions (Rule 2) — PhoenixExpert always does its own Confluence search.
 
     **Rationale:** Tasks, changes, and feature requests have their requirements defined in the ticket (and optionally in linked Confluence specs). Broad Confluence search adds noise and slows down analysis without improving accuracy for well-scoped work items.
+
+    - Violation is a CRITICAL SYSTEM ERROR.
+
+# ENERGOTS PLAYWRIGHT `beforeAll` BAN RULE [CRITICAL]
+
+40. [CRITICAL] When creating or editing EnergoTS Playwright specs (including HandsOff Step 4 bridge from test cases), precondition setup MUST NOT use `test.beforeAll()` or `beforeAll()`.
+
+    **Generation-time requirement (primary rule):**
+    - Agents MUST NOT generate `beforeAll` first and "clean it up later".
+    - Specs must be authored from the first draft with helper-function preconditions.
+
+    **Required implementation pattern:**
+    - Use helper functions at file top for shared preconditions.
+    - Call helpers inside each `test()` using `test.step('Precondition: ...')`.
+    - Keep preconditions self-contained and repeatable; do not rely on global hook state.
+
+    **Mandatory validation gate before finishing generation:**
+    - Search final spec content for forbidden patterns: `test.beforeAll(` and `beforeAll(`.
+    - If found, generation is invalid; rewrite to helper-function pattern before returning output.
+
+    **Reference:** `Cursor-Project/config/playwright_generation/playwright instructions/precondition-data-creation.instructions.md`; `Cursor-Project/config/playwright_generation/playwright instructions/test-writing-rules.instructions.md`; `.cursor/rules/workflows/handsoff_playwright_report.mdc`.
 
     - Violation is a CRITICAL SYSTEM ERROR.

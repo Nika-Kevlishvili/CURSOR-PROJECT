@@ -44,6 +44,8 @@ When the **HandsOff** flow invokes the energo-ts-test agent (Step 4), the agent 
    - one `test('…')` per main scenario from the .md, with test names including the Jira key (e.g. `[NT-1]: …`);
    - API calls and assertions derived from the test case steps and expected results.
 4. **Write** the spec file directly from the .md (endpoints, methods, scenarios). If multiple scenarios share one endpoint, one `test()` per scenario; match existing EnergoTS style and the **playwright instructions** pack.
+5. **Generation-time rule (MUST):** while writing the spec, do **not** use `test.beforeAll(` or `beforeAll(` at all. Start directly with helper functions for shared preconditions and call them inside each `test()` via `test.step('Precondition: ...')`.
+6. **Final gate (MUST pass):** verify the generated file does **not** contain `test.beforeAll(` or `beforeAll(`. If found, the output is invalid and must be regenerated with helper-function pattern before returning.
 
 Reference: `.cursor/commands/hands-off.md` Step 4; `.cursor/rules/workflows/handsoff_playwright_report.mdc` §2.
 

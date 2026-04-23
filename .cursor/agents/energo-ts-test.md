@@ -119,6 +119,16 @@ You receive **test case .md paths** (e.g. `test_cases/Backend/Invoice_cancellati
 3. **Output** to **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**. One `test()` per main scenario from the .md; describe and test titles must include the Jira key.
 4. **Write** the spec file content directly (no Python API): map .md scenarios to `test()` blocks using the same structure and fixtures as existing EnergoTS tests.
 
+## Precondition Authoring Rule [CRITICAL]
+
+Generation-time requirement (NOT post-fix): author preconditions correctly from the first draft.
+
+1. NEVER write `test.beforeAll(` or `beforeAll(` in generated specs.
+2. ALWAYS implement shared setup as helper functions at file top.
+3. ALWAYS call those helpers inside each `test()` via `test.step('Precondition: ...')`.
+4. The generation is invalid if it depends on "write with `beforeAll` now and rewrite later" behavior.
+5. Final self-check still required: if `beforeAll` appears, do not return output; regenerate immediately using helper-function pattern.
+
 Reference: `.cursor/commands/energo-ts-test.md` (HandsOff bridge section); `.cursor/commands/hands-off.md` Step 4.
 
 ## EnergoTS Test Framework
