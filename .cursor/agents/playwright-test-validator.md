@@ -52,17 +52,26 @@ You act as the **PlaywrightTestValidatorAgent** (Test Quality Validator). You va
 - **Before validating**, read **`test-writing-rules.instructions.md`** and **`SKILL.md`** under that folder (and use **`general-rules.md`** for forbidden-path / anti-pattern checks) so validation matches the user-provided instruction set.
 - Flag deviations as **`canon`** issues (e.g. missing `test.step` where required, wrong assertion style vs `CheckResponse`, forbidden patterns from `general-rules.md`).
 
+### 6. Swagger/OpenAPI cross-validation (Rule SWAGGER.0)
+
+- **Spot-check** payload fields in the spec against the refreshed `Cursor-Project/config/swagger/{env}/swagger-spec.json`. For at least the primary endpoint(s), Grep the spec and verify:
+  - Field names in test payloads match the spec EXACTLY (camelCase as in spec).
+  - Enum values match the spec's `enum` array EXACTLY.
+  - Required fields from the spec's `required` array are present in positive-test payloads.
+- Flag mismatches as **`swagger`** issues (e.g. "Payload uses `title` but Swagger spec defines `titleId`", "Source value `Sales_Portal` should be `SALES_PORTAL` per Swagger enum").
+- If spec refresh was NOT performed in this session (no evidence the agent ran `update-swagger-specs.ps1`), flag this as a **`swagger`** issue with suggestion: "Swagger specs were not refreshed before generation — Rule SWAGGER.0 violation."
+
 ## Output (structured result)
 
 Return a **validation result** object (or equivalent) with:
 
 - **passed:** `true` if all criteria above are satisfied; `false` otherwise.
 - **issues:** List of concrete issues, each with:
-  - **criterion:** One of: `syntax`, `coverage`, `alignment`, `framework`, `canon`.
+  - **criterion:** One of: `syntax`, `coverage`, `alignment`, `framework`, `canon`, `swagger`.
   - **description:** Short, actionable description in English.
   - **location:** File path and, if applicable, line number or test name.
   - **suggestion:** What test-case-generator or energo-ts-test should do to fix (e.g. "Add one more test() for TC-3", "Assert response status 400 in test X").
-- **summary:** One or two sentences: "Validation passed" or "Validation failed: N issues (syntax: …, coverage: …, alignment: …, framework: …, canon: …)."
+- **summary:** One or two sentences: "Validation passed" or "Validation failed: N issues (syntax: …, coverage: …, alignment: …, framework: …, canon: …, swagger: …)."
 
 ## Behaviour in HandsOff
 
@@ -84,7 +93,8 @@ Return a **validation result** object (or equivalent) with:
 7. **Check** framework: fixtures used, no forbidden ad-hoc code.
 8. **Check** **playwright instructions** compliance (§5): steps, assertions, forbidden patterns.
 9. **Check** strict hook ban: search for `test.beforeAll(` and `beforeAll(`; if found, emit issue with `criterion: canon` and suggestion to move setup to helper functions invoked via `test.step('Precondition: ...')`.
-10. **Build** the result (passed, issues, summary) and return to the orchestrator.
+10. **Check** Swagger cross-validation (§6): spot-check primary endpoint payload fields against the refreshed Swagger spec; flag name/enum/type mismatches as `swagger` issues.
+11. **Build** the result (passed, issues, summary) and return to the orchestrator.
 
 ## Constraints
 

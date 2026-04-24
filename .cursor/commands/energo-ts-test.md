@@ -15,7 +15,8 @@ Use this command when the user asks about:
 
 ## Mandatory Workflow:
 
-0. **Playwright instructions:** Before creating or editing EnergoTS `.spec.ts`, the agent MUST read **`Cursor-Project/config/playwright_generation/playwright instructions/`** in order: `project-description.md`, `general-rules.md`, `test-writing-rules.instructions.md`, `SKILL.md`, then other `*.md` in that folder alphabetically (**ignore** `__MACOSX` / `._*`). Specs MUST comply with that pack plus **EnergoTSTestAgent** Jira title naming when they differ (see agent doc).
+0. **Playwright instructions:** Before creating or editing EnergoTS `.spec.ts`, the agent MUST read **`Cursor-Project/config/playwright_generation/playwright instructions/`** in order: `project-description.md`, `general-rules.md`, `test-writing-rules.instructions.md`, `SKILL.md`, then other `*.md` in that folder alphabetically (including **`swagger-api-reference.instructions.md`**; **ignore** `__MACOSX` / `._*`). Specs MUST comply with that pack plus **EnergoTSTestAgent** Jira title naming when they differ (see agent doc).
+0.5. **Refresh Swagger specs (Rule SWAGGER.0 — NEVER SKIP):** Before creating or editing ANY `.spec.ts`, you MUST execute `powershell -ExecutionPolicy Bypass -File ".cursor/commands/update-swagger-specs.ps1"` to refresh ALL environment specs. After refresh, for EVERY endpoint used in the test: (a) Grep the updated `Cursor-Project/config/swagger/{env}/swagger-spec.json` for the endpoint path, (b) resolve the request body `$ref` → DTO schema, (c) extract `required` fields, field names (exact camelCase), `enum` values, and types, (d) use ONLY spec-validated field names and enum values in payloads. **The Swagger spec is the single source of truth for field names and enum values — NOT the test case document, NOT the Jira description.** If refresh fails (network/VPN), warn the user but continue with cached specs. See `.cursor/rules/integrations/swagger_refresh_mandatory.mdc`.
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. **Read Jira Task** - ALWAYS read Jira task title and description BEFORE creating test
 3. **Clarify Requirements** - Ask clarifying questions if test requirements are unclear
@@ -36,9 +37,10 @@ Delegate to **`.cursor/agents/energo-ts-test.md`**. There is **no** Python `get_
 
 When the **HandsOff** flow invokes the energo-ts-test agent (Step 4), the agent receives **test case .md paths** (e.g. `Cursor-Project/test_cases/Backend/Invoice_cancellation.md` and `Cursor-Project/test_cases/Frontend/Invoice_cancellation.md`) and **Jira key + ticket title**. The agent MUST:
 
-0. **Read** **`Cursor-Project/config/playwright_generation/playwright instructions/`** (full set per Mandatory Workflow step 0) before writing the spec.
+0. **Read** **`Cursor-Project/config/playwright_generation/playwright instructions/`** (full set per Mandatory Workflow step 0, including **`swagger-api-reference.instructions.md`**) before writing the spec.
+0.5. **Refresh & consult Swagger specs (Rule SWAGGER.0 — NEVER SKIP):** Execute `powershell -ExecutionPolicy Bypass -File ".cursor/commands/update-swagger-specs.ps1"` to refresh ALL specs. Then for EVERY endpoint from the test cases: (a) Grep the updated `Cursor-Project/config/swagger/{env}/swagger-spec.json` (default: `dev`) for the endpoint path, (b) resolve the `$ref` → DTO schema, (c) extract exact field names (camelCase), `required` array, `enum` values, and types. **Use ONLY Swagger-validated field names and enum values in generated payloads.** The spec is the single source of truth — NOT the test case .md document. See `swagger-api-reference.instructions.md` and `.cursor/rules/integrations/swagger_refresh_mandatory.mdc`.
 1. **Read** both test case .md files (Backend and Frontend) and parse scenarios (TC-BE-N from Backend, TC-FE-N from Frontend), steps, expected results, and entry points (endpoints).
-2. **Map** each scenario to a Playwright test: use project **fixtures** (Request, Endpoints, baseFixture, etc.) and **project patterns**; do NOT write custom `getToken()`, `apiRequest()`, or inline auth/request helpers unless they already exist in the framework.
+2. **Map** each scenario to a Playwright test: use project **fixtures** (Request, Endpoints, baseFixture, etc.) and **project patterns**; do NOT write custom `getToken()`, `apiRequest()`, or inline auth/request helpers unless they already exist in the framework. Cross-check payloads and endpoints against the Swagger spec data from step 0.5.
 3. **Produce** a single spec file **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`** with:
    - `test.describe('…')` containing the Jira key and ticket title;
    - one `test('…')` per main scenario from the .md, with test names including the Jira key (e.g. `[NT-1]: …`);
@@ -63,6 +65,17 @@ Reference: `.cursor/commands/hands-off.md` Step 4; `.cursor/rules/workflows/hand
 - Identify: endpoints, HTTP methods, payloads, expected behavior, edge cases
 - Determine: domain, fixtures needed, test steps required
 
+### Step 2.5: Consult Swagger/OpenAPI Spec (Rule SWAGGER.0 — CRITICAL)
+- **PREREQUISITE:** `update-swagger-specs.ps1` MUST have been executed in this session (Step 0.5). If not, execute it NOW before proceeding.
+- Identify the target environment (default: `dev`); use matching spec from `Cursor-Project/config/swagger/{env}/swagger-spec.json`
+- For each endpoint involved in the test:
+  - **Search** (Grep or Python JSON parse) the spec file for the endpoint path — do NOT read the entire file (it is ~1.3 MB)
+  - Extract: HTTP method, request body schema (`$ref` → resolve the DTO), response schema
+  - Note `required` fields, exact field names (camelCase), `type`/`format`, `enum` values
+  - Cross-reference with existing `Endpoints` constants and `GeneratePayload` methods
+- **CRITICAL:** Use ONLY the spec's field names and enum values in payloads. Do NOT copy field names from the test case .md or Jira description without verifying against the spec. Common mismatches: `title` vs `titleId`, `birthdate` vs `birthDate`, `Sales_Portal` vs `SALES_PORTAL`.
+- See **`swagger-api-reference.instructions.md`** and **`.cursor/rules/integrations/swagger_refresh_mandatory.mdc`** for detailed search techniques
+
 ### Step 3: Ask Clarifying Questions (if needed)
 - **IF** you cannot determine exactly what needs to be tested from task description
 - **THEN** ask clarifying questions BEFORE starting test creation:
@@ -78,14 +91,16 @@ Reference: `.cursor/commands/hands-off.md` Step 4; `.cursor/rules/workflows/hand
 - **ONLY** after you have complete understanding of requirements
 - **ONLY** after all clarifying questions are answered
 - Use exact Jira task title as test name (see Test Naming Rule below)
+- Use spec-validated payloads with correct field names, types, and required fields
 
 ### Example Workflow:
 ```
 User: "Create test for REG-1027"
 → Step 1: Read Jira task REG-1027 (title + description)
-→ Step 2: Analyze requirements
+→ Step 2: Analyze requirements (identify endpoints, methods, payloads)
+→ Step 2.5: Grep swagger spec for each endpoint → extract schemas, required fields, enums
 → Step 3: If unclear → Ask: "What endpoint should be tested? What is the expected behavior?"
-→ Step 4: After clarification → Create test with exact task title
+→ Step 4: After clarification → Create test with exact task title, spec-validated payloads
 ```
 
 ## Test Naming Rule [CRITICAL]

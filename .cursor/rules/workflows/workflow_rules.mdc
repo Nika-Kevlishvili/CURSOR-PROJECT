@@ -284,6 +284,23 @@ alwaysApply: true
 
     - Violation is a CRITICAL SYSTEM ERROR.
 
+# SWAGGER REFRESH MANDATORY RULE [CRITICAL]
+
+41. [CRITICAL] Before creating or editing ANY `.spec.ts` file in EnergoTS, the agent MUST refresh Swagger/OpenAPI specs and cross-validate ALL payloads against the refreshed spec.
+    
+    **MANDATORY: Rule SWAGGER.0**
+    - Execute `powershell -ExecutionPolicy Bypass -File ".cursor/commands/update-swagger-specs.ps1"` BEFORE writing any `.spec.ts`.
+    - After refresh, for EVERY endpoint used in the test: Grep the updated `Cursor-Project/config/swagger/{env}/swagger-spec.json`, resolve the request body `$ref` → DTO schema, extract `required` fields, exact field names (camelCase), `enum` values, and types.
+    - Use ONLY spec-validated field names and enum values in generated payloads. The Swagger spec is the single source of truth — NOT the test case document, NOT the Jira description.
+    - If refresh fails (network/VPN): warn the user but continue with cached specs; log a warning.
+    
+    **Why this exists:**
+    - Cached specs become stale when the backend evolves. Using stale data produces tests with wrong field names (`title` instead of `titleId`), wrong enum values (`Sales_Portal` instead of `SALES_PORTAL`), and wrong casing (`birthdate` instead of `birthDate`).
+    
+    **Reference:** `.cursor/rules/integrations/swagger_refresh_mandatory.mdc`; `.cursor/commands/update-swagger-specs.ps1`; `Cursor-Project/config/playwright_generation/playwright instructions/swagger-api-reference.instructions.md`.
+    
+    - Violation is a CRITICAL SYSTEM ERROR.
+
 # ENERGOTS PLAYWRIGHT `beforeAll` BAN RULE [CRITICAL]
 
 40. [CRITICAL] When creating or editing EnergoTS Playwright specs (including HandsOff Step 4 bridge from test cases), precondition setup MUST NOT use `test.beforeAll()` or `beforeAll()`.

@@ -188,6 +188,7 @@ Reference: `.cursor/commands/hands-off.md` Step 8; user-slack MCP for sending.
 
 ## Summary checklist (HandsOff)
 
+- [ ] **Swagger refresh (Rule SWAGGER.0):** `update-swagger-specs.ps1` was executed in this session; every endpoint was grepped in the refreshed spec; every DTO schema was resolved; every payload field name, enum value, and type was cross-validated against the spec. The Swagger spec is the single source of truth — NOT the test case .md.
 - [ ] Test cases: written to `test_cases/Backend/<Topic_name>.md` (TC-BE-N only) and `test_cases/Frontend/<Topic_name>.md` (TC-FE-N only); both files verified on disk; test_cases/README.md, Backend/README.md, and Frontend/README.md updated.
 - [ ] **Precondition completeness:** Every TC uses mandatory creation-step preconditions — HOW to create every entity with endpoint and parameters (never just "entity exists"); full chain from Customer → POD → Product → Terms → Price component → Contract → Energy data → Billing run → Invoice → Payment etc.; dates and amounts included when they affect the outcome.
 - [ ] Playwright: spec created in `EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts` (or equivalent); file verified on disk; **number of `test()` blocks equals total number of test cases (TC-BE-N from Backend file + TC-FE-N from Frontend file)** – full coverage, 1:1.
