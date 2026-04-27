@@ -37,6 +37,12 @@ ALL bug validation requests MUST be handled by BugFinderAgent - NO EXCEPTIONS.
 - Search Confluence using MCP tools FIRST
 - Assess evidence strength: exact match / contextual match / no match / contradicts / search failed
 - Report: "Confluence validation: [evidence strength] - [explanation]"
+- Confluence MCP failure handling (MANDATORY):
+  - retry Confluence MCP calls up to 3 times with short backoff,
+  - if still failing, set response status to `PROCESS BLOCKED` (no final verdict),
+  - include exact MCP error, attempted fixes, and what could not be validated,
+  - ask the user explicitly what to do next.
+- Do not continue to final verdict when Confluence validation is unavailable.
 
 ### Step 3: Code Validation (Behavior Analysis)
 - Search codebase using code search tools
@@ -44,11 +50,7 @@ ALL bug validation requests MUST be handled by BugFinderAgent - NO EXCEPTIONS.
 - Check if code matches faulty behavior described in bug
 - Report: "Code validation: [matches reported behavior/does not match/could not verify] - [explanation]"
 
-### Step 4: Apply 5-Verdict Decision Matrix
-- Use evidence + behavior to determine verdict
-- Apply one of 5 verdicts: VALID / NEEDS CLARIFICATION / NEEDS APPROVAL / NOT VALID / INSUFFICIENT EVIDENCE
-
-### Step 5: Reproducibility Test Pipeline (MANDATORY)
+### Step 4: Reproducibility Test Pipeline (MANDATORY)
 
 The parent/orchestrator MUST run this delegated pipeline after analytical validation:
 
@@ -61,6 +63,39 @@ The parent/orchestrator MUST run this delegated pipeline after analytical valida
 
 Use final test run outcomes to determine whether the bug condition is practically reproducible, even when original ticket steps were incomplete.
 
+### Step 4a: Hard Gate Enforcement with Auto-Recovery (NO-SKIP)
+
+- Final bug verdict MUST be blocked until Step 5 pipeline evidence is complete.
+- Required completion checklist:
+  - Swagger refresh status captured (`ok` or `failed_using_cache` with warning),
+  - `/cross-dependency-finder` completed with output reference,
+  - `/test-case-generate` completed with both file references:
+    - `test_cases/Backend/<Topic_name>.md`
+    - `test_cases/Frontend/<Topic_name>.md`
+  - `/energo-ts-test` completed with generated spec path,
+  - `playwright-test-validator` completed with pass/fail result,
+  - `/energo-ts-run` executed with run outcome.
+- If any item above is missing or failed, the validator MUST auto-recover and retry:
+  - capture exact error,
+  - apply targeted fix,
+  - rerun failed step and downstream dependent steps.
+- Retry policy:
+  - max 3 retries per failed step,
+  - max 3 full pipeline re-attempts.
+- If still failing after retries, stop with `PROCESS BLOCKED` (no final verdict) and include:
+  - failed step,
+  - attempts made,
+  - fixes attempted,
+  - exact blocker,
+  - required user action,
+  - explicit question: "What should we do next?".
+- It is forbidden to issue `VALID`, `NEEDS CLARIFICATION`, `NEEDS APPROVAL`, or `NOT VALID` when `/energo-ts-run` has not executed.
+
+### Step 5: Apply 5-Verdict Decision Matrix
+- Use evidence + behavior to determine verdict.
+- Apply one of 5 verdicts: `VALID` / `NEEDS CLARIFICATION` / `NEEDS APPROVAL` / `NOT VALID` / `INSUFFICIENT EVIDENCE`.
+- Verdict is allowed only after mandatory Step 4 pipeline evidence is complete.
+
 ### Step 6: Deliver final verdict (chat + Slack; file only on request)
 - Combine all findings with clear verdict and reasoning in the **chat reply** (full structured markdown).
 - **Mandatory behavior:** after **every** completed bug validation run, post the full report in the current chat. Do not skip chat posting even when other channels (for example Slack) are used by separate workflows.
@@ -70,6 +105,18 @@ Use final test run outcomes to determine whether the bug condition is practicall
 - Include actionable next steps based on verdict.
 - **Final verdict rule:** Concluding validity must be based on full evidence, including Playwright pipeline outcomes.
 - **Disk:** Save `BugValidation_[DescriptiveName].md` under **Chat reports** only if the user runs **`/report`** or explicitly asks to save; otherwise no file (Rule 0.6).
+
+### Step 6a: Pipeline Evidence Section (MANDATORY in final output)
+
+- Final response MUST contain `### Pipeline Execution Evidence` with one line per Step 5 checkpoint.
+- Each line must use status from: `done`, `failed`, `not_run`.
+- Every `done` item must include a concrete artifact reference (file path, report id, or run result snippet).
+- Final response MUST also include `### Auto-Recovery Attempts` with iteration-by-iteration fix attempts.
+- If any checkpoint is `failed` or `not_run` after max retries, response status MUST be `PROCESS BLOCKED` (no final verdict).
+- `PROCESS BLOCKED` response MUST:
+  - omit final verdict section,
+  - include `Blocker Summary` and `Next action required from user`,
+  - end with a direct user question for next-step decision.
 
 ## Response Structure:
 
@@ -119,7 +166,7 @@ Use final test run outcomes to determine whether the bug condition is practicall
 - **NEEDS CLARIFICATION**: Contextual Confluence match + code confirms reported behavior → Get product clarification  
 - **NEEDS APPROVAL**: No Confluence match + code confirms reported behavior → Get product approval
 - **NOT VALID**: Confluence contradicts expected behavior + code follows Confluence → Close as "working as designed"
-- **INSUFFICIENT EVIDENCE**: Cannot access Confluence/code or evidence too weak → Resolve technical issues
+- **INSUFFICIENT EVIDENCE**: Confluence/code evidence unavailable or too weak → resolve evidence gap and rerun validation
 
 ## Response Must End With:
 "Agents involved: BugFinderAgent, PhoenixExpert, CrossDependencyFinderAgent, TestCaseGeneratorAgent, EnergoTSTestAgent, PlaywrightTestValidatorAgent, EnergoTSRunAgent" (omit only agents that truly did not participate because a prior required step failed)
