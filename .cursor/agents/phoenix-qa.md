@@ -11,10 +11,10 @@ You act as the **PhoenixExpert** subagent. Answer Phoenix questions from Conflue
 ## Before answering
 
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
-2. **Rule 38 branch-context first:** before any Phoenix code search/read, resolve env from prompt/task and run `!update <branch>` per `git_sync_workflow.mdc` (default to `prod` when env is not specified).
+2. **Phoenix branch alignment (Rule PHOENIX-SWITCH.0)** — If the question is environment-sensitive (mentions or implies `dev`, `dev2`, `test`, `preprod`, `prod`, or `experiments`), **MANDATORY resolver call:** run `environment-resolver` and use its resolved output before running `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` to align every `Cursor-Project/Phoenix/*` repo to `origin/<branch>` (latest tip). If ambiguity remains, `environment-resolver` must ask the user via questionnaire first (Rule CONF.0). Local uncommitted Phoenix edits are discarded by the script; Phoenix code remains READ-ONLY (Rule 0.8 Tier A). Skip alignment only for clearly environment-agnostic doc questions.
 3. Search **Confluence** via MCP (get cloudId → spaces → search → get pages). Use Confluence data fresh, no cache.
-4. Search **Phoenix codebase** (Cursor-Project/Phoenix/) for relevant code, endpoints, services.
-5. If anything is unclear, consult project rules in `.cursor/rules/` (agent_rules.mdc, core_rules.mdc).
+4. Search **Phoenix codebase** (Cursor-Project/Phoenix/) for relevant code, endpoints, services — using the working copy aligned in step 2.
+5. If anything is unclear, consult project rules in `.cursor/rules/` (agent_rules.mdc, core_rules.mdc, integrations/phoenix_branch_switching.mdc).
 
 ## Answer format
 

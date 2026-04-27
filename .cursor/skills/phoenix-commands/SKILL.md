@@ -1,6 +1,6 @@
 ---
 name: phoenix-commands
-description: Maps user intent to Cursor commands and workflows (Phoenix query, consult, report, feedback, bug-validate, jira-bug, sync, cross-dependency-finder, test-case-generate, energo-ts-run, hands-off command). Use when the user asks how to run a workflow or which command to use. For HandsOff: there is no separate hands-off skill—use slash command **hands-off** or triggers **/HandsOff** / **!HandsOff** per Rule 37 and `.cursor/commands/hands-off.md`.
+description: Maps user intent to Cursor commands and workflows (Phoenix query, consult, report, feedback, bug-validate, jira-bug, cross-dependency-finder, test-case-generate, energo-ts-run, hands-off command). Use when the user asks how to run a workflow or which command to use. For HandsOff: there is no separate hands-off skill—use slash command **hands-off** or triggers **/HandsOff** / **!HandsOff** per Rule 37 and `.cursor/commands/hands-off.md`.
 ---
 
 # Phoenix Commands and Workflows
@@ -9,8 +9,8 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 
 ## When to Apply
 
-- User asks how to ask Phoenix a question, consult, generate a report, validate a bug, or sync from GitLab.
-- User mentions a command by name (phoenix, consult, report, feedback, bug-validate, sync).
+- User asks how to ask Phoenix a question, consult, generate a report, or validate a bug.
+- User mentions a command by name (phoenix, consult, report, feedback, bug-validate).
 - Need to align a request with the correct workflow.
 
 ## Command → Workflow
@@ -24,7 +24,6 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 | Validate a bug report | **Bug-validate** → BugFinderAgent (Rule 32) | bug-validate.md |
 | Create/rewrite Jira bug (Experiments board only) | **Jira-bug** → jira-bug-template (Rule JIRA.0; NOT Phoenix delivery) | jira-bug.md |
 | Production data analysis (liability offsets, receivable history) | **Production-data-reader** → ProductionDataReaderAgent (Rule PDR.0) | production-data-reader.md, production_data_reader.mdc |
-| Fetch/update/checkout Phoenix repos from GitLab | **Sync** → git_sync_workflow (read-only) | sync.md, git_sync_workflow.mdc |
 | Find cross-dependencies (what could break) | **Cross-dependency-finder** → CrossDependencyFinderAgent (Rule 35) | cross-dependency-finder.md |
 | Generate test cases from bug/task | **Test-case-generate** → cross-dependency-finder FIRST, then TestCaseGeneratorAgent (Rule 35) | test-case-generate.md |
 | Run Playwright test(s) from EnergoTS/GitHub (by prompt) | **Energo-ts-run** → Resolve test from prompt → run `npx playwright test` from local EnergoTS | energo-ts-run.md |
@@ -38,7 +37,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 
 ## Consult (consult.md)
 
-- **When:** Before any task that affects Phoenix (tests, Postman, GitLab, env access, etc.).
+- **When:** Before any task that affects Phoenix (tests, Postman, env access, etc.).
 - **Flow:** Describe task → PhoenixExpert review → Approval required (in chat; Rule 0.3).
 - **Output:** "Agents involved: PhoenixExpert, [others]". Consultation is binding (Rule 27).
 
@@ -73,12 +72,6 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 - **Flow:** PostgreSQLProd MCP (readonly) → SELECT queries → step-by-step explanation (see `integrations/production_data_reader.mdc`).
 - **Output:** Detailed analysis with offset sequence and creation process; "Agents involved: ProductionDataReaderAgent".
 
-## Sync (sync.md)
-
-- **When:** User wants to fetch/update/checkout Phoenix projects from GitLab.
-- **Triggers:** `!sync`, `!update <branch>`, `!checkout <branch>`.
-- **Rule:** Follow `.cursor/rules/integrations/git_sync_workflow.mdc` exactly; use git commands (no Python agent for sync). Read-only (fetch/checkout/merge only; no push).
-
 ## Cross-dependency-finder (cross-dependency-finder.md)
 
 - **When:** User asks for cross-dependencies, what could break, or dependency analysis for a scope (bug/task/feature). Also run automatically before test case generation (Rule 35).
@@ -96,7 +89,7 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 - **When:** User wants to run specific Playwright tests from EnergoTS based on prompt (e.g. "run newly created test", "run test REG-123", "run from GitHub").
 - **Flow:** Resolve which test(s) from prompt → Run `npx playwright test <target>` from `Cursor-Project/EnergoTS/` (`cursor` branch only) → Report results.
 - **Output:** Test run summary (passed/failed); optional file under **Chat reports** + segment per **`Cursor-Project/reports/README.md`**; "Agents involved: EnergoTS Playwright Test Runner".
-- **Note:** Tests run from local repo (synced from GitHub). Suggest `!sync` if user wants latest code first.
+- **Note:** Tests run from local repo (synced from GitHub).
 
 ## Hands-off (hands-off.md)
 
@@ -109,12 +102,10 @@ Helps choose the right command or workflow for Phoenix-related tasks. Commands l
 
 - Phoenix questions → Phoenix command + PhoenixExpert.
 - Before task → Consult + PhoenixExpert approval.
-- Before Phoenix code inspection in any workflow → resolve env from prompt/task and run `!update <env-branch>` first (Rule 38); if env is missing, default to `prod`.
 - Saved reports → **`/report`** or user request → **Chat reports/** (optional); session feedback → **`/feedback`** or explicit request → **Feedback/**; HandsOff → **HandsOff reports/**.
 - Bug check → Bug-validate + BugFinderAgent.
 - Jira bug (Experiments only) → Jira-bug command + jira-bug-template; never Phoenix delivery.
 - Production data → Production-data-reader + ProductionDataReaderAgent.
-- Git sync → Sync command + git_sync_workflow.mdc.
 - Cross-dependencies → Cross-dependency-finder command + CrossDependencyFinderAgent.
 - Test cases → Test-case-generate command (cross-dependency-finder first, then TestCaseGeneratorAgent).
 - Run Playwright tests from EnergoTS by prompt → Energo-ts-run command (resolve test, run locally).

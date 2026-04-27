@@ -15,8 +15,17 @@ Use this command when the user asks about:
 
 ## Mandatory Workflow
 
-0. **Jira-anchored cross-dependency (Rule 35a)** – When the user provides a **Jira/bug/task** key:
-   - Use **Jira MCP** + **codebase** (Phoenix READ-ONLY) + **shallow Confluence** (step 4 below).
+0a. **Resolve environment + align Phoenix branches (Rule PHOENIX-SWITCH.0)** – Before reading any Phoenix code:
+   - **MANDATORY resolver call:** run `/environment-resolve` (EnvironmentResolverAgent) first using parent task/Jira context; it must return one environment among `dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`.
+   - If ambiguity remains, EnvironmentResolverAgent MUST ask the user via environment questionnaire and use the explicit selection (Rule CONF.0).
+   - **Prod safety gate (§1a):** if env is `prod`, FIRST tell the user that local Phoenix edits will be discarded and force-reset to `origin/prod`, wait for explicit ack, then add `-ConfirmProd`. Skip for non-prod envs.
+   - **Subagent reuse (§7a):** if the parent (e.g. `/hands-off`, `/bug-validate`, `/test-case-generate`) already aligned Phoenix to the same env in this session and exited `0`, do NOT re-run the script — reuse it.
+   - Otherwise run `powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` (add ` -ConfirmProd` for `prod` only) so every `Cursor-Project/Phoenix/*` repo aligns to `origin/<branch>` (latest tip). Local Phoenix edits are DISCARDED; Phoenix files remain READ-ONLY (Rule 0.8 Tier A).
+   - Inspect exit code: `0` proceed; `2` proceed but flag mixed-state in the cross-dep output; `3` STOP and ask user to fix VPN / credentials before retrying.
+   - This alignment is NOT local merge-history archaeology and does NOT violate Rule 35a — it is just selecting the environment under analysis.
+
+0b. **Jira-anchored cross-dependency (Rule 35a)** – When the user provides a **Jira/bug/task** key:
+   - Use **Jira MCP** + **codebase** (Phoenix READ-ONLY, working copy aligned in step 0a) + **shallow Confluence** (step 4 below).
    - **Do not** run local **git log** / merge history / git snapshot scripts for the ticket as part of this workflow; **do not** trigger **git sync** only because cross-dep ran.
    - **technical_details:** from Jira + codebase. **GitLab MR** only if the user **explicitly** asks.
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.

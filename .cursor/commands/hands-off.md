@@ -9,18 +9,24 @@ Run the **entire flow** without user intervention when the user provides a **Jir
 
 ## Mandatory Workflow (run in order)
 
-### Step 1: Get Jira ticket and description
+### Step 1: Get Jira ticket and description + align Phoenix branches (Rule PHOENIX-SWITCH.0)
 
 1. **Rule 0.3** — No Python `IntegrationService` in this workspace; follow MCP/Jira when needed (see `.cursor/rules/main/core_rules.mdc`).
 2. **Parse input** – From the user message extract the Jira **issue key** (e.g. REG-123, BUG-456). If user gave a link, parse the key from the URL. If user gave a screenshot only, use vision/OCR if available to extract the key.
 3. **Get cloudId** – Use Jira MCP (e.g. `getAccessibleAtlassianResources` or equivalent) to obtain cloudId if needed.
-4. **Fetch ticket** – Call **Jira MCP** `getJiraIssue(cloudId, issueIdOrKey)` (use `expand: "names"` to resolve field names). Get the ticket **summary** (title) and **description**. For **Tester**, read **only** from the Jira custom field **"Tester"**: in this project that is **`customfield_10095`** (single user picker). Use that user’s **displayName** for Slack lookup in Step 7. **Do NOT use** Assignee, **customfield_11151** (BA), or any other field as Tester. If `customfield_10095` is null, there is no Tester – send report only to #ai-report. Store for later: description, and Tester display name (from customfield_10095 only).
-5. If ticket cannot be fetched, stop and report error.
+4. **Fetch ticket** – Call **Jira MCP** `getJiraIssue(cloudId, issueIdOrKey)` (use `expand: "names"` to resolve field names). Get the ticket **summary** (title), **description**, and **environment** (Environment field, ticket text, attached logs/screenshots). For **Tester**, read **only** from the Jira custom field **"Tester"**: in this project that is **`customfield_10095`** (single user picker). Use that user’s **displayName** for Slack lookup in Step 7. **Do NOT use** Assignee, **customfield_11151** (BA), or any other field as Tester. If `customfield_10095` is null, there is no Tester – send report only to #ai-report. Store for later: description, Tester display name (from customfield_10095 only), and resolved environment.
+5. **Resolve environment + align Phoenix branches** – **MANDATORY resolver call:** run `/environment-resolve` (EnvironmentResolverAgent) with Jira ticket context first. Use only the resolved environment (`dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`) for branch alignment. If ambiguity remains, EnvironmentResolverAgent must ask the user via questionnaire (Rule CONF.0) before continuing. **Prod safety gate (Rule PHOENIX-SWITCH.0 §1a):** if the resolved env is `prod`, FIRST tell the user that aligning to `origin/prod` will discard any uncommitted Phoenix edits and force-reset every Phoenix repo, then wait for explicit user acknowledgement. Only then call the script with `-ConfirmProd`. For non-prod envs, run without `-ConfirmProd`:
+   - `powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` (add ` -ConfirmProd` for `prod` only, after user ack)
+   - Aligns every `Cursor-Project/Phoenix/*` repo to `origin/<branch>` (latest tip). Local Phoenix edits are DISCARDED; Phoenix files remain READ-ONLY (Rule 0.8 Tier A).
+   - Inspect exit code: `0` proceed; `2` proceed but include a "mixed alignment state" note in the HandsOff report; `3` STOP the flow and ask the user to fix connectivity / VPN / credentials before retrying.
+   - Capture the per-repo alignment outcome AND the exit code — include it in the final HandsOff report so the tester can see the exact code state used by Steps 2–5.
+6. **Pass env forward**: include the resolved environment + alignment exit code in the prompts to cross-dependency-finder and test-case-generator so they can apply subagent reuse (Rule PHOENIX-SWITCH.0 §7a) and skip a redundant alignment.
+7. If ticket cannot be fetched, stop and report error.
 
 ### Step 2: Cross-dependencies (Rule 35a)
 
 1. Run **cross-dependency-finder** for this Jira key (same scope = ticket description).
-2. Finder MUST follow **Rule 35a**: **Jira MCP + codebase + shallow Confluence** — no local merge-history archaeology/git-snapshot. **Rule 38 env branch-context alignment (`!update <branch>`) is required before Phoenix code reads**; **technical_details** from ticket + code (GitLab MR only if user explicitly asked).
+2. Finder MUST follow **Rule 35a**: **Jira MCP + codebase + shallow Confluence** — no local merge-history archaeology/git-snapshot; **technical_details** from ticket + code (GitLab MR only if user explicitly asked).
 3. Cross-dependency-finder may consult **PhoenixExpert**. Obtain the full structured output: scope, entry_points, upstream, downstream, what_could_break, **technical_details**.
 4. Pass this output as **cross_dependency_data** to the next step.
 
@@ -129,7 +135,7 @@ Reference: `.cursor/rules/workflows/handsoff_playwright_report.mdc` §7.
 - **READ-ONLY** for Phoenix application code; do not modify production code (Rule 0.8). Only generated test files in `EnergoTS/tests/` may be created/modified (Rule 0.8.1).
 - All report and test case content in **English** (Rule 0.7).
 - **EnergoTS:** Use only the **cursor** branch for running and creating tests (Rule ENERGOTS.0).
-- **Rule 35/35a:** Cross-dependency-finder must run before test case generator (Jira + codebase + shallow Confluence; no local merge-history archaeology/git-snapshot; Rule 38 env branch-context alignment required before Phoenix code reads); **technical_details** when a Jira key is provided.
+- **Rule 35/35a:** Cross-dependency-finder must run before test case generator (Jira + codebase + shallow Confluence; no local merge-history archaeology/git-snapshot); **technical_details** when a Jira key is provided.
 
 ## Response Requirements
 

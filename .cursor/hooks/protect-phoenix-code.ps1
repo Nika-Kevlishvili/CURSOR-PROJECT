@@ -1,51 +1,30 @@
 # protect-phoenix-code.ps1
 # Hook: beforeFileEdit
-# Purpose: Block any code file edits in Phoenix/Cursor-Project folder
+# Purpose: Block only Phoenix code file edits
 # Rule: 0.8 - Code Modification is STRICTLY FORBIDDEN
 
 $jsonInput = [Console]::In.ReadToEnd()
 
 try {
-    $input = $jsonInput | ConvertFrom-Json
-    $filePath = $input.file_path
+    $hookInput = $jsonInput | ConvertFrom-Json
+    $filePath = $hookInput.file_path
     
     # Normalize path for matching (handle both absolute and relative paths)
     $normalizedPath = $filePath -replace '\\', '/'  # Normalize separators
     $normalizedPathLower = $normalizedPath.ToLower()
     
-    # Protected paths (case-insensitive matching) - ENHANCED
-    $protectedPaths = @(
-        "cursor-project", 
-        "phoenix",
-        "phoenix-core-lib",
-        "phoenix-core",
-        "phoenix-billing-run",
-        "phoenix-api-gateway",
-        "phoenix-migration",
-        "phoenix-payment-api",
-        "phoenix-ui",
-        "phoenix-mass-import",
-        "phoenix-scheduler"
-    )
+    # Only protect files inside Cursor-Project/Phoenix/**
+    $isPhoenixPath = ($normalizedPathLower -match "(^|/)cursor-project/phoenix/")
     
-    # Code file extensions - ENHANCED
+    # Code file extensions
     $codeExtensions = @(
         ".java", ".ts", ".js", ".tsx", ".jsx", ".py", 
         ".html", ".css", ".xml", ".yaml", ".yml", 
         ".properties", ".sql", ".kt", ".scala", 
-        ".groovy", ".scss", ".less", ".json", ".md"
+        ".groovy", ".scss", ".less"
     )
     
-    $isProtectedPath = $false
     $isCodeFile = $false
-    
-    # Check if path contains protected directory (case-insensitive)
-    foreach ($path in $protectedPaths) {
-        if ($normalizedPathLower -match [regex]::Escape($path)) {
-            $isProtectedPath = $true
-            break
-        }
-    }
     
     # Check if file has code extension
     foreach ($ext in $codeExtensions) {
@@ -55,12 +34,12 @@ try {
         }
     }
     
-    # Block if both conditions are met
-    if ($isProtectedPath -and $isCodeFile) {
+    # Block only Phoenix code file edits
+    if ($isPhoenixPath -and $isCodeFile) {
         $response = @{
             permission = "deny"
             user_message = "[HOOK BLOCKED] Code modification in Phoenix project is FORBIDDEN (Rule 0.8). File: $filePath"
-            agent_message = "CRITICAL: Code modification was blocked. Rule 0.8 states that code modification is STRICTLY FORBIDDEN. The file '$filePath' is in a protected directory."
+            agent_message = "CRITICAL: Code modification was blocked. Rule 0.8 states that code modification is STRICTLY FORBIDDEN. The file '$filePath' is inside Cursor-Project/Phoenix and has a code extension."
         }
     } else {
         $response = @{ permission = "allow" }

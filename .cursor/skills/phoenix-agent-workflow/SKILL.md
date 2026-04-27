@@ -9,7 +9,7 @@ Guides the assistant to follow **`.cursor/rules/`**, **`.cursor/agents/*.md`**, 
 
 ## When to Apply
 
-- Phoenix questions, tests, Postman, GitLab sync, environment access, bug validation, reporting.
+- Phoenix questions, tests, Postman, environment access, bug validation, reporting.
 - User asks about agents, consultation, or which workflow to use.
 
 ## Quick Reference
@@ -20,6 +20,7 @@ Guides the assistant to follow **`.cursor/rules/`**, **`.cursor/agents/*.md`**, 
 | 1 | **Rule 0.3:** no `agents.*` imports; use MCP/Jira/GitLab steps when needed | `main/core_rules.mdc` |
 | 2 | Route via **subagents/skills/rules** — no Python AgentRouter | `agents/agent_rules.mdc` Rule 13 |
 | 3 | Consult PhoenixExpert before task (in chat / role) | Rule 8 |
+| 3a | Align Phoenix repos to `origin/<env-branch>` via `.cursor/commands/switch-phoenix-branches.ps1` before environment-sensitive Phoenix code reading (Q&A, bug validation, cross-dep, test cases, HandsOff). Local Phoenix edits are discarded; Phoenix files stay READ-ONLY (Rule 0.8 Tier A) | Rule PHOENIX-SWITCH.0 (`integrations/phoenix_branch_switching.mdc`) |
 | 4 | Save markdown under `Cursor-Project/reports/` only for **HandsOff (Rule 37)** or if the user runs **`/report`**, **`/feedback`**, or explicitly requests a file — layout **`reports/README.md`** (Rule 0.6) | Rule 0.6 |
 | 5 | End with **Agents involved:** | Rule 0.1 |
 
@@ -36,7 +37,6 @@ Guides the assistant to follow **`.cursor/rules/`**, **`.cursor/agents/*.md`**, 
 
 - **Tests:** consult PhoenixExpert → follow test-runner / energo-ts workflows.
 - **Postman:** PostmanCollectionGenerator role → PhoenixExpert for APIs.
-- **GitLab:** read-only sync per `integrations/git_sync_workflow.mdc`.
 - **Environment:** `.cursor/agents/environment-access.md` + browser/MCP.
 - **Bug validation:** Rule 32 in `workflows/workflow_rules.mdc` (no `get_bug_finder_agent`).
 

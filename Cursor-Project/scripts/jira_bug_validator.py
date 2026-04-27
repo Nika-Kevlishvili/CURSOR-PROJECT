@@ -13,6 +13,7 @@ Usage:
 
 import json
 import os
+import re
 import subprocess
 import sys
 from datetime import date
@@ -26,8 +27,9 @@ JIRA_BASE_URL = "https://oppa-support.atlassian.net"
 JIRA_BROWSE_URL = f"{JIRA_BASE_URL}/browse"
 PROJECT_KEY = "PDT"
 OUTPUT_DIR = Path(__file__).parent / "bug_logs"
-CURSOR_WORKSPACE = "C:\Users\N.kevlishvili\Cursor"
+CURSOR_WORKSPACE = r"C:\Users\N.kevlishvili\Cursor"
 MAX_RESULTS = 100  # max per page; script paginates automatically
+MAX_REPRO_STEPS = 8
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -161,36 +163,206 @@ def fetch_issue_details(email: str, token: str, key: str) -> dict:
     }
 
 
-def run_cursor(issues: list[dict], email: str, token: str) -> None:
-    print(f"\nRunning cursor agent /bug-validate for {len(issues)} new bug(s)...\n")
+def extract_urls(text: str) -> list[str]:
+    if not text:
+        return []
+    # Keep links unique while preserving order.
+    seen: set[str] = set()
+    links: list[str] = []
+    for match in re.finditer(r"https?://[^\s)\]}>,]+", text):
+        url = match.group(0).rstrip(".,;:")
+        if url not in seen:
+            seen.add(url)
+            links.append(url)
+    return links
+
+
+def extract_log_signals(text: str) -> list[str]:
+    """Pull probable log/error lines from free-form description."""
+    if not text:
+        return []
+    patterns = (
+        r"error",
+        r"exception",
+        r"traceback",
+        r"stack trace",
+        r"\b5\d{2}\b",
+        r"\b4\d{2}\b",
+        r"failed",
+        r"timeout",
+    )
+    signal_re = re.compile("|".join(patterns), re.IGNORECASE)
+    lines: list[str] = []
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+        if signal_re.search(line):
+            lines.append(line)
+    return lines[:10]
+
+
+def _clean_step_text(text: str) -> str:
+    cleaned = re.sub(r"^[\-\*\u2022]\s*", "", text).strip()
+    cleaned = re.sub(r"^\d+[\.\)]\s*", "", cleaned).strip()
+    return cleaned
+
+
+def infer_reproduce_steps(summary: str, description: str) -> list[str]:
+    """
+    Generate candidate reproduce steps from issue data.
+    Works even when exact steps are not explicitly provided.
+    """
+    steps: list[str] = []
+    if description:
+        lines = [line.strip() for line in description.splitlines() if line.strip()]
+        for line in lines:
+            if re.match(r"^\d+[\.\)]\s+", line) or line.startswith(("-", "*", "•")):
+                cleaned = _clean_step_text(line)
+                if len(cleaned) > 6:
+                    steps.append(cleaned)
+            elif re.search(r"\b(open|go to|navigate|select|click|create|update|save|submit|send|delete|refresh|search)\b", line, re.IGNORECASE):
+                if len(line) > 12:
+                    steps.append(line)
+
+    if not steps:
+        # Build synthetic baseline flow when explicit steps are missing.
+        steps = [
+            "Open the relevant module/page described in the ticket summary.",
+            "Prepare minimal preconditions that match the bug context (user role, data state, environment).",
+            "Perform the primary action implied by the bug summary.",
+            "Observe UI/API/log behavior and capture actual response details.",
+        ]
+
+    unique_steps: list[str] = []
+    seen: set[str] = set()
+    for step in steps:
+        normalized = step.lower()
+        if normalized not in seen:
+            seen.add(normalized)
+            unique_steps.append(step)
+    return unique_steps[:MAX_REPRO_STEPS]
+
+
+def format_bullet_list(items: list[str], empty_text: str) -> str:
+    if not items:
+        return f"- {empty_text}"
+    return "\n".join(f"- {item}" for item in items)
+
+
+def run_cursor_command(prompt: str, label: str) -> int:
+    cmd = [
+        "cursor", "agent",
+        "--print",
+        "--trust",
+        "--workspace", CURSOR_WORKSPACE,
+        prompt,
+    ]
+    print(f"    Running command: {label}")
+    result = subprocess.run(cmd, capture_output=False)
+    if result.returncode != 0:
+        print(f"    Warning: command '{label}' exited with code {result.returncode}")
+    return result.returncode
+
+
+def run_cursor_pipeline(issues: list[dict], email: str, token: str) -> None:
+    print(f"\nRunning multi-agent bug pipeline for {len(issues)} new bug(s)...\n")
     for issue in issues:
         key = issue["key"]
         url = issue["url"]
 
         print(f"  Fetching full details for {key}...")
         details = fetch_issue_details(email, token, key)
+        summary = details.get("summary", issue["summary"])
+        description = details.get("description", "(no description retrieved)")
+        links = extract_urls(description)
+        log_signals = extract_log_signals(description)
+        inferred_steps = infer_reproduce_steps(summary, description)
 
-        prompt = (
-            f"/bug-validate\n\n"
+        common_context = (
             f"Ticket: {key}\n"
             f"URL: {url}\n"
-            f"Summary: {details.get('summary', issue['summary'])}\n"
+            f"Summary: {summary}\n"
             f"Status: {details.get('status', '')}\n"
             f"Priority: {details.get('priority', '')}\n"
-            f"Description:\n{details.get('description', '(no description retrieved)')}\n"
+            f"Description:\n{description}\n\n"
+            f"Extracted links:\n{format_bullet_list(links, 'No links found in ticket description.')}\n\n"
+            f"Extracted log/error signals:\n{format_bullet_list(log_signals, 'No clear log/error line found in description.')}\n\n"
+            f"Inferred reproduce flow candidates:\n{format_bullet_list(inferred_steps, 'Could not infer direct steps from the text.')}\n"
         )
 
-        cmd = [
-            "cursor", "agent",
-            "--print",
-            "--trust",
-            "--workspace", CURSOR_WORKSPACE,
-            prompt,
-        ]
-        print(f"  Running cursor agent for {key}")
-        result = subprocess.run(cmd, capture_output=False)
-        if result.returncode != 0:
-            print(f"  Warning: cursor agent exited with code {result.returncode} for {key}")
+        bug_validate_prompt = (
+            f"/bug-validate\n\n"
+            f"{common_context}\n"
+            "Validation policy for this ticket:\n"
+            "- Do NOT invalidate only because exact reproduce steps are missing.\n"
+            "- Use all available data (description, links, log signals, inferred flow).\n"
+            "- Build a practical reproduce scenario for a similar real-world case.\n"
+            "- Final output must state whether bug triggering appears achievable on a realistic scenario, even with incomplete original steps.\n"
+        )
+
+        cross_dependency_prompt = (
+            f"/cross-dependency-finder\n\n"
+            f"{common_context}\n"
+            "Focus:\n"
+            "- Identify upstream/downstream dependencies and what could break for this bug scope.\n"
+            "- Return structured cross-dependency output suitable for test-case generation handoff.\n"
+        )
+
+        test_case_prompt = (
+            f"/test-case-generate\n\n"
+            f"{common_context}\n"
+            "Generation policy:\n"
+            "- Generate comprehensive Backend and Frontend test cases for this ticket.\n"
+            "- Use the dedicated TestCaseGeneratorAgent logic and required folder structure.\n"
+            "- Include at least one scenario designed to trigger the reported/similar bug condition.\n"
+        )
+
+        playwright_prompt = (
+            f"/energo-ts-test\n\n"
+            f"{common_context}\n"
+            "Generation policy:\n"
+            "- Create Playwright test(s) using EnergoTSTestAgent logic.\n"
+            "- Build tests from generated test cases for this ticket.\n"
+            "- Keep tests focused on reproducing/triggering the bug condition on realistic data.\n"
+            "- Do not skip generation because original ticket steps are incomplete.\n"
+        )
+
+        validator_prompt = (
+            "Validate generated Playwright tests against generated test cases "
+            "using playwright-test-validator subagent.\n\n"
+            f"{common_context}\n"
+            "Validation targets:\n"
+            f"- Backend test cases path: Cursor-Project/test_cases/Backend/{key}.md (or matching topic generated for this ticket)\n"
+            f"- Frontend test cases path: Cursor-Project/test_cases/Frontend/{key}.md (or matching topic generated for this ticket)\n"
+            f"- Playwright spec path: Cursor-Project/EnergoTS/tests/cursor/{key}-*.spec.ts\n"
+            "Validation rules:\n"
+            "- Check syntax, 1:1 TC coverage, alignment with test cases, and framework usage.\n"
+            "- If validation fails, return actionable issues and keep status as failed.\n"
+        )
+
+        run_prompt = (
+            f"/energo-ts-run\n\n"
+            f"Run Playwright test(s) for ticket {key} from EnergoTS cursor branch.\n"
+            f"Target: Cursor-Project/EnergoTS/tests/cursor/{key}-*.spec.ts (or tests tagged/named with {key}).\n"
+            "Return clear pass/fail output and key failure reasons if any.\n"
+        )
+
+        print(f"  Running agent chain for {key}")
+        run_cursor_command(bug_validate_prompt, f"{key} /bug-validate")
+        run_cursor_command(cross_dependency_prompt, f"{key} /cross-dependency-finder")
+        run_cursor_command(test_case_prompt, f"{key} /test-case-generate")
+        playwright_rc = run_cursor_command(playwright_prompt, f"{key} /energo-ts-test")
+        if playwright_rc != 0:
+            print(f"    Skipping validation and run for {key} because Playwright generation failed.")
+            continue
+
+        validator_rc = run_cursor_command(validator_prompt, f"{key} playwright-test-validator")
+        if validator_rc != 0:
+            print(f"    Skipping run step for {key} because Playwright validation failed.")
+            continue
+
+        run_cursor_command(run_prompt, f"{key} /energo-ts-run")
 
 
 def main() -> None:
@@ -226,7 +398,7 @@ def main() -> None:
     save_urls(today_file, updated_urls)
     print(f"Saved {len(updated_urls)} total bug(s) to {today_file}")
 
-    run_cursor(new_issues, email, token)
+    run_cursor_pipeline(new_issues, email, token)
 
 
 if __name__ == "__main__":

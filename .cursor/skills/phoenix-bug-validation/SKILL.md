@@ -18,6 +18,13 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
 
 ## Workflow (Rule 32) - 5-Verdict System
 
+### Step 0: Resolve environment + align Phoenix branches (Rule PHOENIX-SWITCH.0) [MANDATORY]
+
+- Pick the environment from the bug ticket: Environment field, ticket text, attached logs, screenshots showing URL hostnames. Map to one of `dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`. If genuinely ambiguous, ASK the user (Rule CONF.0).
+- Run `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` so every `Cursor-Project/Phoenix/*` repo aligns to `origin/<branch>` (latest tip). For `prod` you MUST first explain to the user that local Phoenix edits will be discarded, wait for explicit ack, and only then call the script with `-ConfirmProd`.
+- Inspect the exit code: `0` proceed; `2` proceed but flag mixed-state in chat; `3` stop and ask the user to fix connectivity / VPN / credentials before continuing. Local Phoenix edits are discarded by the script; Phoenix files remain READ-ONLY (Rule 0.8 Tier A).
+- If a previous step in this chat session already aligned Phoenix to the same environment (e.g. parent ran `/phoenix` first), do NOT re-run alignment — reuse it (Rule PHOENIX-SWITCH.0 §7a).
+
 ### Step 1: Extract Expected Behavior
 
 - Extract the bug's expected result from the ticket description.
@@ -51,9 +58,14 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
 
 - Structure: "1. Expected Behavior", "2. Confluence Validation", "3. Code Analysis", "4. Final Verdict".
 
-### Step 5: Results (chat; optional file)
+### Step 5: Results (chat + Slack; optional file)
 
-- **Required:** Post the full structured analysis in **chat** (expected behavior, Confluence validation, code analysis, verdict, paths/lines, next steps). Do not implement code changes during validation.
+- **Required (every run):** Post the full structured analysis in **chat** after each completed validation (expected behavior, Confluence validation, code analysis, verdict, paths/lines, next steps).
+- **Required (every run):** Send the same full structured analysis to the Slack channel **`bug-validation`** (channel ID: `C0AUEEDVCEL`) after each completed validation. Use `slack_send_message(channel_id: "C0AUEEDVCEL", message: <full report>)` via plugin-slack-slack MCP.
+- Slack delivery is built into the Cursor bug-validator workflow; it is not a manual one-off send from the parent chat.
+- If Slack MCP/auth is unavailable, include `Slack delivery: failed` and the failure reason in the validation output.
+- Chat posting is mandatory even if Slack delivery succeeds or a markdown file is written.
+- Never send only "report sent" or summary-only text without the full chat analysis.
 - **Optional:** If the user runs **`/report`** or explicitly asks to save → write `…/YYYY/<english-month>/<DD>/BugValidation_[DescriptiveName].md` under **Chat reports** per **`Cursor-Project/reports/README.md`**.
 
 ## READ-ONLY

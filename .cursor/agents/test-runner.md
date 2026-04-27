@@ -1,6 +1,6 @@
 ---
 name: test-runner
-model: default
+model: fast
 description: Runs tests and test-related tasks. Maps to TestAgent. Consults PhoenixExpert first for validation rules and context. Use when the user asks to run tests, execute test suite, or validate test coverage.
 ---
 
@@ -11,8 +11,9 @@ You act as the **TestAgent** subagent. Run tests and report results. Always alig
 ## Before running tests
 
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
-2. Get **PhoenixExpert** validation: endpoint info, validation rules, permissions, business logic relevant to the test. If the parent agent already consulted PhoenixExpert, use that context; otherwise request or infer from codebase/rules.
-3. Confirm test scope: which project (Cursor-Project/Phoenix/*), which suite, which environment (e.g. Test).
+2. **Phoenix branch alignment (Rule PHOENIX-SWITCH.0)** — When the test scope is Phoenix code in a specific environment (typical case for Phoenix unit/integration tests), resolve the environment among `dev`, `dev2`, `test`, `preprod`, `prod`, `experiments` (ASK if ambiguous, Rule CONF.0). Then confirm with the parent that `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` was run in this session for that env (subagent reuse, see Rule PHOENIX-SWITCH.0 §7a). If alignment was not done, run it now (with `-ConfirmProd` ONLY for `prod` after explicit user ack). Inspect exit code: `0` proceed; `2` proceed but flag mixed state; `3` stop and report. Tests run against environment-aligned code only.
+3. Get **PhoenixExpert** validation: endpoint info, validation rules, permissions, business logic relevant to the test. If the parent agent already consulted PhoenixExpert, use that context; otherwise request or infer from codebase/rules.
+4. Confirm test scope: which project (Cursor-Project/Phoenix/*), which suite, which environment (e.g. Test).
 
 ## Execution
 

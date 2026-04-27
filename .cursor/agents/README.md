@@ -17,9 +17,9 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 | **test-runner.md** | TestAgent | Tests; consult PhoenixExpert first; report results. |
 | **report-generator.md** | Reports (Rule 0.6) | **`/report`**, **`/feedback`**, explicit save request, or **Rule 37 (HandsOff)** file only — per **`Cursor-Project/reports/README.md`**. |
 | **database-query.md** | DB workflow (Rule DB.0+) | PostgreSQL MCP; connect first; see `integrations/database_workflow.mdc`. |
-| **git-sync.md** | Git sync | `integrations/git_sync_workflow.mdc`; read-only GitLab. |
-| **shell.md** | Shell / CLI | Delegated terminal + safe git/CLI; hooks + `git_sync_workflow` for multi-repo sync. |
+| **shell.md** | Shell / CLI | Delegated terminal + safe git/CLI with hooks and project safety rules. |
 | **environment-access.md** | Environment access | Dev/Dev2; browser/MCP per subagent doc. |
+| **environment-resolver.md** | Environment resolver | Resolves `dev/dev2/test/preprod/prod/experiments` from user/Jira; asks user when ambiguous. |
 | **postman-collection.md** | Postman collections | PhoenixExpert first; save under `postman/`. |
 | **test-case-generator.md** | Test cases (Rule 35) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.md`; Confluence + codebase + `cross_dependency_data`; save as two files: `test_cases/Backend/<Topic>.md` + `test_cases/Frontend/<Topic>.md`. |
 | **cross-dependency-finder.md** | Cross-dependencies (Rule 35, 35a) | Jira + code + shallow Confluence; **no** local merge/git; hand off to test-case-generator. |

@@ -11,6 +11,14 @@
   ],
   "settings": {
     "playwright.reuseBrowser": false,
-    "playwright.showBrowser": false
+    "playwright.showBrowser": false,
+    "git.enabled": true,
+    "git.autofetch": false,
+    "git.fetchOnPull": false,
+    "git.detectSubmodules": true,
+    "git.autoRepositoryDetection": true,
+    "git.repositoryScanMaxDepth": 10,
+    "git.openRepositoryInParentFolders": "always",
+    "gitlab.enabled": false
   }
 }

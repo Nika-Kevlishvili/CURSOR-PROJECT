@@ -1,6 +1,6 @@
 ---
 name: energo-ts-run
-model: default
+model: fast
 description: Runs specific Playwright tests from EnergoTS (local repo synced from GitHub) based on user prompt. Resolves which test to run (by name, Jira key, file path, or "newly created") and executes npx playwright test. Use when the user asks to run a Playwright test, run a newly created test, or run a specific test from GitHub/EnergoTS.
 ---
 
@@ -64,7 +64,7 @@ Scoring: 90–100% = tests ran cleanly, results are deterministic; 70–89% = te
 
 - **Branch: cursor only** (Rule ENERGOTS.0): Tests MUST run only from the `cursor` branch in EnergoTS. Before running, verify/checkout `cursor`; never run from main or any other branch.
 - **No code modification**: Only run tests; do not edit source or test files (Rule 0.8). Exception: Rule 0.8.1 does not apply here—this agent does not modify files.
-- **GitHub = local repo**: "Run tests from GitHub" means run tests from the local clone (on `cursor` branch); suggest `!sync` or `!update <branch>` only if the user explicitly asks to update cursor from main.
+- **GitHub = local repo**: "Run tests from GitHub" means run tests from the local clone (on `cursor` branch).
 - Follow project rules in `.cursor/rules/`. All documentation and report text in **English** (Rule 0.7).
 
 ## Example Prompts and Actions

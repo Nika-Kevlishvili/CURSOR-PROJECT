@@ -12,6 +12,17 @@ Use this command when the user asks to:
 
 ## Mandatory Workflow (Rule 35)
 
+### Step 0: Resolve environment + align Phoenix branches (Rule PHOENIX-SWITCH.0) [MANDATORY]
+
+1. **MANDATORY resolver call:** run `/environment-resolve` (EnvironmentResolverAgent) first with Jira/prompt context. Use only its resolved output (`dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`) for the alignment step.
+2. If ambiguity remains, EnvironmentResolverAgent MUST ask the user via questionnaire and use the selected environment (Rule CONF.0).
+3. **Prod safety gate (§1a):** if env is `prod`, FIRST tell the user that local Phoenix edits will be discarded and force-reset to `origin/prod`, wait for explicit ack, then add `-ConfirmProd`. Skip for non-prod envs.
+4. **Subagent reuse (§7a):** if a previous step in this chat session already aligned to the same env and exited `0`, do NOT re-run the script — reuse it. Pass the env + exit code to cross-dependency-finder and test-case-generator so they skip a redundant alignment.
+5. Otherwise run: `powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` (add ` -ConfirmProd` for `prod` only, after user ack).
+6. Aligns every `Cursor-Project/Phoenix/*` repo to `origin/<branch>` (latest tip). Local Phoenix edits are DISCARDED; Phoenix files remain READ-ONLY (Rule 0.8 Tier A).
+7. Inspect exit code: `0` proceed; `2` proceed but flag mixed-state in the chat output and in the test case file headers; `3` STOP and ask user to fix VPN / credentials before retrying.
+8. Pass the resolved environment + exit code forward to cross-dependency-finder and test-case-generator so all subagents read the same code state.
+
 ### Step 1: Cross-Dependency Finder (MANDATORY – do not skip)
 
 1. Run **cross-dependency-finder** for the same scope (bug/task/feature). It MUST follow **Rule 35a**: **Jira MCP + codebase + shallow Confluence** — **no** local merge/git or sync solely for cross-dep; **technical_details** from Jira + codebase (MR/merge only if user explicitly asked GitLab).

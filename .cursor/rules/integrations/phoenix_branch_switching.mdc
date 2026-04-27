@@ -1,0 +1,296 @@
+---
+description: "Phoenix branch switching (Rule PHOENIX-SWITCH.0): before any environment-sensitive code reading (Phoenix Q&A, bug validation, cross-dependency analysis, test case generation, HandsOff), Cursor agents MUST resolve the environment for the task and align every Cursor-Project/Phoenix/* repo to the matching origin/<branch> via .cursor/commands/switch-phoenix-branches.ps1, fetching the latest tip and discarding local Phoenix edits. Phoenix files themselves remain READ-ONLY (Rule 0.8 Tier A)."
+alwaysApply: true
+globs:
+  - "Cursor-Project/Phoenix/**"
+  - ".cursor/agents/phoenix-qa.md"
+  - ".cursor/agents/bug-validator.md"
+  - ".cursor/agents/cross-dependency-finder.md"
+  - ".cursor/agents/test-case-generator.md"
+  - ".cursor/agents/hands-off.md"
+  - ".cursor/commands/phoenix.md"
+  - ".cursor/commands/bug-validate.md"
+  - ".cursor/commands/test-case-generate.md"
+  - ".cursor/commands/hands-off.md"
+  - ".cursor/commands/switch-phoenix-branches.md"
+  - ".cursor/commands/switch-phoenix-branches.ps1"
+---
+
+# PHOENIX BRANCH SWITCHING RULE [CRITICAL]
+
+## Rule PHOENIX-SWITCH.0: Environment-aligned Phoenix branches before code reading [CRITICAL]
+
+**Intent.** When Cursor agents answer environment-sensitive questions about Phoenix, validate
+bugs against Phoenix code, run cross-dependency analysis, generate test cases, or run the
+HandsOff flow, the working copies of every repository under `Cursor-Project/Phoenix/` MUST be
+aligned with the **environment** that the task targets. This rule defines:
+
+1. how the agent picks the environment (prefer `environment-resolver`),
+2. which `origin/<branch>` corresponds to that environment,
+3. when to run the alignment script,
+4. how local uncommitted Phoenix changes are handled (they are **discarded**).
+
+This rule does **not** weaken Rule 0.8 Tier A: Cursor AI still MUST NEVER edit, commit, or
+push Phoenix source code. Only the branch checkout state of the local working copy changes,
+and only via the sanctioned script below.
+
+This rule does **not** apply to `Cursor-Project/EnergoTS/**` — that tree stays locked to the
+`cursor` branch per Rule ENERGOTS.0.
+
+This rule does **not** require local merge-history archaeology, MR enumeration, or git-log
+discovery for cross-dependency work. Rule 35a still forbids that. Aligning the working tree
+to `origin/<branch>` via the script below is **not** "merge archaeology" — it is just selecting
+the environment under analysis.
+
+---
+
+## 1. Branch mapping (canonical, lowercase)
+
+The agent MUST use these names verbatim when calling the alignment script. No other names are
+accepted.
+
+| Environment label  | Script `-Environment` value | Remote branch        |
+|--------------------|-----------------------------|----------------------|
+| Dev                | `dev`                       | `origin/dev`         |
+| Dev2               | `dev2`                      | `origin/dev2`        |
+| Test               | `test`                      | `origin/test`        |
+| PreProd            | `preprod`                   | `origin/preprod`     |
+| Prod               | `prod`                      | `origin/prod`        |
+| Experiments        | `experiments`               | `origin/experiments` |
+
+If a Phoenix repo does not have the matching `origin/<branch>`, the script reports it as
+`missing-remote` for that repo and continues with the rest. The agent MUST surface that fact
+in the chat answer (which repos were aligned and which were skipped).
+
+### 1a. Prod safety gate
+
+When the resolved environment is `prod`, the agent MUST:
+
+1. State explicitly to the user that running the script will discard any uncommitted Phoenix
+   edits and force-reset every Phoenix repo to `origin/prod`.
+2. Wait for explicit user acknowledgement.
+3. Only then invoke the script with the additional `-ConfirmProd` flag.
+
+The script itself refuses to run in `-Environment prod` without `-ConfirmProd` (and without
+`-DryRun`); it exits with code `1` instead. Agents MUST NOT pass `-ConfirmProd` "preemptively"
+on the user's behalf — the prompt to confirm and the user's reply are mandatory.
+
+---
+
+## 2. When the agent MUST switch (triggers)
+
+Run the alignment script **before** reading Phoenix code in any of these cases.
+
+1. **Phoenix Q&A (`/phoenix`, PhoenixExpert role).**
+   The user’s question targets an environment, e.g. "in test", "on prod", "what does dev2
+   return", "current behavior in preprod", "experiments branch", or any environment-bound
+   reference.
+2. **Bug validation (Rule 32, `/bug-validate`, BugFinderAgent).**
+   Pick the environment from the bug ticket (Environment field, ticket text, attached logs,
+   reproduction steps, screenshots showing URL hostnames). If the ticket genuinely has no
+   environment signal, ask the user (Rule CONF.0). Do not silently default.
+3. **Cross-dependency analysis (Rule 35 / 35a, `/cross-dependency-finder`).**
+   Pick the same environment as the parent task (bug or test-case scope). The cross-dependency
+   step itself remains Jira + codebase + shallow Confluence; aligning the working copy to the
+   environment is just so codebase reads reflect that environment.
+4. **Test case generation (Rule 35, `/test-case-generate`).**
+   Reuse the environment used by cross-dependency-finder; if the parent did not pass an
+   environment, ask the user.
+5. **HandsOff flow (Rule 37, `/hands-off`).**
+   As part of step (1) "Get Jira ticket", resolve the environment and align Phoenix repos
+   before steps (2)–(5).
+
+For pure documentation answers that do not depend on environment-specific Phoenix code (e.g.
+"what does Confluence say about X"), alignment is **not** required.
+
+### 2a. EnvironmentResolverAgent (recommended resolver)
+
+For environment resolution, agents SHOULD route to `environment-resolver` (or
+`/environment-resolve`) before alignment. Resolution priority:
+
+1. Explicit user environment in current chat.
+2. Jira ticket environment evidence (field/text/attachments).
+3. Prior confirmed environment in this chat.
+
+If ambiguity remains, the resolver MUST ask the user to choose from:
+`dev`, `dev2`, `test`, `preprod`, `prod`, `experiments` (Rule CONF.0).
+No silent defaults are allowed.
+
+---
+
+## 3. How to run alignment (sanctioned script ONLY)
+
+Cursor agents MUST use the sanctioned script and MUST NOT run ad-hoc multi-repo
+checkout/reset commands directly.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment <env>
+```
+
+Prod (extra confirmation; see §1a):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment prod -ConfirmProd
+```
+
+Dry-run (planning, before showing the user a confirmation that destructive cleanup will run):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment <env> -DryRun
+```
+
+The script:
+
+1. Validates `<env>` against the lowercase set in section 1.
+2. Acquires a workspace-wide lock at `.cursor/.phoenix_switch.lock`. If another alignment run
+   is in progress, the script exits with code `1`. Stale locks are removed automatically.
+3. For every directory under `Cursor-Project/Phoenix/` that is a git repo:
+   1. Detect & abort any in-progress merge/rebase/cherry-pick/revert (`git merge --abort`,
+      `git rebase --abort`, `git cherry-pick --abort`, `git revert --abort`).
+   2. `git fetch origin --prune`. Fetch failures are categorized: `no-origin`,
+      `network-failure`, `auth-failure`, `fetch-failed`.
+   3. If `origin/<branch>` is missing → mark `missing-remote`, skip the rest.
+   4. **Idempotent fast-path:** if HEAD is already at `origin/<branch>` and the working tree
+      is clean → mark `already-aligned`, skip the destructive steps.
+   5. If the working tree is dirty → `git reset --hard HEAD` + `git clean -fd`
+      (this is the **destructive** step; per workspace policy, local Phoenix edits are not
+      preserved during a switch).
+   6. `git checkout -B <branch> origin/<branch>`
+   7. `git reset --hard origin/<branch>` so the local branch matches the latest remote tip.
+4. Prints a per-repo status table and exits with a structured code:
+   - `0` — all repos succeeded (`ok` / `already-aligned` / `dry-run-ok`).
+   - `1` — setup error (Phoenix root missing, prod without `-ConfirmProd`, lock conflict).
+   - `2` — partial failure (some repos succeeded, some failed).
+   - `3` — every repo failed (catastrophic; usually network/VPN down).
+
+The agent MUST inspect the exit code AND the per-repo status table before reading Phoenix
+code. On exit `2` or `3`, the agent MUST clearly label any Phoenix conclusions as based on
+possibly stale or mixed state.
+
+---
+
+## 4. Local-changes policy (DESTRUCTIVE)
+
+By project decision, when the alignment script runs:
+
+- All uncommitted Phoenix working-tree edits are **discarded**.
+- Untracked files inside Phoenix repos are **removed** (`git clean -fd`).
+- The agent MUST NOT stash and re-apply Phoenix edits during a switch.
+- The agent MUST NOT skip the cleanup to "preserve" local edits.
+
+If the user wants to keep local Phoenix edits for some reason, they must commit/branch
+manually outside of this workflow before invoking any environment-sensitive Cursor command.
+Cursor agents do not author Phoenix commits (Rule 0.8 Tier A).
+
+---
+
+## 5. Read-only Phoenix code stays read-only
+
+This rule only changes the branch checkout state of local Phoenix repos. It does **not**
+relax any other constraint:
+
+- Cursor AI MUST NEVER add, edit, or delete files inside `Cursor-Project/Phoenix/**`
+  (Rule 0.8 Tier A).
+- Cursor AI MUST NEVER commit, push, merge, or open MRs against Phoenix
+  (Rule 1, Rule 0.8 Tier A).
+- Cursor AI MUST NEVER write to GitLab or modify Confluence (Rule 1, Rule 1a).
+
+The alignment script only runs `git fetch`, `git checkout`, `git reset`, `git clean` against
+the local working copy of Phoenix repos. No remote write operations occur.
+
+---
+
+## 6. Reporting in chat
+
+After running the script, the agent MUST report in chat (one short block):
+
+- Selected environment label and target branch (e.g. `test → origin/test`).
+- Per-repo result (one of `ok`, `already-aligned`, `missing-remote`, `no-origin`,
+  `network-failure`, `auth-failure`, `fetch-failed`, `checkout-failed`, `reset-failed`,
+  `error`).
+- The script's exit code (`0` / `1` / `2` / `3`) so the user can tell partial failures from
+  full success at a glance.
+- A clear note that any uncommitted Phoenix edits were discarded if any repo was dirty.
+
+Then proceed with the actual task (Q&A / bug validation / cross-dep / test cases / HandsOff).
+
+---
+
+## 7. Failure handling
+
+- If `git fetch` fails for a repo, the agent MUST classify the failure (`no-origin`,
+  `network-failure`, `auth-failure`, `fetch-failed`) and WARN the user. The agent then
+  continues with whatever code state is currently checked out for that repo, clearly
+  labelling that the answer for that repo is based on a possibly stale local state.
+- If `origin/<branch>` is missing for a repo, the agent MUST disclose that gap and answer
+  using whatever branch is currently checked out for that repo (still labelled).
+- If the user asks for an environment outside the lowercase set in section 1, the agent
+  MUST refuse and ask for one of the canonical names instead.
+- If the script exits with code `3` (every repo failed), the agent MUST stop and ask the
+  user to resolve connectivity / VPN / credentials before answering environment-sensitive
+  questions. Do not pretend to know "current dev behaviour" with a fully stale tree.
+
+---
+
+## 7a. Subagent reuse (do not re-align unnecessarily)
+
+If the parent agent has already aligned Phoenix to the same environment in this chat session
+and no environment switch has happened since, child subagents (e.g.
+`cross-dependency-finder` and `test-case-generator` invoked back-to-back by `hands-off`)
+MUST NOT re-run the alignment script. Re-alignment is required only when:
+
+- the parent did not align yet, or
+- the environment changes (e.g. Q&A on `test`, then bug validation on `prod`), or
+- a previous alignment ended with exit code `2` or `3` (mixed / fully stale state), or
+- the user explicitly asks for a fresh alignment.
+
+The parent agent MUST pass the resolved environment to its subagents in the prompt so the
+subagents can detect that alignment is already in place and skip the script.
+
+---
+
+## 7b. Multi-environment comparisons
+
+For requests that compare two environments (e.g. "what is different between dev and prod"),
+the agent MUST run alignment twice in series — once per environment — and capture the
+relevant code reads in chat memory between switches. Do **not** interleave reads across
+environments without an explicit alignment in between, because the local working copy can
+only represent one environment at a time.
+
+---
+
+## 7c. Coverage for non-default agents
+
+The same alignment requirement applies to other agents that read Phoenix code for an
+environment-sensitive task, even though they were not part of the original list:
+
+- **`postman-collection`** — when generating a Postman collection that targets a specific
+  environment's Phoenix endpoints, align first.
+- **`test-runner`** — when running Phoenix unit/integration tests for a specific environment,
+  align first.
+- **`consult.md`** / `phoenix-bug-validation` skill — when the consultation answer depends on
+  current Phoenix code in a specific environment, align first.
+
+`production-data-reader` and `database-query` agents read the database (not the Phoenix tree),
+so they are out of scope. `energo-ts-test` / `energo-ts-run` operate on `EnergoTS/` (locked to
+`cursor`) and are out of scope.
+
+---
+
+## 8. Interaction with other rules
+
+- **Rule 0.2 (PhoenixExpert):** unchanged — Phoenix questions still go through PhoenixExpert.
+- **Rule 0.5 (Confluence fresh):** unchanged — Confluence is still checked.
+- **Rule 0.8 Tier A (no Phoenix edits):** unchanged — branch state changes do not constitute
+  edits to Phoenix source.
+- **Rule 32 (BugFinder):** the BugFinder workflow now starts with environment resolution +
+  alignment.
+- **Rule 35 / 35a (cross-dependency / test cases):** alignment is allowed and required;
+  it is **not** local merge-history archaeology and does not violate 35a.
+- **Rule 37 (HandsOff):** alignment runs as part of step (1).
+- **Rule ENERGOTS.0:** unchanged — EnergoTS stays locked to `cursor`.
+- **Rule CONF.0:** if environment is ambiguous, ask the user before alignment.
+
+Violation of this rule (e.g. answering an environment-sensitive Phoenix question without
+running alignment, or running ad-hoc `git checkout` against Phoenix repos) is a
+**CRITICAL SYSTEM ERROR**.
