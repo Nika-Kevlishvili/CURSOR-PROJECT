@@ -63,6 +63,7 @@ Reference: `.cursor/commands/hands-off.md` Step 4.5; `.cursor/agents/playwright-
 - **Entity creation order:** Terms → Price components → Products → Customers → PODs → Contracts → Billing runs → Invoices → Payments. This order follows dependencies (e.g., Products require Terms + Price components first).
 - **Rule:** Each precondition step from the test case `.md` file MUST be translated into a helper function (if shared by many tests) or inline code (if test-specific).
 - **Rule (Instructions):** Before creating Playwright specs, read **`Cursor-Project/config/playwright_generation/playwright instructions/precondition-data-creation.instructions.md`** which contains detailed patterns for implementing preconditions.
+- **Reference specs in repo (MANDATORY for multi-entity chains):** Before writing helper functions for chained entities, **grep/read** ≥1 similar existing spec under **`Cursor-Project/EnergoTS/tests/`** (see `.cursor/agents/energo-ts-test.md` step **0.6**). Align order with that file or with § Entity Creation Order in `precondition-data-creation.instructions.md`. Agent completion output MUST list **Reference spec(s):** paths. **Do not** invent creation order from memory or from test case wording alone.
 
 **FORBIDDEN patterns:**
 ```typescript
