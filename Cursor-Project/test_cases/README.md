@@ -19,6 +19,7 @@ Every `.md` file MUST follow **`Cursor-Project/config/template/Test_case_templat
 | Correction data by scales — header period must match original | `Backend/Correction_data_by_scales_header_period.md` | `Frontend/Correction_data_by_scales_header_period.md` | PDT-2708 |
 | Get product list (Energy products) — Sales Portal product catalog | `Backend/Get_product_list_energy_products.md` | `Frontend/Get_product_list_energy_products.md` | GET-PRODUCT-LIST |
 | Get product list (Energy products) — comprehensive API & UI coverage (all filtering rules, auth, schema, regression) | `Backend/Get_product_list_energy.md` | `Frontend/Get_product_list_energy.md` | PHN-2178 |
+| Customer invoices list — invoice date label uses wrong translation key (billing_data_by_scales reuse) | `Backend/Customer_invoice_date_label.md` | `Frontend/Customer_invoice_date_label.md` | PDT-2811 |
 
 ## Layout reference
 
