@@ -46,6 +46,9 @@ You act as the **PlaywrightTestValidatorAgent** (Test Quality Validator). You va
 - Test titles should include the **Jira key** (e.g. `[REG-123]: ...`) and be meaningful.
 - No obvious anti-patterns: e.g. hardcoded credentials, duplicated logic that should use fixtures.
 - **Strict hook ban:** `test.beforeAll(` / `beforeAll(` for preconditions is forbidden. Presence of these patterns is an automatic validation failure.
+- **Entity chain & repo alignment (when preconditions create data):** If the spec POST-creates chained entities (e.g. terms, price components, customers, PODs, products, contracts), verify that:
+  - The **creation order** is plausible per **`Cursor-Project/config/playwright_generation/playwright instructions/precondition-data-creation.instructions.md`** § Entity Creation Order, **or** the validation report / agent summary indicated a specific **reference spec path** intentionally followed. Flag **`canon`** if the order looks ad-hoc (e.g. POD or customer nested before terms/price/product without rationale or citation).
+  - **POST assertions** broadly match repository norms: **`expect(response).CheckResponse()`** on create flows where canon expects it; gratuitous **`ToBeOK()`**-only on the same chains as **`canon`** (informational or fail per severity — default **informational** unless instructions forbid `ToBeOK` for those calls).
 
 ### 5. Playwright instructions (`Cursor-Project/config/playwright_generation/playwright instructions/`)
 
@@ -93,8 +96,9 @@ Return a **validation result** object (or equivalent) with:
 7. **Check** framework: fixtures used, no forbidden ad-hoc code.
 8. **Check** **playwright instructions** compliance (§5): steps, assertions, forbidden patterns.
 9. **Check** strict hook ban: search for `test.beforeAll(` and `beforeAll(`; if found, emit issue with `criterion: canon` and suggestion to move setup to helper functions invoked via `test.step('Precondition: ...')`.
-10. **Check** Swagger cross-validation (§6): spot-check primary endpoint payload fields against the refreshed Swagger spec; flag name/enum/type mismatches as `swagger` issues.
-11. **Build** the result (passed, issues, summary) and return to the orchestrator.
+10. **Check** entity chain / precondition alignment (§4): if spec creates chained entities, verify order matches `precondition-data-creation.instructions.md` or is justified by cited reference-pattern heuristics from reading the spec file; scan for gratuitous assertion-style drift (`ToBeOK` vs `CheckResponse`) on POST chains vs instruction pack when relevant.
+11. **Check** Swagger cross-validation (§6): spot-check primary endpoint payload fields against the refreshed Swagger spec; flag name/enum/type mismatches as `swagger` issues.
+12. **Build** the result (passed, issues, summary) and return to the orchestrator.
 
 ## Constraints
 
