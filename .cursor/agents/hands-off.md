@@ -1,6 +1,6 @@
 ---
 name: hands-off
-model: claude-4.6-sonnet-medium-thinking
+model: default
 description: Orchestrates the full HandsOff flow when user provides a Jira ticket and /HandsOff or !HandsOff. Runs Jira fetch → cross-dependencies → test cases → Playwright creation → run tests → report (save + send to Slack to tester). Use when the user gives a Jira link/key/name and invokes HandsOff.
 ---
 

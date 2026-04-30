@@ -13,3 +13,4 @@ TC numbering: `TC-BE-1`, `TC-BE-2`, ...
 | `Get_product_list_energy_products.md` | Get product list (Energy products) — Sales Portal product catalog | GET-PRODUCT-LIST | TC-BE-1 through TC-BE-58 |
 | `Get_product_list_energy.md` | Get product list (Energy products) — comprehensive API coverage (all filtering rules, auth, schema, regression) | PHN-2178 | TC-BE-1 through TC-BE-94 |
 | `Customer_invoice_date_label.md` | Customer invoices list — invoice date label translation key (pure FE bug; no backend TCs applicable) | PDT-2811 | N/A |
+| `Service_Contract_Versioning_PDT_2599.md` | Service Contract versioning — Signed/Not Valid rules, timelines, status transitions, billing resolution, Swagger parity | PDT-2599 | TC-BE-1 through TC-BE-26 |
