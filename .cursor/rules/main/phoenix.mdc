@@ -13,7 +13,7 @@ This file is the **main index** for workspace rules under **`.cursor/rules/`**. 
 | **main** | `.cursor/rules/main/` | `core_rules.mdc` (Rule 0.x), `clarification_and_confidence.mdc` (Rule CONF.0), `phoenix.mdc` (this index) |
 | **safety** | `.cursor/rules/safety/` | `safety_rules.mdc` |
 | **agents** | `.cursor/rules/agents/` | `agent_rules.mdc` |
-| **workflows** | `.cursor/rules/workflows/` | `workflow_rules.mdc`, `handsoff_playwright_report.mdc` |
+| **workflows** | `.cursor/rules/workflows/` | `workflow_rules.mdc`, `handsoff_playwright_report.mdc`, `playwright_detailed_reporting.mdc` |
 | **workspace** | `.cursor/rules/workspace/` | `file_organization_rules.mdc`, `test_cases_structure.mdc` |
 | **integrations** | `.cursor/rules/integrations/` | `database_workflow.mdc`, `energots_branch_lock.mdc`, `production_data_reader.mdc`, `jira_bug_agent.mdc`, `phoenix_branch_switching.mdc` |
 
@@ -29,9 +29,10 @@ Cursor loads **all** `.mdc` files under `.cursor/rules/` **recursively**. Rule 0
 - **Clarification / confidence gate:** `.cursor/rules/main/clarification_and_confidence.mdc` (Rule CONF.0)
 - **Agents:** `.cursor/rules/agents/agent_rules.mdc`
 - **Safety:** `.cursor/rules/safety/safety_rules.mdc`
-- **Workflows:** `.cursor/rules/workflows/workflow_rules.mdc`, `.cursor/rules/workflows/handsoff_playwright_report.mdc`
+- **Workflows:** `.cursor/rules/workflows/workflow_rules.mdc`, `.cursor/rules/workflows/handsoff_playwright_report.mdc`, `.cursor/rules/workflows/playwright_detailed_reporting.mdc`
 - **Files / test cases layout:** `.cursor/rules/workspace/file_organization_rules.mdc`, `.cursor/rules/workspace/test_cases_structure.mdc`
 - **DB / Git / EnergoTS / Prod / Jira bug / Phoenix branch switching:** `.cursor/rules/integrations/*.mdc`
+- **Slack reporting (three paths):** `Cursor-Project/config/template/Slack_reporting_paths.md` — short **Slack text** + **attach** detailed `.md` (`Cursor-Project/config/slack/upload-file-to-slack.ps1`)
 
 ## ⚠️ CRITICAL REMINDERS
 
@@ -48,6 +49,7 @@ Cursor loads **all** `.mdc` files under `.cursor/rules/` **recursively**. Rule 0
 11. **Rule 36:** Run Playwright tests from EnergoTS → energo-ts-run workflow ONLY; run only from `cursor` branch (Rule ENERGOTS.0)
 11a. **Rule PHOENIX-SWITCH.0:** Before environment-sensitive Phoenix code reading (Q&A, bug validation, cross-dep, test-case generation, HandsOff), align every `Cursor-Project/Phoenix/*` repo to the matching `origin/<branch>` via `.cursor/commands/switch-phoenix-branches.ps1`; local Phoenix edits are discarded; Phoenix files stay READ-ONLY (Rule 0.8 Tier A) — see `.cursor/rules/integrations/phoenix_branch_switching.mdc`
 12. **Rule 37:** Jira ticket + /HandsOff or !HandsOff → ALWAYS run full HandsOff flow (hands-off command/orchestrator); report named after Jira key + send to Slack to tester
+12a. **Slack paths:** Bug validation (Rule 32) vs HandsOff vs scoped Playwright Slack — **`Cursor-Project/config/template/Slack_reporting_paths.md`** (do not merge; bug-validator workflow untouched)
 13. **Rule JIRA.0:** Jira bug agent → Experiments board ONLY; NEVER create bugs in Phoenix delivery
 14. **Rule PDR.0:** Production data questions → ALWAYS use ProductionDataReaderAgent
 15. **Rule 34:** ALL agents MUST be organized in subdirectories

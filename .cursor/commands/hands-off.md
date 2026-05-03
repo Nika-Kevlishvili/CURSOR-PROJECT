@@ -2,6 +2,8 @@
 
 Run the **entire flow** without user intervention when the user provides a **Jira ticket** (link, name, or key) and invokes **`/HandsOff`** or **`!HandsOff`**. Orchestrate: Jira → cross-dependencies → test cases → Playwright tests → run tests → report (save + send to Slack to tester).
 
+**Slack:** This command implements **path 2** (HandsOff) in **`Cursor-Project/config/template/Slack_reporting_paths.md`**. Path 1 = bug validation (Rule 32, unchanged). Path 3 = user-triggered scoped Playwright Slack → **`.cursor/commands/send-playwright-results-slack.md`**.
+
 ## When to Use
 
 - User provides a **Jira ticket** (link, ticket key e.g. REG-123, or ticket name) and types **`/HandsOff`** or **`!HandsOff`**.
@@ -99,28 +101,32 @@ Reference: `.cursor/commands/energo-ts-run.md`, Rule 36, `.cursor/rules/workflow
 
 ### Step 6: Build and save report (Step 9 – part 1)
 
-1. **Report filename** = `{JIRA_KEY}.md` (e.g. `REG-123.md`).
-2. **Report content** (English, Rule 0.7) – **ONLY Playwright test results** (see `.cursor/rules/workflows/handsoff_playwright_report.mdc`). For the **Slack message** (Step 7), build content using the **Slack report template**: **`Cursor-Project/config/template/Slack_report_template.md`**. The template defines: header (`{JIRA_KEY} – Playwright test results`), Jira/Title/Date/Assignee/Tester, Total passed/failed/skipped, separator, then per test: Test N, Test description, Expected result, Actual result, Test result. Fill all placeholders from Jira and Playwright run. The saved file **`Cursor-Project/reports/HandsOff reports/…/YYYY/<english-month>/<DD>/{JIRA_KEY}.md`** (segments per **`Cursor-Project/reports/README.md`**) may use the same structure (recommended so Slack and file stay in sync).
-   - Optional in file: spec path and how to run (e.g. `npx playwright test --grep "<JIRA_KEY>"`).
-   - Do NOT fill the report with cross-deps, artifact lists, or long non–test-result sections.
-3. **Save** the report to **`HandsOff reports`** under **`YYYY/<english-month>/<DD>/{JIRA_KEY}.md`** per **`Cursor-Project/reports/README.md`**.
+**Reporting (three parts):** (1) **Smart `{JIRA_KEY}.md`** — TC mapping, links, expected vs actual, meets expectation (`Playwright_run_detailed_report_template.md`). (2) **Machine `playwright-report-detailed.md`** — step/annotation detail from **`playwright-report.json`** via **`generate-detailed-report.mjs`** (Rule **DPR.0** — mandatory when JSON exists). (3) **Slack (Step 7)** — short three-block text + **file uploads** of **both** `.md` files to Tester + **#ai-report** (`C0AK96S1D7X`). Follow **`Slack_report_summary_short_template.md`** for chat body only.
 
-Reference: `Cursor-Project/config/template/Slack_report_template.md`; Rule 37 — Rule 0.6 exception; no Python `ReportingService` in this workspace.
+1. **Detailed report filename** = `{JIRA_KEY}.md` (e.g. `REG-123.md`).
+2. **Detailed report content** (English, Rule 0.7) — **`Cursor-Project/config/playwright/Playwright_run_detailed_report_template.md`**: run metadata; for **each** executed test — Playwright title, **which TC-BE-N / TC-FE-N** it covers (from titles + test case `.md` from Step 3), **created entity links** (URLs or `{METHOD} path + id` from responses / `test.info().annotate`), **expected** vs **actual**, **meets expectation** (Yes/No/Not run). Map failures to TC **Expected result** lines from the test case files when possible.
+   - Sources: Playwright stdout/HTML/`playwright-report.json`, test case `.md` files from Step 3, Jira fields from Step 1.
+   - Do NOT fill this file with cross-deps-only narrative; focus on run outcomes and traceability to TCs.
+3. **Save** the detailed report to **`HandsOff reports`** under **`YYYY/<english-month>/<DD>/{JIRA_KEY}.md`** per **`Cursor-Project/reports/README.md`** (Rule 37).
+4. **Machine detailed Markdown (mandatory when JSON exists):** From **`Cursor-Project/EnergoTS`**, if **`playwright-report.json`** exists, run **`node ../config/playwright/generate-detailed-report.mjs`** (writes **`Cursor-Project/EnergoTS/playwright-report-detailed.md`** next to the JSON). If JSON is missing, skip and record in optional **Notes** (Slack / report) why machine detail was not generated.
+
+Reference: `Cursor-Project/config/playwright/Playwright_run_detailed_report_template.md`; `Slack_report_summary_short_template.md`; Rule 37 — Rule 0.6 exception; no Python `ReportingService` in this workspace.
 
 ### Step 7: Send report to Slack (Step 9 – part 2)
 
-**Rule [CRITICAL]: The report must be sent ONLY to (1) the Tester (DM) and (2) the #ai-report channel. Do NOT send the report to anyone else on Slack (not to Assignee, not to any other user). Only Tester and #ai-report.**
+**Rule [CRITICAL]: Delivery is ONLY to (1) the Tester (DM) and (2) the #ai-report channel. Do NOT send to Assignee or anyone else.**
 
-1. **Tester:** Get the **Tester** for the ticket **only** from the Jira **"Tester"** field. In this project that is **`customfield_10095`** (single user). Use that user’s **displayName** to find them on Slack. **Do NOT use** Assignee or **customfield_11151** (BA). If no Tester is set (customfield_10095 is null), send only to #ai-report.
-2. **Slack message:** Build the message using the **Slack report template**: **`Cursor-Project/config/template/Slack_report_template.md`**. The content MUST follow that template (header, Jira/Title/Date/Assignee/Tester, Total, separator, then each test with Test description, Expected result, Actual result, Test result). Use the same content for both recipients.
-3. **Find tester on Slack by name (not by ID):** Call **user-slack** MCP `slack_search_users(query: <tester display name>)` (e.g. from Jira Tester field). Use the **name** from Jira Tester; do NOT use hardcoded Slack user IDs. From the result, take the **User ID**. Do **not** add @mention in the message.
-4. **Slack – send ONLY to these two (mandatory):**
-   - **To Tester (DM):** If Tester is set in Jira, call `slack_send_message(channel_id: <tester_user_id>, message: report_content)`. The user-slack MCP treats `channel_id` = user ID as a DM to that user. Send the **full report**. Do NOT use @mention. Do NOT send to Assignee.
-   - **To #ai-report:** Call `slack_send_message(channel_id: "C0AK96S1D7X", message: report_content)`. Send the **same full report**. **Always use** channel_id **`C0AK96S1D7X`** for #ai-report. Do NOT send only a short summary.
-   - **Do NOT send to Assignee or any other Slack user.** Only Tester (DM) and #ai-report.
-5. If message length limit applies (e.g. 5000 chars), send at least the full Playwright-results section. Message should indicate it is the HandsOff run result for the Jira ticket.
+**A. Slack text (three blocks only):** Build with **`Slack_report_summary_short_template.md`** — (1) `{JIRA_KEY} – Playwright test results`, (2) `Jira:` / `Title:` / `Date:` / `Assignee:` / `Tester:`, (3) `Total: … passed, … failed, … skipped.` Optional **`Notes:`** (environment, MCP gaps, or **`Full narrative:`** + path if upload cannot run). **Do not** add per-test bullets to the chat body.
 
-Reference: `Cursor-Project/config/template/Slack_report_template.md`; user-slack MCP tools (`slack_send_message`, `slack_search_users`). Jira Tester = **customfield_10095** only (not Assignee, not customfield_11151/BA); find tester by name via `slack_search_users`; send **only** to Tester (DM) and #ai-report (C0AK96S1D7X).
+**B. Slack file attachments (MANDATORY when token exists):** Upload **both** (when the second exists): (i) **`{JIRA_KEY}.md`** from Step 6, and (ii) **`Cursor-Project/EnergoTS/playwright-report-detailed.md`** if Step 6 produced it. For **each** destination — Tester (DM, if any) and **#ai-report** (`C0AK96S1D7X`) — run **`upload-file-to-slack.ps1`** **once per file** (up to **four** script runs: two files × two destinations). Use **`SLACK_API_TOKEN`** or **`SLACK_BOT_TOKEN`** (`files:write`); optional **`_run-upload-with-dotenv.ps1`** loads token from **`EnergoTS/.env`**. Do **not** paste full report bodies in chat. **Incomplete:** short Slack only, or only one file uploaded, while token exists and both files exist.
+
+**C. Optional long narrative in chat:** Only if the user explicitly requests — paste **`Slack_report_template.md`** (rare).
+
+1. **Tester:** From **`customfield_10095`** only; **`slack_search_users`** → User ID. No Tester → skip DM; still upload + post to #ai-report.
+2. **Send text:** **`slack_send_message`** — same three-block body (+ optional Notes) to Tester (if any) and **`C0AK96S1D7X`**.
+3. **Upload files:** For **each** destination (Tester ID if any, then **`C0AK96S1D7X`**), run **`upload-file-to-slack.ps1`** with absolute **`-FilePath`** to (a) the HandsOff **`{JIRA_KEY}.md`**, then (b) **`Cursor-Project/EnergoTS/playwright-report-detailed.md`** if that file exists.
+
+Reference: `Slack_report_summary_short_template.md`; `Cursor-Project/config/slack/README.md`; optional long Slack: `Slack_report_template.md`; user-slack MCP.
 
 ### Step 8: Agent questions after report (with attribution)
 

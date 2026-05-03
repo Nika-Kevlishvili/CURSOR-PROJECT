@@ -24,7 +24,7 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 | **test-case-generator.md** | Test cases (Rule 35) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.md`; Confluence + codebase + `cross_dependency_data`; save as two files: `test_cases/Backend/<Topic>.md` + `test_cases/Frontend/<Topic>.md`. |
 | **cross-dependency-finder.md** | Cross-dependencies (Rule 35, 35a) | Jira + code + shallow Confluence; **no** local merge/git; hand off to test-case-generator. |
 | **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8.1) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.spec.ts`; Playwright under `EnergoTS/tests/` only. |
-| **energo-ts-run.md** | Playwright runner (Rule 36) | `npx playwright test` from EnergoTS; `cursor` branch only. |
+| **energo-ts-run.md** | Playwright runner (Rule 36) | `npx playwright test` from EnergoTS; `cursor` branch only. JSON→MD + Slack uploads are owned by **HandsOff / path 3**; ad-hoc runs: generator only if user explicitly asks (**Rule DPR.0**). |
 | **jira-bug.md** | Jira bug (Rule JIRA.0) | Experiments board only. |
 | **hands-off.md** | HandsOff orchestrator (Rule 37) | Jira + `/HandsOff` / `!HandsOff` full flow. |
 | **playwright-test-validator.md** | Playwright QA gate | Spec vs test cases + **`playwright instructions/`** (HandsOff Step 4.5). |

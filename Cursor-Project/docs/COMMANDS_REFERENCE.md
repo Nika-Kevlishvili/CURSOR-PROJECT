@@ -284,8 +284,8 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 3. **Test cases** – Run test-case-generator with ticket description and cross_dependency_data; save under `Cursor-Project/test_cases/Flows/` or `Objects/` (per template).
 4. **Playwright tests** – Follow **`.cursor/agents/energo-ts-test.md`**: map test case `.md` → spec with EnergoTS framework; output **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**; stay on **`cursor`** branch (Rule ENERGOTS.0). No Python `get_energo_ts_test_agent()` in this workspace.
 5. **Run tests** – Run Playwright tests (e.g. by Jira key or newly created file); capture pass/fail and failure reasons.
-6. **Report (Step 9)** – Save report as **`HandsOff reports/…/YYYY/<english-month>/<DD>/{JIRA_KEY}.md`** per **`Cursor-Project/reports/README.md`** with: Jira key, title, tests run, per-test pass/fail and reason.
-7. **Slack** – Send **full** report per **`Slack_report_template.md`** to **Tester** (Jira custom field `customfield_10095`, DM via `slack_search_users`) and **#ai-report** (`C0AK96S1D7X`) only — see **`handsoff_playwright_report.mdc`**.
+6. **Report (Step 9)** – Save **detailed** report as **`HandsOff reports/…/YYYY/<english-month>/<DD>/{JIRA_KEY}.md`** per **`Cursor-Project/config/playwright/Playwright_run_detailed_report_template.md`** and **`Cursor-Project/reports/README.md`** (TC mapping, entity links, expected vs actual).
+7. **Slack** – **Three-block** text per **`Slack_report_summary_short_template.md`** + **upload** detailed `{JIRA_KEY}.md` via **`config/slack/upload-file-to-slack.ps1`** to Tester and **#ai-report** — see **`handsoff_playwright_report.mdc`** / **`config/slack/README.md`**. Long Slack only if explicitly requested (`Slack_report_template.md`).
 
 **When to use:** Run the full pipeline automatically for a Jira ticket: fetch → cross-deps → test cases → create Playwright tests → run → report (save + send to Slack). No user intervention after providing the ticket and /HandsOff.
 

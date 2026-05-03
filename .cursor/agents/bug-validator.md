@@ -1,6 +1,6 @@
 ---
 name: bug-validator
-model: claude-opus-4-6
+model: default
 description: Validates bug reports using BugFinderAgent workflow (Rule 32). Confluence first, then codebase; READ-ONLY. Use when the user asks to validate a bug, verify a bug report, or run bug validation.
 ---
 
