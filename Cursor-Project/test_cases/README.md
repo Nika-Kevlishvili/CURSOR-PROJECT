@@ -21,7 +21,7 @@ Every `.md` file MUST follow **`Cursor-Project/config/template/Test_case_templat
 | Get product list (Energy products) — comprehensive API & UI coverage (all filtering rules, auth, schema, regression) | `Backend/Get_product_list_energy.md` | `Frontend/Get_product_list_energy.md` | PHN-2178 |
 | Customer invoices list — invoice date label uses wrong translation key (billing_data_by_scales reuse) | `Backend/Customer_invoice_date_label.md` | `Frontend/Customer_invoice_date_label.md` | PDT-2811 |
 | Service Contract versioning — lifecycle, timeline, bilingual validation, billing by effective Signed version | `Backend/Service_Contract_Versioning_PDT_2599.md` | `Frontend/Service_Contract_Versioning_PDT_2599.md` | PDT-2599 |
-| Missing interim invoice — standard billing, REAL parent selection, month-boundary churn | `Backend/Missing_Interim_Invoice_PDT_2750.md` | `Frontend/Missing_Interim_Invoice_PDT_2750.md` | PDT-2750 |
+| Missing interim invoice — standard billing, REAL parent selection, month-boundary churn; re-sign/terminate + FOR_VOLUMES exclusion; null POD deactivation (Keti thread) | `Backend/Missing_Interim_Invoice_PDT_2750.md` | `Frontend/Missing_Interim_Invoice_PDT_2750.md` | PDT-2750 |
 
 ## Layout reference
 

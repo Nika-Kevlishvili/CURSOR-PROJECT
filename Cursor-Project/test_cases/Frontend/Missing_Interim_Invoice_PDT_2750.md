@@ -6,6 +6,8 @@
 
 **Scope:** Frontend (Sales Portal / Energo-Pro portal per Test **`BASE_URL`**) — billing run workspace, invoice lists, invoice detail, customer billing history, document download, and audit/history widgets touched by billing errors.
 
+**Additional scope (Keti / Nika thread — PDT-2750):** Validate UI for **re-signed** product contracts **72882 → 72883** pattern (Dev example): predecessor **terminated**, successor active; **billing run preview** for **STANDARD_BILLING** (Dev example run **16899**) shows **interim** parent / line behaviour consistent with backend — no selection of **FOR_VOLUMES** invoice from terminated predecessor as the “calculated from” source; contract-POD on successor may show **empty deactivation** (open-ended) and must not break billing preview. In **Test**, use URLs built from **Test** `BASE_URL` and ids from seeded data — **do not** rely on Dev-only ids for pass/fail.
+
 ---
 
 ## Jira comments interpreted into checks
@@ -17,6 +19,8 @@
 | **J3** | When parent invoice is **outside** the current run list but already **REAL**, document generation UI must **not** show a permanent failure badge **only** because the parent row is not in the same run table (align with backend REAL gate). |
 | **J4** | For churn scenarios (**old** contract POD deactivated **28.02**, **new** contract POD **01.03**), March billing run screens must list **both** standard and interim invoice types when backend created them — **no** “only standard” display gap. |
 | **J5** | Audit / activity messages must not state interim success if **no** interim invoice row exists for that run (ticket complaint). |
+| **K1** | On invoice detail for interim on **successor** contract, “calculated from” / parent invoice link must **not** point to the **FOR_VOLUMES**-run invoice on **terminated** predecessor. |
+| **K2** | Product contract **POD** grid on successor: **deactivation date** empty (**null**) must display as open-ended without blocking navigation to billing run preview. |
 
 ---
 
@@ -152,6 +156,57 @@
 1. Hard refresh browser on billing run page (`Ctrl+F5`).
 
 **Expected test case results:** Interim row appears — **no** requirement to re-login for consistency.
+
+---
+
+### TC-FE-9 (Positive): Billing run **preview** (STANDARD) shows interim parent consistent with successor — not FOR_VOLUMES invoice on terminated predecessor (**K1**)
+
+**Description:** Mirrors Dev check **`/billing-run/preview/basic-parameters?type=STANDARD_BILLING&id={runId}`** — after backend **TC-BE-13** seeding on Test, open the same **preview** screen for the created standard billing run and verify the UI’s indicated **previous / parent** invoice for interim matches **`I_std_B`** (invoice number), not the invoice created from the **FOR_VOLUMES** run on **terminated A**.
+
+**Preconditions:**
+1. Backend **TC-BE-13** completed on Test; record **billing run id** for the **B** standard run and invoice numbers **`I_volRun_A`**, **`I_std_B`**, interim **`INT1`**.
+
+**Test steps:**
+1. Navigate **Billing → Billing runs →** open the **B** standard billing run (or **Preview** entry point per portal).
+2. Open **basic parameters / preview** view if separate from detail.
+3. Locate interim-related summary (parent invoice number, “from previous invoice”, or line-level hint per UI).
+
+**Expected test case results:** UI references **`I_std_B`** invoice number (or successor-context parent), **never** the **FOR_VOLUMES** invoice number from **A** after **A** is terminated (**K1**).
+
+**Actual result (if bug):** Preview or labels reference the old **volume-run** invoice on **terminated A** — fail.
+
+---
+
+### TC-FE-10 (Positive): Successor **product contract** POD row with empty deactivation — billing and contract screens load (**K2**)
+
+**Description:** Ensures **null deactivation** on contract-POD is visible and does not blank-error the contract or billing preview pages (regression for **K2**).
+
+**Preconditions:**
+1. **Contract B** from **TC-BE-13** with contract-POD **deactivation** left empty.
+
+**Test steps:**
+1. Open **Energy product contracts →** contract **B** **→ Points of delivery** (or equivalent).
+2. Confirm **Deactivation date** column is empty / “—” per UX.
+3. Open billing run preview linked to **B** (same run as **TC-FE-9**).
+
+**Expected test case results:** No unhandled error page; preview loads; dates display coherently.
+
+---
+
+### TC-FE-11 (Negative): Predecessor contract **terminated** — user cannot use it as primary context to justify interim parent on successor (**K1**)
+
+**Description:** Deep-link to **terminated** contract **A** invoice list must not show UI that implies it is still the **percent base** for **B**’s new interim (copy / banners).
+
+**Preconditions:**
+1. **TC-BE-13** data present; **A** is **TERMINATED**.
+
+**Test steps:**
+1. Open **contract A** (terminated) → **Invoices** tab.
+2. Open **contract B** → interim **INT1** detail (parent reference).
+
+**Expected test case results:** **INT1** on **B** does not display parent link to **A**’s FOR_VOLUMES invoice; **A**’s invoices are historical only.
+
+**Actual result (if bug):** Parent link crosses to **A**’s volume invoice — fail.
 
 ---
 

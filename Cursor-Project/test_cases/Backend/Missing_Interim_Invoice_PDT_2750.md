@@ -6,6 +6,27 @@
 
 **Scope:** Backend verification covers stored procedure **`billing_run.run_standard_billing_interim_data_preparation`**, persistence in **`billing_run.run_interim_data`** (`prev_invoice_id`, `is_valid_for_generation`), **`BillingRunStandardInvoiceGenerationProcessor.startInterimProcessing`**, **`BillingRunInterimProcessingService.process`** (including **`PERCENT_FROM_PREVIOUS_INVOICE_AMOUNT`** and **`interimCalculatedFromInvoiceId`**), **`BillingRunStartGenerationInvokeService.getValidInvoices`** (PDF generation eligibility vs REAL parent), and post-accounting **deduction** behaviour for standard billing. **Executable target environment:** Test (reproduce using Test APIs and DB read-only checks — **do not** rely on PROD identifiers).
 
+**Additional scope (Slack / dev thread with Keti — same ticket):** Re-signing a product contract, terminating the predecessor, then running **standard billing with interim** where IAP uses **`PERCENT_FROM_PREVIOUS_INVOICE_AMOUNT`**. Observed failure modes to regression-test: (1) **wrong parent invoice** — e.g. a **volume** (`FOR_VOLUMES` / volume-billing path) **REAL** invoice from the **terminated** predecessor is used as the percent base instead of the **latest REAL standard** invoice appropriate for the successor contract; (2) **contract / POD date window** — logic that joins the **current** contract’s contract-POD rows and checks whether the **invoice date** lies between **activation** and **deactivation** must treat **`deactivation_date = null`** as “active to infinity”; if null is mishandled, **previous-invoice** resolution or interim preparation behaves incorrectly (Dev investigation: billing run preview **STANDARD_BILLING** example id **16899**; product contracts **72882** / **72883** on Dev UI — use as **witness IDs only** in Dev; in Test, recreate the same chain via APIs without hardcoding those ids).
+
+---
+
+## Bug analysis summary (PDT-2750 — thread + code)
+
+| Source | Finding |
+|--------|---------|
+| **Repro (Nika)** | Sequence: volume invoice on **contract A** → **re-sign** (successor **contract B**) → **terminate A** → run **interim / percent-from-previous** step. **Wrong:** system uses the volume invoice tied to **terminated** A. **Workaround:** setting predecessor contract toward **ACTIVE_IN_TERM** (terms) made generation correct — points to **status / eligibility** filtering in parent-invoice selection or related joins. |
+| **Root cause hint (Keti)** | On the **latest** (successor) contract, a **contract-POD** row had **no deactivation date** (`null`). Code path compares **invoice date** to **[activation, deactivation]**; **null deactivation** must mean the POD is still active for date-range checks. Some queries elsewhere already use `coalesce` / `is null` patterns (example below); interim preparation SQL must be aligned. |
+| **Java (percent application)** | Once `run_interim_data.prev_invoice_id` is set, **`BillingRunInterimProcessingService`** copies it to **`interimCalculatedFromInvoiceId`** for **`PERCENT_FROM_PREVIOUS_INVOICE_AMOUNT`** (see excerpt under “Jira comments”). Wrong **`prev_invoice_id`** in DB procedure → wrong interim amounts. |
+| **Jira MCP** | Rovo search in this session did **not** return the Jira issue payload; treat ticket fields in Jira UI as authoritative for title/acceptance. |
+
+**Code reference (correct null `deactivation_date` handling elsewhere — contract POD vs consumption period):**
+
+```420:422:Cursor-Project/Phoenix/phoenix-core-lib/src/main/java/bg/energo/phoenix/repository/contract/product/ProductContractDetailsRepository.java
+                                                    and ((cp.activation_date <= pcc.period_to)
+                                                        and
+                                                         (cp.deactivation_date is null or cp.deactivation_date >= pcc.period_from))
+```
+
 ---
 
 ## Jira comments interpreted into checks
@@ -19,6 +40,8 @@ These assertions are **explicit acceptance checks** derived from Jira discussion
 | J3 | **REAL status matters for PDF / generation gate** | Any gate that blocks interim document generation when the parent invoice is **not** in the current run’s invoice batch MUST still allow generation **if** the parent invoice exists in the database with **`InvoiceStatus.REAL`** (see code path under **`BillingRunStartGenerationInvokeService.getValidInvoices`**). |
 | J4 | **Churn around month boundary** | When an **old** product contract’s POD is **deactivated** on **last days of month N** and a **new** product contract’s POD is **active from first day of month N+1**, a **March** standard billing run must still produce an **interim** row and invoice when interim IAP terms apply — **not** silently skip because POD moved between contracts. |
 | J5 | **Audit vs facts** | Backend logs / billing error publications MUST NOT claim success paths that contradict absence of an interim invoice row or **`InvoiceType.INTERIM_AND_ADVANCE_PAYMENT`** invoice for the run (misleading audit called out in ticket). |
+| **K1** | **Terminated predecessor + volume invoice** | After **terminate** on contract **A**, interim **`prev_invoice_id`** for successor **B** MUST **not** resolve to the **REAL** invoice that was produced **only** by a **FOR_VOLUMES** billing run on **terminated A** when the intended base is the **latest REAL standard (non-volume-run) invoice** for **B** (volume path is still typically **`InvoiceType.STANDARD`** in Phoenix — distinguish runs by **billing run application model**, not invoice type enum alone). |
+| **K2** | **Open-ended contract-POD on successor** | For contract **B**, contract-POD with **`deactivationDate` = null** and **`activationDate` ≤ invoice date** MUST still allow the invoice / interim logic to treat the POD as active through the billing **invoice date** (no false exclusion of rows). |
 
 **Evidence (code — read-only):** Interim processing sets parent reference from preparation data for PERCENT path:
 
@@ -295,8 +318,71 @@ Shared chain for **Test** environment. Replace `{…}` placeholders with values 
 
 ---
 
+### TC-BE-13 (Positive): Re-sign → terminate predecessor — interim percent parent is REAL standard from successor context, not FOR_VOLUMES invoice on terminated contract (**K1**)
+
+**Description:** End-to-end regression for the **Slack repro**: a **FOR_VOLUMES** billing run on **contract A** produces a **REAL** **`InvoiceType.STANDARD`** invoice **`I_volRun_A`** (still “standard” type in DB — identify it by **billing run** having **`FOR_VOLUMES`** in **`applicationModelType`** / equivalent persisted flags per **`billing.billing_run`**); user **re-signs** to **contract B** and **terminates A**; a later **standard** billing run for **B** (with **INTERIM_AND_ADVANCE_PAYMENT** and **`PERCENT_FROM_PREVIOUS_INVOICE_AMOUNT`**) must pick the correct **previous REAL** invoice for the **standard** path on **B**, **never** **`I_volRun_A`** from **terminated A** as the percent base.
+
+**Preconditions:**
+1. Create **customer**, **POD**, **product** with both **standard** (`WITH_ELECTRICITY_INVOICE` or product-default standard path) and **volume** application model capability as required by Swagger (separate billing runs if the product cannot combine both in one run).
+2. Create **product contract A** via `POST /product-contract` — link customer, POD, product; **status** SIGNED / ACTIVE per Swagger; note **`contractAId`**.
+3. Create and execute a **volume** billing run via billing-run create + workflow (`POST` per Swagger, **`applicationModelType`** includes **`FOR_VOLUMES`**) so **`I_volRun_A`** exists with **`status` = REAL**, **`type` = STANDARD**, **`product_contract_id` = contractAId**; record **`billingRunVolumeId`**.
+4. Perform **re-sign** / successor contract creation per product-contract versioning or **create product contract B** linked as successor (same customer, same POD, sequential terms per business rules) — note **`contractBId`**. Create and execute a **non-FOR_VOLUMES** standard billing run for **B** only so **`I_std_B`** exists (**REAL**, **STANDARD**, on **B**), dated appropriately as the “latest standard” parent candidate.
+5. **Terminate contract A** via the documented contract-termination endpoint (pass **termination** / **execution date** per Swagger) so **A** is **TERMINATED** and is not the active commercial contract for the POD.
+6. Configure **IAP** on the product for **B** with **`PERCENT_FROM_PREVIOUS_INVOICE_AMOUNT`** and a known positive percent.
+7. Ensure **contract B** contract-POD row has **`activationDate`** set so the POD is active for the target billing **invoice date**, and **`deactivationDate` = null** (explicitly clear if the API sends null — **K2**).
+
+**Test steps:**
+1. Create **standard** billing run for **contract B** period covering the scenario via `POST` billing-run API (include **`INTERIM_AND_ADVANCE_PAYMENT`** in **`applicationModelType`** per Swagger; **do not** set **`FOR_VOLUMES`** on this run).
+2. Execute **main** then **interim** preparation (`run_standard_billing_main_data_preparation`, **`run_standard_billing_interim_data_preparation`**).
+3. Query **`billing_run.run_interim_data`** for the run id — read **`prev_invoice_id`**.
+4. Confirm **`I_volRun_A`** is the invoice produced by **`billingRunVolumeId`** (use portal billing-run invoice list or read-only SQL on **`billing`** / **`invoice`** join tables per your environment schema). Assert **`prev_invoice_id`** is **not** **`I_volRun_A.id`** and that the chosen parent is not sourced from **`billingRunVolumeId`** on **terminated `contractAId`**.
+
+**Expected test case results:** **`prev_invoice_id`** = **`I_std_B.id`** (or another eligible **REAL STANDARD** invoice from **B**’s standard runs per J1/J2), **≠ `I_volRun_A.id`** (**K1**). Interim line amounts match percent of that parent.
+
+**Actual result (if bug):** **`prev_invoice_id` = `I_volRun_A.id`** — fail.
+
+---
+
+### TC-BE-14 (Positive): Successor contract-POD with **null** `deactivationDate` — invoice date within [activation, ∞) satisfies interim / preparation (**K2**)
+
+**Description:** Validates **Keti’s** DB finding: when **`deactivation_date`** is **null** on the **successor** contract’s contract-POD, date-window logic must still treat the POD as covering dates **≥ activation_date** through the billing invoice date so interim preparation does not mis-resolve **`prev_invoice_id`** or mark rows invalid without cause.
+
+**Preconditions:**
+1. Create **contract B** with one contract-POD via product-contract + contract-POD APIs: set **`activationDate`** ≤ billing period end; set **`deactivationDate`** to **null** (omit or explicit null per Swagger).
+2. Ensure **REAL STANDARD** invoice history on **B** exists as required for **`PERCENT_FROM_PREVIOUS_INVOICE_AMOUNT`** (same as TC-BE-13 steps 4–6 simplified).
+3. Energy data / scales for **B** for the billing period (per product).
+
+**Test steps:**
+1. Run **standard** billing with interim for **B** for a period where **invoice date** ≥ contract-POD **`activationDate`**.
+2. Read **`run_interim_data`** — **`is_valid_for_generation`**, **`prev_invoice_id`**, **`error_message`** (if any).
+3. Optionally compare with a control run where the same POD has a **far-future** `deactivationDate` instead of null — behaviour should be equivalent for date containment.
+
+**Expected test case results:** **`is_valid_for_generation` = true** when IAP data is complete; **`prev_invoice_id`** populated per J1/J2; **no** SQL-null date comparison failure in logs; interim invoice created when model includes interim.
+
+**Actual result (if bug):** **`is_valid_for_generation` = false** or wrong parent **only** when `deactivationDate` is null — fail (**K2**).
+
+---
+
+### TC-BE-15 (Negative): **`prev_invoice_id`** must never reference **`I_volRun_A`** after **A** is terminated (**K1**)
+
+**Description:** Dedicated assertion-only negative on the same dataset as **TC-BE-13** — documents the **forbidden** parent for automation.
+
+**Preconditions:**
+1. Complete **TC-BE-13** preconditions 1–7 and capture **`I_volRun_A.id`**, **`I_std_B.id`**, **`contractAId`**, **`contractBId`**.
+
+**Test steps:**
+1. After interim preparation for the **B** standard run, read **`prev_invoice_id`** from **`billing_run.run_interim_data`**.
+2. Assert **`prev_invoice_id` ≠ `I_volRun_A.id`**.
+3. Assert invoice for **`prev_invoice_id`** has **`product_contract_id` = `contractBId`** (same-contract parent on **B**) **or** satisfies documented **J2** fallback (still **≠** **`I_volRun_A`**).
+
+**Expected test case results:** All assertions pass.
+
+**Actual result (if bug):** Equality to **`I_volRun_A.id`** — fail.
+
+---
+
 ## References
 
-- **Jira:** [PDT-2750](https://oppa-support.atlassian.net/browse/PDT-2750) — Missing interim invoice (PROD repro references UIC **202629378**, run **BILLING202603200011**).
+- **Jira:** [PDT-2750](https://oppa-support.atlassian.net/browse/PDT-2750) — Missing interim invoice (PROD repro references UIC **202629378**, run **BILLING202603200011**); **Slack/Dev thread** — product contracts **72882** / **72883**, billing run preview **STANDARD_BILLING** id **16899** (Dev host **10.236.20.11** — witness only).
 - **Confluence (cross_dependency hint):** “Interim advance payment process change” — fetch via MCP when validating business wording against implementation.
 - **Code:** `BillingRunStandardPreparationService`, `BillingRunStandardInvoiceGenerationProcessor`, `BillingRunInterimProcessingService`, `BillingRunStartGenerationInvokeService`, `BillingRunInterimData`, `InvoiceRepository`.

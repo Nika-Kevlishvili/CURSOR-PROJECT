@@ -1,6 +1,6 @@
 ---
 name: report-generator
-model: fast
+model: default
 description: Saves markdown under Cursor-Project/reports/ per reports/README.md only when the user/parent invokes **`/report`**, **`/feedback`**, an explicit save request, or **Rule 37 (HandsOff)** — not after routine tasks or Rule 32 alone.
 ---
 
