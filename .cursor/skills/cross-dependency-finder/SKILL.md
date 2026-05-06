@@ -83,6 +83,5 @@ The final output MUST include a **Confidence Score** (0–100%). Format: `**Conf
 ## Command reference
 
 - **Saved pattern (stable):** `Cursor-Project/docs/CROSS_DEPENDENCY_WORK_PATTERN.md`
-- `.cursor/commands/cross-dependency-finder.md`
 - Subagent: `.cursor/agents/cross-dependency-finder.md`
 - Design: `Cursor-Project/docs/CROSS_DEPENDENCY_FINDER_AGENT.md`

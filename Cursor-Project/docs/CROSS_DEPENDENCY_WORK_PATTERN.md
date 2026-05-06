@@ -45,7 +45,7 @@ Save optionally to **`Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope_slug>.
 |------|------|
 | Skill | `.cursor/skills/cross-dependency-finder/SKILL.md` |
 | Subagent | `.cursor/agents/cross-dependency-finder.md` |
-| Command | `.cursor/commands/cross-dependency-finder.md` |
+| Slash command | Removed — route via **`cross-dependency-finder`** subagent / skill |
 | Design | `Cursor-Project/docs/CROSS_DEPENDENCY_FINDER_AGENT.md` |
 | Timing note (optional) | `Cursor-Project/docs/CROSS_DEPENDENCY_TIMING_ITERATIONS.md` |
 | **This pattern** | `Cursor-Project/docs/CROSS_DEPENDENCY_WORK_PATTERN.md` |

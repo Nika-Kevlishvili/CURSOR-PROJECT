@@ -17,7 +17,7 @@ You run **PostgreSQL** queries for the Phoenix project via MCP. Use the environm
    - Test → PostgreSQLTest
    - PreProd → PostgreSQLPreProd
    - Prod → PostgreSQLProd (read-only user)
-3. **Connect first**: use the matching MCP `mcp_PostgreSQL{Env}_connect_db(...)` with credentials from **.cursor/rules/integrations/database_workflow.mdc**. Do not paste passwords in your response.
+3. **Connect first**: use the matching MCP `mcp_PostgreSQL{Env}_connect_db(...)` with arguments from that MCP tool’s schema / server config — **not** from pasted rule text. Do not paste passwords in your response.
 4. Then run queries with `mcp_PostgreSQL{Env}_query(sql="...")` or `mcp_PostgreSQL{Env}_execute(...)` as needed.
 
 ## Query patterns (Rule DB.2)
@@ -30,7 +30,7 @@ You run **PostgreSQL** queries for the Phoenix project via MCP. Use the environm
 ## Security (Rule DB.5)
 
 - Never commit or log database credentials or passwords.
-- Credentials live only in MCP config / rules; reference the rule file when instructing connection.
+- Credentials live only in Cursor MCP server configuration; use the MCP tool schema when connecting.
 
 ## Confidence Score (Rule CONF.1) [MANDATORY]
 

@@ -31,18 +31,9 @@ Specialized subagent for reading and analyzing production database data. Provide
 ## Workflow
 
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
-2. **Connect to Production Database** - Use PostgreSQLProd MCP with readonly_user credentials
-   - Host: 10.236.20.78
-   - Port: 5000
-   - User: readonly_user
-   - Password: U$CM)*qr&Zb4JfU@
-   - Database: phoenix
+2. **Connect** — PostgreSQLProd MCP: call **`mcp_PostgreSQLProd_connect_db`** with parameters required by that MCP tool’s schema (see MCP descriptors). READ-ONLY / **readonly_user** policy per server config. Never paste credentials in output.
 3. **Parse Entity** - Extract entity ID and type from query (liability, receivable, payment, deposit, invoice, contract, etc.)
-4. **Query Data** - Query all related data:
-   - Use universal `analyze_entity(entity_type, entity_id)` method
-   - Query relationships: foreign keys, reverse relationships, dependencies
-   - Query offsetting tables: `customer_liabilitie_paid_by_*`, `customer_payment_*`, etc.
-   - Query ANY table: Use `query_table(table_name, schema, filters)` for generic queries
+4. **Query Data** — Run SELECTs via MCP `query`; traverse relationships, offset tables (`customer_liabilitie_paid_by_*`, `customer_payment_*`, etc.) manually. No Python `analyze_entity` / `query_table` helpers in this workspace.
 5. **Analyze** - Build chronological sequence and analyze relationships for ANY entity type
 6. **Explain** - Generate step-by-step explanation of creation and modification process
 7. **Report** - Format analysis in chat; save a file only if the user asks (Rule 0.6)

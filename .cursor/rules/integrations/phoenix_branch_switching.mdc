@@ -1,6 +1,6 @@
 ---
 description: "Phoenix branch switching (Rule PHOENIX-SWITCH.0): before any environment-sensitive code reading (Phoenix Q&A, bug validation, cross-dependency analysis, test case generation, HandsOff), Cursor agents MUST resolve the environment for the task and align every Cursor-Project/Phoenix/* repo to the matching origin/<branch> via .cursor/commands/switch-phoenix-branches.ps1, fetching the latest tip and discarding local Phoenix edits. Phoenix files themselves remain READ-ONLY (Rule 0.8 Tier A)."
-alwaysApply: true
+alwaysApply: false
 globs:
   - "Cursor-Project/Phoenix/**"
   - ".cursor/agents/phoenix-qa.md"
@@ -8,9 +8,6 @@ globs:
   - ".cursor/agents/cross-dependency-finder.md"
   - ".cursor/agents/test-case-generator.md"
   - ".cursor/agents/hands-off.md"
-  - ".cursor/commands/phoenix.md"
-  - ".cursor/commands/bug-validate.md"
-  - ".cursor/commands/test-case-generate.md"
   - ".cursor/commands/hands-off.md"
   - ".cursor/commands/switch-phoenix-branches.md"
   - ".cursor/commands/switch-phoenix-branches.ps1"
@@ -81,22 +78,22 @@ on the user's behalf — the prompt to confirm and the user's reply are mandator
 
 Run the alignment script **before** reading Phoenix code in any of these cases.
 
-1. **Phoenix Q&A (`/phoenix`, PhoenixExpert role).**
+1. **Phoenix Q&A (PhoenixExpert role, e.g. `phoenix-qa` agent).**
    The user’s question targets an environment, e.g. "in test", "on prod", "what does dev2
    return", "current behavior in preprod", "experiments branch", or any environment-bound
    reference.
-2. **Bug validation (Rule 32, `/bug-validate`, BugFinderAgent).**
+2. **Bug validation (Rule 32, `bug-validator` / BugFinderAgent).**
    Pick the environment from the bug ticket (Environment field, ticket text, attached logs,
    reproduction steps, screenshots showing URL hostnames). If the ticket genuinely has no
    environment signal, ask the user (Rule CONF.0). Do not silently default.
-3. **Cross-dependency analysis (Rule 35 / 35a, `/cross-dependency-finder`).**
+3. **Cross-dependency analysis (Rule 35 / 35a, `cross-dependency-finder`).**
    Pick the same environment as the parent task (bug or test-case scope). The cross-dependency
    step itself remains Jira + codebase + shallow Confluence; aligning the working copy to the
    environment is just so codebase reads reflect that environment.
-4. **Test case generation (Rule 35, `/test-case-generate`).**
+4. **Test case generation (Rule 35, `test-case-generator` workflow after cross-dep).**
    Reuse the environment used by cross-dependency-finder; if the parent did not pass an
    environment, ask the user.
-5. **HandsOff flow (Rule 37, `/hands-off`).**
+5. **HandsOff flow (Rule 37, `/HandsOff` / `!HandsOff` + `.cursor/commands/hands-off.md`).**
    As part of step (1) "Get Jira ticket", resolve the environment and align Phoenix repos
    before steps (2)–(5).
 
@@ -105,8 +102,7 @@ For pure documentation answers that do not depend on environment-specific Phoeni
 
 ### 2a. EnvironmentResolverAgent (recommended resolver)
 
-For environment resolution, agents SHOULD route to `environment-resolver` (or
-`/environment-resolve`) before alignment. Resolution priority:
+For environment resolution, agents SHOULD route to **`environment-resolver`** before alignment. Resolution priority:
 
 1. Explicit user environment in current chat.
 2. Jira ticket environment evidence (field/text/attachments).
@@ -268,7 +264,7 @@ environment-sensitive task, even though they were not part of the original list:
   environment's Phoenix endpoints, align first.
 - **`test-runner`** — when running Phoenix unit/integration tests for a specific environment,
   align first.
-- **`consult.md`** / `phoenix-bug-validation` skill — when the consultation answer depends on
+- **PhoenixExpert consultation** (`phoenix-agent-workflow` skill) / `phoenix-bug-validation` skill — when the consultation answer depends on
   current Phoenix code in a specific environment, align first.
 
 `production-data-reader` and `database-query` agents read the database (not the Phoenix tree),

@@ -5,7 +5,7 @@ description: Validates bug reports using Rule 32 workflow: Confluence first, the
 
 # Phoenix Bug Validation
 
-Ensures bug validation follows **Rule 32** in `.cursor/rules/workflows/workflow_rules.mdc`: Confluence → codebase → analysis → **full reply in chat**. **READ-ONLY** — no code changes during validation. Persisted `BugValidation_*.md` only if the user runs **`/report`** or explicitly asks to save.
+Ensures **Rule 32** bug validation (mandated by `.cursor/rules/workflows/workflow_rules.mdc`; **this SKILL is the canonical procedure**): Confluence → codebase → analysis → **full reply in chat**. **READ-ONLY** — no code changes during validation. Persisted `BugValidation_*.md` only if the user runs **`/report`** or explicitly asks to save.
 
 ## When to Apply
 
@@ -97,10 +97,10 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
     - `test_cases/Frontend/<Topic_name>.md`
   - generated Playwright spec reference,
   - Playwright validator result,
-  - Playwright run result from `/energo-ts-run`.
+  - Playwright run result from **`energo-ts-run`** (subagent / EnergoTS `npx playwright test`).
 - If any evidence item is missing, trigger auto-recovery and retries; if still unresolved after max retries, return `PROCESS BLOCKED` with `Missing pipeline evidence`.
-- Do not issue `VALID`, `NEEDS CLARIFICATION`, `NEEDS APPROVAL`, or `NOT VALID` without `/energo-ts-run` execution evidence.
-- Do not label a bug "not reproducible" when `/energo-ts-run` was not executed.
+- Do not issue `VALID`, `NEEDS CLARIFICATION`, `NEEDS APPROVAL`, or `NOT VALID` without **`energo-ts-run`** execution evidence.
+- Do not label a bug "not reproducible" when **`energo-ts-run`** was not executed.
 - Auto-recovery is mandatory when a step fails:
   - capture failure reason,
   - apply targeted fix,
@@ -165,7 +165,6 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
 
 The final output MUST include a **Confidence Score** (0–100%). Format: `**Confidence: XX%** Reason: <explanation>`. Scoring: 90–100% = Confluence exact match + code confirms; 70–89% = contextual match or partial code evidence; 50–69% = significant evidence gaps; <50% = validation incomplete, flag prominently. Be honest — do not inflate.
 
-## Command reference
+## Routing reference
 
-- `.cursor/commands/bug-validate.md`
-- `.cursor/agents/bug-validator.md`
+- **Subagent (canonical procedure):** `.cursor/agents/bug-validator.md` — invoke **`bug-validator`** / BugFinderAgent workflow when the user asks for bug validation (Rule 32).

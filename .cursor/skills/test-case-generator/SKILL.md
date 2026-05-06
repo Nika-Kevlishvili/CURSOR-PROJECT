@@ -18,6 +18,7 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 
 **Do not skip:** When the user requests test case creation, run **cross-dependency-finder** first, then **test-case-generator** with the finder's output.
 
+0. **Step 0 – Environment (Rule PHOENIX-SWITCH.0):** Before any Phoenix code read for this workflow, resolve target env via **`environment-resolver`** (`dev` … `experiments`). Align every `Cursor-Project/Phoenix/*` repo using `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` (`-ConfirmProd` for `prod` only after explicit user acknowledgement). Pass resolved env + alignment exit code to cross-dependency-finder / generator prompts so subagents reuse alignment when the parent already ran the script (Rule PHOENIX-SWITCH.0 §7a). Details: `.cursor/rules/integrations/phoenix_branch_switching.mdc`.
 1. **Step 1 – Cross-dependency-finder:** Same scope (bug/task/feature). Finder MUST follow Rule 35a when user gives Jira/bug/task: **Jira MCP + codebase + shallow Confluence** — **no** local merge/git. **Pattern:** `Cursor-Project/docs/CROSS_DEPENDENCY_WORK_PATTERN.md`. Finder may consult PhoenixExpert. Obtain structured output (including what_could_break and technical_details).
 2. **Step 2 – Test-case-generator:** Call with `context['cross_dependency_data'] = <finder output>` (includes technical_details from merges when applicable), plus Confluence data and codebase_findings.
 
@@ -139,9 +140,8 @@ Regression/impact cases (from what_could_break) go in whichever file (Backend or
 
 The final output MUST include a **Confidence Score** (0–100%). Format: `**Confidence: XX%** Reason: <explanation>`. Scoring: 90–100% = verified data + clear requirements; 70–89% = reasonable inference with assumptions (list them); 50–69% = significant info gaps; <50% = best-effort draft, flag prominently. When multiple test cases have varying confidence, include per-item scores alongside the overall score. Be honest — do not inflate.
 
-## Command and references
+## References
 
-- Command: `.cursor/commands/test-case-generate.md`
 - Subagent: `.cursor/agents/test-case-generator.md`
 - Hierarchy format: `Cursor-Project/docs/TEST_CASES_HIERARCHY_FORMAT.md`
 - Agent doc: `Cursor-Project/docs/TEST_CASE_GENERATOR_AGENT.md`

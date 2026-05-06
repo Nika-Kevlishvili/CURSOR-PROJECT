@@ -1,5 +1,13 @@
 ---
-alwaysApply: true
+description: "Mandatory two-folder test_cases layout (Backend/Frontend), TC numbering, README updates. Loads when editing test cases or running test-case / HandsOff workflows."
+alwaysApply: false
+globs:
+  - "Cursor-Project/test_cases/**"
+  - "Cursor-Project/generated_test_cases/**"
+  - ".cursor/commands/hands-off.md"
+  - ".cursor/agents/test-case-generator.md"
+  - ".cursor/agents/hands-off.md"
+  - ".cursor/skills/test-case-generator/**"
 ---
 
 # TEST CASES FOLDER STRUCTURE [MANDATORY]

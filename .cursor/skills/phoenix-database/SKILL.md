@@ -5,7 +5,7 @@ description: Runs PostgreSQL queries via MCP using the correct environment (Dev,
 
 # Phoenix Database Queries
 
-Ensures database access uses the right PostgreSQL MCP server, connect-before-query workflow, and standard patterns. Credentials and full connection details are in `.cursor/rules/integrations/database_workflow.mdc`; never embed or log passwords.
+Ensures database access uses the right PostgreSQL MCP server, connect-before-query workflow, and standard patterns. **Connection parameters** come from the MCP tool descriptor / Cursor MCP server config — not from workspace rules text; never embed or log passwords.
 
 ## When to Apply
 
@@ -27,7 +27,7 @@ Use the **exact** environment the user asks for. Do not switch.
 
 ## Workflow
 
-1. **Connect first** with the chosen MCP: `mcp_PostgreSQL{Env}_connect_db(...)` using credentials from `database_workflow.mdc`.
+1. **Connect first** with the chosen MCP: `mcp_PostgreSQL{Env}_connect_db(...)` using arguments required by that MCP tool’s schema (see MCP descriptors under `mcps/user-PostgreSQL*/`).
 2. **Then run queries:** `mcp_PostgreSQL{Env}_query(sql="SELECT ...")` or `mcp_PostgreSQL{Env}_execute(...)` for writes if allowed.
 3. Reconnect if the session drops.
 
@@ -40,8 +40,8 @@ Use the **exact** environment the user asks for. Do not switch.
 ## Security (Rule DB.5)
 
 - Never commit or log database credentials or passwords.
-- Credentials live in MCP config / rules only; reference the rule file when connecting.
+- Credentials live in **Cursor MCP server configuration** only.
 
 ## Rules Source
 
-Full connection details, credentials, and SQL patterns: `.cursor/rules/integrations/database_workflow.mdc`. Rule 33: Test environment queries use PostgreSQLTest MCP.
+Environment mapping, connect-first workflow, and SQL templates: `.cursor/rules/integrations/database_workflow.mdc`. Rule 33: Test environment queries use PostgreSQLTest MCP.

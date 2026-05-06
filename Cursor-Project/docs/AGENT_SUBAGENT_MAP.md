@@ -10,7 +10,7 @@ Use this file as the **single map** from “agent role” to **where it lives to
 | Subagent file | Role (concept) | Primary trigger |
 |---------------|----------------|-----------------|
 | **phoenix-qa.md** | Phoenix Q&A (PhoenixExpert) | `/phoenix`, Phoenix questions (Rule 0.2) |
-| **bug-validator.md** | Bug validation | `/bug-validate`, Rule 32 |
+| **bug-validator.md** | Bug validation | Rule 32; invoke **`bug-validator`** subagent |
 | **test-runner.md** | Test execution | Test-related runs; consult PhoenixExpert |
 | **report-generator.md** | Rule 0.6 reports | After tasks; `/report` |
 | **database-query.md** | PostgreSQL (Dev/Test/Prod) | DB questions; `database_workflow.mdc` |
@@ -19,7 +19,7 @@ Use this file as the **single map** from “agent role” to **where it lives to
 | **shell.md** | CLI / terminal delegation | Parent Task `shell`; hooks; optional `git_sync` for multi-repo |
 | **environment-access.md** | Dev / Dev2 access | Rule 10; browser/MCP |
 | **postman-collection.md** | Postman collections | Postman generation flows |
-| **test-case-generator.md** | Test cases (Rule 35) | `/test-case-generate`; after cross-dependency-finder |
+| **test-case-generator.md** | Test cases (Rule 35) | After **`cross-dependency-finder`**; see **`test-case-generator`** skill |
 | **cross-dependency-finder.md** | Cross-dependencies (35, 35a) | Before test cases; Jira + code + shallow Confluence; **no** local merge/git; **`docs/CROSS_DEPENDENCY_WORK_PATTERN.md`** |
 | **energo-ts-test.md** | Playwright test authoring | Rule 0.8.1; `EnergoTS/tests/` only |
 | **energo-ts-run.md** | Playwright test run | Rule 36; `cursor` branch only |

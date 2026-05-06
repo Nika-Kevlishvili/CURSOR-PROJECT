@@ -10,7 +10,7 @@ There are **three** distinct Slack delivery paths. **Do not merge or confuse the
 
 ## Rules
 
-- **Path 1** is unchanged by Playwright / HandsOff work — do not replace it with the Playwright template. **Do not modify** `.cursor/agents/bug-validator.md`, `.cursor/commands/bug-validate.md`, Rule 32 delivery, or bug-validation skill Slack behavior when documenting or implementing paths 2–3.
+- **Path 1** is unchanged by Playwright / HandsOff work — do not replace it with the Playwright template. **Do not modify** `.cursor/agents/bug-validator.md`, Rule 32 delivery, or bug-validation skill Slack behavior when documenting or implementing paths 2–3.
 - **Paths 2 and 3** use **short Slack text (three blocks)** + **upload the smart `.md` and the machine `playwright-report-detailed.md`** (when generated) + on-disk reports (see table). Same dual recipients as HandsOff Step 7 when Jira Tester is set.
 - **Path 3** does not run the full HandsOff pipeline (no cross-deps / test-case generation unless the user asks separately).
 

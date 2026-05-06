@@ -161,7 +161,7 @@ Generation-time requirement (NOT post-fix): author preconditions correctly from 
 7. **Granularity:** Where test cases enumerate separate creation steps, prefer **one `test.step('Precondition: …')` per major entity or use small helpers per entity** (like `tests/cursor/PHN-2214-*.spec.ts` composing `sharedSetup`) instead of a single opaque mega-step hiding the chain.
 8. **Self-check before return:** Confirm entity order ≠ invented; confirm **Reference spec(s)** line is in the summary (step 0.6).
 
-Reference: `.cursor/commands/energo-ts-test.md` (HandsOff bridge section); `.cursor/commands/hands-off.md` Step 4; `precondition-data-creation.instructions.md`.
+Reference: `.cursor/commands/hands-off.md` Step 4 (HandsOff bridge); `precondition-data-creation.instructions.md`.
 
 ## EnergoTS Test Framework
 

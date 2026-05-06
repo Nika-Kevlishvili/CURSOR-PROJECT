@@ -1,114 +1,57 @@
 ---
 name: phoenix-commands
-description: Maps user intent to Cursor commands and workflows (Phoenix query, consult, report, feedback, bug-validate, jira-bug, cross-dependency-finder, test-case-generate, energo-ts-run, hands-off command). Use when the user asks how to run a workflow or which command to use. For HandsOff: there is no separate hands-off skill—use slash command **hands-off** or triggers **/HandsOff** / **!HandsOff** per Rule 37 and `.cursor/commands/hands-off.md`.
+description: Maps user intent to **agents**, **skills**, and remaining **operational** command docs under `.cursor/commands/` (HandsOff checklist, branch switch, Swagger refresh, git/sync helpers). Duplicative slash-command markdown files were removed — route workflows via Task/subagents or natural language.
 ---
 
-# Phoenix Commands and Workflows
+# Phoenix routing (agents / skills / operational commands)
 
-Helps choose the right command or workflow for Phoenix-related tasks. Commands live in `.cursor/commands/`; rules in `.cursor/rules/`.
+Use this skill when the user asks **which workflow or agent** applies.
+
+**Canonical behavior:** procedural detail lives in **`.cursor/agents/*.md`** and **`.cursor/skills/*/SKILL.md`**.
+
+**Remaining `.cursor/commands/*.md`:** operational procedures only — notably **`hands-off.md`** (Rule 37 checklist), **`switch-phoenix-branches.md`** (+ `.ps1`), **`update-swagger-specs.md`**, **`send-playwright-results-slack.md`**, and git/sync helpers (`sync-*`, `pull-energots`, `push-energots`, `update-*`).
+
+Rules load first (**Rule 0.0**) from **`.cursor/rules/`**.
 
 ## When to Apply
 
-- User asks how to ask Phoenix a question, consult, generate a report, or validate a bug.
-- User mentions a command by name (phoenix, consult, report, feedback, bug-validate).
-- Need to align a request with the correct workflow.
+- User asks how to run Phoenix Q&A, bug validation, test cases, HandsOff, reports, or EnergoTS tests.
+- User mentions an agent name or workflow keyword (`bug-validator`, `cross-dependency-finder`, HandsOff, etc.).
+- Need to align intent with the correct **Task/subagent** or skill.
 
-## Command → Workflow
+## Intent → canonical agent / skill
 
-| User intent | Command / workflow | Rule / reference |
-|-------------|--------------------|-------------------|
-| Phoenix question (how/what/why, endpoints, logic) | **Phoenix** command → Route to PhoenixExpert (Rule 0.2) | phoenix.md |
-| Before doing a task (validation, approval) | **Consult** → PhoenixExpert consultation (Rule 8) | consult.md |
-| User wants a saved report / export | **Report** → Optional markdown under **Chat reports** + `YYYY/<english-month>/<DD>/` (Rule 0.6; **`reports/README.md`**) | report.md |
-| User wants to save session feedback (sentiment + summary) | **Feedback** → Markdown under **Feedback** + `YYYY/<english-month>/<DD>/` as `Feedback_{Slug}_{HHMM}.md` (Rule 0.6; **`reports/README.md`**) | feedback.md |
-| Validate a bug report | **Bug-validate** → BugFinderAgent (Rule 32) | bug-validate.md |
-| Create/rewrite Jira bug (Experiments board only) | **Jira-bug** → jira-bug-template (Rule JIRA.0; NOT Phoenix delivery) | jira-bug.md |
-| Production data analysis (liability offsets, receivable history) | **Production-data-reader** → ProductionDataReaderAgent (Rule PDR.0) | production-data-reader.md, production_data_reader.mdc |
-| Find cross-dependencies (what could break) | **Cross-dependency-finder** → CrossDependencyFinderAgent (Rule 35) | cross-dependency-finder.md |
-| Generate test cases from bug/task | **Test-case-generate** → cross-dependency-finder FIRST, then TestCaseGeneratorAgent (Rule 35) | test-case-generate.md |
-| Run Playwright test(s) from EnergoTS/GitHub (by prompt) | **Energo-ts-run** → Resolve test from prompt → run `npx playwright test` from local EnergoTS | energo-ts-run.md |
-| Full HandsOff flow (Jira ticket → cross-deps → test cases → Playwright → run → report + Slack) | **Hands-off** → hands-off.md; route to hands-off orchestrator | hands-off.md |
+| User intent | Route to |
+|-------------|-----------|
+| Phoenix question (endpoints, logic, docs) | `.cursor/agents/phoenix-qa.md` — PhoenixExpert (**Rule 0.2**) |
+| Consult before a Phoenix-related task | **Rule 8** + `.cursor/skills/phoenix-agent-workflow/SKILL.md`; PhoenixExpert patterns like **`phoenix-qa`** |
+| Saved Chat report | `.cursor/skills/phoenix-reporting/SKILL.md`, `.cursor/agents/report-generator.md` — user **`/report`** or explicit save (**Rule 0.6**) |
+| Session feedback file | **`phoenix-reporting`** skill — **Feedback saves**; **`report-generator`** |
+| Bug validation | `.cursor/agents/bug-validator.md`, **`phoenix-bug-validation`** skill (**Rule 32**) |
+| Jira bug text (Experiments only) | **`jira-bug`** subagent, **`jira-bug-template`** skill (**Rule JIRA.0**) |
+| Production DB read-only analysis | **`production-data-reader`** agent + skill (**Rule PDR.0**) |
+| Resolve environment for Phoenix workflows | **`environment-resolver`** subagent — `.cursor/agents/environment-resolver.md` |
+| Cross-dependencies / impact | **`cross-dependency-finder`** subagent + skill (**Rules 35, 35a**) |
+| Test cases (.md, Backend + Frontend) | **`cross-dependency-finder`** then **`test-case-generator`** — `.cursor/skills/test-case-generator/SKILL.md` |
+| Run EnergoTS Playwright | **`energo-ts-run`** — `.cursor/agents/energo-ts-run.md`, skill (**Rules 36, ENERGOTS.0**) |
+| Author EnergoTS `.spec.ts` | **`energo-ts-test`** — `.cursor/agents/energo-ts-test.md` (**Rule 0.8.1**, Swagger **Rule 41**) |
+| Full HandsOff pipeline | **`.cursor/commands/hands-off.md`** + **`.cursor/agents/hands-off.md`**; triggers **`/HandsOff`** / **`!HandsOff`** + Jira (**Rule 37**) |
 
-## Phoenix (phoenix.md)
+## Section notes
 
-- **When:** Any Phoenix-related question.
-- **Flow:** Confluence (MCP, fresh) → Codebase → PhoenixExpert answer (Rule 0.3: no Python IntegrationService).
-- **Output:** Start with "**Expert:** PhoenixExpert", end with "Agents involved: PhoenixExpert". Save report files only for **HandsOff (Rule 37)** or if the user runs **`/report`**, **`/feedback`**, or explicitly requests a file (Rule 0.6).
+### Phoenix Q&A
 
-## Consult (consult.md)
+Confluence (MCP, fresh) → codebase → answer as PhoenixExpert. Optional disk reports only per **Rule 0.6** / **`report-generator`**.
 
-- **When:** Before any task that affects Phoenix (tests, Postman, env access, etc.).
-- **Flow:** Describe task → PhoenixExpert review → Approval required (in chat; Rule 0.3).
-- **Output:** "Agents involved: PhoenixExpert, [others]". Consultation is binding (Rule 27).
+### Bug validation
 
-## Report (report.md)
+Rule **32**: **`bug-validator`** subagent; chat + Slack **`bug-validation`**; no disk unless **`/report`** or explicit save.
 
-- **When:** User requests a report, runs `/report`, or a workflow explicitly requires a file (Rule 0.6).
-- **Flow:** Write markdown under **Chat reports** with `YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`** (no Python ReportingService).
-- **Location:** See **`Cursor-Project/reports/README.md`** (Chat / HandsOff / Feedback areas).
+### HandsOff
 
-## Feedback (feedback.md)
-
-- **When:** User runs **`/feedback`** or explicitly asks to save feedback to disk (Rule 0.6).
-- **Flow:** **`AskQuestion`** (liked / disliked only) — **question + option labels same language** as chat (see **`feedback.md`**) → optional detail from UI/chat → chat context (prompt → answer) → summary + confidence → **`Feedback_{Slug}_{HHMM}.md`** under **Feedback** (`YYYY/<english-month>/<DD>/`). Saved file in **English** (Rule 0.7). Details: **`feedback.md`**.
-- **Location:** **`Cursor-Project/reports/Feedback/`** (see README).
-
-## Bug-validate (bug-validate.md)
-
-- **When:** User wants to validate or verify a bug report.
-- **Flow:** Rule 32 in chat → Confluence → codebase → full analysis in the reply; **no** automatic `BugValidation_*.md` unless the user runs **`/report`** or explicitly asks to save.
-- **Output:** Structured Bug Validation Analysis; "Agents involved: BugFinderAgent, PhoenixExpert".
-
-## Jira-bug (jira-bug.md)
-
-- **When:** User wants to create a Jira bug or rewrite an existing one on the **Experiments** board. **Not for Phoenix delivery** (Rule JIRA.0).
-- **Triggers:** `!jira-bug`, "create Jira bug", "Experiments board bug".
-- **Flow:** Confirm Experiments board → extract/ask details → fill template (Summary, Description, Steps, Expected, Actual, Environment, Technical details, Example).
-- **Output:** Ready-to-paste Jira text; "Agents involved: jira-bug (Jira bug agent)".
-
-## Production-data-reader (production-data-reader.md)
-
-- **When:** User asks about production database data, liability offsets, receivable history, or how an entity was created.
-- **Flow:** PostgreSQLProd MCP (readonly) → SELECT queries → step-by-step explanation (see `integrations/production_data_reader.mdc`).
-- **Output:** Detailed analysis with offset sequence and creation process; "Agents involved: ProductionDataReaderAgent".
-
-## Cross-dependency-finder (cross-dependency-finder.md)
-
-- **When:** User asks for cross-dependencies, what could break, or dependency analysis for a scope (bug/task/feature). Also run automatically before test case generation (Rule 35).
-- **Flow (Rule 35a):** **Jira MCP + codebase + shallow Confluence** — **no** local merge/git for cross-dep. PhoenixExpert (if needed) → scope → output (upstream, downstream, what_could_break, **technical_details** from Jira + code) → optional JSON to `Cursor-Project/cross_dependencies/`.
-- **Output:** Structured report including **technical_details**; "Agents involved: CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
-
-## Test-case-generate (test-case-generate.md)
-
-- **When:** User asks to generate test cases for a bug or task.
-- **Flow:** Rule 35: (1) Run **cross-dependency-finder** first (including Rule 35a) → (2) **MANDATORY:** read **`Cursor-Project/config/playwright_generation/playwright instructions/`** (see `test-case-generate.md` step 0) → (3) Run **test-case-generator** with cross_dependency_data. Save as two files: **`Cursor-Project/test_cases/Backend/<Topic>.md`** (TC-BE-N) and **`test_cases/Frontend/<Topic>.md`** (TC-FE-N) per `workspace/test_cases_structure.mdc`; `generated_test_cases/` is legacy.
-- **Output:** Test cases in human-readable hierarchy; "Agents involved: TestCaseGeneratorAgent, CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
-
-## Energo-ts-run (energo-ts-run.md)
-
-- **When:** User wants to run specific Playwright tests from EnergoTS based on prompt (e.g. "run newly created test", "run test REG-123", "run from GitHub").
-- **Flow:** Resolve which test(s) from prompt → Run `npx playwright test <target>` from `Cursor-Project/EnergoTS/` (`cursor` branch only) → Report results.
-- **Output:** Test run summary (passed/failed); optional file under **Chat reports** + segment per **`Cursor-Project/reports/README.md`**; "Agents involved: EnergoTS Playwright Test Runner".
-- **Note:** Tests run from local repo (synced from GitHub).
-
-## Hands-off (hands-off.md)
-
-- **Trigger (command-only):** Run via Cursor slash command **hands-off** (`.cursor/commands/hands-off.md`) and/or user text **/HandsOff** or **!HandsOff** with a Jira key (Rule 37). There is **no** `hands-off` entry under `.cursor/skills/`—do not rely on a dedicated HandsOff skill.
-- **When:** User provides a **Jira ticket** (link, key e.g. REG-123, or name) and types **/HandsOff** or **!HandsOff** (or runs the **hands-off** command).
-- **Flow:** Route to **hands-off** orchestrator. Full flow: (1) Get Jira ticket and description (Jira MCP); (2) Run cross-dependency-finder (Rule 35a); (3) Run test-case-generator with cross_dependency_data; (4) Create Playwright tests from test cases (bridge .md → spec → EnergoTSTestAgent); (5) Run Playwright tests (energo-ts-run, cursor branch); (6) Save report as **`HandsOff reports/…/YYYY/<english-month>/<DD>/{JIRA_KEY}.md`** per **`Cursor-Project/reports/README.md`**; (7) Send report to Slack to the tester and duplicate to the AI report channel (user-slack MCP).
-- **Output:** Summary of run; report file; Slack delivery. "Agents involved: HandsOff (orchestrator), CrossDependencyFinderAgent, TestCaseGeneratorAgent, EnergoTSTestAgent, EnergoTS Playwright Test Runner".
+No separate HandsOff skill file — orchestrator follows **`hands-off.md`** checklist end-to-end.
 
 ## Summary
 
-- Phoenix questions → Phoenix command + PhoenixExpert.
-- Before task → Consult + PhoenixExpert approval.
-- Saved reports → **`/report`** or user request → **Chat reports/** (optional); session feedback → **`/feedback`** or explicit request → **Feedback/**; HandsOff → **HandsOff reports/**.
-- Bug check → Bug-validate + BugFinderAgent.
-- Jira bug (Experiments only) → Jira-bug command + jira-bug-template; never Phoenix delivery.
-- Production data → Production-data-reader + ProductionDataReaderAgent.
-- Cross-dependencies → Cross-dependency-finder command + CrossDependencyFinderAgent.
-- Test cases → Test-case-generate command (cross-dependency-finder first, then TestCaseGeneratorAgent).
-- Run Playwright tests from EnergoTS by prompt → Energo-ts-run command (resolve test, run locally).
-- Full HandsOff flow (Jira + /HandsOff or !HandsOff or **hands-off** slash command) → `.cursor/commands/hands-off.md` + hands-off orchestrator (no separate hands-off skill).
-
-All commands assume rules are loaded first (Rule 0.0) from `.cursor/rules/`.
+- Route duplicated workflows through **agents/skills**, not deleted `.md` stubs.
+- **HandsOff**, branch switching, Swagger refresh, and git/sync docs remain under **`.cursor/commands/`** as runnable/checklist references.

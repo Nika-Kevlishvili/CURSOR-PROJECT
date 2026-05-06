@@ -77,8 +77,8 @@ Added to `workflow_rules.mdc`. Before ANY Phoenix code read/search:
 - `.cursor/agents/bug-validator.md` — Step 3 code validation
 - `.cursor/agents/cross-dependency-finder.md` — Step 0 Jira-anchored analysis
 - `.cursor/agents/hands-off.md` — Steps 2 and constraints
-- `.cursor/commands/phoenix.md` — Mandatory workflow Step 2
-- `.cursor/commands/bug-validate.md` — Step 3
+- `.cursor/agents/phoenix-qa.md` — Mandatory workflow Step 2 (Phoenix Q&A)
+- `.cursor/agents/bug-validator.md` — Step 3 (bug validation)
 - `.cursor/skills/phoenix-commands/SKILL.md` — Summary section
 
 ---

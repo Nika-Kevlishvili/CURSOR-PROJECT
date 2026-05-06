@@ -1,6 +1,6 @@
 # EnergoTS Test Management Agent
 
-> **Current locations:** Cursor → **`.cursor/agents/energo-ts-test.md`**, **`.cursor/commands/energo-ts-test.md`**. Run tests → **`.cursor/agents/energo-ts-run.md`**. Specs → **`Cursor-Project/EnergoTS/tests/cursor/`** (branch **`cursor`**). Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. Below: historical Python API.
+> **Current locations:** Cursor → **`.cursor/agents/energo-ts-test.md`**. Run tests → **`.cursor/agents/energo-ts-run.md`**, **`.cursor/skills/energo-ts-run/SKILL.md`**. Specs → **`Cursor-Project/EnergoTS/tests/cursor/`** (branch **`cursor`**). Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. Below: historical Python API.
 
 ## Overview
 

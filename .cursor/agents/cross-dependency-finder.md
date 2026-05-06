@@ -21,7 +21,7 @@ You find **cross-dependencies** for a given scope (feature, module, bug, or task
 
 - **MANDATORY resolver call:** run `environment-resolver` first with parent task/Jira context; use only its resolved output among `dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`.
 - If ambiguity remains, `environment-resolver` MUST ask the user via questionnaire (Rule CONF.0).
-- **Subagent reuse (Rule PHOENIX-SWITCH.0 §7a):** If the parent agent (e.g. `/hands-off`, `/bug-validate`, `/test-case-generate`) has already aligned Phoenix to the same environment in this chat session — and the previous alignment did not exit `2` or `3` — DO NOT re-run the script. The parent passes the resolved environment in the prompt; trust it.
+- **Subagent reuse (Rule PHOENIX-SWITCH.0 §7a):** If the parent agent (e.g. **hands-off** orchestrator, **bug-validator**, **test-case-generator** flow parent) has already aligned Phoenix to the same environment in this chat session — and the previous alignment did not exit `2` or `3` — DO NOT re-run the script. The parent passes the resolved environment in the prompt; trust it.
 - Otherwise run `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` so every `Cursor-Project/Phoenix/*` repo aligns to `origin/<branch>` (latest tip) before code reading. For `prod` you MUST first ask the user for explicit confirmation, then call with `-ConfirmProd`.
 - Inspect the exit code: `0` proceed; `2` proceed but flag mixed-state in the cross-dep output; `3` stop and ask the user to fix connectivity / VPN / credentials.
 - Local uncommitted Phoenix edits are DISCARDED by the alignment script; Phoenix source files remain READ-ONLY (Rule 0.8 Tier A).

@@ -66,7 +66,7 @@ Example:
 
 ## Command reference
 
-- **Command:** `.cursor/commands/jira-bug.md`
+- **Routing:** Natural language or **`jira-bug`** Task/subagent — see **`jira-bug-template`** skill (Rule JIRA.0).
 - **Triggers:** `!jira-bug`, "create Jira bug (Experiments)", "rewrite this Jira bug with the template".
 
 ## Confidence Score (Rule CONF.1) [MANDATORY]

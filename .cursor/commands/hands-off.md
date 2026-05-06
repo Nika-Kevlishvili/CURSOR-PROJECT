@@ -1,5 +1,7 @@
 # HandsOff – Full Automated Flow
 
+**Canonical checklist (Rule 37):** This file remains the **full** operational procedure for HandsOff orchestrators. Orchestrator role summary and agent invocation order: **`.cursor/agents/hands-off.md`**.
+
 Run the **entire flow** without user intervention when the user provides a **Jira ticket** (link, name, or key) and invokes **`/HandsOff`** or **`!HandsOff`**. Orchestrate: Jira → cross-dependencies → test cases → Playwright tests → run tests → report (save + send to Slack to tester).
 
 **Slack:** This command implements **path 2** (HandsOff) in **`Cursor-Project/config/template/Slack_reporting_paths.md`**. Path 1 = bug validation (Rule 32, unchanged). Path 3 = user-triggered scoped Playwright Slack → **`.cursor/commands/send-playwright-results-slack.md`**.
@@ -17,7 +19,7 @@ Run the **entire flow** without user intervention when the user provides a **Jir
 2. **Parse input** – From the user message extract the Jira **issue key** (e.g. REG-123, BUG-456). If user gave a link, parse the key from the URL. If user gave a screenshot only, use vision/OCR if available to extract the key.
 3. **Get cloudId** – Use Jira MCP (e.g. `getAccessibleAtlassianResources` or equivalent) to obtain cloudId if needed.
 4. **Fetch ticket** – Call **Jira MCP** `getJiraIssue(cloudId, issueIdOrKey)` (use `expand: "names"` to resolve field names). Get the ticket **summary** (title), **description**, and **environment** (Environment field, ticket text, attached logs/screenshots). For **Tester**, read **only** from the Jira custom field **"Tester"**: in this project that is **`customfield_10095`** (single user picker). Use that user’s **displayName** for Slack lookup in Step 7. **Do NOT use** Assignee, **customfield_11151** (BA), or any other field as Tester. If `customfield_10095` is null, there is no Tester – send report only to #ai-report. Store for later: description, Tester display name (from customfield_10095 only), and resolved environment.
-5. **Resolve environment + align Phoenix branches** – **MANDATORY resolver call:** run `/environment-resolve` (EnvironmentResolverAgent) with Jira ticket context first. Use only the resolved environment (`dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`) for branch alignment. If ambiguity remains, EnvironmentResolverAgent must ask the user via questionnaire (Rule CONF.0) before continuing. **Prod safety gate (Rule PHOENIX-SWITCH.0 §1a):** if the resolved env is `prod`, FIRST tell the user that aligning to `origin/prod` will discard any uncommitted Phoenix edits and force-reset every Phoenix repo, then wait for explicit user acknowledgement. Only then call the script with `-ConfirmProd`. For non-prod envs, run without `-ConfirmProd`:
+5. **Resolve environment + align Phoenix branches** – **MANDATORY resolver call:** invoke **`environment-resolver`** (EnvironmentResolverAgent) with Jira ticket context first. Use only the resolved environment (`dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`) for branch alignment. If ambiguity remains, EnvironmentResolverAgent must ask the user via questionnaire (Rule CONF.0) before continuing. **Prod safety gate (Rule PHOENIX-SWITCH.0 §1a):** if the resolved env is `prod`, FIRST tell the user that aligning to `origin/prod` will discard any uncommitted Phoenix edits and force-reset every Phoenix repo, then wait for explicit user acknowledgement. Only then call the script with `-ConfirmProd`. For non-prod envs, run without `-ConfirmProd`:
    - `powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` (add ` -ConfirmProd` for `prod` only, after user ack)
    - Aligns every `Cursor-Project/Phoenix/*` repo to `origin/<branch>` (latest tip). Local Phoenix edits are DISCARDED; Phoenix files remain READ-ONLY (Rule 0.8 Tier A).
    - Inspect exit code: `0` proceed; `2` proceed but include a "mixed alignment state" note in the HandsOff report; `3` STOP the flow and ask the user to fix connectivity / VPN / credentials before retrying.
@@ -32,7 +34,7 @@ Run the **entire flow** without user intervention when the user provides a **Jir
 3. Cross-dependency-finder may consult **PhoenixExpert**. Obtain the full structured output: scope, entry_points, upstream, downstream, what_could_break, **technical_details**.
 4. Pass this output as **cross_dependency_data** to the next step.
 
-Reference: `.cursor/commands/cross-dependency-finder.md`, Rule 35a in `.cursor/rules/workflows/workflow_rules.mdc`.
+Reference: `.cursor/skills/cross-dependency-finder/SKILL.md`, `.cursor/agents/cross-dependency-finder.md`, Rule 35a in `.cursor/rules/workflows/workflow_rules.mdc`.
 
 ### Step 3: Test case generator (comprehensive coverage – mandatory)
 
@@ -47,7 +49,7 @@ Reference: `.cursor/commands/cross-dependency-finder.md`, Rule 35a in `.cursor/r
 4. **Verify on disk:** After generation, check that **both** `.md` files exist (Backend and Frontend). If missing, **write them directly**. Update **`test_cases/README.md`**, **`test_cases/Backend/README.md`**, and **`test_cases/Frontend/README.md`** to include the new files.
 5. Note the paths of both test case files for the bridge to Playwright.
 
-Reference: `.cursor/commands/test-case-generate.md`, `.cursor/rules/workflows/handsoff_playwright_report.mdc` §1.
+Reference: `.cursor/skills/test-case-generator/SKILL.md`, `.cursor/rules/workflows/handsoff_playwright_report.mdc` §1.
 
 ### Step 4: Create Playwright tests from test cases (bridge) [MANDATORY: energo-ts-test agent]
 
@@ -59,7 +61,7 @@ Reference: `.cursor/commands/test-case-generate.md`, `.cursor/rules/workflows/ha
 3. **Output:** Spec file **`Cursor-Project/EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`** (e.g. `NT-1-invoice-cancellation.spec.ts`). EnergoTS must be on **cursor** branch (Rule ENERGOTS.0). Spec MUST follow project patterns (fixtures, test naming with Jira key). **CRITICAL – full coverage:** The spec MUST contain **one `test()` (or equivalent) for every test case (TC-BE-N from Backend file + TC-FE-N from Frontend file)**. Playwright tests must cover **all** test cases from both files; the number of tests in the spec MUST equal the total number of TCs. If a TC cannot be automated (e.g. no API, complex setup), include it as `test.skip(..., 'reason')` so the count matches. **CRITICAL – precondition authoring:** never use `test.beforeAll()` / `beforeAll()`; shared preconditions must be helper functions called inside each test with `test.step('Precondition: ...')`.
 4. **Verify on disk:** After the agent runs, verify the spec file exists and that it has one test per test case from both `.md` files (count must match). If the agent did not create it or coverage is incomplete, invoke the agent again with the explicit test case paths and the requirement to cover all TCs; do not fall back to writing an ad-hoc spec.
 
-Reference: `.cursor/rules/workflows/handsoff_playwright_report.mdc` §2, `.cursor/commands/energo-ts-test.md`.
+Reference: `.cursor/rules/workflows/handsoff_playwright_report.mdc` §2, `.cursor/agents/energo-ts-test.md`.
 
 ### Step 4.5: Validate Playwright tests (quality gate) [MANDATORY – repeat until pass or max iterations]
 
@@ -97,7 +99,7 @@ Reference: `.cursor/agents/playwright-test-validator.md`; `.cursor/rules/workflo
 3. **Run tests** from `Cursor-Project/EnergoTS/`: `npx playwright test --grep "<JIRA_KEY>"` or `npx playwright test tests/cursor/<JIRA_KEY>-*.spec.ts`. Use list (or similar) reporter to capture output.
 4. **Capture** the run output: which tests ran, which **passed** or **failed**, and for each failure the **reason** (assertion message, status code, error snippet). If tests could not run (e.g. setup failed or token still missing), record "Not run" and the exact reason (e.g. ENOENT token.json, or setup error message).
 
-Reference: `.cursor/commands/energo-ts-run.md`, Rule 36, `.cursor/rules/workflows/handsoff_playwright_report.mdc` §5–6.
+Reference: `.cursor/skills/energo-ts-run/SKILL.md`, `.cursor/agents/energo-ts-run.md`, Rule 36, `.cursor/rules/workflows/handsoff_playwright_report.mdc` §5–6.
 
 ### Step 6: Build and save report (Step 9 – part 1)
 

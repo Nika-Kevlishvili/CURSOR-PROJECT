@@ -59,7 +59,7 @@ Example:
 
 ## Command and sub-agent
 
-- **Command:** `.cursor/commands/jira-bug.md`
+- **Routing:** Invoke **`jira-bug`** subagent when the user asks for Experiments-board bug text (Rule JIRA.0).
 - **Sub-agent:** `.cursor/agents/jira-bug.md`
 - **Rule:** `.cursor/rules/integrations/jira_bug_agent.mdc` (JIRA.0)
 

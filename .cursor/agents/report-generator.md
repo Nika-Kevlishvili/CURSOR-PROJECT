@@ -23,7 +23,7 @@ Write files under **`Cursor-Project/reports/`** using:
 
 - User or parent asks to save a report.
 - **`/report`** or equivalent.
-- **`/feedback`** → **Feedback** area (`Feedback_{HHMM}.md` per `feedback.md`).
+- **`/feedback`** → **Feedback** area (`Feedback_{Slug}_{HHMM}.md` per **`phoenix-reporting`** skill).
 - **Rule 37 (HandsOff)** mandates `{JIRA_KEY}.md` → **HandsOff reports**.
 
 **Do not** run automatically after every generic task.

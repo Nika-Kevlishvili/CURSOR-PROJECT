@@ -29,7 +29,7 @@ Use this skill when the user wants to **run** (execute) Playwright tests from th
 ## Agent / Command
 
 - **Agent**: `.cursor/agents/energo-ts-run.md` (EnergoTS Playwright Test Runner).
-- **Command**: `.cursor/commands/energo-ts-run.md`.
+- **Subagent:** `.cursor/agents/energo-ts-run.md`.
 
 ## Confidence Score (Rule CONF.1) [MANDATORY]
 
