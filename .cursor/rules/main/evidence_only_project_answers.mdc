@@ -89,3 +89,23 @@ the assistant MAY answer from general knowledge, but MUST still respect:
 - The workspace’s clarification gate (ask when scope/env/target matters)
 - Safety rules (no secrets; no forbidden modifications)
 
+---
+
+## Jira ticket evidence completeness (MANDATORY)
+
+When the user asks to retrieve information from a Jira ticket, the assistant MUST NOT rely only on the `description` field.
+
+The assistant MUST always:
+
+1. Fetch the full issue payload (all available fields) and verify whether `description` is present, empty, or `null`.
+2. Always check whether `linked issues` and `attachments metadata` are present, regardless of whether `description` is filled.
+   - If present: inspect and validate them.
+   - If not present: explicitly mark them as "not present" and continue with the remaining ticket evidence.
+3. If `description` is empty or insufficient, inspect additional evidence locations before answering:
+   - custom fields (including rich-text ADF fields)
+   - comments/history and update context
+   - environment, labels, components, and other key metadata fields
+4. Return a consolidated answer based on the complete ticket context and explicitly note where critical details were found (for example: "found in custom field", "found in comments", "found in linked issue", "found in attachment metadata").
+
+The assistant MUST NOT conclude "no information" only because `description` is empty.
+
