@@ -66,30 +66,56 @@ function decodeJsonAttachmentBody(body) {
   }
 }
 
+function decodeTextAttachmentBody(body) {
+  if (!body) return '';
+  try {
+    return Buffer.from(String(body), 'base64').toString('utf-8');
+  } catch {
+    return '';
+  }
+}
+
+function collectLinksFromObject(obj) {
+  if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return [];
+  const out = [];
+  for (const [entity, rawUrls] of Object.entries(obj)) {
+    if (!Array.isArray(rawUrls)) continue;
+    const entityName = String(entity || 'entity');
+    for (const rawUrl of rawUrls) {
+      if (typeof rawUrl !== 'string') continue;
+      const url = rawUrl.trim();
+      if (!/^https?:\/\//i.test(url)) continue;
+      out.push({ entity: entityName, url });
+    }
+  }
+  return out;
+}
+
 function collectCreatedEntityLinks(test) {
   const out = [];
   const seen = new Set();
   for (const r of test.results || []) {
     for (const a of r.attachments || []) {
-      const name = String(a?.name || '').toLowerCase();
-      if (!name.includes('created entities')) continue;
-      if (a?.contentType !== 'application/json') continue;
-      const parsed = decodeJsonAttachmentBody(a?.body);
-      const links = parsed?.links;
-      if (!links || typeof links !== 'object') continue;
+      let candidates = [];
+      if (a?.contentType === 'application/json') {
+        const parsed = decodeJsonAttachmentBody(a?.body);
+        // Legacy shape: { links: { entity: [url] } }
+        candidates = [...candidates, ...collectLinksFromObject(parsed?.links)];
+        // New shape used by tests: { entity: [url] } on "portal URLs (JSON)" attachments.
+        candidates = [...candidates, ...collectLinksFromObject(parsed)];
+      }
+      if (String(a?.contentType || '').startsWith('text/plain')) {
+        // Fallback for plain-text attachments containing direct URLs.
+        const text = decodeTextAttachmentBody(a?.body);
+        const urls = text.match(/https?:\/\/[^\s)]+/gi) || [];
+        candidates = [...candidates, ...urls.map((url) => ({ entity: 'link', url: url.trim() }))];
+      }
 
-      for (const [entity, rawUrls] of Object.entries(links)) {
-        if (!Array.isArray(rawUrls)) continue;
-        const entityName = String(entity || 'entity');
-        for (const rawUrl of rawUrls) {
-          if (typeof rawUrl !== 'string') continue;
-          const url = rawUrl.trim();
-          if (!/^https?:\/\//i.test(url)) continue;
-          const key = `${entityName}::${url}`;
-          if (seen.has(key)) continue;
-          seen.add(key);
-          out.push({ entity: entityName, url });
-        }
+      for (const item of candidates) {
+        const key = `${item.entity}::${item.url}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.push(item);
       }
     }
   }
