@@ -35,7 +35,38 @@ alwaysApply: true
 
 # TEST CASE GENERATION WORKFLOW RULE [CRITICAL]
 
-35. [CRITICAL] User requests **test cases** → resolve env + align Phoenix (**Rule PHOENIX-SWITCH.0**; pass env + alignment exit code to subagents; prod `-ConfirmProd` + user ack). Run **cross-dependency-finder** FIRST; pass structured output as `context['cross_dependency_data']` to **test-case-generator**. Never skip cross-dep. **Canonical procedure:** `.cursor/skills/cross-dependency-finder/SKILL.md`, `.cursor/skills/test-case-generator/SKILL.md`. Folder layout: `.cursor/rules/workspace/test_cases_structure.mdc`.
+35. [CRITICAL] When the user requests creation of test cases (for a bug, task, or feature), ALWAYS follow this mandatory workflow:
+
+    Resolve environment + align Phoenix first (**Rule PHOENIX-SWITCH.0**; pass env + alignment exit code to subagents; prod `-ConfirmProd` + user ack). Then run the workflow below.
+    
+    **Step 1: Run Cross-Dependency Finder FIRST (MANDATORY)**
+    - Delegate to **cross-dependency-finder** subagent (or run CrossDependencyFinderAgent) for the same scope (bug/task/feature).
+    - Cross-dependency-finder MUST follow **Rule 35a** (Jira-anchored analysis; **no** local merge/git steps — see below).
+    - Cross-dependency-finder MAY consult **PhoenixExpert** to study the project, scope, and dependencies (Rule 8).
+    - Cross-dependency-finder identifies: upstream/downstream dependencies, code references, and **what could break as a result of changes** (callers, consumers, contract usage, integration points).
+    - Obtain the structured output (scope, entry_points, upstream, downstream, impact_risk / what_could_break, integration_points, **technical_details** from Jira + codebase per Rule 35a).
+    
+    **Step 2: Pass result to Test Case Generator**
+    - Call **test-case-generator** (TestCaseGeneratorAgent) with the same prompt and with `context['cross_dependency_data']` set to the cross-dependency-finder output.
+    - Test-case-generator uses this data to produce test cases that cover integration points, regression risks, and anything that could break.
+    - **Playwright instructions (MANDATORY):** Before writing test-case `.md` files, TestCaseGeneratorAgent MUST read **`Cursor-Project/config/playwright_generation/playwright instructions/`** in order: `project-description.md`, `general-rules.md`, `test-writing-rules.instructions.md`, `SKILL.md`, then any other `*.md` in that folder alphabetically. Ignore `__MACOSX` / `._*`. Test steps and expected results MUST align with that pack (bridge to EnergoTS Playwright: `test.step` granularity, HTTP/status/response expectations, no forbidden patterns from `general-rules.md`) **and** **`Cursor-Project/config/template/Test_case_template.md`**.
+
+    **Step 2.5: TC quality validation (MANDATORY)**
+    - After test-case-generator saves `test_cases/Backend/<Topic_name>.md` and `test_cases/Frontend/<Topic_name>.md`, invoke the **test-case-quality-validator** subagent (`.cursor/agents/test-case-quality-validator.md`).
+    - The validator scores every TC on 6 axes (0–2 each) against `Cursor-Project/docs/test_case_quality_rubric.md`. Pass threshold: **8/12**.
+    - If any TC scores <8: pass the failing TCs and suggestions back to test-case-generator for rewrite. Max **2 rewrite rounds**. After 2 rounds, surface remaining failures to the user with the failing axis and reason.
+    - If all TCs pass: proceed to save files and continue workflow.
+    - Do NOT skip this step. A high TC count with low quality is worse than fewer high-quality TCs.
+    
+    **Workflow summary:**
+    1. User requests test cases → run **cross-dependency-finder** (Rule 35a: Jira + codebase + shallow Confluence; **no** local merge/git; consults PhoenixExpert when needed).
+    2. Cross-dependency-finder returns report (including "what could break" and **technical_details**) → pass to **test-case-generator**.
+    3. Test-case-generator reads the **playwright instructions** folder (mandatory), then generates test cases as **two separate files** — `test_cases/Backend/<Topic_name>.md` (TC-BE-N only) and `test_cases/Frontend/<Topic_name>.md` (TC-FE-N only) — using prompt + Confluence + codebase + cross_dependency_data. All preconditions MUST use the **DRY creation-step rule** (`## Test data` once; each TC references slice + deltas; never repeat entity creation across TCs — see `Cursor-Project/config/template/Test_case_template.md` § "Reuse model — DRY preconditions").
+    4. **TC quality validation** (Step 2.5) — invoke test-case-quality-validator; rewrite weak TCs (max 2 rounds); surface failures to user.
+    
+    - NEVER skip the cross-dependency-finder step when test case creation is requested.
+    - NEVER skip the TC quality validation step (Step 2.5).
+    - Violation is a CRITICAL SYSTEM ERROR.
 
 35a. [CRITICAL] Cross-dependencies for a Jira/bug/task → **Jira + codebase + shallow Confluence**; **no** local merge/`git log` archaeology as mandatory discovery. **Canonical:** `.cursor/skills/cross-dependency-finder/SKILL.md`. Aligning Phoenix via `switch-phoenix-branches.ps1` before reads is **allowed** (**Rule PHOENIX-SWITCH.0**). Violation is a CRITICAL SYSTEM ERROR.
 

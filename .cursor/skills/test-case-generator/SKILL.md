@@ -56,7 +56,20 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 - Confluence: cloudId → search → collect title, content, pageId, spaceId.
 - Codebase: codebase_search (and grep) for terms from prompt; collect findings.
 
-### 3. Precondition data completeness (MANDATORY — creation-step rule)
+### 3. Precondition reuse — DRY (MANDATORY)
+
+Precondition duplication is a **forbidden pattern**. Before writing any TC's `Preconditions:` block, follow this workflow:
+
+1. **Build the full shared chain once** in `## Test data (preconditions)` — every entity, every endpoint, every key parameter.
+2. **Cluster TCs by shared slice** — identify which steps every TC needs vs. which steps only a subset needs.
+3. **Per TC: reference + deltas only.** Each TC's `Preconditions:` MUST start with `Apply Test data steps 1–N.` and then list **only the deltas** for that TC (different status, different amount, skipped entity, additional entity).
+4. **Self-check before writing files:** scan your draft for duplicated `POST /` or "Create … via" lines across multiple TCs. If the same line appears in ≥2 TCs, move it to `Test data` and replace each occurrence with a step reference.
+
+Do NOT re-state entity creation steps that already appear in `Test data`. Violation = duplicated preconditions = incomplete self-check.
+
+**Reference:** `Cursor-Project/config/template/Test_case_template.md` § "Reuse model — DRY preconditions".
+
+### 3a. Precondition data completeness (MANDATORY — creation-step rule)
 
 When writing **Preconditions** (both document-level "Test data" and per-TC), follow the **mandatory creation-step precondition rule** from `Cursor-Project/config/template/Test_case_template.md`:
 
@@ -104,7 +117,15 @@ Test cases MUST be written so that Playwright automation can implement them **wi
 - Store created entities in `Responses` arrays (not describe-level `let` variables)
 - Never query existing data instead of creating new data
 
-### 4. Generate and save as TWO files — Backend and Frontend (comprehensive coverage)
+### 4. TC quality — apply rubric before saving (MANDATORY)
+
+Before writing the final `.md` files, score each TC against the quality rubric in `Cursor-Project/docs/test_case_quality_rubric.md`. Score axes (each 0–2): Intent uniqueness, Observable expected result, Endpoint specificity, Delta clarity, Risk coverage from cross_dep, Readability. Minimum passing score: **8/12**.
+
+- TCs scoring <8 MUST be rewritten (max 2 passes).
+- After rewriting, re-score; any TC still below 8 after 2 passes is flagged to the user with the specific axis that failed — do not silently drop or keep weak TCs.
+- After generation completes, invoke the **test-case-quality-validator** subagent (`.cursor/agents/test-case-quality-validator.md`) to do a second-pass verification. If it returns rewrite suggestions, apply them (max 2 rounds) before final file write.
+
+### 5. Generate and save as TWO files — Backend and Frontend (comprehensive coverage)
 
 **Coverage (CRITICAL):** Generate **exhaustive** test cases – **not** a random or minimal set. Cover **every scenario that could occur**: all positive (happy path, valid inputs), all negative (invalid inputs, errors, rejections), edge cases, boundaries, and regression from cross_dependency_data (what_could_break). Aim for the **maximum number** of test cases that **fully cover** the task or bug.
 
@@ -120,7 +141,7 @@ Test cases MUST be written so that Playwright automation can implement them **wi
 
 Regression/impact cases (from what_could_break) go in whichever file (Backend or Frontend) is most relevant. Update `test_cases/README.md`, `test_cases/Backend/README.md`, and `test_cases/Frontend/README.md` when adding new files.
 
-### 5. Output content
+### 6. Output content
 
 - Confluence references, codebase analysis, file paths where test cases were saved (e.g. `test_cases/Backend/Invoice_cancellation.md` and `test_cases/Frontend/Invoice_cancellation.md`).
 

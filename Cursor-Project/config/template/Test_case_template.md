@@ -63,6 +63,53 @@ Preconditions MUST describe the **full data creation chain** required by the tes
 
 ---
 
+### Reuse model — DRY preconditions (MANDATORY)
+
+One topic file typically has many TCs that share the same long entity-creation chain. **Write that chain once** in `## Test data (preconditions)`, then have each TC's `Preconditions:` block reference the shared steps and only add **deltas** (the things that differ for that TC — a different status, amount, date, or missing field).
+
+**Pattern:**
+- `## Test data` — full numbered creation chain (every entity, endpoint, parameters).
+- `TC-BE-N Preconditions:` — reference the slice (`Apply Test data steps 1–N.`) + list only TC-specific overrides/additions.
+
+**BAD (FORBIDDEN) — repeated creation chain across TCs:**
+
+```
+### TC-BE-1 Preconditions:
+1. Create customer via POST /customer (PRIVATE, ACTIVE).
+2. Create POD via POST /pod (ELECTRICITY, ACTIVE).
+3. Create product via POST /product …
+…
+11. Payment package lock status = LOCKED.
+
+### TC-BE-2 Preconditions:
+1. Create customer via POST /customer (PRIVATE, ACTIVE).   ← identical to TC-BE-1
+2. Create POD via POST /pod (ELECTRICITY, ACTIVE).          ← identical to TC-BE-1
+…
+```
+
+**GOOD (REQUIRED) — shared chain in Test data, only deltas per TC:**
+
+```
+## Test data (preconditions)
+1. Create customer via POST /customer (type: PRIVATE, status: ACTIVE).
+2. Create POD via POST /pod (type: ELECTRICITY, status: ACTIVE, activation date: 2024-01-01).
+…
+11. Payment package lock status: LOCKED.
+
+### TC-BE-1 Preconditions:
+1. Apply Test data steps 1–11.
+2. Confirm invoice status = PAID (delta from step 10).
+3. Confirm payment package lock = LOCKED (delta from step 11).
+
+### TC-BE-2 Preconditions:
+1. Apply Test data steps 1–9 only (payment not yet created).
+2. Delta: do NOT create a payment — invoice stays in status GENERATED.
+```
+
+**Self-check rule:** Before finalising a TC file, scan for duplicated `POST /` or "Create … via" lines across multiple TCs. If the same creation step appears in two or more TCs, move it into `## Test data` and replace each occurrence with an "Apply Test data steps …" reference.
+
+---
+
 ## Copy-paste blank — Backend file (`test_cases/Backend/<Topic_name>.md`)
 
 ````markdown
@@ -267,9 +314,9 @@ Shared setup for this file (environment + entity creation chain). Describe step-
 **Description:** Check that the cancellation API succeeds and the service does not require an UNLOCKED payment package.
 
 **Preconditions:**
-1. Complete steps 1–11 from Test data above.
-2. Invoice status is PAID (confirmed after step 10).
-3. Payment package lock status is **LOCKED** (step 11).
+1. Apply Test data steps 1–11.
+2. Delta: confirm invoice status = PAID (result of step 10).
+3. Delta: confirm payment package lock status = **LOCKED** (step 11).
 4. No prior cancellation exists for this invoice.
 
 **Test steps:**
@@ -289,8 +336,8 @@ Shared setup for this file (environment + entity creation chain). Describe step-
 **Description:** Check that invalid or missing invoice reference is rejected clearly and no cancellation is stored.
 
 **Preconditions:**
-1. A user with invoice-cancellation permissions can call the cancel endpoint.
-2. No invoice exists with the identifier that will be used in this test (e.g. use a non-existent UUID or malformed invoice number).
+1. Apply Test data steps 1–6 only (customer, POD, product, terms, price component, contract — no billing run or payment needed for this case).
+2. Delta: do NOT create a billing run or invoice — no valid invoice identifier exists in the system for the value used in this test (use a non-existent UUID or malformed invoice number).
 
 **Test steps:**
 1. Call `POST /invoice-cancellation` with an empty, malformed, or non-existent invoice identifier.
