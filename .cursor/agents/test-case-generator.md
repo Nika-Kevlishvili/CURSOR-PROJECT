@@ -51,7 +51,17 @@ Downstream **energo-ts-test** also reads this folder; keep cases consistent with
 - Use this data so test cases cover: integration points, upstream/downstream behaviour, data entities, and **what_could_break** (regression and impact risks).
 - See `.cursor/agents/cross-dependency-finder.md` and `Cursor-Project/docs/CROSS_DEPENDENCY_FINDER_AGENT.md`.
 
-### 4. Precondition data completeness (MANDATORY — creation-step rule)
+### 4. Precondition reuse — DRY (MANDATORY)
+
+Precondition duplication is a **forbidden pattern**. Before writing any TC's `Preconditions:` block:
+
+1. **Build the full shared chain once** in `## Test data (preconditions)`.
+2. **Per TC: reference + deltas only.** Each TC's `Preconditions:` MUST start with `Apply Test data steps 1–N.` then list only its **deltas** (different status, skipped entity, additional entity).
+3. **Self-check:** scan your draft for duplicated `POST /` or "Create … via" lines across TCs. If the same line appears in ≥2 TCs, move it to `Test data` and replace with a step reference.
+
+**Reference:** `Cursor-Project/config/template/Test_case_template.md` § "Reuse model — DRY preconditions".
+
+### 4a. Precondition data completeness (MANDATORY — creation-step rule)
 
 When writing preconditions (document-level "Test data" and per-TC "Preconditions"), you MUST describe **HOW to create every entity** in the data chain — NEVER just write "entity X exists."
 
@@ -63,7 +73,15 @@ When writing preconditions (document-level "Test data" and per-TC "Preconditions
 
 See `Cursor-Project/config/template/Test_case_template.md` for the full mandatory creation-step rule, examples, and data layer table.
 
-### 5. Generate test cases (comprehensive coverage – mandatory)
+### 5. TC quality — apply rubric before saving (MANDATORY)
+
+Score each TC against the quality rubric (`Cursor-Project/docs/test_case_quality_rubric.md`) on 6 axes (each 0–2): Intent uniqueness, Observable expected result, Endpoint specificity, Delta clarity, Risk coverage from cross_dep, Readability. Min passing score: **8/12**.
+
+- TCs scoring <8 MUST be rewritten (max 2 passes).
+- After all TCs pass (or max passes reached), invoke the **test-case-quality-validator** subagent (`.cursor/agents/test-case-quality-validator.md`) for second-pass verification. Apply its rewrite suggestions (max 2 rounds) before final file write.
+- Remaining failures after max passes: surface to user with the failing axis and reason — never silently keep a weak TC.
+
+### 6. Generate test cases (comprehensive coverage – mandatory)
 
 - **Coverage rule (CRITICAL):** Do **not** produce a random or minimal set. Generate **exhaustive** test cases that **fully cover** the task or bug:
   - **All positive:** happy path(s), valid inputs, expected success.
