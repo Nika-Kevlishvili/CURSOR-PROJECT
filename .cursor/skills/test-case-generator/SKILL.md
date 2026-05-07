@@ -69,6 +69,21 @@ Do NOT re-state entity creation steps that already appear in `Test data`. Violat
 
 **Reference:** `Cursor-Project/config/template/Test_case_template.md` § "Reuse model — DRY preconditions".
 
+### 3b. Case-specific preconditions (MANDATORY — NEVER OMIT)
+
+For **every** TC, make the scenario-specific setup explicit in `Preconditions:`. Use this shape:
+
+1. `Apply Test data steps X–Y.`
+2. `Delta: ...` (what differs in this TC only).
+
+Allowed deltas: changed status/state, skipped entity, extra entity, different amount/date/value, alternative user role/permission.
+
+Rules:
+- If no special setup exists, still write: `Delta: none (shared setup unchanged).`
+- Negative TCs MUST include a concrete failing delta (not generic text).
+- Two TCs must not have identical `Preconditions:` blocks unless they are true duplicates (duplicates are forbidden; merge/remove instead).
+- Do not leave TC-specific setup only in Description/Steps; it must appear in `Preconditions:`.
+
 ### 3a. Precondition data completeness (MANDATORY — creation-step rule)
 
 When writing **Preconditions** (both document-level "Test data" and per-TC), follow the **mandatory creation-step precondition rule** from `Cursor-Project/config/template/Test_case_template.md`:
@@ -128,6 +143,14 @@ Before writing the final `.md` files, score each TC against the quality rubric i
 ### 5. Generate and save as TWO files — Backend and Frontend (comprehensive coverage)
 
 **Coverage (CRITICAL):** Generate **exhaustive** test cases – **not** a random or minimal set. Cover **every scenario that could occur**: all positive (happy path, valid inputs), all negative (invalid inputs, errors, rejections), edge cases, boundaries, and regression from cross_dependency_data (what_could_break). Aim for the **maximum number** of test cases that **fully cover** the task or bug.
+
+**Negative-scope rule (CRITICAL):**
+- Default negative cases must validate **business/domain rejections** for the target feature.
+- Do NOT include irrelevant technical negatives (unauthorized/unauthenticated auth failures, wrong URL/path, generic connectivity failures) unless the user explicitly requested auth/routing/infrastructure testing.
+- For each negative TC, define exact expected rejection semantics: intended status, error code/message fragment, and the field/constraint that failed.
+- `HTTP 400` is valid when business validation is expected, but `HTTP 400` alone is never a passing expectation.
+- `HTTP 403` should be expected only in permission/authorization test scenarios.
+- If code/spec defines a specific error contract for a scenario, use that exact expected error in the TC (status + error semantics), not a generic 4xx.
 
 **Root folder:** `Cursor-Project/test_cases/`
 

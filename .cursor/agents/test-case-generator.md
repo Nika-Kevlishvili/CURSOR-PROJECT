@@ -62,6 +62,25 @@ Precondition duplication is a **forbidden pattern**. Before writing any TC's `Pr
 
 **Reference:** `Cursor-Project/config/template/Test_case_template.md` § "Reuse model — DRY preconditions".
 
+### 4b. Case-specific preconditions (MANDATORY — NEVER OMIT)
+
+DRY does **not** mean "all TCs have the same preconditions." For every TC, you MUST explicitly declare the TC-specific setup delta.
+
+Required format in each TC `Preconditions:` block:
+1. `Apply Test data steps X–Y.`
+2. `Delta:` line(s) describing what is different **for this TC only**:
+   - changed status/state,
+   - missing/skipped entity,
+   - additional entity,
+   - different amount/date/value.
+
+If a TC has no special setup, write `Delta: none (uses shared setup exactly as-is).`
+
+Hard checks before final file write:
+- If two TCs have identical `Preconditions:` text, rewrite to make the per-TC delta explicit.
+- Negative TCs MUST include at least one concrete delta that explains why the scenario fails.
+- Do not hide TC-specific setup differences inside `Description` or `Expected` only; they must be in `Preconditions:`.
+
 ### 4a. Precondition data completeness (MANDATORY — creation-step rule)
 
 When writing preconditions (document-level "Test data" and per-TC "Preconditions"), you MUST describe **HOW to create every entity** in the data chain — NEVER just write "entity X exists."
@@ -90,6 +109,15 @@ Score each TC against the quality rubric (`Cursor-Project/docs/test_case_quality
   - **Edge cases:** empty/zero values, boundaries, already-done state, duplicates.
   - **Regression:** every scenario from cross_dependency_data (what_could_break, integration points).
   Aim for the **maximum number** of test cases needed so that **any scenario that could occur** is covered (positive and negative).
+- **Business negatives only (default):** Negative TCs MUST target business/validation behavior of the feature under test. Do **not** add infrastructure/transport negatives like:
+  - unauthorized/unauthenticated (`401`/`403`) caused by missing/invalid auth,
+  - wrong URL/path (`404`) from incorrect endpoint,
+  - unrelated gateway/network errors.
+  Include these only if the user explicitly asks to test auth/routing/infrastructure behavior.
+- **`400` is valid when intended:** `400 Bad Request` is a valid expected outcome for business validation failures (missing required field, invalid enum/format, invalid state input) when that is the intended contract behavior.
+- **`403` scope rule:** Use `403 Forbidden` as expected only in authorization/permission scenarios (role/permission checks).
+- **No generic "any 400 = PASS":** For negative TCs, expected result MUST specify the exact intended rejection semantics (status + error code/message fragment + field/constraint). A plain "returns 400" is invalid.
+- **Code-first expected error rule (MANDATORY):** If code/contract defines a specific error for a scenario, the TC MUST use that exact expected error (status + business error code/message semantics), even if another 4xx could also occur technically.
 - **Preferred:** Use TestCaseGeneratorAgent with Confluence + codebase data + cross_dependency_data.
   - Implement in chat: build test cases from Confluence + codebase + `cross_dependency_data` and **write two separate `.md` files** — one in **`Cursor-Project/test_cases/Backend/<Topic_name>.md`** (TC-BE-N only) and one in **`Cursor-Project/test_cases/Frontend/<Topic_name>.md`** (TC-FE-N only) — per `workspace/test_cases_structure.mdc`. Do not import `get_test_case_generator_agent`.
   - `result = agent.generate_test_cases(prompt=..., prompt_type='bug'|'task', confluence_data=..., context={'codebase_findings': ..., 'cross_dependency_data': ...})`

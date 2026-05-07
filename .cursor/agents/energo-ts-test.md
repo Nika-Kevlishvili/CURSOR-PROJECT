@@ -50,6 +50,7 @@ You act as the **EnergoTSTestAgent** subagent. Manage EnergoTS Playwright test a
 - Analyze task description to understand what needs to be tested
 - Identify: endpoints, HTTP methods, payloads, expected behavior, edge cases
 - Determine: domain, fixtures needed, test steps required
+- Scope negatives to business behavior by default. Do NOT introduce auth/routing/infrastructure negatives (401/403 unauthorized, wrong URL 404, gateway/network failures) unless explicitly requested by the user/Jira acceptance criteria.
 
 ### Step 2.5: Consult Swagger/OpenAPI Spec (Rule SWAGGER.0 — CRITICAL — NEVER SKIP)
 - **PREREQUISITE:** `update-swagger-specs.ps1` MUST have been executed in this session (Step 0.5). If not yet done, execute it NOW.
@@ -160,6 +161,28 @@ Generation-time requirement (NOT post-fix): author preconditions correctly from 
 6. **Chains:** Follow **Before Any Task** step **0.6** — grep/read reference specs before defining `create*` / `shared*` helpers; align entity order with **`precondition-data-creation.instructions.md`** or a cited in-repo reference (see step 0.6).
 7. **Granularity:** Where test cases enumerate separate creation steps, prefer **one `test.step('Precondition: …')` per major entity or use small helpers per entity** (like `tests/cursor/PHN-2214-*.spec.ts` composing `sharedSetup`) instead of a single opaque mega-step hiding the chain.
 8. **Self-check before return:** Confirm entity order ≠ invented; confirm **Reference spec(s)** line is in the summary (step 0.6).
+9. **Case-specific setup mapping (MANDATORY):** For each generated `test()` block, add a dedicated precondition step that captures that test's unique delta versus shared setup, for example:
+   - `test.step('Precondition delta: invoice status is GENERATED (no payment)', ...)`
+   - `test.step('Precondition delta: use inactive product status', ...)`
+   Shared helpers are allowed, but unique setup for each scenario MUST be explicit in that scenario's own precondition steps.
+10. **No hidden deltas:** Do not keep scenario-specific setup only in test title or assertions. If a TC expects a different precondition, the spec must implement it in that test's precondition steps (or helper call with explicit delta parameters).
+11. **Anti-pattern (forbidden):** Multiple tests calling identical setup with no scenario delta while claiming different preconditions in test cases. If detected, regenerate with explicit per-test delta setup.
+
+## Negative Assertion Rule [CRITICAL]
+
+1. A negative test is valid only when it checks the **intended business rejection** for that scenario (not any random failure).
+2. `400 Bad Request` is valid when business validation failure is the intended behavior for the scenario.
+3. Never treat "any 400" as pass. Assert:
+   - exact expected status code,
+   - expected error code or stable message fragment,
+   - failing field/constraint where applicable.
+4. `403 Forbidden` should be asserted only in permission/authorization tests.
+5. Treat unexpected statuses as failure, especially:
+   - `401/403` (auth issue),
+   - `404` caused by wrong URL/path,
+   - `5xx` transport/backend crash.
+6. Do not intentionally use wrong endpoint paths to force negative outcomes unless routing behavior is explicitly in scope.
+7. If service code/spec indicates a specific error contract for the scenario, assertions MUST target that specific expected error (status + error semantics), not a generic fallback.
 
 Reference: `.cursor/commands/hands-off.md` Step 4 (HandsOff bridge); `precondition-data-creation.instructions.md`.
 

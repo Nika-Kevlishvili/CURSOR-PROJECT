@@ -56,6 +56,46 @@ function collectErrorSnippet(test) {
   return '';
 }
 
+function decodeJsonAttachmentBody(body) {
+  if (!body) return null;
+  try {
+    const decoded = Buffer.from(String(body), 'base64').toString('utf-8');
+    return JSON.parse(decoded);
+  } catch {
+    return null;
+  }
+}
+
+function collectCreatedEntityLinks(test) {
+  const out = [];
+  const seen = new Set();
+  for (const r of test.results || []) {
+    for (const a of r.attachments || []) {
+      const name = String(a?.name || '').toLowerCase();
+      if (!name.includes('created entities')) continue;
+      if (a?.contentType !== 'application/json') continue;
+      const parsed = decodeJsonAttachmentBody(a?.body);
+      const links = parsed?.links;
+      if (!links || typeof links !== 'object') continue;
+
+      for (const [entity, rawUrls] of Object.entries(links)) {
+        if (!Array.isArray(rawUrls)) continue;
+        const entityName = String(entity || 'entity');
+        for (const rawUrl of rawUrls) {
+          if (typeof rawUrl !== 'string') continue;
+          const url = rawUrl.trim();
+          if (!/^https?:\/\//i.test(url)) continue;
+          const key = `${entityName}::${url}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          out.push({ entity: entityName, url });
+        }
+      }
+    }
+  }
+  return out;
+}
+
 function annotationsBlock(test) {
   const ann = test.annotations || [];
   if (!ann.length)
@@ -148,6 +188,7 @@ function buildMarkdown(report, jsonPath, cwdForDisplay) {
       const status = lastResultStatus(test);
       const duration = formatDurationMs(test);
       const steps = collectStepTitles(test);
+      const entityLinks = collectCreatedEntityLinks(test);
       const err =
         status === 'failed' || status === 'timedOut' ? collectErrorSnippet(test) : '';
       const tc = parseTestCaseFromTitle(title);
@@ -179,6 +220,12 @@ function buildMarkdown(report, jsonPath, cwdForDisplay) {
       sections.push('');
       sections.push(steps.length ? steps.map((t) => `- ${escapeMd(t)}`).join('\n') : '_None._');
       sections.push('');
+      if (entityLinks.length) {
+        sections.push(`### Created Entity Links`);
+        sections.push('');
+        sections.push(entityLinks.map((x) => `- **${escapeMd(x.entity)}:** [${escapeMd(x.url)}](${x.url})`).join('\n'));
+        sections.push('');
+      }
       if (err) {
         sections.push(`### Failure (first line)`);
         sections.push('');

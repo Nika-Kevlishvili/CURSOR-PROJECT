@@ -18,6 +18,14 @@
 
 Optional for bugs: **Actual result** (current wrong behaviour). Optional: **References** (Jira, Confluence, API name).
 
+**Negative-case expectation rule (CRITICAL):**
+- Do not write generic expectations like "request fails" or "any 400 is acceptable."
+- Specify the intended rejection: exact status, expected error code/message fragment, and what must NOT be created/changed.
+- `400 Bad Request` is valid when business validation failure is the expected behavior for the case.
+- Use `403 Forbidden` as expected only when permission/authorization is the thing being tested.
+- Do not use `401` or wrong-path `404` as pass criteria for business-negative cases unless auth/routing is explicitly the scope.
+- If code/contract defines a scenario-specific error behavior, write that exact expected error in the test case.
+
 ---
 
 ### Mandatory creation-step precondition rule (CRITICAL)
@@ -71,6 +79,13 @@ One topic file typically has many TCs that share the same long entity-creation c
 - `## Test data` — full numbered creation chain (every entity, endpoint, parameters).
 - `TC-BE-N Preconditions:` — reference the slice (`Apply Test data steps 1–N.`) + list only TC-specific overrides/additions.
 
+**Per-TC mandatory lines:**
+- Line 1: `Apply Test data steps X–Y.`
+- Line 2: `Delta: ...` (what is unique for this TC)
+- If no difference exists: `Delta: none (shared setup unchanged).`
+
+**Important:** Each TC MUST have an explicit delta declaration. Do not rely on Description/Expected results to imply setup differences.
+
 **BAD (FORBIDDEN) — repeated creation chain across TCs:**
 
 ```
@@ -98,8 +113,8 @@ One topic file typically has many TCs that share the same long entity-creation c
 
 ### TC-BE-1 Preconditions:
 1. Apply Test data steps 1–11.
-2. Confirm invoice status = PAID (delta from step 10).
-3. Confirm payment package lock = LOCKED (delta from step 11).
+2. Delta: confirm invoice status = PAID (step 10).
+3. Delta: confirm payment package lock = LOCKED (step 11).
 
 ### TC-BE-2 Preconditions:
 1. Apply Test data steps 1–9 only (payment not yet created).
@@ -107,6 +122,8 @@ One topic file typically has many TCs that share the same long entity-creation c
 ```
 
 **Self-check rule:** Before finalising a TC file, scan for duplicated `POST /` or "Create … via" lines across multiple TCs. If the same creation step appears in two or more TCs, move it into `## Test data` and replace each occurrence with an "Apply Test data steps …" reference.
+
+**Self-check rule (case-specific):** Before finalising, confirm every TC `Preconditions:` has an explicit `Delta:` line. If two TCs have identical Preconditions text, rewrite so each TC-specific setup difference is explicit.
 
 ---
 
