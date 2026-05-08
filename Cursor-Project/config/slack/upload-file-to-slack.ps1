@@ -25,7 +25,37 @@ param(
     [string]$InitialComment = ''
 )
 
-# Prefer Bot User OAuth Token (xoxb-) from either env var — file upload API does not accept App-level (xapp-) tokens.
+function Get-TokenFromDotEnv {
+    param(
+        [Parameter(Mandatory = $true)][string]$DotEnvPath
+    )
+
+    if (-not (Test-Path -LiteralPath $DotEnvPath)) {
+        return $null
+    }
+
+    $lines = Get-Content -LiteralPath $DotEnvPath -ErrorAction SilentlyContinue
+    foreach ($line in $lines) {
+        $trimmed = $line.Trim()
+        if (-not $trimmed -or $trimmed.StartsWith('#')) {
+            continue
+        }
+
+        if ($trimmed -match '^\s*(SLACK_API_TOKEN|SLACK_BOT_TOKEN)\s*=\s*(.+?)\s*$') {
+            $value = $matches[2].Trim()
+            if (($value.StartsWith('"') -and $value.EndsWith('"')) -or ($value.StartsWith("'") -and $value.EndsWith("'"))) {
+                $value = $value.Substring(1, $value.Length - 2)
+            }
+            if ($value) {
+                return $value
+            }
+        }
+    }
+
+    return $null
+}
+
+# Prefer Bot User OAuth Token (xoxb-) from either env var - file upload API does not accept App-level (xapp-) tokens.
 $api = $env:SLACK_API_TOKEN
 $bot = $env:SLACK_BOT_TOKEN
 $slackToken = $null
@@ -40,11 +70,20 @@ if (-not $slackToken) {
     elseif ($bot) { $slackToken = $bot }
 }
 if (-not $slackToken) {
-    Write-Error 'Set SLACK_API_TOKEN (EnergoTS) or SLACK_BOT_TOKEN before running this script.'
+    $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+    $repoRoot = Split-Path -Parent (Split-Path -Parent $scriptDir)
+    $dotEnvPath = Join-Path $repoRoot 'EnergoTS\.env'
+    $dotEnvToken = Get-TokenFromDotEnv -DotEnvPath $dotEnvPath
+    if ($dotEnvToken) {
+        $slackToken = $dotEnvToken
+    }
+}
+if (-not $slackToken) {
+    Write-Error 'Set SLACK_API_TOKEN or SLACK_BOT_TOKEN in environment, or add one of them to Cursor-Project/EnergoTS/.env.'
     exit 1
 }
 if ($slackToken.StartsWith('xapp-', [System.StringComparison]::OrdinalIgnoreCase)) {
-    Write-Error 'Slack App-level token (xapp-...) cannot be used for files.getUploadURLExternal. Add Bot User OAuth Token (xoxb-...) in SLACK_API_TOKEN or SLACK_BOT_TOKEN (OAuth & Permissions → Bot User OAuth Token; scope files:write; reinstall app).'
+    Write-Error 'Slack App-level token (xapp-...) cannot be used for files.getUploadURLExternal. Add Bot User OAuth Token (xoxb-...) in SLACK_API_TOKEN or SLACK_BOT_TOKEN (OAuth and Permissions -> Bot User OAuth Token; scope files:write; reinstall app).'
     exit 1
 }
 

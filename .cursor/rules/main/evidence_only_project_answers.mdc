@@ -109,3 +109,61 @@ The assistant MUST always:
 
 The assistant MUST NOT conclude "no information" only because `description` is empty.
 
+---
+
+## Jira custom field mapping (MANDATORY)
+
+The Jira instance uses **custom fields** for key content. When fetching issues via MCP `getJiraIssue`, the assistant MUST:
+
+1. **Always include `expand: "names"`** in the call so the response contains a `names` map (fieldId → human label).
+2. **Always request these known content-bearing custom fields** (in the `fields` array or by omitting `fields` to get all):
+
+| Custom Field ID | Human Label | Purpose |
+|---|---|---|
+| `customfield_10103` | Description formatted | **Primary rich-text content** — treat as equivalent to `description` when `description` is null/empty |
+| `customfield_10283` | Clarification Reason | Open questions / clarification notes |
+| `customfield_10048` | Acceptance Criteria | Acceptance criteria for the ticket |
+| `customfield_10745` | Test Case | Test case details |
+| `customfield_10104` | Design | Design notes / references |
+| `customfield_10217` | Bug Description | Bug-specific description (A.R. / E.R.) |
+| `customfield_10095` | Tester | Assigned tester |
+| `customfield_10877` | Approved for Prod | Production approval status |
+| `customfield_10485` | QA points | QA story points |
+| `customfield_10484` | Dev Points | Dev story points |
+| `customfield_10483` | DB Points | DB story points |
+
+3. **When `description` is null/empty:** treat `customfield_10103` ("Description formatted") as the **primary content source**. Parse its full ADF/HTML structure including:
+   - Text content (paragraphs, lists, headings)
+   - Embedded images (`mediaSingle` / `media` nodes with `alt` text)
+   - Inline links (`inlineCard` with `url`, `link` marks with `href`)
+   - Attached file references (`mediaInline` nodes)
+4. **Extract and list all URLs** found in rich-text fields (Figma mockups, diagrams.net, external links) with their context labels.
+5. **Never skip a non-null custom field** just because `description` has content — always scan both.
+
+---
+
+## Jira attachment content analysis (MANDATORY)
+
+When a Jira ticket has attachments and the user requests content analysis (or when ticket understanding requires it):
+
+1. **Metadata is always available** via `getJiraIssue` → `fields.attachment[]` (filename, mimeType, size, content URL, thumbnail URL).
+2. **For actual content analysis**, run the download script:
+   ```
+   powershell -ExecutionPolicy Bypass -File "Cursor-Project/config/jira/download-jira-attachments.ps1" -IssueKey "<KEY>"
+   ```
+   This downloads attachments to `Cursor-Project/config/jira/attachments/<KEY>/` and extracts text from DOCX files.
+3. **After download, analyze each file type:**
+   - **Images (PNG/JPEG/GIF/WEBP):** Use the `Read` tool (has native vision/image support) to analyze screenshots, mockups, UI states
+   - **SVG:** Read as text — contains diagram structure, labels, flow descriptions
+   - **DOCX:** Read the extracted `.txt` file (created by the download script alongside the `.docx`)
+   - **PDF:** Use the `Read` tool (has native PDF support)
+4. **Include attachment findings** in the consolidated ticket analysis with citation: "found in attachment: `<filename>`"
+5. **If the download script is not configured** (missing `JIRA_API_TOKEN`), fall back to metadata-only analysis and note: "Attachment content not analyzed — JIRA_API_TOKEN not configured. Only metadata available."
+
+### Required environment variables for attachment download
+
+Set in `Cursor-Project/EnergoTS/.env` or system environment:
+- `JIRA_EMAIL` — Atlassian account email
+- `JIRA_API_TOKEN` — Atlassian API token (from https://id.atlassian.com/manage-profile/security/api-tokens)
+- `JIRA_BASE_URL` — e.g. `https://oppa-support.atlassian.net`
+

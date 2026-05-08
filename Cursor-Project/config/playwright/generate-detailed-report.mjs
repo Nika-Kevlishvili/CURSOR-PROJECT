@@ -119,7 +119,16 @@ function collectCreatedEntityLinks(test) {
       }
     }
   }
-  return out;
+  // Remove generic "link" entries when the same URL exists under a concrete entity.
+  const concreteByUrl = new Set(
+    out
+      .filter((x) => String(x.entity).toLowerCase() !== 'link')
+      .map((x) => x.url),
+  );
+  return out.filter((x) => {
+    if (String(x.entity).toLowerCase() !== 'link') return true;
+    return !concreteByUrl.has(x.url);
+  });
 }
 
 function annotationsBlock(test) {
@@ -179,28 +188,17 @@ function normalizeDescribePath(describePath) {
   return s.replace(/\\/g, '/');
 }
 
-function buildMarkdown(report, jsonPath, cwdForDisplay) {
-  const stats = report.stats || {};
-  const sections = [];
-  const jsonLabel = path.relative(cwdForDisplay, jsonPath) || path.basename(jsonPath);
+function toStatusLabel(status) {
+  const s = String(status || '').toLowerCase();
+  if (s === 'passed') return 'PASSED';
+  if (s === 'skipped') return 'SKIPPED';
+  if (s === 'timedout') return 'FAILED';
+  if (s === 'failed') return 'FAILED';
+  return String(status || 'UNKNOWN').toUpperCase();
+}
 
-  sections.push(`# Playwright detailed report`);
-  sections.push('');
-  sections.push(`- **Generated:** ${new Date().toISOString()}`);
-  sections.push(`- **Source:** \`${escapeMd(jsonLabel)}\` (same folder as default output when run from EnergoTS)`);
-  sections.push(`- **Run start (from JSON):** ${stats.startTime || ''}`);
-  if (stats.duration != null) sections.push(`- **Total run duration (from JSON):** ${Math.round(stats.duration)} ms`);
-  sections.push(
-    `- **Summary (from JSON stats):** expected=${stats.expected ?? 0}, unexpected=${stats.unexpected ?? 0}, skipped=${stats.skipped ?? 0}, flaky=${stats.flaky ?? 0}`,
-  );
-  sections.push(`- **Skip setup/teardown files in this report:** ${skipSetup ? 'yes' : 'no'}`);
-  sections.push('');
-  sections.push(
-    'Each section lists **which test case the automation title maps to** (Jira + TC id when present) and **what scenario the title describes**. Map to `test_cases/Backend|Frontend/*.md` when you need full preconditions and expected results.',
-  );
-  sections.push('');
-
-  let index = 0;
+function collectAllTests(report) {
+  const rows = [];
   walkSuites(report.suites || [], [], (spec, describePath, suiteFile) => {
     const file = spec.file || suiteFile || '';
     if (shouldSkipFile(file)) return;
@@ -208,64 +206,102 @@ function buildMarkdown(report, jsonPath, cwdForDisplay) {
     const line = spec.line != null ? spec.line : '';
     const location = line !== '' ? `${file}:${line}` : file;
     const describeNorm = normalizeDescribePath(describePath);
-
     for (const test of spec.tests || []) {
-      index += 1;
-      const status = lastResultStatus(test);
-      const duration = formatDurationMs(test);
-      const steps = collectStepTitles(test);
-      const entityLinks = collectCreatedEntityLinks(test);
-      const err =
-        status === 'failed' || status === 'timedOut' ? collectErrorSnippet(test) : '';
-      const tc = parseTestCaseFromTitle(title);
-
-      sections.push(`## ${index}. ${escapeMd(title)}`);
-      sections.push('');
-      sections.push(`| Field | Value |`);
-      sections.push(`| --- | --- |`);
-      sections.push(`| **Jira (from title)** | ${escapeMd(tc.jira)} |`);
-      sections.push(`| **Test case id (from title)** | ${escapeMd(tc.tcId)} |`);
-      sections.push(`| **Scenario / objective (from title)** | ${escapeMd(tc.scenario)} |`);
-      sections.push(`| **Playwright \`test()\` title** | ${escapeMd(title)} |`);
-      sections.push(`| **Spec location** | \`${escapeMd(location.replace(/\\/g, '/'))}\` |`);
-      sections.push(`| **Describe path** | ${escapeMd(describeNorm || '—')} |`);
-      sections.push(`| **Result** | **${escapeMd(status)}** |`);
-      sections.push(`| **Duration (sum of results)** | ${duration} ms |`);
-      sections.push('');
-      if (!tc.matched && tc.tcId.startsWith('Unmapped')) {
-        sections.push(
-          '> **Tip:** Name each Playwright test title like **`[JIRA-KEY] TC-BE-n: Short scenario`** (or **TC-FE-n**) so this report shows the exact TC row the test covers.',
-        );
-        sections.push('');
-      }
-      sections.push(`### Annotations`);
-      sections.push('');
-      sections.push(annotationsBlock(test));
-      sections.push('');
-      sections.push(`### Steps (\`test.step\` titles)`);
-      sections.push('');
-      sections.push(steps.length ? steps.map((t) => `- ${escapeMd(t)}`).join('\n') : '_None._');
-      sections.push('');
-      if (entityLinks.length) {
-        sections.push(`### Created Entity Links`);
-        sections.push('');
-        sections.push(entityLinks.map((x) => `- **${escapeMd(x.entity)}:** [${escapeMd(x.url)}](${x.url})`).join('\n'));
-        sections.push('');
-      }
-      if (err) {
-        sections.push(`### Failure (first line)`);
-        sections.push('');
-        sections.push('```');
-        sections.push(err);
-        sections.push('```');
-        sections.push('');
-      }
-      sections.push('---');
-      sections.push('');
+      rows.push({
+        title,
+        test,
+        location,
+        describeNorm,
+        tc: parseTestCaseFromTitle(title),
+        status: lastResultStatus(test),
+        duration: formatDurationMs(test),
+        entityLinks: collectCreatedEntityLinks(test),
+        err: collectErrorSnippet(test),
+      });
     }
   });
+  return rows;
+}
 
-  if (index === 0) sections.push('_No test entries (empty run or all filtered out)._\n');
+function buildMarkdown(report, jsonPath, cwdForDisplay) {
+  const stats = report.stats || {};
+  const sections = [];
+  const allTests = collectAllTests(report);
+  const runDate = stats.startTime ? new Date(stats.startTime) : new Date();
+  const dateStr = Number.isNaN(runDate.getTime()) ? new Date().toISOString().slice(0, 10) : runDate.toISOString().slice(0, 10);
+  const jiraSet = new Set(allTests.map((t) => t.tc.jira).filter((x) => x && x !== '—'));
+  const jiraKey = jiraSet.size === 1 ? Array.from(jiraSet)[0] : 'N/A';
+  const tcIds = allTests
+    .map((t) => t.tc.tcId)
+    .filter((x) => /^TC-(BE|FE)-\d+$/i.test(String(x)))
+    .map((x) => String(x).toUpperCase());
+  const specSet = new Set(allTests.map((t) => t.location.split(':')[0].replace(/\\/g, '/')).filter(Boolean));
+  const jsonLabel = path.relative(cwdForDisplay, jsonPath) || path.basename(jsonPath);
+
+  const passed = allTests.filter((t) => String(t.status).toLowerCase() === 'passed').length;
+  const failed = allTests.filter((t) => ['failed', 'timedout'].includes(String(t.status).toLowerCase())).length;
+  const skipped = allTests.filter((t) => String(t.status).toLowerCase() === 'skipped').length;
+
+  const reportTitle = jiraKey !== 'N/A'
+    ? `# ${jiraKey} Detailed Test Report`
+    : '# Detailed Test Report';
+
+  sections.push(reportTitle);
+  sections.push('');
+  sections.push('Run context');
+  sections.push(`- Jira key: ${jiraKey}`);
+  sections.push(`- Date: ${dateStr}`);
+  sections.push('- Branch: cursor');
+  if (specSet.size === 1) {
+    sections.push(`- Spec path: \`${escapeMd(Array.from(specSet)[0])}\``);
+  } else {
+    sections.push('- Spec path(s):');
+    for (const specPath of specSet) sections.push(`  - \`${escapeMd(specPath)}\``);
+  }
+  sections.push(`- Source JSON: \`${escapeMd(jsonLabel)}\``);
+  sections.push('- Command: N/A (read from generated Playwright JSON report)');
+  sections.push('');
+  sections.push('Summary');
+  sections.push(`- Total in scope: ${allTests.length}`);
+  sections.push(`- Passed: ${passed}`);
+  sections.push(`- Failed: ${failed}`);
+  sections.push(`- Skipped: ${skipped}`);
+  if (stats.duration != null) {
+    sections.push(`- Duration: ~${(stats.duration / 1000).toFixed(1)}s`);
+  }
+  if (tcIds.length) {
+    sections.push(`- Test case IDs: ${tcIds.join(', ')}`);
+  }
+  sections.push('');
+  sections.push('Test cases');
+  sections.push('');
+
+  allTests.forEach((row, idx) => {
+    const tcLabel = /^TC-(BE|FE)-\d+$/i.test(String(row.tc.tcId))
+      ? String(row.tc.tcId).toUpperCase()
+      : `Test-${idx + 1}`;
+    sections.push(tcLabel);
+    sections.push(`- Status: ${toStatusLabel(row.status)}`);
+    sections.push(`- Expected Result: ${row.tc.scenario && row.tc.scenario !== '—' ? row.tc.scenario : row.title}`);
+    if (String(row.status).toLowerCase() === 'passed') {
+      sections.push('- Actual Result: Test passed with expected behavior.');
+    } else if (String(row.status).toLowerCase() === 'skipped') {
+      sections.push('- Actual Result: Test was skipped.');
+    } else {
+      sections.push(`- Actual Result: Test failed. ${row.err || 'See Playwright report for details.'}`);
+    }
+    sections.push('- Portal data links:');
+    if (row.entityLinks.length) {
+      row.entityLinks.forEach((x) => {
+        sections.push(`  - ${x.entity}: ${x.url}`);
+      });
+    } else {
+      sections.push('  - not available');
+    }
+    sections.push('');
+  });
+
+  if (!allTests.length) sections.push('_No test entries (empty run or all filtered out)._\n');
 
   return sections.join('\n');
 }
