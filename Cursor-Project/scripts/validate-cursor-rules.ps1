@@ -3,7 +3,7 @@
   Static integrity checks for workspace Cursor rules/skills (no Cursor IDE required).
 
 .DESCRIPTION
-  - Ensures referenced paths under .cursor/ exist (from workflow_rules.mdc).
+  - Ensures internal references in .cursor/rules/**/*.mdc to .cursor/... and Cursor-Project/... paths exist.
   - Warns if alwaysApply:false rules lack globs.
   - Fails if plaintext DB-style secrets appear in .cursor/**/*.md and .cursor/**/*.mdc.
   - Usage: powershell -ExecutionPolicy Bypass -File "Cursor-Project/scripts/validate-cursor-rules.ps1"
@@ -25,19 +25,26 @@ function Test-PathFromRepo([string]$RelativePath) {
     Test-Path -LiteralPath $full
 }
 
-# --- References from workflow_rules.mdc (Rule 32–41 pointers)
-$workflowPath = Join-Path $CursorRoot 'rules\workflows\workflow_rules.mdc'
-if (-not (Test-Path $workflowPath)) {
-    $failures += "Missing $workflowPath"
+# --- Internal path references in all workflow rules (.mdc under .cursor/rules)
+$refPattern = '(?:\.cursor|Cursor-Project)/[a-zA-Z0-9_./-]+\.(?:mdc|md|ps1|mjs)'
+$rulesRoot = Join-Path $CursorRoot 'rules'
+if (-not (Test-Path -LiteralPath $rulesRoot)) {
+    $failures += "Missing rules directory: $rulesRoot"
 } else {
-    $content = Get-Content -LiteralPath $workflowPath -Raw
-    # Longest suffix first: otherwise `.mdc` matches `.md` + stray `c`
-    $pattern = '\.cursor/[a-zA-Z0-9_./-]+\.(?:mdc|md)'
-    $refs = [regex]::Matches($content, $pattern) | ForEach-Object { $_.Value } | Sort-Object -Unique
-    foreach ($ref in $refs) {
-        $rel = $ref -replace '/', '\'
-        if (-not (Test-PathFromRepo $rel)) {
-            $failures += "Broken reference in workflow_rules.mdc: $ref"
+    Get-ChildItem -Path $rulesRoot -Recurse -Filter '*.mdc' -File | ForEach-Object {
+        $mdcPath = $_.FullName
+        $content = Get-Content -LiteralPath $mdcPath -Raw
+        $refs = [regex]::Matches($content, $refPattern) | ForEach-Object { $_.Value } | Sort-Object -Unique
+        foreach ($ref in $refs) {
+            $rel = $ref -replace '/', '\'
+            if (Test-PathFromRepo $rel) { continue }
+            $relMdc = $mdcPath.Replace($RepoRoot, '').TrimStart('\')
+            if ($ref -like '.cursor/*') {
+                $failures += "Broken reference in ${relMdc}: $ref"
+            } else {
+                # Cursor-Project/ paths may be illustrative examples; warn only.
+                $warnings += "Missing Cursor-Project path (example or not checked in): $ref (from $relMdc)"
+            }
         }
     }
 }

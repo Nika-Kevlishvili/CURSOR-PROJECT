@@ -12,7 +12,7 @@ Use this file as the **single map** from “agent role” to **where it lives to
 | **phoenix-qa.md** | Phoenix Q&A (PhoenixExpert) | `/phoenix`, Phoenix questions (Rule 0.2) |
 | **bug-validator.md** | Bug validation | Rule 32; invoke **`bug-validator`** subagent |
 | **test-runner.md** | Test execution | Test-related runs; consult PhoenixExpert |
-| **report-generator.md** | Rule 0.6 reports | After tasks; `/report` |
+| **report-generator.md** | Persisted reports (Rule 0.6) | HandsOff `{JIRA_KEY}.md`; **`/report`**; **`/feedback`**; explicit user save only — not after every routine task |
 | **database-query.md** | PostgreSQL (Dev/Test/Prod) | DB questions; `database_workflow.mdc` |
 | **production-data-reader.md** | Production DB (read-only) | Rule PDR.0; PostgreSQLProd MCP |
 | **git-sync.md** | Phoenix GitLab sync | `/sync`, `!sync`, `git_sync_workflow.mdc` |

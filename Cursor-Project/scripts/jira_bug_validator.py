@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
 """
-Fetch Jira bugs from project PDT and run cursor /bag-validate for each one.
+Fetch Jira bugs from a configured project and run Cursor agent prompts for each one.
 Designed to run as a background service - skips bugs already processed today.
 
 Required environment variables:
   JIRA_EMAIL      - your Atlassian account email
   JIRA_API_TOKEN  - your Atlassian API token (https://id.atlassian.com/manage-profile/security/api-tokens)
 
+Optional environment variables (see Cursor-Project/config/jira/README.md):
+  JIRA_BASE_URL       - default https://oppa-support.atlassian.net
+  JIRA_PROJECT_KEY    - default PDT
+  CURSOR_WORKSPACE      - folder passed to `cursor agent --workspace` (default: git workspace root above Cursor-Project/)
+  CURSOR_WORKSPACE_ROOT - alias override for the same default resolution
+
 Usage:
-  python3 jira_bug_validator.py
+  python jira_bug_validator.py
 """
 
 import json
@@ -22,12 +28,31 @@ from pathlib import Path
 import requests
 from requests.auth import HTTPBasicAuth
 
-# ── Config ──────────────────────────────────────────────────────────────────
-JIRA_BASE_URL = "https://oppa-support.atlassian.net"
+# ── Config (env-tunable; defaults are team-friendly) ───────────────────────
+_SCRIPT_DIR = Path(__file__).resolve().parent
+_REPO_ROOT = _SCRIPT_DIR.parent.parent  # .../Cursor-Project/scripts -> workspace root
+
+
+def _default_cursor_workspace() -> str:
+    explicit = os.environ.get("CURSOR_WORKSPACE") or os.environ.get("CURSOR_WORKSPACE_ROOT")
+    if explicit:
+        return str(Path(explicit).expanduser().resolve())
+    return str(_REPO_ROOT.resolve())
+
+
+def _jira_base_url() -> str:
+    return os.environ.get("JIRA_BASE_URL", "https://oppa-support.atlassian.net").rstrip("/")
+
+
+def _project_key() -> str:
+    return os.environ.get("JIRA_PROJECT_KEY", "PDT")
+
+
+JIRA_BASE_URL = _jira_base_url()
 JIRA_BROWSE_URL = f"{JIRA_BASE_URL}/browse"
-PROJECT_KEY = "PDT"
-OUTPUT_DIR = Path(__file__).parent / "bug_logs"
-CURSOR_WORKSPACE = r"C:\Users\N.kevlishvili\Cursor"
+PROJECT_KEY = _project_key()
+OUTPUT_DIR = _SCRIPT_DIR / "bug_logs"
+CURSOR_WORKSPACE = _default_cursor_workspace()
 MAX_RESULTS = 100  # max per page; script paginates automatically
 MAX_REPRO_STEPS = 8
 # ─────────────────────────────────────────────────────────────────────────────

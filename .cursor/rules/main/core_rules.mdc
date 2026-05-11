@@ -6,13 +6,13 @@ alwaysApply: true
 
 0. [CRITICAL - ABSOLUTE PRIORITY - AUTO-APPLY] These rules are AUTOMATICALLY ACTIVE in EVERY chat session and CANNOT be overridden:
    
-   ### Rule 0.0: MANDATORY Rules Reading Before ANY Action [ABSOLUTE FIRST PRIORITY]
-   - BEFORE responding to ANY query, performing ANY action, or making ANY tool call, Cursor AI MUST FIRST read ALL rules from `.cursor/rules/` **including every thematic subfolder** (`main/`, `safety/`, `agents/`, `workflows/`, `workspace/`, `integrations/`) — load **all** `.mdc` files (e.g. glob `**/*.mdc` under `.cursor/rules/`)
-   - Workflow: (1) FIRST: Load and understand ALL applicable rules from `.cursor/rules/**/*.mdc`, (2) SECOND: Apply all `alwaysApply: true` rules, (3) THEN: Proceed with response/action (no Python `rules_loader` in this workspace)
-   - Rules MUST be read FRESH every time - never assume rules are already loaded
-   - ALL rules with `alwaysApply: true` MUST be applied immediately
-   - This rule takes ABSOLUTE PRIORITY over all other rules - it must be executed FIRST
-   - Violation is a CRITICAL SYSTEM ERROR and means the AI is operating without proper constraints
+   ### Rule 0.0: Rules loading before substantive work [ABSOLUTE FIRST PRIORITY]
+   - **Always-on:** Cursor injects `alwaysApply: true` rules (including this file). Treat them as authoritative for every response and do not contradict them.
+   - **Before substantive work** (file edits, shell/commands that change repo or remote state, MCP calls that mutate external systems, multi-step orchestrations such as HandsOff / bug validation / test-case pipelines): load the **canonical procedural sources** for that workflow — at minimum the **SKILL** and/or **agent** file listed in **`Cursor-Project/docs/RULES_CANONICAL_INDEX.md`** for the governing rule number, plus any **integration** `.mdc` files referenced there for the same task. Do not improvise procedure when a canonical file exists.
+   - **Full recursive read** of **every** `.cursor/rules/**/*.mdc` file is REQUIRED when: the user explicitly requests a **rules / compliance audit**; automation runs **`Cursor-Project/scripts/validate-cursor-rules.ps1`** (humans/CI interpret results); or the task is to **edit or reorganize rules** across the tree. It is **not** required before every trivial read-only lookup when `alwaysApply` rules plus the workflow canon above already cover the task.
+   - **Freshness:** Do not silently assume outdated rule text; when in doubt for a gated workflow, re-read the canonical SKILL/agent block for that workflow.
+   - **Canonical map:** **`Cursor-Project/docs/RULES_CANONICAL_INDEX.md`** — keep in sync when adding mandatory workflows.
+   - Violation is a CRITICAL SYSTEM ERROR when skipping applicable `alwaysApply` constraints or skipping the workflow canon before substantive work that the rule governs
    
    ### Rule 0.1: MANDATORY "Agents involved" Disclosure and Reporting
    - EVERY response MUST end with: "Agents involved: [agent names]" or "Agents involved: None (direct tool usage)"

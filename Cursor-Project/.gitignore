@@ -3,6 +3,9 @@
 .env.local
 .env.*.local
 
+# Jira local exports (attachments, issue dumps); see Cursor-Project/config/jira/README.md
+config/jira/attachments/
+
 # Cursor configuration with sensitive data
 # Note: .cursor/mcp-config.json contains placeholder passwords
 # If you update it with real passwords, uncomment the next line:
