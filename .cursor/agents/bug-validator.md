@@ -53,6 +53,12 @@ Supplementary detail also lives in **`.cursor/skills/phoenix-bug-validation/SKIL
 - State expected behavior in 1–3 clear bullets.
 - Separate expected behavior from reported actual behavior.
 
+### Step 1b: Process diagrams (local library + linked assets)
+
+- **`Cursor-Project/config/Diagrams/`** (`Bundle 4`, `Bundle 5`, `Bundle 6`): when the ticket has **no** diagram attachment and diagram URLs are not yet tied to this case, search filenames and inspect matching `.svg` files for this bug's process. Cite **full path** when used as flow context.
+- **Jira attachments:** use **`Cursor-Project/config/jira/download-jira-attachments.ps1`** when diagram files live on the issue.
+- **Confluence / ticket URLs:** fetch pages read-only; when direct image/export URLs exist, save under **`Cursor-Project/config/confluence/diagrams/<pageId-or-issueKey>/`** and cite path (see **`.cursor/skills/phoenix-bug-validation/SKILL.md`** Step 1b for authority order: **code > Confluence > diagram**).
+
 ### Step 2: Confluence validation (evidence strength assessment)
 
 - Search Confluence with MCP and classify evidence strength: `exact match` | `contextual match` | `no match` | `contradicts` | `search failed`.
@@ -137,6 +143,7 @@ Use this structure when status is **`COMPLETED`**:
 ### 1. Expected Behavior
 **Bug Claims:** …
 **Context:** …
+**Diagram sources (if used):** Local `config/Diagrams/…` and/or `config/confluence/diagrams/…` — or state "none matched".
 
 ### 2. Confluence Validation  
 **Evidence Strength:** …

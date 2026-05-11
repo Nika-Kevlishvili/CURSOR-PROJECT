@@ -46,6 +46,14 @@ Downstream **energo-ts-test** also reads this folder; keep cases consistent with
 - Run codebase_search (and grep if needed) for terms from the prompt (e.g. validation, identifier, customer).
 - Collect findings and search terms for context.
 
+### 2b. Process diagrams
+
+Follow **`.cursor/skills/test-case-generator/SKILL.md`** § **2b** exactly.
+
+- **`prompt_type: 'bug'`:** local **`config/Diagrams/`** when the ticket lacks diagrams; cite paths; download linked assets to **`config/confluence/diagrams/`** when URLs allow.
+- **`prompt_type: 'task'`:** if the task/description or linked ticket pages **already include a diagram**, rely on **that description + diagram** — **do not** push **`config/Diagrams/`** ahead of user-supplied visuals. If there is **no** diagram in scope, search **`config/Diagrams/`** for matches and **ask the user** before basing TCs on any candidate — quote **full paths** of proposed files.
+- **Authority:** **code + Confluence** override contradictory diagrams.
+
 ### 3. Cross-dependency data (MANDATORY when user requested test cases – Rule 35)
 
 - The parent MUST have run **cross-dependency-finder** first and pass its output in `context['cross_dependency_data']`.

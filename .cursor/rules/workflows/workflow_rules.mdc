@@ -23,6 +23,8 @@ alwaysApply: true
 
     **Invariant reminders:** Environment resolution + Phoenix alignment per **Rule PHOENIX-SWITCH.0** (resolver **`environment-resolver`** subagent, `switch-phoenix-branches.ps1`, prod `-ConfirmProd` + user ack). Chat gets the **full** analysis; Slack **`bug-validation`** `C0AUEEDVCEL` after each completed validation when MCP allows; disk `BugValidation_*.md` only on **`/report`** or explicit save (**Rule 0.6**). If the reproducibility path touches Playwright generation, **Swagger refresh** is mandatory (**Rule 41** / `update-swagger-specs.ps1`).
 
+    **Process diagrams:** When the ticket lacks an attached diagram, **`bug-validator`** MUST consider **`Cursor-Project/config/Diagrams/`** (`Bundle 4`, `Bundle 5`, `Bundle 6`) for a matching process `.svg` and cite paths when used. For URLs from Jira/Confluence with downloadable assets, save read-only under **`Cursor-Project/config/confluence/diagrams/<pageId-or-issueKey>/`**. **Authority:** Phoenix **code** and **Confluence** override contradictory diagrams — see **`.cursor/skills/phoenix-bug-validation/SKILL.md`** Step 1b.
+
     Violation is a CRITICAL SYSTEM ERROR.
 
 # DATABASE WORKFLOW RULE [CRITICAL]
@@ -61,7 +63,7 @@ alwaysApply: true
     **Workflow summary:**
     1. User requests test cases → run **cross-dependency-finder** (Rule 35a: Jira + codebase + shallow Confluence; **no** local merge/git; consults PhoenixExpert when needed).
     2. Cross-dependency-finder returns report (including "what could break" and **technical_details**) → pass to **test-case-generator**.
-    3. Test-case-generator reads the **playwright instructions** folder (mandatory), then generates test cases as **two separate files** — `test_cases/Backend/<Topic_name>.md` (TC-BE-N only) and `test_cases/Frontend/<Topic_name>.md` (TC-FE-N only) — using prompt + Confluence + codebase + cross_dependency_data. All preconditions MUST use the **DRY creation-step rule** (`## Test data` once; each TC references slice + deltas; never repeat entity creation across TCs — see `Cursor-Project/config/template/Test_case_template.md` § "Reuse model — DRY preconditions").
+    3. Test-case-generator reads the **playwright instructions** folder (mandatory), then generates test cases as **two separate files** — `test_cases/Backend/<Topic_name>.md` (TC-BE-N only) and `test_cases/Frontend/<Topic_name>.md` (TC-FE-N only) — using prompt + Confluence + codebase + cross_dependency_data. **Diagrams:** for **bugs**, use **`Cursor-Project/config/Diagrams/`** when the ticket has no diagram but a local `.svg` matches; for **tasks/non-bugs**, if the task/description or linked pages already include a diagram, **that** description + diagram are primary — **do not** prioritize `config/Diagrams/` over user/task scope; if a task has **no** diagram, search `config/Diagrams/` and **ask the user** before using any candidate (name full paths). Download linked diagram assets read-only to **`Cursor-Project/config/confluence/diagrams/`** when URLs allow; cite paths in **References**. All preconditions MUST use the **DRY creation-step rule** (`## Test data` once; each TC references slice + deltas; never repeat entity creation across TCs — see `Cursor-Project/config/template/Test_case_template.md` § "Reuse model — DRY preconditions"). Canonical detail: **`.cursor/skills/test-case-generator/SKILL.md`** § **2b**.
     4. **TC quality validation** (Step 2.5) — invoke test-case-quality-validator; rewrite weak TCs (max 2 rounds); surface failures to user.
     
     - NEVER skip the cross-dependency-finder step when test case creation is requested.
@@ -89,3 +91,7 @@ alwaysApply: true
 # SWAGGER REFRESH MANDATORY RULE [CRITICAL]
 
 41. [CRITICAL] Before **any** EnergoTS `.spec.ts` create/edit → **`update-swagger-specs.ps1`**; payloads from refreshed Swagger only. **Canonical:** `.cursor/rules/integrations/swagger_refresh_mandatory.mdc`. Violation is a CRITICAL SYSTEM ERROR.
+
+# JIRA MCP FALLBACK (REST READ) [CRITICAL]
+
+42. [CRITICAL] **Jira issue reads:** Prefer **Jira MCP**. If Jira MCP is unavailable or fails after **2–3 retries** with backoff, agents MUST use the **Atlassian REST API v3** read fallback for **full** issue-equivalent data (same evidence expectations as MCP: `expand=names`, custom fields, links, attachments metadata; attachment body via **`Cursor-Project/config/jira/download-jira-attachments.ps1`** when needed). **Secrets:** only from env / MCP config — never in rules or chat (**Rule DB.1** pattern). Disclose in chat: **`Jira source: REST fallback …`**. **Canonical:** `.cursor/rules/integrations/jira_rest_fallback.mdc`. Abandoning Jira-backed work when REST could satisfy the read **without** user opt-out is a CRITICAL SYSTEM ERROR.

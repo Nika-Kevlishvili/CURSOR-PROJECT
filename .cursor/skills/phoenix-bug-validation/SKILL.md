@@ -31,6 +31,23 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
 - Identify the specific behavior that should occur according to the bug reporter.
 - Document the claimed expected behavior clearly.
 
+### Step 1b: Process diagrams (local library + linked assets)
+
+Use diagrams **when they sharpen expected flow or reproducibility**, not as a substitute for code or Confluence.
+
+1. **Local diagram library (no attachment on ticket)**  
+   - Search **`Cursor-Project/config/Diagrams/`** — **`Bundle 4`**, **`Bundle 5`**, **`Bundle 6`** — when the bug has **no** diagram attachment and no diagram URL tied to this scope in Jira/Confluence evidence yet.  
+   - Match by process/domain keywords from the ticket, filenames, and (if ambiguous) open candidate **`.svg`** files and verify labels/branches fit **this** case.  
+   - If a clear match exists: cite **full workspace path** in the analysis (e.g. expected sequence vs reporter steps).
+
+2. **Diagrams from Jira / Confluence links**  
+   - Extract URLs from ticket rich-text and linked pages per **`evidence_only_project_answers.mdc`** (Figma, diagrams.net, embedded media).  
+   - When `getConfluencePage` or linked URLs expose **direct downloadable assets** (e.g. PNG/SVG/PDF): save **read-only** copies under **`Cursor-Project/config/confluence/diagrams/<pageId-or-issueKey>/`** (create folders as needed) and cite that path.  
+   - Macro-only embeds without a direct file URL: state limitation in chat; do not invent flows.
+
+3. **Authority order**  
+   - **Phoenix code > Confluence > diagram.** If a diagram contradicts code or Confluence, record the conflict explicitly — diagrams alone never overturn verified code/spec.
+
 ### Step 2: Confluence validation (evidence strength)
 
 - Use MCP Confluence tools: search, getSpaces, getPages, getConfluencePage.

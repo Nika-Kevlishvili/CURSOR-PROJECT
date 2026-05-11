@@ -22,7 +22,7 @@ Route to cross-dependency-finder subagent / CrossDependencyFinderAgent. Do not d
 
 ### 0. Jira-anchored analysis (Rule 35a) [when user gives a Jira/bug/task]
 
-- **Jira MCP:** Load issue (key, summary, description).
+- **Jira:** Load issue (key, summary, description, links, key custom fields) via **Jira MCP** first; if MCP fails after retries, use **REST read fallback** per **`.cursor/rules/integrations/jira_rest_fallback.mdc`** (disclose `Jira source: REST fallback` in output to parent).
 - **Codebase:** Search/read Phoenix code (READ-ONLY) for entry points, callers, **what_could_break**.
 - **Prohibited (default):** local **`git log` / merge lookup** for the ticket key; **`git show`** archaeology; **git sync** triggered only because cross-dep ran; any removed **git snapshot** script.
 - **GitLab MR/merge:** **Only** if the user **explicitly** asks; read-only MCP.

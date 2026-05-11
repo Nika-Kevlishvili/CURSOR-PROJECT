@@ -95,6 +95,8 @@ the assistant MAY answer from general knowledge, but MUST still respect:
 
 When the user asks to retrieve information from a Jira ticket, the assistant MUST NOT rely only on the `description` field.
 
+**Jira MCP unavailable:** If Jira MCP cannot return the issue after retries, the assistant MUST use the **REST read fallback** in **`.cursor/rules/integrations/jira_rest_fallback.mdc`** (same field/link/attachment discipline below). State **`Jira source: REST fallback …`** in the reply.
+
 The assistant MUST always:
 
 1. Fetch the full issue payload (all available fields) and verify whether `description` is present, empty, or `null`.

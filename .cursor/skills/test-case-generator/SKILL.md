@@ -56,6 +56,22 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 - Confluence: cloudId → search → collect title, content, pageId, spaceId.
 - Codebase: codebase_search (and grep) for terms from prompt; collect findings.
 
+### 2b. Process diagrams (expected flow alignment)
+
+Use **`prompt_type`** (`'bug'` vs `'task'`) from inputs — behavior differs.
+
+**Bugs (`prompt_type: 'bug'`):**
+
+- When the ticket has **no** diagram attachment and no diagram URL in scope yet, consult **`Cursor-Project/config/Diagrams/`** (`Bundle 4`–`6`): pick matching `.svg` files, align steps/expected results, cite paths under **`## References`** (same as prior bug-validation alignment).
+- When Jira/Confluence provides downloadable diagram assets, save read-only under **`Cursor-Project/config/confluence/diagrams/<pageId-or-issueKey>/`** and cite in **References**.
+- **Authority:** **code + Confluence** override contradictory diagrams; note conflicts in **References**.
+
+**Tasks / non-bugs (`prompt_type: 'task'`) — user-supplied scope wins:**
+
+1. **Diagram already in scope** (task/Jira description, linked Confluence page text/media from that ticket, diagram URLs or attachments in **chat**, explicit diagram URLs the user or ticket provided): treat **written description + that diagram** as **primary**. Do **not** prioritize or substitute **`Cursor-Project/config/Diagrams/`** over what the task already contains. Local library is **out of scope** unless the user asks to compare or the description is silent and you are in case (2).
+2. **No diagram in task description or linked pages:** search **`Cursor-Project/config/Diagrams/`** for plausible `.svg` matches. **Mandatory gate:** if any candidate fits, **do not** write TC files based on that diagram until the user confirms — ask explicitly whether to use it, naming **each candidate by full workspace path** (and one-line why it might match). If the user declines or multiple candidates remain ambiguous, omit local diagram from TC scope until clarified.
+3. **Authority:** same as bugs — **code + Confluence** override contradictory diagrams; document discrepancies in **References**.
+
 ### 3. Precondition reuse — DRY (MANDATORY)
 
 Precondition duplication is a **forbidden pattern**. Before writing any TC's `Preconditions:` block, follow this workflow:
