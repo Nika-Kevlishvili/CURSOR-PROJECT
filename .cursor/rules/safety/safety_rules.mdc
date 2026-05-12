@@ -46,9 +46,7 @@ alwaysApply: true
 
 # NEGATIVE RULES - WHAT MUST NEVER HAPPEN [CRITICAL - ABSOLUTE PROHIBITIONS]
 
-18. [CRITICAL] Agents MUST NEVER work independently without required consultations.
-    - TestAgent, PostmanCollectionGenerator, GitLabUpdateAgent MUST consult PhoenixExpert first.
-    - Violation is a CRITICAL ERROR.
+18. [CRITICAL] Agents MUST NOT work independently — PhoenixExpert consultation mandatory (Rule 0.4). Violation is a CRITICAL ERROR.
     
 19. [CRITICAL] Agents MUST route work per **`.cursor/agents/`**, skills, and rules — there is **no** Python `AgentRouter` in this workspace.
     - Use Task tool / subagents or explicit specialist roles in chat; do not ignore prescribed workflows.
@@ -61,15 +59,13 @@ alwaysApply: true
 21. [CRITICAL] Agents MUST NEVER modify GitLab or Confluence (see Rule 1).
     - Violation is a CRITICAL SECURITY ERROR.
     
-22. [CRITICAL] Agents MUST NEVER answer Phoenix questions without PhoenixExpert (see Rule 0.2).
-    - Violation breaks single source of truth principle.
+22. [CRITICAL] Phoenix questions without PhoenixExpert are forbidden (Rule 0.2). Violation breaks single source of truth.
     
 23. [CRITICAL] Agents MUST NEVER operate outside their domain without PhoenixExpert approval.
     - Stay within specialization unless explicitly approved.
     - Violation causes incorrect results.
     
-24. [CRITICAL] Agents MUST NEVER skip "Agents involved" disclosure (see Rule 0.1).
-    - Violation is a CRITICAL SYSTEM ERROR.
+24. [CRITICAL] "Agents involved" disclosure is mandatory (Rule 0.1). Violation is a CRITICAL SYSTEM ERROR.
     
 25. [CRITICAL] Agents MUST NEVER execute destructive operations without explicit user command.
     - Safety first: when in doubt, ask or don't act.

@@ -6,16 +6,8 @@ alwaysApply: true
 
 **Canonical map (reduce drift):** Step-by-step procedure for numbered rules below lives primarily in **`.cursor/skills/**/SKILL.md`** and **`.cursor/agents/*.md`** as cited per rule; this file states **obligations and exit criteria**. Full index: **`Cursor-Project/docs/RULES_CANONICAL_INDEX.md`**. Intended architecture: **`Cursor-Project/docs/WORKSPACE_PATTERNS.md`**.
 
-3. [CRITICAL] Every response MUST end with "Agents involved: [agent names]" or "Agents involved: None (direct tool usage)".
-   - Ensures transparency, accountability, and traceability.
-   - Violation is a CRITICAL ERROR.
-4. [CRITICAL] Every response MUST include a Confidence block:
-   - Format:
-     - `**Confidence: XX%**`
-     - `Reason: <1-2 sentence explanation>`
-   - Placement: immediately before the final "Agents involved: ..." line.
-   - Applies to all response types: final answers, progress updates, clarifying questions, and error messages.
-   - Violation is a CRITICAL ERROR.
+3. [CRITICAL] "Agents involved" footer — see Rule 0.1 in `core_rules.mdc`. Violation is a CRITICAL ERROR.
+4. [CRITICAL] Confidence block mandatory (CONF.1 in `clarification_and_confidence.mdc`). Format: `**Confidence: XX%**` + Reason. Placement: before "Agents involved". Violation is a CRITICAL ERROR.
 
 # BUG VALIDATION RULE [CRITICAL]
 

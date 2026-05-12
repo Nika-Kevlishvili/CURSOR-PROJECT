@@ -1,92 +1,77 @@
 # Cursor Project
 
-Multi-functional project with **Cursor rules/subagents/skills**, optional Python tooling, Java/Gradle libraries, Postman integration, and migration tools. The **`agents/`** Python package under `Cursor-Project/` is **not** shipped in this workspace; see **`docs/AGENTS_COMPARISON_AND_ALIGNMENT.md`**.
+Workspace with **Cursor rules/subagents/skills**, Phoenix Java projects (read-only), EnergoTS Playwright tests, Postman collections, and supporting tooling. The Python `agents/` package is **not** shipped — see `docs/HISTORICAL_PYTHON_AGENTS_PACKAGE.md`.
 
-## 📁 Project Structure
+## Project Structure
 
 ```
-├── .cursor/             # Cursor IDE configuration (MCP config, extensions, rules)
-├── (no agents/ here)    # Cursor: ../.cursor/agents/*.md + ../.cursor/rules/
-├── config/              # Configuration files (backend architecture, swagger specs, env.example)
-├── docs/                # Documentation (architecture, integration guides, setup docs)
-├── examples/            # Example scripts (download projects, generate collections, etc.)
-├── Phoenix/             # Phoenix Java projects (phoenix-core, phoenix-core-lib, etc.)
-├── postman/             # Postman collections and integration
-├── setup-cursor-config.ps1  # Script to setup Cursor config on new computer
-├── README.md            # Main project documentation
-└── requirements.txt     # Python dependencies
+Cursor-Project/
+├── .cursor/               # Cursor IDE config (agents, rules, skills, commands, hooks)
+├── config/                # Swagger specs, Jira/Confluence scripts, Playwright generation, templates
+├── cross_dependencies/    # Cross-dependency-finder JSON outputs (date_JIRA-KEY.json)
+├── Cursor Setup/          # MCP config template, env.example for new machine setup
+├── docs/                  # Active documentation (archived Python-era docs in docs/_archive/)
+├── EnergoTS/              # Playwright test project (submodule, locked to cursor branch)
+├── menu_data/             # Phoenix UI menu structure snapshots
+├── Phoenix/               # Phoenix Java projects (submodules, read-only — Rule 0.8 Tier A)
+├── postman/               # Postman collections
+├── reports/               # Chat reports, HandsOff reports, Feedback (see reports/README.md)
+├── scripts/               # Validation, git hooks
+├── test_cases/            # Backend/ and Frontend/ test case files
+└── User story/            # User stories and flow documentation
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Cursor IDE Setup
 
-**Important**: After transferring the project to a new computer, set up Cursor IDE configuration.
+After cloning or transferring the project, see `Cursor Setup/` for MCP configuration and environment variables.
 
-**Quick Setup**:
+### Git hooks (recommended)
+
 ```powershell
-# Windows PowerShell
-.\setup-cursor-config.ps1
+git config core.hooksPath Cursor-Project/scripts/git-hooks
 ```
 
-This script automatically:
-- ✅ Transfers MCP configuration to Cursor settings
-- ✅ Prompts for sensitive values (passwords, tokens)
-- ✅ Shows recommended extensions list
+This enables:
+- **commit-msg** — enforces conventional commit format (`feat:`, `fix:`, `docs:`, etc.)
+- **pre-commit** — runs `validate-cursor-rules.ps1` when `.cursor/rules/**/*.mdc` files change
 
-**Manual Setup**: See [`../.cursor/README.md`](../.cursor/README.md) for workspace Cursor config (rules live under `../.cursor/rules/`).
+### Phoenix submodule setup
 
----
-
-### Python (optional scripts / legacy deps)
-
-**Requirements:** Python 3.8+ if you run project scripts or `requirements.txt`.
+Phoenix repos use placeholder URLs (`git.domain.internal`) in `.gitmodules`. Before initializing submodules, replace with your internal git host:
 
 ```bash
-python -m venv venv
-venv\Scripts\activate   # Windows
-pip install -r requirements.txt
+git submodule foreach 'git remote set-url origin $(echo $url | sed s/git.domain.internal/YOUR_HOST/)'
+git submodule update --init --recursive
 ```
 
-There is **no** `from agents import ...` package in this tree. For Cursor workflows, use **`.cursor/`** and **`docs/CURSOR_SUBAGENTS.md`**.
-
-### Java/Gradle Project
-
-**Requirements:**
-- Java 17+ (required - see `phoenix-core-lib/build.gradle`)
-- Gradle wrapper included (no installation needed)
+### Java/Gradle (Phoenix)
 
 ```bash
-cd phoenix-core-lib
+cd Phoenix/phoenix-core-lib
 ./gradlew build
 ```
 
-## 📚 Documentation
+Requires Java 17+. Gradle wrapper included.
 
-- **[Agent / subagent map (canonical paths)](docs/AGENT_SUBAGENT_MAP.md)** · [Cursor subagents](docs/CURSOR_SUBAGENTS.md) · [Commands reference](docs/COMMANDS_REFERENCE.md) · [Rules loading](docs/RULES_LOADING_SYSTEM.md) · [Agents model (current)](docs/AGENTS_COMPARISON_AND_ALIGNMENT.md) · [Historical Python agents docs](docs/HISTORICAL_PYTHON_AGENTS_PACKAGE.md)
-- [Architecture Knowledge Base](docs/ARCHITECTURE_KNOWLEDGE_BASE.md)
-- [Postman Collection Generator](docs/POSTMAN_COLLECTION_GENERATOR.md)
-- [Test Agent Documentation](docs/README_TEST_AGENT.md)
-- [GitLab Update Agent](docs/GITLAB_UPDATE_AGENT.md)
-- [Phoenix Project Analysis](docs/PHOENIX_PROJECT_ANALYSIS.md)
+## Documentation
 
-## 🔧 Technologies
+- **[Agent / subagent map](docs/AGENT_SUBAGENT_MAP.md)** — canonical paths for all subagents
+- [Cursor subagents](docs/CURSOR_SUBAGENTS.md) — how `.cursor/agents/` works
+- [Commands reference](docs/COMMANDS_REFERENCE.md)
+- [Rules loading](docs/RULES_LOADING_SYSTEM.md)
+- [Workspace patterns](docs/WORKSPACE_PATTERNS.md)
+- [Agents model (current vs historical)](docs/AGENTS_COMPARISON_AND_ALIGNMENT.md)
+- [Phoenix project analysis](docs/PHOENIX_PROJECT_ANALYSIS.md)
+- [Historical Python agents docs](docs/HISTORICAL_PYTHON_AGENTS_PACKAGE.md) — index to `docs/_archive/`
 
-- **Python** - Optional automation scripts / dependencies (no bundled `agents` package)
-- **Java/Gradle** - Phoenix Core Library
-- **Postman** - API testing and collections
+## Important Notes
 
-## ⚠️ Important Notes
-
-1. **Secrets**: 
-   - API keys, tokens, passwords should be in environment variables
-   - Do NOT commit `.env` file to Git
-
-## 📝 License
-
-[Add your license here]
+1. **Secrets**: API keys, tokens, passwords belong in environment variables or MCP config — do NOT commit `.env` to Git
+2. **Phoenix is read-only**: Cursor AI must never modify files under `Phoenix/` (Rule 0.8 Tier A)
+3. **EnergoTS branch lock**: EnergoTS stays on `cursor` branch only (Rule ENERGOTS.0)
 
 ---
 
-**Last Updated**: 2025-01-14
-
+**Last Updated**: 2026-05-13

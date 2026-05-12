@@ -42,8 +42,14 @@ if (-not (Test-Path -LiteralPath $rulesRoot)) {
             if ($ref -like '.cursor/*') {
                 $failures += "Broken reference in ${relMdc}: $ref"
             } else {
-                # Cursor-Project/ paths may be illustrative examples; warn only.
-                $warnings += "Missing Cursor-Project path (example or not checked in): $ref (from $relMdc)"
+                # Skip paths that appear only inside backtick-wrapped inline code examples
+                $escaped = [regex]::Escape($ref)
+                $isExample = [regex]::IsMatch($content, '`[^`]*' + $escaped + '[^`]*`')
+                if ($isExample) {
+                    $warnings += "Example-only path (backtick-wrapped, skipped): $ref (from $relMdc)"
+                } else {
+                    $failures += "Missing referenced Cursor-Project path: $ref (from $relMdc)"
+                }
             }
         }
     }

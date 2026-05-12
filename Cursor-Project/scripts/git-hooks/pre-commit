@@ -1,0 +1,5 @@
+#!/bin/sh
+# Run validate-cursor-rules.ps1 when .cursor/rules/**/*.mdc files are staged
+if git diff --cached --name-only | grep -q '\.cursor/rules/'; then
+  powershell -ExecutionPolicy Bypass -File "Cursor-Project/scripts/validate-cursor-rules.ps1"
+fi

@@ -25,16 +25,11 @@ alwaysApply: true
 
 # COORDINATION & CONSULTATION RULE [CRITICAL]
 
-8. [CRITICAL] BEFORE any task, agents MUST consult with PhoenixExpert.
-   - Consultation is MANDATORY - PhoenixExpert validates logic, approach, correctness.
-   - Provides: endpoint info, validation rules, permissions, business logic.
-   - In Cursor chat: perform PhoenixExpert consultation per rules/skills (no `AgentRegistry` Python API in this workspace).
-   - Task cannot proceed without PhoenixExpert approval.
-   - Applies to ALL agents (TestExpert, DevOpsExpert, PostmanExpert, etc.).
+8. [CRITICAL] BEFORE any task, agents MUST consult PhoenixExpert (Rule 0.4). PhoenixExpert validates logic, approach, correctness; provides endpoint info, validation rules, permissions, business logic. Applies to ALL agents. Violation is a CRITICAL ERROR.
 
 # OUTPUT CONSISTENCY [IMPORTANT]
 
-9. [IMPORTANT] If multiple agents involved, PhoenixExpert has final decision and must appear in "Agents involved" footer.
+9. [IMPORTANT] PhoenixExpert has final decision in multi-agent responses (Rule 0.1 footer applies).
 
 # ENVIRONMENT ACCESS RULE [IMPORTANT]
 

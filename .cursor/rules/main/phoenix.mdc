@@ -38,12 +38,12 @@ Cursor loads **all** `.mdc` files under `.cursor/rules/` **recursively** (subjec
 ## ⚠️ CRITICAL REMINDERS
 
 1. **Rule 0.0:** Tiered rules loading — see **`core_rules.mdc`**; canonical map: **`Cursor-Project/docs/RULES_CANONICAL_INDEX.md`**. **Rule CONF.0:** If scope/environment/target/success criteria are ambiguous → ask before substantive action; do not guess (`clarification_and_confidence.mdc`).
-2. **Rule 0.1:** ALWAYS end responses with "Agents involved: [names]"
+2. **Rule 0.1:** "Agents involved" footer mandatory
 3. **Rule 0.2:** ALL Phoenix questions → PhoenixExpert ONLY
 4. **Rule 0.6:** Disk reports **only** when mandated (e.g. HandsOff), **`/report`**, **`/feedback`**, or explicit user save — default **chat-first**; full text: **`core_rules.mdc`** Rule 0.6
 5. **Rule 0.8:** Phoenix never edited by AI; EnergoTS only EnergoTSTestAgent in `tests/`; all other workspace paths editable when user requests (provisional) — see `.cursor/rules/safety/safety_rules.mdc` Rule 7
 6. **Rule 1:** GitLab and Confluence are READ-ONLY
-7. **Rule 8:** ALWAYS consult PhoenixExpert before tasks
+7. **Rule 0.4 / Rule 8:** PhoenixExpert consultation mandatory before tasks
 8. **Rule 11 / 0.3:** External automation may use IntegrationService; in Cursor chat follow MCP/Jira/GitLab steps — no `agents.*` imports here
 9. **Rule 32:** ALL bug validation → ALWAYS use BugFinderAgent
 10. **Rule 35/35a:** Test cases → cross-dependency-finder FIRST; Rule 35a: **Jira + codebase + shallow Confluence** — **no** local merge/git or git snapshot for cross-dep (see `workflow_rules.mdc`)
