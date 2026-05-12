@@ -21,6 +21,7 @@ Guides the assistant to follow **`.cursor/rules/`**, **`.cursor/agents/*.md`**, 
 | 2 | Route via **subagents/skills/rules** — no Python AgentRouter | `agents/agent_rules.mdc` Rule 13 |
 | 3 | Consult PhoenixExpert before task (in chat / role) | Rule 8 |
 | 3a | Align Phoenix repos to `origin/<env-branch>` via `.cursor/commands/switch-phoenix-branches.ps1` before environment-sensitive Phoenix code reading (Q&A, bug validation, cross-dep, test cases, HandsOff). Local Phoenix edits are discarded; Phoenix files stay READ-ONLY (Rule 0.8 Tier A) | Rule PHOENIX-SWITCH.0 (`integrations/phoenix_branch_switching.mdc`) |
+| 3b | **Jira ticket analysis** (analysis/triage/summary): if the issue links to Confluence, read those pages in the same response (MCP or Rule 43 REST; set `CONFLUENCE_WIKI_BASE` when the wiki host differs from `JIRA_BASE_URL`) | `evidence_only_project_answers.mdc` (*Jira ticket analysis — linked Confluence*); **Rule 44** `workflow_rules.mdc` |
 | 4 | Save markdown under `Cursor-Project/reports/` only for **HandsOff (Rule 37)** or if the user runs **`/report`**, **`/feedback`**, or explicitly requests a file — layout **`reports/README.md`** (Rule 0.6) | Rule 0.6 |
 | 5 | End with **Agents involved:** | Rule 0.1 |
 

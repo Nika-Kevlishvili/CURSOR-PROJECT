@@ -40,6 +40,7 @@ $env:POSTMAN_WORKSPACE_ID="your-workspace-id"
 
 # Confluence
 $env:CONFLUENCE_URL="https://your-company.atlassian.net/wiki/home"
+$env:CONFLUENCE_WIKI_BASE="https://your-company.atlassian.net/wiki"
 ```
 
 ## Required Environment Variables
@@ -60,8 +61,12 @@ $env:CONFLUENCE_URL="https://your-company.atlassian.net/wiki/home"
 - `POSTMAN_API_KEY` - API key from Postman
 - `POSTMAN_WORKSPACE_ID` - Workspace ID
 
-### Confluence (for PhoenixExpert)
-- `CONFLUENCE_URL` - Confluence base URL (optional, uses cache if not set)
+### Confluence (MCP + REST read fallback)
+
+- `CONFLUENCE_URL` — Wiki UI / home URL (optional for MCP; helps derive wiki base), e.g. `https://your-company.atlassian.net/wiki/home`
+- `CONFLUENCE_WIKI_BASE` — Explicit REST origin, e.g. `https://your-company.atlassian.net/wiki` (recommended when using **`Cursor-Project/config/confluence/get-confluence-page-rest.ps1`** without `CONFLUENCE_URL`)
+- `CONFLUENCE_EMAIL` / `CONFLUENCE_API_TOKEN` — Optional overrides for Confluence REST only; if omitted, **`JIRA_EMAIL`** and **`JIRA_API_TOKEN`** are reused (same Atlassian Cloud site)
+- **Canonical:** `.cursor/rules/integrations/confluence_rest_fallback.mdc` (Rule **43** / **CONFLUENCE.1**); config notes: **`Cursor-Project/config/confluence/README.md`**
 
 ## Permanent Setup
 

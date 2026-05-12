@@ -45,7 +45,7 @@ Confluence (MCP, fresh) → codebase → answer as PhoenixExpert. Optional disk 
 
 ### Bug validation
 
-Rule **32**: **`bug-validator`** subagent; chat + Slack **`bug-validation`**; no disk unless **`/report`** or explicit save.
+Rule **32**: **`bug-validator`** subagent; evidence from **Confluence (mandatory full wiki URL per decision page in chat + Slack)**, mandatory **`update-swagger-specs.ps1`**, aligned Phoenix code, reproduce steps + diagrams per skill; **no** automatic test-case or Playwright pipeline inside Rule 32. Chat + Slack **`bug-validation`**; no disk unless **`/report`** or explicit save.
 
 ### HandsOff
 

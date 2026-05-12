@@ -17,7 +17,7 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 | Subagent | File | Maps to | Purpose |
 |----------|------|---------|---------|
 | **Phoenix Q&A** | `phoenix-qa.md` | PhoenixExpert (Rule 0.2) | Answer Phoenix questions from Confluence (MCP) + codebase. READ-ONLY. |
-| **Bug Validator** | `bug-validator.md` | BugFinderAgent (Rule 32) | Validate bug: Confluence first, then codebase; save under **Chat reports** per **`Cursor-Project/reports/README.md`**. READ-ONLY. |
+| **Bug Validator** | `bug-validator.md` | BugFinderAgent (Rule 32) | Validate bug: Phoenix alignment, Confluence, mandatory Swagger refresh + OpenAPI, codebase; Slack **`bug-validation`**; save under **Chat reports** only on **`/report`** or explicit request. READ-ONLY. No TC/Playwright pipeline in Rule 32. |
 | **Test Runner** | `test-runner.md` | TestAgent (Rule 8, 17) | Run tests; consult PhoenixExpert first; report results. |
 | **Report Generator** | `report-generator.md` | Rule 0.6 | Save markdown per **`Cursor-Project/reports/README.md`** (no Python ReportingService). |
 | **Database Query** | `database-query.md` | database_workflow.mdc | Run PostgreSQL MCP queries; correct env (Dev/Test/Prod); connect first; contract/POD patterns. |
@@ -34,7 +34,7 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 ## Relation to Project Agents
 
 - **PhoenixExpert** → Cursor subagent **phoenix-qa**: same “Phoenix Q&A” role; subagent runs in isolated context.
-- **BugFinderAgent** → Cursor subagent **bug-validator**: same Rule 32 workflow (Confluence → code → report).
+- **BugFinderAgent** → Cursor subagent **bug-validator**: same Rule 32 workflow (alignment → Confluence → Swagger + code → verdict; see **`phoenix-bug-validation`** skill).
 - **TestAgent** → Cursor subagent **test-runner**: same “run tests + consult PhoenixExpert” pattern.
 - **Rule 0.6 reporting** → Cursor subagent **report-generator**: save markdown per **`Cursor-Project/reports/README.md`**.
 - **Database workflow** (Rule DB.0–DB.5) → Cursor subagent **database-query**: same env selection and query patterns.

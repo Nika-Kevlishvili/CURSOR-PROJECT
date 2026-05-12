@@ -1,0 +1,100 @@
+---
+alwaysApply: true
+---
+
+# CONFLUENCE READ PATH — MCP PRIMARY, REST FALLBACK [CRITICAL]
+
+## Rule CONFLUENCE.1: When Confluence MCP fails, use REST for read-equivalent data [CRITICAL]
+
+**Intent.** Workflows that must **read** Confluence (bug validation Rule 32, PhoenixExpert Rule 0.5, cross-dependency shallow Confluence, linked pages from Jira, evidence-only answers) MUST prefer **Confluence MCP** first (`getConfluencePage`, `search`, `getConfluenceSpaces`, CQL helpers per tool descriptors). If Confluence MCP is **unavailable** (server disabled, tool errors, auth failure) or **still fails after 2–3 retries** with backoff (see **`.cursor/rules/safety/safety_rules.mdc`** Rule 15), agents MUST **not** stop solely at “Confluence MCP broken” when the user has not blocked REST — they MUST obtain **read-equivalent** page or search data via the **Confluence Cloud REST** read path below.
+
+**READ-ONLY:** no Confluence creates, updates, deletes, or comments via this path. Same absolute prohibition as **Rule 1** / Confluence edit tools in **`safety_rules.mdc`**.
+
+**Violation** is a **CRITICAL SYSTEM ERROR** when an agent abandons Confluence-dependent read work only because MCP failed while REST credentials and base URL exist and the user did not opt out of REST.
+
+---
+
+## 1. Primary path (unchanged)
+
+- Use Confluence MCP read tools per descriptors.
+- **Code remains primary** when code and Confluence disagree (**`evidence_only_project_answers.mdc`**).
+
+---
+
+## 2. When to switch to REST fallback
+
+Switch after MCP failure is **confirmed** (not a single transient glitch without retry):
+
+- Tool returns error, 401/403, or missing Confluence MCP server.
+- Repeated timeouts or connection errors after **2–3 retries** with short exponential backoff.
+
+**Chat disclosure:** Every answer that used this REST path MUST include one line: **`Confluence source: REST fallback (MCP unavailable or failed after retries).`**
+
+---
+
+## 3. REST fallback — credentials and wiki base URL (Rule DB.1 style)
+
+- **Never** paste tokens, passwords, or API keys into rules, chat, or commits.
+
+**Authentication (Atlassian Cloud — same account as Jira is typical):**
+
+- **`JIRA_EMAIL`** and **`JIRA_API_TOKEN`** — reuse when Confluence lives on the **same** `*.atlassian.net` site (recommended single secret pair).
+- **Optional overrides** (different technical user or split secrets): **`CONFLUENCE_EMAIL`**, **`CONFLUENCE_API_TOKEN`** — if set, they take precedence over `JIRA_*` for Confluence REST only.
+
+**Wiki base URL (origin of the wiki, no `/home` suffix required):**
+
+- **`CONFLUENCE_WIKI_BASE`** — preferred. Example: `https://your-company.atlassian.net/wiki` (no trailing slash required; scripts normalize).
+- **Fallback:** derive from **`CONFLUENCE_URL`** (e.g. `https://your-company.atlassian.net/wiki/home`) by normalizing to `https://<host>/wiki`, or from **`JIRA_BASE_URL`** (e.g. `https://your-company.atlassian.net`) as `JIRA_BASE_URL` + `/wiki` when both point at the same Atlassian Cloud site. Same resolution order as **`Cursor-Project/config/confluence/get-confluence-page-rest.ps1`** and project `.env` files that script resolves.
+
+If **both** MCP and REST fail (missing vars, 401, wrong host, network): state the failure, stop substantive Confluence-dependent conclusions where Confluence is mandatory, and ask the user (**Rule CONF.0**) — same honesty as **`PROCESS BLOCKED`** where applicable.
+
+---
+
+## 4. REST fallback — request shapes (read parity)
+
+Use **Confluence Cloud** REST under the wiki base `{CONFLUENCE_WIKI_BASE}` (normalized).
+
+**Single page by numeric page ID** (from URLs like `/wiki/spaces/SPACE/pages/123456789/Title`):
+
+- **Legacy v1 (rich `expand`, good default for agents):**  
+  `GET {CONFLUENCE_WIKI_BASE}/rest/api/content/{pageId}?expand=body.storage,body.view,version,space,ancestors,metadata.labels,children.page`
+- **v2 pages API (alternative):**  
+  `GET {CONFLUENCE_WIKI_BASE}/api/v2/pages/{pageId}?body-format=storage`  
+  Use when v1 responses are truncated or your tooling prefers v2; adjust query flags per current Atlassian docs.
+
+**Search / shallow CQL** (when workflow allows one search, e.g. cross-dependency Rule 35a):
+
+- `GET {CONFLUENCE_WIKI_BASE}/rest/api/content/search?cql={encodedCql}&limit=25`  
+  Keep CQL narrow; do not crawl large result sets — respect the same **shallow** intent as MCP search.
+
+**Implementation in Cursor:** use **terminal** `Invoke-RestMethod` / `curl` with **Basic auth** (email + API token) and `Accept: application/json`, and/or run:
+
+`powershell -ExecutionPolicy Bypass -File "Cursor-Project/config/confluence/get-confluence-page-rest.ps1" -PageId "<numericId>"`
+
+**Do not** add new secret stores; use env / existing `.env` resolution only.
+
+---
+
+## 5. Consistency with evidence-only and citations
+
+After REST fetch:
+
+- Cite **page title**, **page ID**, and **URL** when present in the JSON (`title`, `id`, `_links` / `webui` / space key as applicable).
+- If body is HTML/storage, summarize or quote conservatively; do not dump huge payloads into Slack.
+- Continue to prefer **code** over Confluence when they conflict.
+
+---
+
+## 6. Write operations
+
+This rule governs **read** fallback only. **Creating/updating** Confluence pages or comments stays forbidden for agents (**`safety_rules.mdc`**). Do not improvise REST **POST/PUT/DELETE** to Confluence.
+
+---
+
+## Integration
+
+- **Rule 32 / bug-validator:** After MCP retries fail, use this REST path before declaring Confluence validation unavailable; update **`phoenix-bug-validation`** SKILL Step 2 accordingly.
+- **Rule 42 / JIRA.1:** Jira REST read does **not** satisfy Confluence read — use **this** rule for Confluence.
+- **Rule 35a / cross-dependency:** If the single allowed Confluence lookup hits MCP failure, one REST **search** or **one** `content/{id}` read is acceptable if it preserves the shallow limit.
+
+Canonical cross-reference: **`.cursor/rules/workflows/workflow_rules.mdc`** Rule **43**.

@@ -6,7 +6,7 @@
     "board": "PDT (Phoenix Delivery)",
     "time_window": "Last 8 weeks",
     "selection_rule": "Bugs with Jira comments that explicitly describe a cause, root cause, or concrete reproduction mechanism",
-    "verification_method": "Full Jira issue details were checked for each retained pattern: summary, status, resolution, and comments. Patterns are not treated as product truth unless supported by later Confluence, code, and Playwright evidence."
+    "verification_method": "Full Jira issue details were checked for each retained pattern: summary, status, resolution, and comments. Patterns are not treated as product truth unless supported by later Confluence, aligned Phoenix code, and OpenAPI (Swagger) evidence."
   },
   "patterns": [
     {
@@ -47,7 +47,7 @@
       "verified_source": {
         "type": "jira_comment",
         "comment_summary": "Comments provide explicit reproduce steps: keep first draft RFD open, execute second RFD with same PODs, then execute first RFD; backend now checks if PODs are used in another executed object.",
-        "limitations": "Exact endpoint/code path still needs cross-dependency and Playwright verification per validator workflow."
+        "limitations": "Exact endpoint/code path still needs cross-dependency or deep code/OpenAPI verification outside the minimal pattern text."
       },
       "trigger_signature": [
         "Same POD appears in multiple executed disconnection requests",
@@ -112,7 +112,7 @@
         "reason why error message appears in UI"
       ],
       "repro_heuristic": "Create or seed second contract version with invalid effective date format and attempt UI edit.",
-      "validator_action": "Use only as a data-quality hypothesis; do not infer code defect unless Playwright/code evidence confirms it."
+      "validator_action": "Use only as a data-quality hypothesis; do not infer code defect unless Phoenix code and OpenAPI evidence confirms it."
     },
     {
       "issue_key": "PDT-2698",
@@ -215,7 +215,7 @@
         "did not mark these profiles as invoiced"
       ],
       "repro_heuristic": "Generate SLP profiles in a flow where invoice creation can fail or be skipped, then verify whether profiles with missing invoice linkage are marked or cleaned correctly.",
-      "validator_action": "Use only as a medium-confidence hypothesis; Playwright test must prove the exact invoice-generation failure path."
+      "validator_action": "Use only as a medium-confidence hypothesis; aligned Phoenix code and OpenAPI evidence must confirm the exact invoice-generation failure path."
     }
   ],
   "validator_usage_notes": {
@@ -223,9 +223,9 @@
     "matching_strategy": [
       "Match by domain + evidence_keywords + trigger_signature overlap",
       "Prefer pattern_reliability=high patterns first",
-      "Treat medium and medium_high patterns as candidate hypotheses requiring stronger Playwright/code evidence",
+      "Treat medium and medium_high patterns as candidate hypotheses requiring stronger code and OpenAPI (Swagger) evidence",
       "Do not use Won't Do patterns as application-defect proof; use them as data-state or historical-flow hypotheses only"
     ],
-    "verdict_policy": "Pattern match improves reproducibility hypotheses but does not replace Confluence+code+test evidence."
+    "verdict_policy": "Pattern match improves reproduce-flow hypotheses but does not replace Confluence + aligned Phoenix code + OpenAPI (Swagger) evidence."
   }
 }

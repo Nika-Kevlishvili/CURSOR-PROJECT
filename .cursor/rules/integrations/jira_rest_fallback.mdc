@@ -74,7 +74,7 @@ This rule governs **read** fallback only. **Creating/updating** Jira issues stay
 
 ## Integration
 
-- **Rule 32 / bug-validator:** If Confluence MCP is mandatory separately, Jira REST fallback does **not** replace Confluence MCP — only **Jira** read.
+- **Rule 32 / bug-validator:** Jira REST satisfies **Jira** read only. **Confluence** read requires Confluence MCP **or** **Rule 43 / CONFLUENCE.1** (`.cursor/rules/integrations/confluence_rest_fallback.mdc`) — not this file.
 - **Rule 37 / HandsOff:** Ticket fetch MUST succeed via MCP **or** this REST path before continuing the pipeline; document **`Jira source:`** in internal notes if reporting requires traceability.
 
 Canonical cross-reference: **`.cursor/rules/workflows/workflow_rules.mdc`** Rule **42**.

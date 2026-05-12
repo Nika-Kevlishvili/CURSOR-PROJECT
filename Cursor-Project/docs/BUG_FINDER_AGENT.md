@@ -4,33 +4,18 @@
 
 ## Overview
 
-BugFinderAgent is a specialized agent for validating bug reports by comparing them against Confluence documentation and codebase implementation. It follows Rule 32 workflow to ensure comprehensive bug validation.
+BugFinderAgent is a specialized agent for validating bug reports using **Confluence**, **refreshed OpenAPI/Swagger** specs, and **aligned Phoenix code**, plus ticket/diagram recovery patterns. It follows **Rule 32**; the canonical step-by-step procedure is **`.cursor/skills/phoenix-bug-validation/SKILL.md`** (not historical Python steps below).
 
 ## Workflow
 
-The agent follows a strict 4-step workflow (Rule 32):
+**Authoritative procedure (Cursor):** environment resolution + Phoenix branch alignment → expected behavior + diagrams → Confluence (MCP, REST fallback) → **mandatory `update-swagger-specs.ps1`** + OpenAPI cross-check → code analysis → **5-verdict matrix** → full answer in chat + Slack **`bug-validation`**; optional `BugValidation_*.md` only on **`/report`** or explicit save. **Rule 32 does not** run automatic test-case generation, Playwright authoring, or **`energo-ts-run`** — use Rules **35–37** / **36** for that scope.
 
-1. **Confluence Validation (FIRST)**
-   - Search Confluence using MCP tools
-   - Validate bug description against documentation
-   - Check if bug report information is correct
-   - Document all sources found
+**Historical note:** The numbered list below described an older 4-step narrative; prefer the SKILL above.
 
-2. **Code Validation (SECOND)**
-   - Search codebase using semantic and text search
-   - Analyze code implementation
-   - Check if code satisfies bug report requirements
-   - Identify exact bug location (file, lines, code snippets)
-
-3. **Comprehensive Analysis**
-   - Combine Confluence and code findings
-   - Determine if bug is valid (code differs from description)
-   - Provide detailed analysis with conclusions
-
-4. **Deliver results**
-   - Post the full structured analysis in **chat** (findings, code references, verdict, conclusions).
-   - **Optional disk file:** `…/BugValidation_[BugName].md` under **Chat reports** per **`Cursor-Project/reports/README.md`** only if the user runs **`/report`** or explicitly asks to save (Rule 0.6).
-   - **CRITICAL: READ-ONLY mode - NO code modifications during validation**
+1. **Confluence validation** — MCP + REST fallback; evidence strength classification.
+2. **Swagger/OpenAPI** — refresh then cite `Cursor-Project/config/swagger/<env>/swagger-spec.json` for contract-level claims.
+3. **Code validation** — after `switch-phoenix-branches.ps1`; paths, lines, snippets.
+4. **Verdict + delivery** — structured chat + Slack; READ-ONLY (no fixes during validation).
 
 ## Usage
 

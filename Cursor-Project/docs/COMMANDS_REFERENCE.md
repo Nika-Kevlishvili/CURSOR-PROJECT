@@ -195,12 +195,14 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 
 **What it can do:**
 - Follow Rule 0.3; consult PhoenixExpert where Rule 8 applies.
-- **Step 1 – Confluence:** Search Confluence via MCP; check if bug description matches docs; report correct/incorrect/partially correct.
-- **Step 2 – Code:** Search codebase; check if implementation matches expected behavior; report satisfies/does not satisfy.
-- **Step 3 – Conclusion:** Combine findings; conclude if bug is valid; suggest fix but do not implement (read-only).
-- Full analysis in chat; save **`BugValidation_{Name}.md`** under **Chat reports** only if the user runs **`/report`** or explicitly requests a file (per **`Cursor-Project/reports/README.md`**).
+- **Environment + Phoenix:** Resolve env; run **`switch-phoenix-branches.ps1`** (prod: user ack + `-ConfirmProd`) before reading Phoenix code.
+- **Confluence:** MCP + REST fallback; classify evidence strength.
+- **Swagger:** Run **`update-swagger-specs.ps1`**; cite refreshed or cached **`Cursor-Project/config/swagger/<id>/swagger-spec.json`** for API-level claims.
+- **Code:** Search aligned Phoenix codebase; file/line evidence; compare to bug report.
+- **Verdict:** Five-verdict matrix (see **`phoenix-bug-validation`** skill); full analysis in chat + Slack **`bug-validation`**. **Does not** auto-generate test cases or run Playwright (use test-case / HandsOff flows separately).
+- Save **`BugValidation_{Name}.md`** under **Chat reports** only if the user runs **`/report`** or explicitly requests a file (per **`Cursor-Project/reports/README.md`**).
 
-**When to use:** Validate a bug report against Confluence and code before any fix.
+**When to use:** Validate a bug report against Confluence, OpenAPI, and code before any fix.
 
 ---
 
@@ -306,7 +308,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 | **Phoenix**                | Answer Phoenix questions (Confluence + codebase). |
 | **Consult**                | PhoenixExpert approval before a task. |
 | **Report**                 | Save agent and summary reports (Rule 0.6). |
-| **Bug validate**           | Validate bug vs Confluence + code (BugFinderAgent); read-only. |
+| **Bug validate**           | Validate bug vs Confluence + Swagger/OpenAPI + aligned code (BugFinderAgent); read-only; no TC/Playwright in Rule 32. |
 | **Production data reader** | Read and explain Prod DB data (read-only). |
 | **Cross-dependency finder** | Find dependencies and what could break; feed test-case-generator. |
 | **Test case generate**     | Generate test cases (after cross-dependency finder). |

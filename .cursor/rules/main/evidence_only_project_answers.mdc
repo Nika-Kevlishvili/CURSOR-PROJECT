@@ -1,5 +1,5 @@
 ---
-description: "Evidence-only answers for project-related questions: require grounding in code, Confluence (read-only via MCP), and Swagger/OpenAPI; ask 1–2 clarifying questions instead of improvising when evidence is missing."
+description: "Evidence-only answers for project-related questions: require grounding in code, Confluence (read-only via MCP or REST read fallback per confluence_rest_fallback.mdc when MCP fails), and Swagger/OpenAPI; ask 1–2 clarifying questions instead of improvising when evidence is missing."
 alwaysApply: true
 ---
 
@@ -11,7 +11,7 @@ Prevent the assistant from answering **project-related questions** using persona
 For project scope, answers MUST be grounded in **verifiable sources**:
 
 1. **Codebase** (highest priority)
-2. **Confluence via MCP (read-only)** (secondary)
+2. **Confluence via MCP (read-only), or Confluence Cloud REST read fallback** (secondary; **`.cursor/rules/integrations/confluence_rest_fallback.mdc`**) when MCP is unavailable after retries — disclose **`Confluence source: REST fallback …`** in chat
 3. **Swagger/OpenAPI** (especially for API contracts: fields, enums, required properties)
 4. **Database evidence** (schema objects + read-only queries): tables/views, constraints, and stored routines (functions/procedures)
 
@@ -110,6 +110,17 @@ The assistant MUST always:
 4. Return a consolidated answer based on the complete ticket context and explicitly note where critical details were found (for example: "found in custom field", "found in comments", "found in linked issue", "found in attachment metadata").
 
 The assistant MUST NOT conclude "no information" only because `description` is empty.
+
+---
+
+## Jira ticket analysis — linked Confluence (MANDATORY)
+
+When the user requests **analysis**, **triage**, **summary**, or **retrieval** of a **Jira issue** (by key or equivalent ticket scope), and the issue payload — including `description`, rich-text custom fields (e.g. `customfield_10103` “Description formatted”), **comments**, `environment`, remote issue links, or ADF `link` / `inlineCard` URLs — contains **Confluence page URLs** (e.g. `*.atlassian.net/wiki/...` / `.../spaces/.../pages/<id>/...`):
+
+1. **MUST** read **every linked Confluence page** that is in scope for the ticket’s stated problem or acceptance (same narrow intent as **Rule 39**: linked URLs first; **no** broad Confluence `search`/CQL unless the user asks, the item is a **Bug** under **Rule 32**, or PhoenixExpert Q&A requires it).
+2. **MUST** use Confluence MCP read tools first; if unavailable or failing after **2–3 retries** with backoff, use **Rule 43** REST read (**`.cursor/rules/integrations/confluence_rest_fallback.mdc`**, **`Cursor-Project/config/confluence/get-confluence-page-rest.ps1`**). When the linked wiki **host** differs from the site implied by **`JIRA_BASE_URL`** (e.g. ticket links to another `*.atlassian.net` wiki), **MUST** set **`CONFLUENCE_WIKI_BASE`** (or process env equivalent) to that wiki’s origin for those reads — **do not** skip reads solely because default wiki derivation points elsewhere.
+3. **MUST** merge Confluence findings into the **same** response as the Jira analysis: cite **page title + page ID** (and URL). State explicitly if a page could not be read (403/404/network), after retries and REST where applicable.
+4. Delivering **Jira-only** analysis when readable in-scope Confluence links were present **without** user opt-out is a **CRITICAL SYSTEM ERROR** (evidence gate).
 
 ---
 

@@ -41,7 +41,7 @@ Route to cross-dependency-finder subagent / CrossDependencyFinderAgent. Do not d
 ### 3. Find cross-dependencies
 
 - **Codebase:** Imports, references, API clients, DB access, event producers/consumers, shared libs. In code links/references, identify **what could break** (callers, consumers, contract users).
-- **Confluence (MCP) — shallow only (default):** Do **not** dig deeply. **Primary evidence** remains **Jira + codebase**; Confluence is **light context** only.
+- **Confluence (MCP) — shallow only (default):** Do **not** dig deeply. **Primary evidence** remains **Jira + codebase**; Confluence is **light context** only. If Confluence MCP fails after retries, use **read-only REST** for **at most one** page fetch or **one** CQL search per **`.cursor/rules/integrations/confluence_rest_fallback.mdc`** (disclose **`Confluence source: REST fallback …`** to the parent).
   - **At most one** search or **one** CQL query for the topic (Jira key, service name, or feature phrase).
   - Use **search snippets and titles** from the first page of results; treat them as sufficient unless **exactly one** hit is obviously the owning spec — then **at most one** `getPage` for that page.
   - **Forbidden for this workflow:** walking descendants, footers, many related pages, multi-hop “see also”, or full long-page reads. Extract only what is **surface-visible** (title, snippet, top headings if one page is opened).

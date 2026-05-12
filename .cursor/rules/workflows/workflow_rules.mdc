@@ -21,9 +21,9 @@ alwaysApply: true
 
 32. [CRITICAL] Bug reports / bug validation → **BugFinder (Rule 32)**. **READ-ONLY:** no code edits or fixes during validation (fixes only if the user explicitly asks **after** validation). Do **not** use `from agents.Main import get_bug_finder_agent` — no `Cursor-Project/agents/` package.
 
-    **Canonical steps, verdicts, Slack, reproducibility pipeline, `PROCESS BLOCKED`, and Confidence:** Implement exactly **`.cursor/skills/phoenix-bug-validation/SKILL.md`** (single source of procedural detail). Route via **`.cursor/agents/bug-validator.md`** (and **`bug-validator`** Task/subagent).
+    **Canonical steps, verdicts, Slack, `PROCESS BLOCKED`, and Confidence:** Implement exactly **`.cursor/skills/phoenix-bug-validation/SKILL.md`** (single source of procedural detail). Route via **`.cursor/agents/bug-validator.md`** (and **`bug-validator`** Task/subagent). Rule 32 validates from **Confluence + mandatory Swagger refresh/OpenAPI + aligned Phoenix code** (and ticket/diagram recovery patterns) — **not** from automatic test-case generation, Playwright authoring, validator, or **`energo-ts-run`** (those are Rules **35–37** / **36** or explicit user scope).
 
-    **Invariant reminders:** Environment resolution + Phoenix alignment per **Rule PHOENIX-SWITCH.0** (resolver **`environment-resolver`** subagent, `switch-phoenix-branches.ps1`, prod `-ConfirmProd` + user ack). Chat gets the **full** analysis; Slack **`bug-validation`** `C0AUEEDVCEL` after each completed validation when MCP allows; disk `BugValidation_*.md` only on **`/report`** or explicit save (**Rule 0.6**). If the reproducibility path touches Playwright generation, **Swagger refresh** is mandatory (**Rule 41** / `update-swagger-specs.ps1`).
+    **Invariant reminders:** Environment resolution + Phoenix alignment per **Rule PHOENIX-SWITCH.0** (resolver **`environment-resolver`** subagent, `switch-phoenix-branches.ps1`, prod `-ConfirmProd` + user ack). **Swagger refresh** is mandatory for Rule 32: run **`update-swagger-specs.ps1`** before citing OpenAPI evidence (**`.cursor/commands/update-swagger-specs.ps1`**; on failure continue with cached specs per SKILL). Chat gets the **full** analysis; Slack **`bug-validation`** `C0AUEEDVCEL` after each completed validation when MCP allows; disk `BugValidation_*.md` only on **`/report`** or explicit save (**Rule 0.6**). **Rule 41** remains mandatory before creating or editing any EnergoTS Playwright `.spec.ts` file — Rule 32 does not author specs.
 
     **Process diagrams:** When the ticket lacks an attached diagram, **`bug-validator`** MUST consider **`Cursor-Project/config/Diagrams/`** (`Bundle 4`, `Bundle 5`, `Bundle 6`) for a matching process `.svg` and cite paths when used. For URLs from Jira/Confluence with downloadable assets, save read-only under **`Cursor-Project/config/confluence/diagrams/<pageId-or-issueKey>/`**. **Authority:** Phoenix **code** and **Confluence** override contradictory diagrams — see **`.cursor/skills/phoenix-bug-validation/SKILL.md`** Step 1b.
 
@@ -84,7 +84,7 @@ alwaysApply: true
 
 # CONFLUENCE SCOPE RULE FOR NON-BUG TICKETS [CRITICAL]
 
-39. [CRITICAL] Non-bug Jira items → **task-driven Confluence:** ticket text + **linked Confluence URLs only** (`getConfluencePage`); **no** broad `search`/CQL unless user asks, or item is a **Bug** (Rule 32), or PhoenixExpert Q&A. Violation is a CRITICAL SYSTEM ERROR.
+39. [CRITICAL] Non-bug Jira items → **task-driven Confluence:** ticket text + **linked Confluence URLs only** (`getConfluencePage` or **REST read fallback** per Rule **43** when MCP fails); **no** broad `search`/CQL unless user asks, or item is a **Bug** (Rule 32), or PhoenixExpert Q&A. Violation is a CRITICAL SYSTEM ERROR.
 
 # ENERGOTS PLAYWRIGHT `beforeAll` BAN RULE [CRITICAL]
 
@@ -97,3 +97,11 @@ alwaysApply: true
 # JIRA MCP FALLBACK (REST READ) [CRITICAL]
 
 42. [CRITICAL] **Jira issue reads:** Prefer **Jira MCP**. If Jira MCP is unavailable or fails after **2–3 retries** with backoff, agents MUST use the **Atlassian REST API v3** read fallback for **full** issue-equivalent data (same evidence expectations as MCP: `expand=names`, custom fields, links, attachments metadata; attachment body via **`Cursor-Project/config/jira/download-jira-attachments.ps1`** when needed). **Secrets:** only from env / MCP config — never in rules or chat (**Rule DB.1** pattern). Disclose in chat: **`Jira source: REST fallback …`**. **Canonical:** `.cursor/rules/integrations/jira_rest_fallback.mdc`. Abandoning Jira-backed work when REST could satisfy the read **without** user opt-out is a CRITICAL SYSTEM ERROR.
+
+# CONFLUENCE MCP FALLBACK (REST READ) [CRITICAL]
+
+43. [CRITICAL] **Confluence reads:** Prefer **Confluence MCP**. If Confluence MCP is unavailable or fails after **2–3 retries** with backoff, agents MUST use the **Confluence Cloud REST** read fallback for **read-equivalent** page/search data (same read-only posture as MCP; **no** Confluence writes). **Secrets / base URL:** only from env / MCP config — **`CONFLUENCE_WIKI_BASE`**, or derive from **`CONFLUENCE_URL`** / **`JIRA_BASE_URL`** (see **`confluence_rest_fallback.mdc`**), plus **`JIRA_EMAIL`/`JIRA_API_TOKEN`** or **`CONFLUENCE_EMAIL`/`CONFLUENCE_API_TOKEN`** — never in rules or chat (**Rule DB.1** pattern). Disclose in chat: **`Confluence source: REST fallback …`**. **Canonical:** `.cursor/rules/integrations/confluence_rest_fallback.mdc`; helper script: **`Cursor-Project/config/confluence/get-confluence-page-rest.ps1`**. Abandoning mandatory Confluence read steps when REST could satisfy the read **without** user opt-out is a CRITICAL SYSTEM ERROR.
+
+# JIRA TICKET ANALYSIS + LINKED CONFLUENCE [CRITICAL]
+
+44. [CRITICAL] When the user requests **Jira issue** analysis, triage, summary, or retrieval, and the issue contains **in-scope Confluence URLs**, agents MUST read those pages in the **same** pass as the ticket analysis (**`.cursor/rules/main/evidence_only_project_answers.mdc`** — *Jira ticket analysis — linked Confluence*). Use **Rule 39** scope (linked pages only unless the user asks or Rule 32 applies) and **Rule 43** for MCP/REST. Skipping readable linked Confluence when the user asked for ticket analysis **without** user opt-out is a CRITICAL SYSTEM ERROR.

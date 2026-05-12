@@ -8,22 +8,17 @@ Confluence documentation has been integrated into the **PhoenixExpert** agent sy
 
 ## Integration Points
 
-### PhoenixExpert Agent
-- **Location**: `phoenix_expert.py`
-- **Purpose**: Read-only access to Confluence documentation and Phoenix codebase
-- **Capabilities**:
-  - Read Confluence pages (never modify)
-  - Search pages by query
-  - Access cached Confluence pages
-  - Explore Phoenix code repositories (especially phoenix-core-lib)
-  - Provide Q&A based on indexed knowledge from code and Confluence
+### PhoenixExpert (Cursor)
+
+- **Role:** **`.cursor/agents/phoenix-qa.md`** — Phoenix Q&A with code primary and Confluence supplementary (Rule 0.2, 0.5).
+- **Capabilities:** Read-only Confluence via MCP; REST read fallback per **`confluence_rest_fallback.mdc`** when MCP fails; Phoenix codebase read under **`Cursor-Project/Phoenix/**`** (AI never edits Phoenix).
 
 ### Confluence Access
-- **Base URL**: Set via `CONFLUENCE_URL` environment variable (default: read from cache only)
+- **Primary (Cursor):** Confluence via **MCP** read tools; Phoenix Q&A → **`.cursor/agents/phoenix-qa.md`** (Rule 0.2, 0.5).
+- **REST read fallback:** When MCP is unavailable after retries, agents use **`.cursor/rules/integrations/confluence_rest_fallback.mdc`** (Rule **43** / **CONFLUENCE.1**) — Basic auth, **read-only**, same disclosure line as that rule. Helper script: **`Cursor-Project/config/confluence/get-confluence-page-rest.ps1`**; env table: **`Cursor-Project/config/confluence/README.md`**.
+- **Base URL**: `CONFLUENCE_WIKI_BASE` or `CONFLUENCE_URL` (or derive from `JIRA_BASE_URL` per README); optional `CONFLUENCE_EMAIL` / `CONFLUENCE_API_TOKEN` or reuse `JIRA_EMAIL` / `JIRA_API_TOKEN`.
 - **Mode**: Read-only (never creates, edits, or deletes)
-- **Cache Location**: `confluence_cache/`
-- **Integration**: Automatic, no approval required
-- **Configuration**: Set `CONFLUENCE_URL` environment variable (e.g., `https://your-company.atlassian.net/wiki/home`)
+- **Historical note:** Older Python `get_phoenix_expert` examples below are **not** in this workspace; Cursor uses agents/skills/MCP only.
 
 ## Rules Enforced
 
@@ -34,18 +29,13 @@ Confluence documentation has been integrated into the **PhoenixExpert** agent sy
 5. ✅ **Priority system** - Code takes precedence over Confluence
 6. ✅ **No modifications** - Do NOT modify, commit, push, merge, delete, or execute anything
 
-## Usage Example
+## Usage example (REST fallback helper)
 
-```python
-from agents import get_phoenix_expert
-
-expert = get_phoenix_expert()
-
-# Get Confluence pages (supplementary)
-confluence_pages = expert.get_confluence_pages('billing')
-
-# Answer questions using code (primary) and Confluence (secondary)
-response = expert.answer_question("How does billing run work?")
+```powershell
+$env:JIRA_EMAIL = 'user@company.com'
+$env:JIRA_API_TOKEN = 'your-api-token'
+$env:JIRA_BASE_URL = 'https://your-company.atlassian.net'
+powershell -ExecutionPolicy Bypass -File "Cursor-Project/config/confluence/get-confluence-page-rest.ps1" -PageId '779517953'
 ```
 
 ## Status
