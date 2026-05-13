@@ -73,6 +73,23 @@ function Stop-InProgressGitOp {
     if ((Test-Path (Join-Path $RepoGitDir 'rebase-apply')) -or (Test-Path (Join-Path $RepoGitDir 'rebase-merge'))) { Invoke-Git 'rebase --abort' | Out-Null }
 }
 
+function Test-RepoHasLocalChanges {
+    $porcelain = (Invoke-Git 'status --porcelain').Output
+    return -not [string]::IsNullOrWhiteSpace($porcelain)
+}
+
+function Clear-PhoenixLocalChanges {
+    param([string]$RepoName)
+    $hadChanges = Test-RepoHasLocalChanges
+    Invoke-Git 'reset --hard HEAD' | Out-Null
+    Invoke-Git 'clean -fd' | Out-Null
+    if ($hadChanges) {
+        Write-Host "[$RepoName] WARN: local changes discarded (git reset --hard HEAD; git clean -fd)." -ForegroundColor Yellow
+        Write-Log "Repo [$RepoName] local changes discarded before alignment." 'WARN'
+    }
+    return $hadChanges
+}
+
 function New-PhoenixSwitchLock {
     param([string]$Path)
     if (Test-Path $Path) {
@@ -118,6 +135,24 @@ if (-not $repos -or $repos.Count -eq 0) {
 }
 
 $results = @()
+
+$dirtyRepos = @()
+foreach ($repo in $repos) {
+    Push-Location $repo.FullName
+    try {
+        if (Test-RepoHasLocalChanges) { $dirtyRepos += $repo.Name }
+    } finally {
+        Pop-Location
+    }
+}
+if ($dirtyRepos.Count -gt 0) {
+    $dirtyList = $dirtyRepos -join ', '
+    Write-Host "WARN: Phoenix repos should have no local changes. Found dirty working trees: $dirtyList" -ForegroundColor Yellow
+    Write-Host "      All local modifications and untracked files in those repos will be discarded during this switch." -ForegroundColor Yellow
+    Write-Log "Pre-flight: dirty Phoenix repos ($dirtyList). Policy: discard all local changes." 'WARN'
+} else {
+    Write-Log "Pre-flight: all Phoenix repos have clean working trees."
+}
 
 foreach ($repo in $repos) {
     $name = $repo.Name
@@ -184,18 +219,21 @@ foreach ($repo in $repos) {
             continue
         }
 
+        $discardedLocal = $false
         if (-not $DryRun) {
+            $discardedLocal = Clear-PhoenixLocalChanges -RepoName $name
+
             $headSha = (Invoke-Git 'rev-parse HEAD').Output.Trim()
             $remoteSha = (Invoke-Git "rev-parse refs/remotes/origin/$targetBranch").Output.Trim()
             $headRef = (Invoke-Git 'symbolic-ref --quiet HEAD').Output.Trim()
-            $dirty = (Invoke-Git 'status --porcelain').Output.Trim()
-            if ($headSha -and $remoteSha -and $headSha -eq $remoteSha -and $headRef -eq "refs/heads/$targetBranch" -and [string]::IsNullOrEmpty($dirty)) {
+            if ($headSha -and $remoteSha -and $headSha -eq $remoteSha -and $headRef -eq "refs/heads/$targetBranch") {
+                $detailSuffix = if ($discardedLocal) { '; local-changes-discarded' } else { '' }
                 $results += [PSCustomObject]@{
                     Repo = $name
                     Status = 'already-aligned'
-                    Detail = "HEAD=$($headSha.Substring(0,[Math]::Min(7,$headSha.Length)))"
+                    Detail = "HEAD=$($headSha.Substring(0,[Math]::Min(7,$headSha.Length)))$detailSuffix"
                 }
-                Write-Log "Repo [$name] already aligned."
+                Write-Log "Repo [$name] already aligned.$detailSuffix"
                 continue
             }
         }
@@ -204,12 +242,6 @@ foreach ($repo in $repos) {
             $status = 'dry-run-ok'
             $detail = 'no changes applied'
         } else {
-            $dirtyState = (Invoke-Git 'status --porcelain').Output
-            if ($dirtyState -and $dirtyState.Trim()) {
-                Invoke-Git 'reset --hard HEAD' | Out-Null
-                Invoke-Git 'clean -fd' | Out-Null
-            }
-
             $co = Invoke-Git "checkout -B $targetBranch origin/$targetBranch"
             if ($co.ExitCode -ne 0) {
                 $preview = (($co.Output -split "`n") | Select-Object -First 2) -join ' / '
@@ -238,7 +270,7 @@ foreach ($repo in $repos) {
 
             $head = (Invoke-Git 'rev-parse --short HEAD').Output.Trim()
             $status = 'ok'
-            $detail = "HEAD=$head"
+            $detail = if ($discardedLocal) { "HEAD=$head; local-changes-discarded" } else { "HEAD=$head" }
         }
 
         $results += [PSCustomObject]@{

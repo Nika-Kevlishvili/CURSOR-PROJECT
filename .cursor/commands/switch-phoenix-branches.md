@@ -25,6 +25,9 @@ No other environment names are accepted. The script validates the parameter agai
 
 ## What the script does (per repo, in order)
 
+0. **Pre-flight (once):** scan every Phoenix repo; if any has a dirty working tree, print a
+   **WARN** listing repo names. Phoenix repos are **expected to have no local changes** (see
+   [Local-changes policy](.cursor/rules/integrations/phoenix_branch_switching.mdc) §4).
 1. Detect & abort any in-progress git operation (`merge`, `rebase`, `cherry-pick`, `revert`).
 2. `git fetch origin --prune`. Failures are categorized so the agent can react:
    - `no-origin` — repo has no `origin` remote at all.
@@ -32,12 +35,19 @@ No other environment names are accepted. The script validates the parameter agai
    - `auth-failure` — credentials missing or rejected.
    - `fetch-failed` — any other fetch error.
 3. Verify `origin/<branch>` exists; otherwise mark the repo `missing-remote` and skip.
-4. **Idempotent fast-path:** if HEAD is already at `origin/<branch>` and the working tree is
-   clean, mark `already-aligned` and skip the destructive steps.
-5. **Discard uncommitted local changes** if any: `git reset --hard HEAD` + `git clean -fd`.
-   - Per workspace policy: local Phoenix edits are NOT preserved during a switch.
+4. **Always discard local changes** before alignment: `git reset --hard HEAD` +
+   `git clean -fd` on every repo that will be aligned (mandatory even if the tree looked
+   clean). If changes were present, `Detail` includes `local-changes-discarded`.
+5. **Idempotent fast-path:** if HEAD is already at `origin/<branch>` on the correct local
+   branch after cleanup → mark `already-aligned` and skip checkout/reset.
 6. `git checkout -B <branch> origin/<branch>` (creates / re-points local tracking branch).
 7. `git reset --hard origin/<branch>` (force-align local branch to the latest remote tip).
+
+### Local-changes policy (summary)
+
+1. **No local changes** should exist in Phoenix repos during environment-sensitive work.
+2. **If changes exist anyway**, the switch script **deletes** them (`reset --hard` +
+   `clean -fd`) — never preserved, never stashed by agents.
 
 ## Concurrency lock
 
@@ -52,7 +62,7 @@ removed automatically on the next invocation.
 | Status              | Meaning                                                                 |
 |---------------------|-------------------------------------------------------------------------|
 | `ok`                | Aligned to `origin/<branch>` after a fresh fetch.                       |
-| `already-aligned`   | HEAD was already at `origin/<branch>` with a clean working tree.        |
+| `already-aligned`   | HEAD was already at `origin/<branch>` on the correct branch after cleanup. |
 | `dry-run-ok`        | Dry-run preview only; no git state changed.                             |
 | `missing-remote`    | The repo has no `origin/<branch>` ref. Skipped, left untouched.         |
 | `no-origin`         | The repo has no `origin` remote configured.                             |

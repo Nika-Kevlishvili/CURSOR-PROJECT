@@ -141,18 +141,20 @@ The script:
 2. Acquires a workspace-wide lock at `.cursor/.phoenix_switch.lock`. If another alignment run
    is in progress, the script exits with code `1`. Stale locks are removed automatically.
 3. For every directory under `Cursor-Project/Phoenix/` that is a git repo:
-   1. Detect & abort any in-progress merge/rebase/cherry-pick/revert (`git merge --abort`,
+   1. **Pre-flight (once per run):** scan all Phoenix repos; if any working tree is dirty, log a
+      **WARN** listing repo names. Phoenix repos are **expected to have no local changes** (see §4).
+   2. Detect & abort any in-progress merge/rebase/cherry-pick/revert (`git merge --abort`,
       `git rebase --abort`, `git cherry-pick --abort`, `git revert --abort`).
-   2. `git fetch origin --prune`. Fetch failures are categorized: `no-origin`,
+   3. `git fetch origin --prune`. Fetch failures are categorized: `no-origin`,
       `network-failure`, `auth-failure`, `fetch-failed`.
-   3. If `origin/<branch>` is missing → mark `missing-remote`, skip the rest.
-   4. **Idempotent fast-path:** if HEAD is already at `origin/<branch>` and the working tree
-      is clean → mark `already-aligned`, skip the destructive steps.
-   5. If the working tree is dirty → `git reset --hard HEAD` + `git clean -fd`
-      (this is the **destructive** step; per workspace policy, local Phoenix edits are not
-      preserved during a switch).
-   6. `git checkout -B <branch> origin/<branch>`
-   7. `git reset --hard origin/<branch>` so the local branch matches the latest remote tip.
+   4. If `origin/<branch>` is missing → mark `missing-remote`, skip the rest.
+   5. **Always discard local changes** before alignment checks: `git reset --hard HEAD` +
+      `git clean -fd` on every repo that will be aligned (even when the tree looked clean).
+      If changes were present, log `local-changes-discarded` in the per-repo `Detail` column.
+   6. **Idempotent fast-path:** if HEAD is already at `origin/<branch>` on the correct local
+      branch after cleanup → mark `already-aligned`, skip checkout/reset.
+   7. `git checkout -B <branch> origin/<branch>`
+   8. `git reset --hard origin/<branch>` so the local branch matches the latest remote tip.
 4. Prints a per-repo status table and exits with a structured code:
    - `0` — all repos succeeded (`ok` / `already-aligned` / `dry-run-ok`).
    - `1` — setup error (Phoenix root missing, prod without `-ConfirmProd`, lock conflict).
@@ -167,12 +169,24 @@ possibly stale or mixed state.
 
 ## 4. Local-changes policy (DESTRUCTIVE)
 
+**Normative expectation (rule 1):** Repositories under `Cursor-Project/Phoenix/` MUST NOT
+carry local uncommitted changes during environment-sensitive Cursor work. Cursor agents MUST
+NOT create or leave Phoenix working-tree edits (Rule 0.8 Tier A). A clean Phoenix tree is the
+default state before and after alignment.
+
+**Mandatory cleanup on switch (rule 2):** When `switch-phoenix-branches.ps1` runs, ANY local
+modifications that exist anyway MUST be removed — the script always runs
+`git reset --hard HEAD` and `git clean -fd` on each repo it aligns (not only when `git status`
+already reported dirty). There is no stash-and-reapply path.
+
 By project decision, when the alignment script runs:
 
 - All uncommitted Phoenix working-tree edits are **discarded**.
 - Untracked files inside Phoenix repos are **removed** (`git clean -fd`).
 - The agent MUST NOT stash and re-apply Phoenix edits during a switch.
 - The agent MUST NOT skip the cleanup to "preserve" local edits.
+- If the pre-flight scan finds dirty repos, the agent MUST report which repos were dirty and
+  that their changes were discarded (see `local-changes-discarded` in the summary `Detail`).
 
 If the user wants to keep local Phoenix edits for some reason, they must commit/branch
 manually outside of this workflow before invoking any environment-sensitive Cursor command.
