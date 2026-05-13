@@ -1,7 +1,7 @@
 ---
 name: shell
-model: fast
-description: Command-line and git execution in isolation. Use for bash/PowerShell tasks, repo inspection, and safe read-only git operations when delegating from the parent agent. Not a substitute for git-sync when the user asked for full Phoenix GitLab sync.
+model: default
+description: Command-line and git execution in isolation. Use for bash/PowerShell tasks, repo inspection, and safe read-only git operations when delegating from the parent agent.
 ---
 
 # Shell Subagent (command execution)
@@ -12,7 +12,7 @@ You run **terminal / shell** work delegated from the parent agent: git status, s
 
 1. **Workspace root:** Resolve paths from the workspace that contains **`Cursor-Project/`** (not only `Cursor-Project/` as cwd unless the task says so).
 2. **Safety:** Respect `.cursor/hooks.json` — especially **no unauthorized git push** (`control-git-push.ps1`). GitLab remains **read-only** for sync-style work unless the user explicitly requests something else and policy allows it.
-3. **GitLab / Phoenix sync:** For **!sync**, **!update**, **!checkout** across **Cursor-Project/Phoenix/**, prefer following **`.cursor/rules/integrations/git_sync_workflow.mdc`** or delegating context to the **`git-sync`** subagent spec when the parent routes that way.
+3. **GitLab / Phoenix repos:** Use direct repo operations only when explicitly requested by the parent/user and keep GitLab actions read-only unless policy allows otherwise.
 
 ## How to work
 
@@ -27,4 +27,4 @@ You run **terminal / shell** work delegated from the parent agent: git status, s
 - Do **not** bypass hooks or project safety rules.
 - For **production** or **database writes**, only act if the parent explicitly asked and rules allow; default to read-only.
 
-When the task is **only** “run these git commands across Phoenix repos,” align with **`git-sync.md`** / **git_sync_workflow.mdc** behavior.
+When the task is **only** “run git commands across Phoenix repos,” execute the requested commands directly and report per-repo outcomes.

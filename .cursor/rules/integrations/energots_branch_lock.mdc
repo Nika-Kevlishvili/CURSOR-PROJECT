@@ -186,7 +186,7 @@ To work on a different branch, please use a different directory or contact the p
 ### Integration with Other Rules
 
 - **Compatible with Rule 0.8:** This rule enforces branch restriction, not code modification
-- **Compatible with git_sync_workflow.mdc:** git_sync_workflow rules apply to Phoenix projects, not EnergoTS
+- **Phoenix note:** Phoenix repositories may use direct multi-repo operations; this rule applies only to EnergoTS.
 - **Compatible with safety_rules.mdc:** This is a safety restriction, not a modification operation
 
 ### Hooks Implementation

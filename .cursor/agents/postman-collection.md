@@ -11,8 +11,9 @@ You help generate **Postman collections** for Phoenix APIs (PostmanCollectionGen
 ## Before generating
 
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
-2. Get **PhoenixExpert** context: which endpoints, which environment (e.g. Test), validation rules. If the parent agent already consulted PhoenixExpert, use that; otherwise request or infer from codebase/rules.
-3. Confirm scope: which API/module (e.g. POD create, billing), base URL, and whether to save locally and/or upload to Postman workspace (if config exists).
+2. **Phoenix branch alignment (Rule PHOENIX-SWITCH.0)** — When the collection targets Phoenix endpoints in a specific environment (typical case), resolve the environment among `dev`, `dev2`, `test`, `preprod`, `prod`, `experiments` (ASK if ambiguous, Rule CONF.0). Then confirm with the parent that `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` was run in this session for that env (subagent reuse, see Rule PHOENIX-SWITCH.0 §7a). If alignment was not done, run it now (with `-ConfirmProd` ONLY for `prod` after explicit user ack). Inspect exit code: `0` proceed; `2` proceed but flag mixed state; `3` stop and report. Do not generate from a stale tree.
+3. Get **PhoenixExpert** context: which endpoints, which environment (e.g. Test), validation rules. If the parent agent already consulted PhoenixExpert, use that; otherwise request or infer from codebase/rules.
+4. Confirm scope: which API/module (e.g. POD create, billing), base URL, and whether to save locally and/or upload to Postman workspace (if config exists).
 
 ## Workflow
 

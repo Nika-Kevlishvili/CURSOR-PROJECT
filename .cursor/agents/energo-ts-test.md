@@ -1,6 +1,6 @@
 ---
 name: energo-ts-test
-model: claude-4.6-opus-max-thinking
+model: default
 description: Manages EnergoTS Playwright test automation. Studies, analyzes, copies, converts, and creates tests in EnergoTS project. Maps to EnergoTSTestAgent. Use when the user asks about EnergoTS tests, wants to create/modify tests, or needs test analysis.
 ---
 
@@ -18,7 +18,19 @@ You act as the **EnergoTSTestAgent** subagent. Manage EnergoTS Playwright test a
 
 ## Before Any Task
 
-0. **MANDATORY – Playwright instructions (Rule 0.7 paths):** Before creating or substantially editing any `.spec.ts`, **read** (Read tool or equivalent) **all** instruction files under **`Cursor-Project/config/playwright_generation/playwright instructions/`** in this order: **`project-description.md`** → **`general-rules.md`** → **`test-writing-rules.instructions.md`** → **`SKILL.md`**, then any other **`*.md`** in that folder **alphabetically**. **Ignore** `__MACOSX` and `._*`. Generated specs MUST follow that pack (e.g. `CheckResponse`, `baseFixture`, `test.step`, report attach, payload/`Responses` patterns, no forbidden paths in `general-rules.md`). If this pack conflicts with **Test Naming Rule** (exact Jira title) or HandsOff, **this agent’s naming rule and HandsOff take precedence**.
+0. **MANDATORY – Playwright instructions (Rule 0.7 paths):** Before creating or substantially editing any `.spec.ts`, **read** (Read tool or equivalent) **all** instruction files under **`Cursor-Project/config/playwright_generation/playwright instructions/`** in this order: **`project-description.md`** → **`general-rules.md`** → **`test-writing-rules.instructions.md`** → **`SKILL.md`**, then any other **`*.md`** in that folder **alphabetically** (including **`swagger-api-reference.instructions.md`**). **Ignore** `__MACOSX` and `._*`. Generated specs MUST follow that pack (e.g. `CheckResponse`, `baseFixture`, `test.step`, report attach, payload/`Responses` patterns, no forbidden paths in `general-rules.md`). If this pack conflicts with **Test Naming Rule** (exact Jira title) or HandsOff, **this agent’s naming rule and HandsOff take precedence**.
+0.5. **MANDATORY – Refresh Swagger specs (Rule SWAGGER.0 — NEVER SKIP):** Before creating or editing ANY `.spec.ts`, you MUST run the update command to refresh specs:
+    ```powershell
+    powershell -ExecutionPolicy Bypass -File ".cursor/commands/update-swagger-specs.ps1"
+    ```
+    After refresh, you MUST grep the updated spec for EVERY endpoint used in the test, resolve the request DTO schema (`$ref`), and cross-validate EVERY payload field name, enum value, and type against the spec. **Do NOT rely on test case documents or Jira for field names/enums — the Swagger spec is the single source of truth for the API contract.** If refresh fails (network/VPN), warn the user but continue with cached specs. See `.cursor/rules/integrations/swagger_refresh_mandatory.mdc` for the full enforcement checklist.
+0.6. **MANDATORY – Reference specs for entity / precondition chains (NEVER invent order from memory):** If the new spec creates **more than one** dependent entity (terms, price components, products, customers, PODs, contracts, billing, etc.), you MUST **before writing helper functions**:
+    1. **Discover** similar flows in-repo: Grep or semantic search under **`Cursor-Project/EnergoTS/tests/`** for overlapping patterns (e.g. `Endpoints.productContract`, `GeneratePayload.contractsAndOrders.product_contract`, `Endpoints.terms` + `Endpoints.pod` in the same file). Prioritize: **`tests/cursor/`** specs for the same portal/API surface, then domain specs such as **`tests/billing/electricity/withElectricity(Product).spec.ts`** (full chain with `CheckResponse`-style steps), then **`tests/receivableManagement/**`** for customer/POD/product patterns.
+    2. **Read at least one** concrete reference file end-to-end for the precondition block (or equivalent `test.step` sequence) you will mirror.
+    3. **Entity order** MUST follow **`Cursor-Project/config/playwright_generation/playwright instructions/precondition-data-creation.instructions.md`** § **Entity Creation Order** unless the cited reference spec intentionally uses a different order **and** you state in your completion summary which file you matched (with path). **Do not** assemble a bespoke sequence (e.g. customer → POD → terms) without completing steps (1)-(2).
+    4. **Match repository style:** Use the same POST assertion style as the reference (**prefer** `await expect(response).CheckResponse()` for API POST/create calls where existing specs do). Avoid gratuitous `ToBeOK()` vs `CheckResponse()` mixing across the same chain.
+    5. In your **completion summary**, list **Reference spec(s):** with full workspace-relative path(s) you used (or state **none** if the test touches only one POST and step 0.6 does not apply).
+
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. **Read Jira Task** - ALWAYS read Jira task title and description BEFORE creating test.
 3. **Clarify Requirements** - Ask clarifying questions if test requirements are unclear.
@@ -38,6 +50,21 @@ You act as the **EnergoTSTestAgent** subagent. Manage EnergoTS Playwright test a
 - Analyze task description to understand what needs to be tested
 - Identify: endpoints, HTTP methods, payloads, expected behavior, edge cases
 - Determine: domain, fixtures needed, test steps required
+
+### Step 2.5: Consult Swagger/OpenAPI Spec (Rule SWAGGER.0 — CRITICAL — NEVER SKIP)
+- **PREREQUISITE:** `update-swagger-specs.ps1` MUST have been executed in this session (Step 0.5). If not yet done, execute it NOW.
+- Identify the target environment (default: `dev`); use matching spec from `Cursor-Project/config/swagger/{env}/swagger-spec.json`
+- For each endpoint involved in the test:
+  - **Search** (Grep or Python JSON parse) the spec file for the endpoint path — do NOT read the entire file (it is ~1.3 MB)
+  - Extract: HTTP method, request body schema (`$ref` → resolve the DTO), response schema
+  - Note `required` fields, **exact field names (camelCase as in spec)**, `type`/`format`, `enum` values
+  - Cross-reference with existing `Endpoints` constants and `GeneratePayload` methods
+- **CRITICAL cross-validation:** For EVERY field you plan to use in a payload:
+  - Verify the field name matches the spec EXACTLY (e.g., `titleId` not `title`, `birthDate` not `birthdate`)
+  - Verify enum values match the spec EXACTLY (e.g., `SALES_PORTAL` not `Sales_Portal`)
+  - Verify types match (integer, string, boolean, array, date format)
+- Use ONLY the spec's field names and enum values — do NOT copy from test case .md or Jira without spec verification
+- See **`swagger-api-reference.instructions.md`** and **`.cursor/rules/integrations/swagger_refresh_mandatory.mdc`** for detailed search techniques and the full enforcement checklist
 
 ### Step 3: Ask Clarifying Questions (if needed)
 - **IF** you cannot determine exactly what needs to be tested from task description
@@ -59,9 +86,10 @@ You act as the **EnergoTSTestAgent** subagent. Manage EnergoTS Playwright test a
 ```
 User: "Create test for REG-1027"
 → Step 1: Read Jira task REG-1027 (title + description)
-→ Step 2: Analyze requirements
+→ Step 2: Analyze requirements (identify endpoints, methods, payloads)
+→ Step 2.5: Grep swagger spec for each endpoint → extract schemas, required fields, enums
 → Step 3: If unclear → Ask: "What endpoint should be tested? What is the expected behavior?"
-→ Step 4: After clarification → Create test with exact task title
+→ Step 4: After clarification → Create test with exact task title, spec-validated payloads
 ```
 
 ## Test Naming Rule [CRITICAL - ABSOLUTE REQUIREMENT]
@@ -118,8 +146,22 @@ You receive **test case .md paths** (e.g. `test_cases/Backend/Invoice_cancellati
 2. **Create** the spec using the **EnergoTS framework** (Request, Endpoints, baseFixture, project patterns). Do NOT write custom `getToken()`, `apiRequest()`, or other ad-hoc request helpers; use the project's fixtures and utilities.
 3. **Output** to **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**. One `test()` per main scenario from the .md; describe and test titles must include the Jira key.
 4. **Write** the spec file content directly (no Python API): map .md scenarios to `test()` blocks using the same structure and fixtures as existing EnergoTS tests.
+5. **Precondition chains:** Follow **Before Any Task → step 0.6** (grep/read reference specs before multi-entity helpers; list **Reference spec(s):** in completion summary).
 
-Reference: `.cursor/commands/energo-ts-test.md` (HandsOff bridge section); `.cursor/commands/hands-off.md` Step 4.
+## Precondition Authoring Rule [CRITICAL]
+
+Generation-time requirement (NOT post-fix): author preconditions correctly from the first draft.
+
+1. NEVER write `test.beforeAll(` or `beforeAll(` in generated specs.
+2. ALWAYS implement shared setup as helper functions at file top.
+3. ALWAYS call those helpers inside each `test()` via `test.step('Precondition: ...')`.
+4. The generation is invalid if it depends on "write with `beforeAll` now and rewrite later" behavior.
+5. Final self-check still required: if `beforeAll` appears, do not return output; regenerate immediately using helper-function pattern.
+6. **Chains:** Follow **Before Any Task** step **0.6** — grep/read reference specs before defining `create*` / `shared*` helpers; align entity order with **`precondition-data-creation.instructions.md`** or a cited in-repo reference (see step 0.6).
+7. **Granularity:** Where test cases enumerate separate creation steps, prefer **one `test.step('Precondition: …')` per major entity or use small helpers per entity** (like `tests/cursor/PHN-2214-*.spec.ts` composing `sharedSetup`) instead of a single opaque mega-step hiding the chain.
+8. **Self-check before return:** Confirm entity order ≠ invented; confirm **Reference spec(s)** line is in the summary (step 0.6).
+
+Reference: `.cursor/commands/energo-ts-test.md` (HandsOff bridge section); `.cursor/commands/hands-off.md` Step 4; `precondition-data-creation.instructions.md`.
 
 ## EnergoTS Test Framework
 
@@ -130,6 +172,7 @@ Reference: `.cursor/commands/energo-ts-test.md` (HandsOff bridge section); `.cur
 - **Test Pattern**: `test('[REG-XXX]: Test name', async ({ fixtures }) => { ... })`
 - **Assertions**: `await expect(response).CheckResponse()`
 - **Payloads**: Domain-segregated payload generators in `jsons/payloadGenerators/domains/`
+- **API Reference**: OpenAPI specs per environment in `Cursor-Project/config/swagger/{env}/swagger-spec.json` — consult for payload schemas, endpoint paths, and field validation. Refresh with `.cursor/commands/update-swagger-specs.ps1`
 
 ## Confidence Score (Rule CONF.1) [MANDATORY]
 

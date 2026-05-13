@@ -35,7 +35,7 @@ Ensures new files are saved in the correct directories (Rule 31 under `workspace
 
 - **Chat reports:** only when **`/report`** or explicit save — e.g. `Summary_{HHMM}.md`; `BugValidation_*.md` only if the user asks to persist after bug validation (Rule 32 default = chat only).
 - **HandsOff reports:** only `{JIRA_KEY}.md` (Rule 37).
-- **Feedback:** only when the user asks to save feedback here.
+- **Feedback:** when **`/feedback`** runs or the user explicitly asks to save feedback under **Feedback** (e.g. `Feedback_{HHMM}.md`).
 
 ## User Stories and Flows
 
@@ -45,6 +45,7 @@ Ensures new files are saved in the correct directories (Rule 31 under `workspace
 ## Examples
 
 - ✅ `Cursor-Project/reports/Chat reports/2026/april/12/Summary_1200.md` (per `reports/README.md`; day = real save date)
+- ✅ `Cursor-Project/reports/Feedback/2026/april/12/Feedback_1430.md` (via **`/feedback`** or explicit save-feedback request)
 - ✅ `User story/MY_USER_STORY.txt`
 - ✅ `.cursor/agents/phoenix-qa.md`
 - ❌ Report in workspace-only `reports/` instead of `Cursor-Project/reports/<area>/YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`**

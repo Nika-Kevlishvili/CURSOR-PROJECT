@@ -35,8 +35,10 @@ Or in PowerShell with full path (replace with your workspace root):
 
 ## When to use
 
+- **MANDATORY: Before creating or editing ANY `.spec.ts` file** (Rule SWAGGER.0). This is the most critical use case — stale specs cause wrong field names, wrong enum values, and failing tests.
 - After backend deployments when APIs change.
 - Before regenerating Postman collections or comparing specs across environments.
+- Before any workflow that constructs API payloads (HandsOff, energo-ts-test, test generation).
 
 ## Changing URLs
 

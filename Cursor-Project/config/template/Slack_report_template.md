@@ -1,8 +1,17 @@
-# Slack Report Template – Playwright Test Results
+# Slack Report Template – Playwright Test Results (long form, optional)
 
-**Scope:** This template applies **only** to reports sent to Slack (tester and #ai-report channel) as part of the HandsOff flow. The same structure MUST be used every time a Playwright test results report is sent to Slack.
+**Default Slack format (paths 2 & 3):** Use **`Slack_report_summary_short_template.md`** — short Slack message + **detailed** report on disk per **`Cursor-Project/config/playwright/Playwright_run_detailed_report_template.md`**. Use **this** file only if the user **explicitly** requests the **full** long Playwright body in Slack (same content as before).
 
-**Reference:** `.cursor/rules/workflows/handsoff_playwright_report.mdc` §4; `.cursor/commands/hands-off.md` Step 6–7.
+**Workspace overview:** Three Slack paths are defined in **`Slack_reporting_paths.md`**. This file applies only to **paths 2 and 3** (HandsOff and user-requested scoped Playwright), and only when **long** Slack is requested. **Bug validation (path 1)** uses a different report format and channel — do **not** use this template there.
+
+**Scope (legacy long Slack):** Use this template for **Slack** messages that must repeat the full per-test narrative (rare):
+
+1. **HandsOff** – end of `/HandsOff` / `!HandsOff` (mandatory).
+2. **User-triggered scoped runs** – when the user explicitly asks to post results to Slack for a **specific** subset of tests (same recipients and structure). Orchestration: `.cursor/commands/send-playwright-results-slack.md`.
+
+The same structure MUST be used every time Playwright test results are sent to Slack for these flows.
+
+**Reference:** `Slack_reporting_paths.md`; `.cursor/rules/workflows/handsoff_playwright_report.mdc` §4; `.cursor/commands/hands-off.md` Step 6–7; `.cursor/commands/send-playwright-results-slack.md`.
 
 ---
 
@@ -130,7 +139,7 @@ Passed
 
 ## Rules
 
-1. **Always use this template** when sending Playwright test result reports to Slack (HandsOff flow).
+1. **Default:** Send **`Slack_report_summary_short_template.md`** to Slack; persist detail with **`Cursor-Project/config/playwright/Playwright_run_detailed_report_template.md`**. Use **this** long template only on **explicit** request for full Slack body.
 2. **Same content** is sent to both the tester (assignee) and the #ai-report channel (channel_id: C0AK96S1D7X).
 3. **One block per test** with: Test N header, Test description, Expected result, Actual result, Test result.
 4. **English only** (Rule 0.7).

@@ -24,6 +24,8 @@ Use this skill when the user wants to **run** (execute) Playwright tests from th
 3. **Execute** from `Cursor-Project/EnergoTS/`: `npx playwright test <path|grep|dir>`.
 4. **Report** results; optional save under **Chat reports** per **`Cursor-Project/reports/README.md`**; end with "Agents involved: EnergoTS Playwright Test Runner".
 
+**Rule DPR.0:** **HandsOff** and **path 3** automatically generate **`playwright-report-detailed.md`** and upload it with the smart report. For **ad-hoc** runs only, if the user explicitly asks for the JSON-derived Markdown or Slack upload, from `Cursor-Project/EnergoTS/` run `node ../config/playwright/generate-detailed-report.mjs` → **`Cursor-Project/EnergoTS/playwright-report-detailed.md`**, then follow user + **`README-detailed-reporting.md`**. Smart report structure: **`Playwright_run_detailed_report_template.md`**.
+
 ## Agent / Command
 
 - **Agent**: `.cursor/agents/energo-ts-run.md` (EnergoTS Playwright Test Runner).

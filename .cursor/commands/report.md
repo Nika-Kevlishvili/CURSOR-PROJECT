@@ -25,10 +25,16 @@ All paths: **`Cursor-Project/reports/Chat reports/YYYY/<english-month>/<DD>/…`
 
 - **Path:** `Cursor-Project/reports/Chat reports/<segment>/Summary_{HHMM}.md`
 
+## Date Safety (MANDATORY)
+
+- Always derive report date from the **current system date at execution time**.
+- Never use remembered/session metadata dates for `YYYY/<english-month>/<DD>`.
+- If there is any mismatch between prior chat context and current system date, use the current system date.
+
 ## Workflow (this workspace)
 
 There is **no** Python `ReportingService`. Use editor/file tools:
 
-1. Resolve `<segment>` per **`Cursor-Project/reports/README.md`**.
+1. Resolve `<segment>` per **`Cursor-Project/reports/README.md`** using current system date (`YYYY/<english-month>/<DD>`).
 2. Write the markdown file(s) requested.
 3. See **phoenix-reporting** skill and `.cursor/agents/report-generator.md`.

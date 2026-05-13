@@ -5,6 +5,9 @@
       { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/block-phoenix-code-requests.ps1" },
       { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/block-jira-phoenix-delivery.ps1" }
     ],
+    "beforeFileEdit": [
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/protect-phoenix-code.ps1" }
+    ],
     "afterFileEdit": [
       { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/warn-phoenix-code-edit.ps1" }
     ],

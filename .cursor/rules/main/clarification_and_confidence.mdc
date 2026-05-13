@@ -52,21 +52,18 @@ Before substantive tool use or file edits, verify you know:
 
 ---
 
-## Rule CONF.1: Confidence score in results [REQUIRED]
+## Rule CONF.1: Confidence score in every response [REQUIRED]
 
-**Intent:** After completing substantive work, the agent MUST include a **Confidence Score** (0–100%) in its final output so the user can gauge how reliable the result is.
+**Intent:** The agent MUST include a **Confidence Score** (0–100%) in **every chat response** so the user can gauge reliability continuously.
 
 ### When to show
 
-Show a confidence score whenever the agent produces a **deliverable** — including but not limited to:
+Show a confidence score in **all responses**:
 
-- Test cases or test scenarios
-- Bug validation verdicts
-- Database query results / analysis
-- Code fixes or refactoring suggestions
-- Playwright test scripts
-- Postman collections
-- Reports or summaries
+- final results
+- progress updates
+- clarifying-question messages
+- error or blocker messages
 
 ### Format
 
@@ -76,6 +73,8 @@ At the end of the result, include a clearly visible block:
 **Confidence: XX%**
 Reason: <1-2 sentence explanation of why this score>
 ```
+
+Place this block near the end of each response, before the mandatory `Agents involved: ...` line.
 
 ### Scoring guidelines
 

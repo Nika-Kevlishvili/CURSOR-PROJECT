@@ -1,0 +1,342 @@
+Service Contract Version Lifecycle: Creation, Versioning, and Editing Rules
+Service Contract Creation
+User Story
+As a
+ system user,
+I want to
+ create a new Service Contract,
+So that
+ the contract is initialized with a default 
+‘Valid / Signed by both sides’ 
+version and a specific 
+"Validity Start Date
+”
+.
+Acceptance Criteria:
+"Contract Version Status"
+ must be set by default to 
+‘
+Valid / Signed by both sides
+’ 
+and must be disabled in 
+Create
+ mode.
+The system must allow creating at least one 
+‘Valid / Signed by both sides’
+ contract version.
+Version Start Date
+ must be set to the 
+Contract Creation Date
+ and must have 
+Open end
+.
+The current version must appear in the footer, in the right corner, next to the Version indicator, in the following format: 
+[Version Number] / (Start Date – Open end) Valid
+Date format for Start Date and End Date must be: 
+DD.MM.YYYY
+Service Contract New Version Creation
+User Story
+As a
+ system user,
+I want to
+ create new versions of a Service Contract,
+So that
+ the contract can store different information and statuses across different periods of time, while preserving full historical traceability.
+Acceptance Criteria:
+Every new version, whether valid or 
+Not Valid
+, must receive the next numeric 
+Version Number
+, starting from 1.
+1. Create other valid versions except the first one
+A version is considered 
+Valid
+ when its status is
+ ‘Valid/Signed by both sides’
+; otherwise it is treated as 
+Not Valid
+.
+A new version’s Validity Start Date can be 
+later than
+ any existing 
+V
+alid or 
+Not Valid 
+version 
+Start Date.
+A new version’s Validity Start Date can also be 
+earlier than
+ existing 
+V
+alid or 
+Not Valid
+ 
+version Start Dates
+, 
+except
+ the first version’s Start Date (Contract Creation Date).
+If the entered date 
+matches already existing version’s Start Date
+, the system must display:
+EN: 
+"Contract version already has provided start date!"
+BG: 
+„Версията на договора вече има зададена начална дата!“
+Version label format:
+ 
+[Version Number] / (Start Date – Open end) Valid
+End Date Recalculation Logic
+The system must 
+sort
+ all 
+‘Valid/Signed by both sides’ 
+versions by 
+S
+tart
+ 
+Date in 
+ascending order
+.
+For each 
+‘Valid/Signed by both sides’
+ version except the last one:
+endDate = 
+(next 
+‘Valid/Signed by both sides’
+ version startDate) - 1 day
+For the 
+last
+ 
+‘Valid/Signed by both sides’
+ version:
+endDate = 
+O
+pen end
+A) New version created after last version
+When a new Product Contract version is created as 
+Valid
+ (
+V
+ersion
+ 
+Status = 
+‘Valid/Signed by both sides’
+) and its Start Date is after all currently 
+Valid
+ versions, the system recalculates signed-version validity periods so that the previously last signed version is closed and the new signed version becomes the current open-ended version. The previous last signed version receives an 
+E
+nd
+ 
+Date equal to one day before the new version’s 
+S
+tart
+ 
+Date
+, and the new version receives 
+E
+nd
+ 
+Date = Open end.
+Example
+Existing:
+V1: 01.01.2024 - 31.12.2024
+V2: 01.01.2025 - Open end
+Create V3 with Start Date 01.04.2025
+Result:
+V2: 01.01.2025 - 31.03.2025
+V3: 01.04.2025 - Open end
+B) New version inserted between two existing versions
+When a new Product Contract version is created as 
+Valid
+ (
+V
+ersion
+ 
+Status = 
+‘Valid/Signed by both sides’
+) and its Start Date falls between two 
+Valid
+ versions, the system recalculates the 
+valid-
+version timeline. The 
+Valid
+ version immediately before the inserted version is closed one day before the inserted version’s Start Date, and the inserted version is closed one day before the next 
+Valid
+ version’s Start Date. All other 
+Valid
+ versions preserve their order and are recalculated consistently by the same rule.
+Example
+Existing:
+V1: 01.01.2024 - 31.12.2024
+V2: 01.01.2025 - Open end
+Create V3 with Start Date 01.10.2024
+Result:
+V1: 01.01.2024 - 30.09.2024
+V3: 01.10.2024 - 31.12.2024
+V2: 01.01.2025 - Open end
+2. Create other 
+Not Valid
+ versions except the first one
+A version is 
+Not Valid
+ when it has one of the following statuses:
+'Draft'
+'Ready'
+'Cancelled'
+Not Valid
+ versions must still be created with a unique 
+Validity Start Date
+.
+Validity End Date
+ is displayed as 
+Open end
+ for 
+Not V
+alid versions.
+Validity Start Date
+ must:
+be different from other version Start Dates;
+not be earlier than the contract Creation Date.
+Version label format: 
+[Version Number] / (Start Date – Open end) 
+Not Valid
+Service Contract Existing Version Editing
+User Story
+As a
+ system user,
+I want to
+ edit the data of an existing Service Contract version without creating a new version,
+So that
+ I can correct contract information while preserving version history.
+ 
+After creating the first version, in Edit mode I must see two buttons:
+Create New Version
+Update Current Version
+Each time one of these buttons is clicked, a modal must open with the 
+Validity Start Date
+ field, so the user can explicitly define the effective date of the change.
+1. Updating the first version (Valid)
+Date Update
+ - 
+Start Date update is 
+NOT
+ allowed for the first contract version.
+Version 
+Status Update
+ 
+–
+ 
+The first version must always be 
+'
+Valid/
+Signed
+ by both sides
+'
+ and mustn’t be able to convert to cancelled.
+ 
+2. Updating any other versions (Valid and 
+Not V
+alid), except the first one
+Date Update
+ - 
+For 
+V
+alid versions, 
+Validity Start Date
+ must be different from all other version Start Dates and must not be earlier than the 
+previous
+ version’s 
+Start
+ Date.
+Date Update
+ - For 
+Not 
+V
+alid versions, 
+Start Date
+ must be different from all other version Start Dates and must not be earlier than the 
+first
+ version’s Start Date.
+When the Start Date of an existing Product Contract 
+Valid 
+version is changed, the system rebuilds the Valid-version date chain based on the new Start Date. The version’s new position in the Valid timeline determines which neighboring versions are closed and where the edited version’s new End Date is set. If the edited 
+Valid
+ version becomes the latest Valid version, its End Date is set to 
+Open end
+; otherwise, its End Date is set to one day before the next Valid version’s Start Date.
+When the Start Date of an existing Product Contract 
+Valid 
+version is changed
+, the version’s new posit
+i
+on in the Not Valid timeline depends on other Not Valid versions’ Start Dates, as End Dates 
+are all set to Open End. 
+General Notes
+Status Update
+<w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="8420" w:type="dxa"/><w:jc w:val="center"/><w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="1" w:lastColumn="0" w:noHBand="0" w:noVBand="1"/></w:tblPr><w:tblGrid><w:gridCol w:w="1684"/><w:gridCol w:w="1684"/><w:gridCol w:w="1684"/><w:gridCol w:w="1684"/><w:gridCol w:w="1684"/></w:tblGrid><w:tr w:rsidR="006A291F" w:rsidRPr="003F0D7E" w14:paraId="64D817E3" w14:textId="77777777" w:rsidTr="001743F6"><w:trPr><w:trHeight w:val="826"/><w:jc w:val="center"/></w:trPr><w:tc><w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="7B3A49BC" w14:textId="273F0A3C" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="001743F6" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:r w:rsidRPr="003F0D7E"><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>From | To
+<w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="4C239D6A" w14:textId="10391FEC" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:r w:rsidRPr="003F0D7E"><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>Draft
+<w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="0D5AB71D" w14:textId="27B098AB" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:r w:rsidRPr="003F0D7E"><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>Ready
+<w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="6C2F9193" w14:textId="118EFC9C" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="003F0D7E" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:r w:rsidRPr="003F0D7E"><w:t>Valid/Signed by both sides 
+<w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="77F09D86" w14:textId="5B33AC8D" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:r w:rsidRPr="003F0D7E"><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>Cancelled
+<w:trPr><w:trHeight w:val="826"/><w:jc w:val="center"/></w:trPr><w:tc><w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="536F525A" w14:textId="5AF2BCBF" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:r w:rsidRPr="003F0D7E"><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>Draft
+<w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="D1D1D1" w:themeFill="background2" w:themeFillShade="E6"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="51194332" w14:textId="062BA541" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="5133A5F0" w14:textId="4ECA2671" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="001743F6" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:r w:rsidRPr="003F0D7E"><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>✓
+<w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="4571BAAF" w14:textId="77777777" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="3713A4E4" w14:textId="24743366" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="001743F6" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:r w:rsidRPr="003F0D7E"><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>✓
+<w:trPr><w:trHeight w:val="826"/><w:jc w:val="center"/></w:trPr><w:tc><w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="4019AEE5" w14:textId="2D3FCF91" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:r w:rsidRPr="003F0D7E"><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>Ready
+<w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="0D89C9DF" w14:textId="2CA2DE4E" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="001743F6" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:r w:rsidRPr="003F0D7E"><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>✓
+<w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="D1D1D1" w:themeFill="background2" w:themeFillShade="E6"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="7A12153F" w14:textId="77777777" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="22C61CA8" w14:textId="44A5D11A" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="001743F6" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:r w:rsidRPr="003F0D7E"><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>✓
+<w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="25461BCB" w14:textId="6CBC4512" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="001743F6" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:r w:rsidRPr="003F0D7E"><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>✓
+<w:trPr><w:trHeight w:val="826"/><w:jc w:val="center"/></w:trPr><w:tc><w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="152CD8DC" w14:textId="30055D03" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="003F0D7E" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:r w:rsidRPr="003F0D7E"><w:t>Valid/Signed by both sides 
+<w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="4A1B75E5" w14:textId="3457538B" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="1A86BFD0" w14:textId="77777777" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="D1D1D1" w:themeFill="background2" w:themeFillShade="E6"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="3E795E70" w14:textId="77777777" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="5128BA4A" w14:textId="1E94D965" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="001743F6" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:r w:rsidRPr="003F0D7E"><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>✓
+<w:trPr><w:trHeight w:val="826"/><w:jc w:val="center"/></w:trPr><w:tc><w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="279FFC43" w14:textId="2BBD4E53" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:r w:rsidRPr="003F0D7E"><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>Cancelled
+<w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="102ABAA5" w14:textId="74882FD5" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="5246F381" w14:textId="77777777" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="06F8721C" w14:textId="77777777" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="1684" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="D1D1D1" w:themeFill="background2" w:themeFillShade="E6"/><w:vAlign w:val="center"/></w:tcPr><w:p w14:paraId="043E5246" w14:textId="77777777" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:jc w:val="center"/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr></w:p></w:tc></w:tr></w:tbl><w:p w14:paraId="5FEF384F" w14:textId="77777777" w:rsidR="006A291F" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F" w:rsidP="006A291F"><w:pPr><w:ind w:left="360"/></w:pPr></w:p><w:p w14:paraId="0C9B0210" w14:textId="6B15D793" w:rsidR="003F0D7E" w:rsidRPr="003F0D7E" w:rsidRDefault="006A291F"><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="0"/><w:numId w:val="42"/></w:numPr></w:pPr><w:r w:rsidRPr="003F0D7E"><w:t>After updating any version except the first one, the 
+Validity Start Date
+ must be updated and visible in the right corner 
+in the footer
+.
+Additional Requirements (to be applied across all three stories
+ above
+)
+Whenever the user is positioned on a version, the 
+current version
+ must always be visible in the right corner.
+In the version dropdown list:
+show 
+Valid
+ versions first, sorted by Start Date ascending;
+then show 
+Not V
+alid
+ versions, also sorted by Start Date ascending.
+It must be possible for one version’s Start Date to match another version’s End Date
+.
+Every system validation error must include Bulgarian localization (EN + BG).
+After saving a new version, the system must remain on the newly created version page and must not redirect to another version.
+Version Usage and Change Impact on Procceses
+Billing run – One time
+This run uses contract context for a specific billing event date. The system must resolve the applicable 
+Service Contract version
+ by the one-time billing event date (date must fall between version start and end date/open end). All invoice data for that one-time charge must come from the resolved version. Under target logic, only 
+Valid
+ versions are eligible; 
+Not V
+alid versions (Draft, Ready, Cancelled) must be excluded. If no valid version exists for the billing date, the one-time billing item must not be invoiced and should return a validation error.
+Billing run – Periodical
+For recurring periods, contract data is read based on effective version dates in the billing window.
+ For each billing period, the system must resolve the applicable 
+Service Contract version
+ by billing effective date(s) (date within version start and end date/open end). Contract terms used for invoice generation must come only from the resolved version for the corresponding period segment. Under target logic, only 
+Valid
+ versions  can be used; If no valid version exists for any required billing date, that billing item/segment must not be invoiced and should return a validation error. 
+ 
+Billing run – Per piece
+For piece-based billing, the system selects the Service Contract version effective on the billing date and uses version-dependent terms (pricing/conditions) from that version.
+Billing run – Interim
+For interim billing, the system determines the effective Service Contract version for the interim billing date/period and applies version-specific contract data from that resolved version.
+Changing already existing records
+For existing Service Contract Version records, the system must
+:
+Recalculate End Dates for Valid Versions
+;
+Keep all Not Valid versions’ End Dates to Open End
+;
+Apply Valid/ Not Valid in the dropdown. 

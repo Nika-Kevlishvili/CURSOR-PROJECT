@@ -1,4 +1,7 @@
-# Fetch all git repos under Cursor-Project/Phoenix (read-only). See .cursor/rules/integrations/git_sync_workflow.mdc
+# Fetch-only helper for all git repos under Cursor-Project/Phoenix (read-only, non-destructive: stashes local changes, fetches origin + prune, restores stash).
+# Stale reference removed: the old `.cursor/rules/integrations/git_sync_workflow.mdc` rule and `/sync` / `!update <branch>` / `!checkout <branch>` triggers are no longer present in this workspace.
+# For environment-aligned branch switching (with force-reset to origin/<branch> and discarding local Phoenix edits), use the sanctioned command instead:
+#   .cursor/commands/switch-phoenix-branches.ps1   (governed by Rule PHOENIX-SWITCH.0 in .cursor/rules/integrations/phoenix_branch_switching.mdc).
 $ErrorActionPreference = 'Continue'
 $CursorProjectRoot = Split-Path -Parent $PSScriptRoot
 $phoenix = Join-Path $CursorProjectRoot 'Phoenix'

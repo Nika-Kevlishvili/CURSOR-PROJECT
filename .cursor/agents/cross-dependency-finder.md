@@ -17,10 +17,19 @@ You find **cross-dependencies** for a given scope (feature, module, bug, or task
 
 ## Workflow
 
-### 0. Jira-anchored analysis (Rule 35a) [when user gives a Jira/bug/task]
+### 0a. Resolve environment + align Phoenix branches (Rule PHOENIX-SWITCH.0) [MANDATORY when scope reads Phoenix code]
 
-- **Rule 38 branch-context first:** before codebase reads under `Cursor-Project/Phoenix/**`, resolve env from prompt/Jira text and run `!update <branch>` per `git_sync_workflow.mdc` (default to `prod` when not specified).
-- **Jira MCP** + **codebase** (Phoenix READ-ONLY). No local merge-history archaeology (`git log`/`git show` keyed by ticket) by default. Rule 38 branch-context alignment (`!update <branch>`) before Phoenix code reads is required and does not replace Jira-anchored analysis.
+- **MANDATORY resolver call:** run `environment-resolver` first with parent task/Jira context; use only its resolved output among `dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`.
+- If ambiguity remains, `environment-resolver` MUST ask the user via questionnaire (Rule CONF.0).
+- **Subagent reuse (Rule PHOENIX-SWITCH.0 §7a):** If the parent agent (e.g. `/hands-off`, `/bug-validate`, `/test-case-generate`) has already aligned Phoenix to the same environment in this chat session — and the previous alignment did not exit `2` or `3` — DO NOT re-run the script. The parent passes the resolved environment in the prompt; trust it.
+- Otherwise run `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` so every `Cursor-Project/Phoenix/*` repo aligns to `origin/<branch>` (latest tip) before code reading. For `prod` you MUST first ask the user for explicit confirmation, then call with `-ConfirmProd`.
+- Inspect the exit code: `0` proceed; `2` proceed but flag mixed-state in the cross-dep output; `3` stop and ask the user to fix connectivity / VPN / credentials.
+- Local uncommitted Phoenix edits are DISCARDED by the alignment script; Phoenix source files remain READ-ONLY (Rule 0.8 Tier A).
+- This alignment is NOT local merge-history archaeology and does NOT violate Rule 35a — it is just selecting the environment under analysis.
+
+### 0b. Jira-anchored analysis (Rule 35a) [when user gives a Jira/bug/task]
+
+- **Jira MCP** + **codebase** (Phoenix READ-ONLY, working copy aligned in step 0a). No local merge-history archaeology (`git log`/`git show` keyed by ticket) by default.
 - **technical_details:** Jira + codebase notes. **GitLab MR** only if user **explicitly** asks.
 
 ### 1. Define scope

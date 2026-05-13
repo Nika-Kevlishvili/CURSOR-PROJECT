@@ -1,0 +1,32 @@
+[2026-04-30 12:57:57.820] [INFO] Switch started. environment=test, branch=origin/test, dryRun=False, root=C:\Users\N.kevlishvili\Cursor\Cursor-Project\Phoenix
+[2026-04-30 12:57:57.894] [INFO] Repo [mfe-poc-with-nx] start.
+[2026-04-30 12:58:03.512] [ERROR] Repo [mfe-poc-with-nx] fetch failed. attempts=4, exit=128
+[2026-04-30 12:58:03.525] [ERROR] Repo [mfe-poc-with-nx] fetch stderr(full): fatal: invalid refspec '+refs/heads//remotes/origin/test'
+[2026-04-30 12:58:03.529] [INFO] Repo [phoenix-api-gateway] start.
+[2026-04-30 12:58:08.693] [ERROR] Repo [phoenix-api-gateway] fetch failed. attempts=4, exit=128
+[2026-04-30 12:58:08.702] [ERROR] Repo [phoenix-api-gateway] fetch stderr(full): fatal: invalid refspec '+refs/heads//remotes/origin/test'
+[2026-04-30 12:58:08.713] [INFO] Repo [phoenix-billing-run] start.
+[2026-04-30 12:58:15.579] [ERROR] Repo [phoenix-billing-run] fetch failed. attempts=4, exit=128
+[2026-04-30 12:58:15.583] [ERROR] Repo [phoenix-billing-run] fetch stderr(full): fatal: invalid refspec '+refs/heads//remotes/origin/test'
+[2026-04-30 12:58:15.599] [INFO] Repo [phoenix-core] start.
+[2026-04-30 12:58:21.820] [ERROR] Repo [phoenix-core] fetch failed. attempts=4, exit=128
+[2026-04-30 12:58:21.820] [ERROR] Repo [phoenix-core] fetch stderr(full): fatal: invalid refspec '+refs/heads//remotes/origin/test'
+[2026-04-30 12:58:21.834] [INFO] Repo [phoenix-core-lib] start.
+[2026-04-30 12:58:28.634] [ERROR] Repo [phoenix-core-lib] fetch failed. attempts=4, exit=128
+[2026-04-30 12:58:28.643] [ERROR] Repo [phoenix-core-lib] fetch stderr(full): fatal: invalid refspec '+refs/heads//remotes/origin/test'
+[2026-04-30 12:58:28.647] [INFO] Repo [phoenix-mass-import] start.
+[2026-04-30 12:58:34.033] [ERROR] Repo [phoenix-mass-import] fetch failed. attempts=4, exit=128
+[2026-04-30 12:58:34.033] [ERROR] Repo [phoenix-mass-import] fetch stderr(full): fatal: invalid refspec '+refs/heads//remotes/origin/test'
+[2026-04-30 12:58:34.053] [INFO] Repo [phoenix-migration] start.
+[2026-04-30 12:58:39.461] [ERROR] Repo [phoenix-migration] fetch failed. attempts=4, exit=128
+[2026-04-30 12:58:39.463] [ERROR] Repo [phoenix-migration] fetch stderr(full): fatal: invalid refspec '+refs/heads//remotes/origin/test'
+[2026-04-30 12:58:39.472] [INFO] Repo [phoenix-payment-api] start.
+[2026-04-30 12:58:44.570] [ERROR] Repo [phoenix-payment-api] fetch failed. attempts=4, exit=128
+[2026-04-30 12:58:44.571] [ERROR] Repo [phoenix-payment-api] fetch stderr(full): fatal: invalid refspec '+refs/heads//remotes/origin/test'
+[2026-04-30 12:58:44.573] [INFO] Repo [phoenix-scheduler] start.
+[2026-04-30 12:58:50.538] [ERROR] Repo [phoenix-scheduler] fetch failed. attempts=4, exit=128
+[2026-04-30 12:58:50.538] [ERROR] Repo [phoenix-scheduler] fetch stderr(full): fatal: invalid refspec '+refs/heads//remotes/origin/test'
+[2026-04-30 12:58:50.549] [INFO] Repo [phoenix-ui] start.
+[2026-04-30 12:58:56.318] [ERROR] Repo [phoenix-ui] fetch failed. attempts=4, exit=128
+[2026-04-30 12:58:56.318] [ERROR] Repo [phoenix-ui] fetch stderr(full): fatal: invalid refspec '+refs/heads//remotes/origin/test'
+[2026-04-30 12:58:56.442] [ERROR] Switch finished with exit code 3. all repos failed.

@@ -1,0 +1,111 @@
+---
+description: "Evidence-only answers for project-related questions: require grounding in code, Confluence (read-only via MCP), and Swagger/OpenAPI; ask 1–2 clarifying questions instead of improvising when evidence is missing."
+alwaysApply: true
+---
+
+# EVIDENCE-ONLY ANSWERS FOR PROJECT QUESTIONS [CRITICAL]
+
+## Purpose
+
+Prevent the assistant from answering **project-related questions** using personal interpretation or improvisation.
+For project scope, answers MUST be grounded in **verifiable sources**:
+
+1. **Codebase** (highest priority)
+2. **Confluence via MCP (read-only)** (secondary)
+3. **Swagger/OpenAPI** (especially for API contracts: fields, enums, required properties)
+4. **Database evidence** (schema objects + read-only queries): tables/views, constraints, and stored routines (functions/procedures)
+
+If evidence is insufficient, the assistant MUST ask **1–2 targeted clarifying questions** and STOP instead of guessing.
+
+---
+
+## What counts as “project-related”
+
+A question is project-related if it asks about any of:
+
+- Phoenix / EnergoTS behavior, endpoints, validations, services, schedulers, business rules
+- API payloads, DTOs, enums, field names, required fields, status codes
+- DB schema usage, query expectations, contracts, entity relationships, **stored procedures / functions**
+- Test cases, Playwright patterns, workflows, scripts under this repo
+- Configuration, environment-dependent behavior, branches/environments (dev/dev2/test/preprod/prod/experiments)
+
+If unclear whether it is project-related, treat it as project-related and request clarification.
+
+---
+
+## Evidence gate (MANDATORY)
+
+Before asserting behavior for project scope, the assistant MUST do ALL of the following:
+
+- **Locate evidence** in at least one approved source (code / Confluence / Swagger).
+- **Prefer code** when code and Confluence disagree (code wins).
+- **Do not generalize** beyond what the evidence supports.
+
+### Required citations in the answer
+
+When making a project-behavior claim, include at least one of:
+
+- **Code citation**: file path + line range(s) (e.g. `Cursor-Project/Phoenix/.../Foo.java:123-170`)
+- **Confluence citation**: page title + page ID (and URL if available)
+- **Swagger citation**: swagger file path (e.g. `Cursor-Project/config/swagger/<env>/swagger-spec.json`) + endpoint + schema/DTO name + required fields/enums referenced
+- **DB citation** (when DB is used as evidence): schema + object name (table/view/function/procedure) and either (a) the exact DDL reference location if available or (b) the **read-only SQL** used + summarized result
+
+If you cannot provide any citation for a claim, you MUST NOT claim it as fact.
+
+---
+
+## No-evidence behavior (MANDATORY)
+
+If evidence is missing, ambiguous, or cannot be accessed, the assistant MUST:
+
+1. State clearly: **"Cannot verify from code/Confluence/Swagger with the information available."**
+2. Ask **1–2** targeted questions that would unblock evidence gathering. Examples:
+   - Which **environment** (dev/dev2/test/preprod/prod/experiments)?
+   - Which **endpoint** / DTO name / error message / file path?
+   - Provide the **Jira key** or **Confluence link/page ID**?
+3. After the user answers, re-run evidence gathering and only then respond with a sourced answer.
+
+The assistant MUST NOT:
+
+- Provide a “best guess” about Phoenix/EnergoTS/project behavior
+- Invent field names, enum values, endpoints, or business rules
+- Use training-data memory of the project as a substitute for current repo/Confluence/Swagger evidence
+
+### Database-specific constraints
+
+- DB evidence MUST be gathered **read-only** (SELECT-only) and MUST follow the workspace DB environment rule:
+  - If the user does not specify DB environment (Dev/Dev2/Test/PreProd/Prod), ask **one** clarifying question to pick the exact environment.
+- If the question is about a stored routine, prefer verifying via:
+  - `pg_proc` / `pg_namespace` lookup (routine name, schema, arguments, return type), and
+  - referencing the routine body/definition when accessible in the environment.
+
+---
+
+## Non-project questions (allowed)
+
+For non-project/general programming questions (e.g. language syntax, generic Git usage, algorithms),
+the assistant MAY answer from general knowledge, but MUST still respect:
+
+- The workspace’s clarification gate (ask when scope/env/target matters)
+- Safety rules (no secrets; no forbidden modifications)
+
+---
+
+## Jira ticket evidence completeness (MANDATORY)
+
+When the user asks to retrieve information from a Jira ticket, the assistant MUST NOT rely only on the `description` field.
+
+The assistant MUST always:
+
+1. Fetch the full issue payload (all available fields) and verify whether `description` is present, empty, or `null`.
+2. Always check whether `linked issues` and `attachments metadata` are present, regardless of whether `description` is filled.
+   - If present: inspect and validate them.
+   - If not present: explicitly mark them as "not present" and continue with the remaining ticket evidence.
+3. If `description` is empty or insufficient, inspect additional evidence locations before answering:
+   - custom fields (including rich-text ADF fields)
+   - comments/history and update context
+   - environment, labels, components, and other key metadata fields
+4. Return a consolidated answer based on the complete ticket context and explicitly note where critical details were found (for example: "found in custom field", "found in comments", "found in linked issue", "found in attachment metadata").
+
+The assistant MUST NOT conclude "no information" only because `description` is empty.
+

@@ -45,11 +45,24 @@ You act as the **PlaywrightTestValidatorAgent** (Test Quality Validator). You va
 - The spec MUST use the **EnergoTS framework** (fixtures: Request, Endpoints, baseFixture, etc.). No ad-hoc `getToken()`, custom `apiRequest()`, or similar unless they are project utilities.
 - Test titles should include the **Jira key** (e.g. `[REG-123]: ...`) and be meaningful.
 - No obvious anti-patterns: e.g. hardcoded credentials, duplicated logic that should use fixtures.
+- **Strict hook ban:** `test.beforeAll(` / `beforeAll(` for preconditions is forbidden. Presence of these patterns is an automatic validation failure.
+- **Entity chain & repo alignment (when preconditions create data):** If the spec POST-creates chained entities (e.g. terms, price components, customers, PODs, products, contracts), verify that:
+  - The **creation order** is plausible per **`Cursor-Project/config/playwright_generation/playwright instructions/precondition-data-creation.instructions.md`** § Entity Creation Order, **or** the validation report / agent summary indicated a specific **reference spec path** intentionally followed. Flag **`canon`** if the order looks ad-hoc (e.g. POD or customer nested before terms/price/product without rationale or citation).
+  - **POST assertions** broadly match repository norms: **`expect(response).CheckResponse()`** on create flows where canon expects it; gratuitous **`ToBeOK()`**-only on the same chains as **`canon`** (informational or fail per severity — default **informational** unless instructions forbid `ToBeOK` for those calls).
 
 ### 5. Playwright instructions (`Cursor-Project/config/playwright_generation/playwright instructions/`)
 
 - **Before validating**, read **`test-writing-rules.instructions.md`** and **`SKILL.md`** under that folder (and use **`general-rules.md`** for forbidden-path / anti-pattern checks) so validation matches the user-provided instruction set.
 - Flag deviations as **`canon`** issues (e.g. missing `test.step` where required, wrong assertion style vs `CheckResponse`, forbidden patterns from `general-rules.md`).
+
+### 6. Swagger/OpenAPI cross-validation (Rule SWAGGER.0)
+
+- **Spot-check** payload fields in the spec against the refreshed `Cursor-Project/config/swagger/{env}/swagger-spec.json`. For at least the primary endpoint(s), Grep the spec and verify:
+  - Field names in test payloads match the spec EXACTLY (camelCase as in spec).
+  - Enum values match the spec's `enum` array EXACTLY.
+  - Required fields from the spec's `required` array are present in positive-test payloads.
+- Flag mismatches as **`swagger`** issues (e.g. "Payload uses `title` but Swagger spec defines `titleId`", "Source value `Sales_Portal` should be `SALES_PORTAL` per Swagger enum").
+- If spec refresh was NOT performed in this session (no evidence the agent ran `update-swagger-specs.ps1`), flag this as a **`swagger`** issue with suggestion: "Swagger specs were not refreshed before generation — Rule SWAGGER.0 violation."
 
 ## Output (structured result)
 
@@ -57,11 +70,11 @@ Return a **validation result** object (or equivalent) with:
 
 - **passed:** `true` if all criteria above are satisfied; `false` otherwise.
 - **issues:** List of concrete issues, each with:
-  - **criterion:** One of: `syntax`, `coverage`, `alignment`, `framework`, `canon`.
+  - **criterion:** One of: `syntax`, `coverage`, `alignment`, `framework`, `canon`, `swagger`.
   - **description:** Short, actionable description in English.
   - **location:** File path and, if applicable, line number or test name.
   - **suggestion:** What test-case-generator or energo-ts-test should do to fix (e.g. "Add one more test() for TC-3", "Assert response status 400 in test X").
-- **summary:** One or two sentences: "Validation passed" or "Validation failed: N issues (syntax: …, coverage: …, alignment: …, framework: …, canon: …)."
+- **summary:** One or two sentences: "Validation passed" or "Validation failed: N issues (syntax: …, coverage: …, alignment: …, framework: …, canon: …, swagger: …)."
 
 ## Behaviour in HandsOff
 
@@ -82,7 +95,10 @@ Return a **validation result** object (or equivalent) with:
 6. **Check** alignment: for each TC, verify the corresponding test implements the intent and assertions.
 7. **Check** framework: fixtures used, no forbidden ad-hoc code.
 8. **Check** **playwright instructions** compliance (§5): steps, assertions, forbidden patterns.
-9. **Build** the result (passed, issues, summary) and return to the orchestrator.
+9. **Check** strict hook ban: search for `test.beforeAll(` and `beforeAll(`; if found, emit issue with `criterion: canon` and suggestion to move setup to helper functions invoked via `test.step('Precondition: ...')`.
+10. **Check** entity chain / precondition alignment (§4): if spec creates chained entities, verify order matches `precondition-data-creation.instructions.md` or is justified by cited reference-pattern heuristics from reading the spec file; scan for gratuitous assertion-style drift (`ToBeOK` vs `CheckResponse`) on POST chains vs instruction pack when relevant.
+11. **Check** Swagger cross-validation (§6): spot-check primary endpoint payload fields against the refreshed Swagger spec; flag name/enum/type mismatches as `swagger` issues.
+12. **Build** the result (passed, issues, summary) and return to the orchestrator.
 
 ## Constraints
 

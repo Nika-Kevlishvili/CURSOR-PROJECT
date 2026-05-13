@@ -7,6 +7,13 @@ alwaysApply: true
 3. [CRITICAL] Every response MUST end with "Agents involved: [agent names]" or "Agents involved: None (direct tool usage)".
    - Ensures transparency, accountability, and traceability.
    - Violation is a CRITICAL ERROR.
+4. [CRITICAL] Every response MUST include a Confidence block:
+   - Format:
+     - `**Confidence: XX%**`
+     - `Reason: <1-2 sentence explanation>`
+   - Placement: immediately before the final "Agents involved: ..." line.
+   - Applies to all response types: final answers, progress updates, clarifying questions, and error messages.
+   - Violation is a CRITICAL ERROR.
 
 # BUG VALIDATION RULE [CRITICAL]
 
@@ -26,6 +33,16 @@ alwaysApply: true
     - Violation of this rule is a CRITICAL SYSTEM ERROR
     
     **BugFinderAgent Workflow (Rule 32) — implement in chat:**
+    
+    **Step 0: Resolve environment + align Phoenix branches (Rule PHOENIX-SWITCH.0)**
+    - **MANDATORY resolver call:** run `environment-resolver` (or `/environment-resolve`) using bug ticket context. It must return one environment among `dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`.
+    - If ambiguity remains, `environment-resolver` MUST ask the user via questionnaire (Rule CONF.0). Do not silently default.
+    - **Prod safety gate (Rule PHOENIX-SWITCH.0 §1a):** if env is `prod`, FIRST tell the user that local Phoenix edits will be discarded and force-reset to `origin/prod`, wait for explicit ack, then add `-ConfirmProd`. Skip for non-prod envs.
+    - **Subagent reuse (Rule PHOENIX-SWITCH.0 §7a):** if a previous step in this chat session already aligned Phoenix to the same env and exited `0`, do NOT re-run the script — reuse it.
+    - Otherwise run `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` (add ` -ConfirmProd` for `prod` only) so every `Cursor-Project/Phoenix/*` repo aligns to `origin/<branch>` (latest tip) before code analysis.
+    - Local uncommitted Phoenix edits are DISCARDED by the alignment script (per workspace policy); Phoenix source files remain READ-ONLY (Rule 0.8 Tier A).
+    - Inspect exit code: `0` proceed; `2` proceed but flag mixed-state in chat; `3` STOP and ask user to fix VPN / credentials before retrying.
+    - Report in chat which environment + branch were used, the exit code, and any per-repo issues (`missing-remote`, `no-origin`, `network-failure`, `auth-failure`, `fetch-failed`, `checkout-failed`, `reset-failed`, `error`) before proceeding.
     
     **Step 1: Extract Expected Behavior**
     - Extract the bug's expected result from the ticket description
@@ -59,8 +76,10 @@ alwaysApply: true
     - Use clear structure: "1. Expected Behavior", "2. Confluence Validation", "3. Code Analysis", "4. Final Verdict"
     - Format the report in markdown using the structure in **Example Response Structure** below (no Python formatter)
     
-    **Step 5: Deliver results (chat; optional disk)**
-    - **Required:** Reply in chat with the full structured analysis (same content as the former report file): Expected Behavior, Confluence validation, Code analysis, verdict, code references (paths + lines), next steps. Do **not** implement code changes during validation.
+ **Step 5: Deliver results (chat + Slack; optional disk)**
+ - **Required:** Reply in chat with the full structured analysis (same content as the former report file): Expected Behavior, Confluence validation, Code analysis, verdict, code references (paths + lines), next steps. Do **not** implement code changes during validation.
+ - **Required Slack delivery:** After every completed bug validation, send the same full structured report to the Slack channel **`bug-validation`** (channel ID: `C0AUEEDVCEL`) using `slack_send_message(channel_id: "C0AUEEDVCEL", message: <full report>)` via plugin-slack-slack MCP. This is part of the Cursor BugFinder workflow and MUST happen automatically; it is not a parent-chat one-off send.
+ - If Slack MCP/auth is unavailable, include `Slack delivery: failed` and the exact failure reason in the chat analysis. Do not silently skip Slack delivery.
     - **Optional disk file:** Only if the user runs **`/report`** or **explicitly** asks to save the validation to **Chat reports** — then write `…/YYYY/<english-month>/<DD>/BugValidation_[BugName].md` per **`Cursor-Project/reports/README.md`**. Otherwise do **not** create `BugValidation_*.md` automatically.
     
     **DECISION MATRIX - 5 VERDICTS:**
@@ -97,6 +116,7 @@ alwaysApply: true
     - ALWAYS check Confluence SECOND (via MCP tools)
     - ALWAYS check codebase THIRD  
     - ALWAYS apply the 5-verdict decision matrix FOURTH
+    - If reproducibility pipeline is executed (cross-dependency → test cases → energo-ts-test), Swagger refresh is MANDATORY before Playwright generation: run `powershell -ExecutionPolicy Bypass -File ".cursor/commands/update-swagger-specs.ps1"`; if refresh fails, continue with cached specs only with explicit warning.
     - ALWAYS provide all validations in response with clear verdict
     - Do **NOT** automatically create a BugValidation file on disk; chat output satisfies Step 5 unless the user requests **`/report`** or an explicit save (Rule 0.6)
     - NEVER skip any step
@@ -158,6 +178,16 @@ alwaysApply: true
 
 35. [CRITICAL] When the user requests creation of test cases (for a bug, task, or feature), ALWAYS follow this mandatory workflow:
     
+    **Step 0: Resolve environment + align Phoenix branches (Rule PHOENIX-SWITCH.0)**
+    - **MANDATORY resolver call:** run `environment-resolver` (or `/environment-resolve`) from Jira/prompt context and use only its resolved output among `dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`.
+    - If ambiguity remains, `environment-resolver` MUST ask the user via questionnaire (Rule CONF.0).
+    - **Prod safety gate (Rule PHOENIX-SWITCH.0 §1a):** if env is `prod`, FIRST tell the user that local Phoenix edits will be discarded and force-reset to `origin/prod`, wait for explicit ack, then add `-ConfirmProd`. Skip for non-prod envs.
+    - **Subagent reuse (Rule PHOENIX-SWITCH.0 §7a):** if a previous step in this chat session already aligned to the same env and exited `0`, do NOT re-run the script — reuse it. Pass the env + exit code to cross-dependency-finder and test-case-generator so they skip a redundant alignment.
+    - Otherwise run `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` (add ` -ConfirmProd` for `prod` only) so every `Cursor-Project/Phoenix/*` repo aligns to `origin/<branch>` (latest tip) before cross-dep + test-case generation.
+    - Local uncommitted Phoenix edits are DISCARDED by the alignment script; Phoenix source files remain READ-ONLY (Rule 0.8 Tier A).
+    - Inspect exit code: `0` proceed; `2` proceed but flag mixed-state in test case headers; `3` STOP and ask user to fix VPN / credentials before retrying.
+    - Pass the resolved environment + exit code to cross-dependency-finder and test-case-generator so both subagents read the same code state.
+    
     **Step 1: Run Cross-Dependency Finder FIRST (MANDATORY)**
     - Delegate to **cross-dependency-finder** subagent (or run CrossDependencyFinderAgent) for the same scope (bug/task/feature).
     - Cross-dependency-finder MUST follow **Rule 35a** (Jira-anchored analysis; **no** local merge/git steps — see below).
@@ -189,12 +219,15 @@ alwaysApply: true
     **Prohibited in CrossDependencyFinderAgent (default)**
     - Local **merge history lookup** (e.g. `git log --grep`, branch scans for ticket key) **for** cross-dependency discovery.
     - **`CrossDependency_GitSnapshot.ps1`** / **`technical_details.git_snapshot`** as required steps (script removed from repo pattern).
-    - **Conditional git sync** (`!sync` / `!update`) triggered **only** because cross-dependency-finder ran for a Jira key, **except Rule 38 branch-context alignment** (allowed/required before Phoenix code inspection).
+    - Any conditional repository synchronization triggered solely by cross-dependency-finder is prohibited.
 
-    **Optional (explicit user request only)**
-    - **GitLab MCP (read-only)** for MRs/merges: only if the user **explicitly** asks for GitLab merge/MR review.
+ **Optional (explicit user request only)**
+ - **GitLab MCP (read-only)** for MRs/merges: only if the user **explicitly** asks for GitLab merge/MR review.
 
-    **Summary:** Cross-dependencies for a ticket are anchored on **Jira + code + shallow Confluence**, not on local merge archaeology. Rule 38 environment branch-context alignment is compatible and required before Phoenix code reads.
+ **Allowed environment alignment (Rule PHOENIX-SWITCH.0)**
+ - Aligning every `Cursor-Project/Phoenix/*` repo to the matching `origin/<branch>` via `.cursor/commands/switch-phoenix-branches.ps1` before code reading is **NOT** local merge archaeology and **NOT** prohibited by Rule 35a. It is just selecting the environment under analysis. The cross-dependency analysis itself (callers/consumers/integration points) still anchors on Jira + codebase + shallow Confluence; do not run `git log`/`git show` keyed by the ticket.
+
+ **Summary:** Cross-dependencies for a ticket are anchored on **Jira + code + shallow Confluence**, not on local merge archaeology. Branch alignment to the ticket's environment via the sanctioned script is allowed and required when reading Phoenix code.
 
     - Violation is a CRITICAL SYSTEM ERROR.
 
@@ -222,39 +255,13 @@ alwaysApply: true
     
     **MANDATORY: Use hands-off workflow**
     - Route to the **hands-off** orchestrator (`.cursor/commands/hands-off.md`, `.cursor/agents/hands-off.md`).
-    - Execute the full flow in order: (1) Get Jira ticket and description (Jira MCP); (2) Run cross-dependency-finder for the Jira key (Rule 35a); (3) Run test-case-generator with cross_dependency_data; (4) Create Playwright tests from test cases (bridge .md to spec, EnergoTSTestAgent); (4.5) Validate Playwright tests (playwright-test-validator); if validation fails, re-run (3) and/or (4) and re-validate until pass or max iterations; (5) Run Playwright tests (energo-ts-run, cursor branch only); (6) Save report as **`HandsOff reports/…/YYYY/<english-month>/<DD>/{JIRA_KEY}.md`** per **`Cursor-Project/reports/README.md`** with pass/fail and reasons; (7) Send that report to Slack to the tester and to the AI report channel (user-slack MCP); (8) After the report, collect questions from each participating agent (as needed), tag each question with the agent name, and send the list of questions to the same Slack recipients.
+    - Execute the full flow in order: (1) Get Jira ticket and description (Jira MCP) AND resolve target environment (`dev`/`dev2`/`test`/`preprod`/`prod`/`experiments`); ask the user if ambiguous (Rule CONF.0); align every `Cursor-Project/Phoenix/*` repo via `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` (Rule PHOENIX-SWITCH.0; local Phoenix edits are discarded; Phoenix files stay READ-ONLY, Rule 0.8 Tier A); (2) Run cross-dependency-finder for the Jira key (Rule 35a); (3) Run test-case-generator with cross_dependency_data; (4) Create Playwright tests from test cases (bridge .md to spec, EnergoTSTestAgent); (4.5) Validate Playwright tests (playwright-test-validator); if validation fails, re-run (3) and/or (4) and re-validate until pass or max iterations; (5) Run Playwright tests (energo-ts-run, cursor branch only); (6) Save report as **`HandsOff reports/…/YYYY/<english-month>/<DD>/{JIRA_KEY}.md`** per **`Cursor-Project/reports/README.md`** with pass/fail and reasons (include resolved environment and per-repo alignment status), then when **`EnergoTS/playwright-report.json`** exists run **`Cursor-Project/config/playwright/generate-detailed-report.mjs`** from **`EnergoTS/`** → **`Cursor-Project/EnergoTS/playwright-report-detailed.md`** (Rule **DPR.0**); (7) Send to Slack: **short** summary via user-slack MCP **and** **mandatory file uploads** of **`{JIRA_KEY}.md`** **and** **`playwright-report-detailed.md`** (when generated) to Tester + **#ai-report** (`C0AK96S1D7X`) when **`SLACK_API_TOKEN`/`SLACK_BOT_TOKEN`** allows — **`Cursor-Project/config/slack/upload-file-to-slack.ps1`** (see `handsoff_playwright_report.mdc` §4 and **`playwright_detailed_reporting.mdc`**); (8) After the report, collect questions from each participating agent (as needed), tag each question with the agent name, and send the list of questions to the same Slack recipients.
     - Do not skip steps. Report must be named after the Jira key and sent to Slack; then agent questions (with attribution) must be sent after the report.
     
     **When to apply**
     - User message contains a Jira ticket identifier and the trigger **/HandsOff** or **!HandsOff** (or "HandsOff for this ticket", "Run HandsOff for REG-123", etc.).
     
     **Reference:** `.cursor/commands/hands-off.md`, `.cursor/agents/hands-off.md`. (HandsOff has no project skill entry; trigger via **/HandsOff**, **!HandsOff**, or the **hands-off** slash command only.)
-    
-    - Violation is a CRITICAL SYSTEM ERROR.
-
-# PHOENIX CODE-CHECK BRANCH CONTEXT RULE [CRITICAL]
-
-38. [CRITICAL] For ANY task where an agent must inspect/read/analyze code under **`Cursor-Project/Phoenix/**`**, the agent MUST first align Phoenix repos to the environment branch implied by the prompt/task, then only after that perform code search/reading.
-
-    **Mandatory branch-context workflow (before code inspection):**
-    1. Detect environment from user text / Jira bug text:
-       - `dev` / დევ → target branch `dev`
-       - `dev2` / დევ2 → target branch `dev2`
-       - `test` / ტესტ → target branch `test`
-       - `preprod` / პრე-პროდ → target branch `preprod` (or `pre-prod` / matching PreProdRelease branch)
-       - `prod` / production / პროდ → target branch `prod` (fallback `main`/`master` where applicable)
-    2. If environment is NOT explicitly mentioned, **default to PROD context** (do not block on clarification for this specific branch-selection step).
-    3. Run read-only sync/update per `.cursor/rules/integrations/git_sync_workflow.mdc`:
-       - `!update <resolved-branch>` across Phoenix repos (fetch + checkout/update + merge from origin)
-       - Preserve local changes (stash workflow), never push/commit.
-    4. Only after step (3), run codebase searches/reads for analysis/answers.
-
-    **Applies to:** PhoenixExpert Q&A, bug validation, cross-dependency analysis, test-case generation inputs, and any other agent task that reads Phoenix code for conclusions.
-    
-    **Safety constraints:**
-    - Git operations remain READ-ONLY (fetch/checkout/merge only).
-    - If branch is missing in a repo, skip that repo with a note; continue others.
-    - If repo is diverged/conflicted, report and ask user how to proceed for that repo.
     
     - Violation is a CRITICAL SYSTEM ERROR.
 
@@ -274,5 +281,43 @@ alwaysApply: true
     - PhoenixExpert Q&A questions (Rule 2) — PhoenixExpert always does its own Confluence search.
 
     **Rationale:** Tasks, changes, and feature requests have their requirements defined in the ticket (and optionally in linked Confluence specs). Broad Confluence search adds noise and slows down analysis without improving accuracy for well-scoped work items.
+
+    - Violation is a CRITICAL SYSTEM ERROR.
+
+# SWAGGER REFRESH MANDATORY RULE [CRITICAL]
+
+41. [CRITICAL] Before creating or editing ANY `.spec.ts` file in EnergoTS, the agent MUST refresh Swagger/OpenAPI specs and cross-validate ALL payloads against the refreshed spec.
+    
+    **MANDATORY: Rule SWAGGER.0**
+    - Execute `powershell -ExecutionPolicy Bypass -File ".cursor/commands/update-swagger-specs.ps1"` BEFORE writing any `.spec.ts`.
+    - After refresh, for EVERY endpoint used in the test: Grep the updated `Cursor-Project/config/swagger/{env}/swagger-spec.json`, resolve the request body `$ref` → DTO schema, extract `required` fields, exact field names (camelCase), `enum` values, and types.
+    - Use ONLY spec-validated field names and enum values in generated payloads. The Swagger spec is the single source of truth — NOT the test case document, NOT the Jira description.
+    - If refresh fails (network/VPN): warn the user but continue with cached specs; log a warning.
+    
+    **Why this exists:**
+    - Cached specs become stale when the backend evolves. Using stale data produces tests with wrong field names (`title` instead of `titleId`), wrong enum values (`Sales_Portal` instead of `SALES_PORTAL`), and wrong casing (`birthdate` instead of `birthDate`).
+    
+    **Reference:** `.cursor/rules/integrations/swagger_refresh_mandatory.mdc`; `.cursor/commands/update-swagger-specs.ps1`; `Cursor-Project/config/playwright_generation/playwright instructions/swagger-api-reference.instructions.md`.
+    
+    - Violation is a CRITICAL SYSTEM ERROR.
+
+# ENERGOTS PLAYWRIGHT `beforeAll` BAN RULE [CRITICAL]
+
+40. [CRITICAL] When creating or editing EnergoTS Playwright specs (including HandsOff Step 4 bridge from test cases), precondition setup MUST NOT use `test.beforeAll()` or `beforeAll()`.
+
+    **Generation-time requirement (primary rule):**
+    - Agents MUST NOT generate `beforeAll` first and "clean it up later".
+    - Specs must be authored from the first draft with helper-function preconditions.
+
+    **Required implementation pattern:**
+    - Use helper functions at file top for shared preconditions.
+    - Call helpers inside each `test()` using `test.step('Precondition: ...')`.
+    - Keep preconditions self-contained and repeatable; do not rely on global hook state.
+
+    **Mandatory validation gate before finishing generation:**
+    - Search final spec content for forbidden patterns: `test.beforeAll(` and `beforeAll(`.
+    - If found, generation is invalid; rewrite to helper-function pattern before returning output.
+
+    **Reference:** `Cursor-Project/config/playwright_generation/playwright instructions/precondition-data-creation.instructions.md`; `Cursor-Project/config/playwright_generation/playwright instructions/test-writing-rules.instructions.md`; `.cursor/rules/workflows/handsoff_playwright_report.mdc`.
 
     - Violation is a CRITICAL SYSTEM ERROR.

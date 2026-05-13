@@ -1,0 +1,86 @@
+---
+description: "MANDATORY: Always refresh Swagger/OpenAPI specs BEFORE generating or editing any Playwright .spec.ts file. Run update-swagger-specs.ps1 and grep the updated spec for every endpoint used. Never skip this step even if cached specs exist."
+alwaysApply: false
+globs:
+  - "Cursor-Project/EnergoTS/tests/**/*.spec.ts"
+  - ".cursor/agents/energo-ts-test.md"
+  - ".cursor/commands/energo-ts-test.md"
+  - ".cursor/commands/hands-off.md"
+  - ".cursor/agents/hands-off.md"
+  - ".cursor/agents/playwright-test-validator.md"
+  - "Cursor-Project/config/playwright_generation/**/*.md"
+---
+# SWAGGER REFRESH MANDATORY RULE [CRITICAL]
+
+## Rule SWAGGER.0: Always Refresh Before Generation [ABSOLUTE REQUIREMENT]
+
+**CRITICAL:** Before creating or editing ANY `.spec.ts` file, the agent MUST refresh Swagger specs and use them to validate all payloads, field names, types, and enum values.
+
+## Why This Rule Exists
+
+Cached Swagger specs become stale as the backend evolves. New endpoints, renamed fields, and changed enum values will NOT appear in cached specs. Using stale specs produces tests with **wrong field names, wrong enum values, and wrong types** — tests that fail silently or test the wrong thing.
+
+**Real example of damage caused by skipping this step:**
+- Field `title` was used instead of correct `titleId` (Swagger: `titleId`)
+- Source value `Sales_Portal` was used instead of correct `SALES_PORTAL` (Swagger enum: `SALES_PORTAL`)
+- Field `birthdate` was used instead of correct `birthDate` (Swagger: `birthDate`)
+- All of these would cause **every test to fail at runtime**
+
+## Mandatory Steps (NEVER SKIP)
+
+### Step 1: Refresh Swagger Specs
+
+```powershell
+powershell -ExecutionPolicy Bypass -File ".cursor/commands/update-swagger-specs.ps1"
+```
+
+- If the script succeeds: proceed with updated specs.
+- If the script fails (network/VPN): **warn the user** but continue with cached specs. Log a warning in the output.
+
+### Step 2: Search the Updated Spec for Every Endpoint
+
+For each endpoint used in the test:
+
+1. **Find the endpoint path** in the spec (use Grep or Python JSON parsing).
+2. **Extract the operation** (POST, GET, PUT, DELETE) and its `requestBody.$ref`.
+3. **Resolve the DTO schema** — get the full `properties`, `required` array, field `type`/`format`, and `enum` values.
+
+### Step 3: Cross-Validate Every Payload Field
+
+For every field in the test payload, verify against the spec:
+
+| Check | What to Verify |
+|-------|---------------|
+| Field name | Exact camelCase spelling matches spec (e.g., `titleId` not `title`, `birthDate` not `birthdate`) |
+| Required fields | All fields in the `required` array are present in positive-test payloads |
+| Enum values | String values match the spec's `enum` array exactly (e.g., `SALES_PORTAL` not `Sales_Portal`) |
+| Field types | Numbers are numbers, strings are strings, arrays are arrays, dates use correct format |
+| Path parameters | Types match (`string` vs `integer`), constraints match (`minimum: 1`) |
+
+### Step 4: Document Findings
+
+If the endpoint is NOT in the spec even after refresh:
+1. State clearly: "Endpoint not found in updated Swagger spec for [env]."
+2. Construct payloads from the test case document only.
+3. Flag this as a risk in the confidence score.
+
+## Enforcement Checklist
+
+Before writing ANY `.spec.ts` file, the agent MUST be able to answer YES to ALL of these:
+
+- [ ] `update-swagger-specs.ps1` was executed in this session (or failure was logged)
+- [ ] Every endpoint was searched in the refreshed spec
+- [ ] Every DTO schema was resolved and its `required`/`properties`/`enum` extracted
+- [ ] Every payload field name matches the spec exactly
+- [ ] Every enum value matches the spec exactly
+- [ ] Every field type matches the spec exactly
+
+## What Happens If You Skip This
+
+**Violation of this rule produces tests that:**
+- Use wrong field names → API ignores them → false positives
+- Use wrong enum values → API rejects them → tests fail
+- Miss required fields → API returns 400 → tests fail
+- Use wrong types → API returns 400 → tests fail
+
+**This rule has ZERO exceptions. Even if you "think" you know the field names, ALWAYS verify against the refreshed spec.**

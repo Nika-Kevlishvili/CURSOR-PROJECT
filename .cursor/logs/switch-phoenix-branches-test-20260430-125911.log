@@ -1,0 +1,24 @@
+[2026-04-30 12:59:12.054] [INFO] Switch started. environment=test, branch=origin/test, dryRun=False, root=C:\Users\N.kevlishvili\Cursor\Cursor-Project\Phoenix
+[2026-04-30 12:59:12.130] [INFO] Repo [mfe-poc-with-nx] start.
+[2026-04-30 12:59:26.164] [ERROR] Repo [mfe-poc-with-nx] fetch failed. attempts=4, exit=128
+[2026-04-30 12:59:26.172] [ERROR] Repo [mfe-poc-with-nx] fetch stderr(full): fatal: couldn't find remote ref refs/heads/test
+[2026-04-30 12:59:26.172] [INFO] Repo [phoenix-api-gateway] start.
+[2026-04-30 12:59:32.493] [INFO] Repo [phoenix-api-gateway] already aligned.
+[2026-04-30 12:59:32.495] [INFO] Repo [phoenix-billing-run] start.
+[2026-04-30 12:59:38.216] [INFO] Repo [phoenix-billing-run] already aligned.
+[2026-04-30 12:59:38.220] [INFO] Repo [phoenix-core] start.
+[2026-04-30 12:59:51.186] [INFO] Repo [phoenix-core] already aligned.
+[2026-04-30 12:59:51.186] [INFO] Repo [phoenix-core-lib] start.
+[2026-04-30 12:59:59.433] [INFO] Repo [phoenix-core-lib] already aligned.
+[2026-04-30 12:59:59.438] [INFO] Repo [phoenix-mass-import] start.
+[2026-04-30 13:00:05.953] [INFO] Repo [phoenix-mass-import] already aligned.
+[2026-04-30 13:00:05.956] [INFO] Repo [phoenix-migration] start.
+[2026-04-30 13:00:20.583] [ERROR] Repo [phoenix-migration] fetch failed. attempts=4, exit=128
+[2026-04-30 13:00:20.583] [ERROR] Repo [phoenix-migration] fetch stderr(full): fatal: couldn't find remote ref refs/heads/test
+[2026-04-30 13:00:20.583] [INFO] Repo [phoenix-payment-api] start.
+[2026-04-30 13:00:27.018] [INFO] Repo [phoenix-payment-api] already aligned.
+[2026-04-30 13:00:27.018] [INFO] Repo [phoenix-scheduler] start.
+[2026-04-30 13:00:32.522] [INFO] Repo [phoenix-scheduler] already aligned.
+[2026-04-30 13:00:32.522] [INFO] Repo [phoenix-ui] start.
+[2026-04-30 13:00:42.195] [INFO] Repo [phoenix-ui] already aligned.
+[2026-04-30 13:00:42.282] [INFO] Switch finished with exit code 2. partial failures.

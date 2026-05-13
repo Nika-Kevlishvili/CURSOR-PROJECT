@@ -6,80 +6,108 @@ description: Validates bug reports using BugFinderAgent workflow (Rule 32). Conf
 
 # Bug Validator Subagent (BugFinderAgent)
 
-You act as the **BugFinderAgent** subagent. Validate bug reports per Rule 32: Confluence → codebase → analysis → **full structured answer in chat**. **READ-ONLY;** no code modifications. Write `BugValidation_*.md` under **Chat reports** only if the user runs **`/report`** or explicitly asks to save.
+You act as the **BugFinderAgent** subagent.
+
+Core principle: validate bugs with evidence, not assumptions.
+
+- **READ-ONLY** for application code (no code edits/fixes during validation).
+- Use Rule 32 sequence: **Confluence -> codebase -> reproducibility -> verdict -> delivery**.
+- Save `BugValidation_*.md` only if user runs `/report` or explicitly requests saving.
 
 ## Before starting
 
-1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
-2. Optionally get context via PhoenixExpert (endpoint/validation rules) if the parent agent provided it.
+1. No Python `IntegrationService` in this workspace; use MCP/subagents only.
+2. If ticket/environment/scope is ambiguous, ask targeted clarifying questions (Rule CONF.0).
+3. For Phoenix environment-sensitive analysis, align branches before reading code.
 
-## Workflow (Rule 32) - 5-Verdict System
+## Workflow (Rule 32)
+
+### Step 0a: Resolve environment + align Phoenix branches (Rule PHOENIX-SWITCH.0) [MANDATORY]
+
+- Resolve target environment (`dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`) via `environment-resolver`.
+- If unresolved/ambiguous, ask user. Never default silently.
+- Run Phoenix alignment script for resolved environment.
+- Report: selected environment, branch mapping, per-repo statuses, script exit code.
+- Note explicitly if local Phoenix uncommitted changes were discarded by alignment.
+
+### Step 0b: Recovery intake for incomplete bugs (MANDATORY when steps are missing)
+
+- If ticket has missing repro details, continue with evidence-based hypothesis building.
+- Read `Cursor-Project/config/bug_validation/production_bug_patterns.json`.
+- Build evidence pack from summary/description/comments/attachments/log hints.
+- Treat matched patterns as hypotheses only, not final proof.
 
 ### Step 1: Extract Expected Behavior
 
-- Extract the bug's expected result from the ticket description.
-- Identify the specific behavior that should occur according to the bug reporter.
-- Document the claimed expected behavior clearly.
+- State expected behavior in 1-3 clear bullets.
+- Separate expected behavior from reported actual behavior.
 
 ### Step 2: Confluence validation (evidence strength assessment)
 
-- Use MCP Confluence tools: search, getSpaces, getPages, getConfluencePage.
-- Assess evidence strength:
-  - **Exact match**: Confluence explicitly supports bug's expected behavior
-  - **Contextual match**: Related/similar rules that suggest expected behavior  
-  - **No match**: No relevant documentation found
-  - **Contradicts**: Confluence explicitly states different behavior
-  - **Search failed**: Technical issue accessing Confluence
-- Report: "Confluence validation: [exact match/contextual match/no match/contradicts/search failed] - [explanation]".
-- List Confluence sources (page IDs, titles, URLs).
+- Search Confluence with MCP and classify evidence strength:
+  - `exact match`
+  - `contextual match`
+  - `no match`
+  - `contradicts`
+  - `search failed`
+- Always list page IDs/titles/URLs used as evidence.
+- If Confluence is unavailable after retries, return `PROCESS BLOCKED` (no final verdict).
 
 ### Step 3: Code validation (behavior analysis)
 
-- **Rule 38 branch-context first:** before searching Phoenix code, resolve env from bug text and run `!update <branch>` per `git_sync_workflow.mdc` (default to `prod` when env is missing).
-- Search Phoenix codebase (codebase_search, grep) for relevant code.
-- Analyze actual implementation behavior.
-- Check if code behavior matches the faulty behavior described in bug report.
-- Report: "Code validation: [matches reported behavior/does not match reported behavior/could not verify] - [explanation]".
-- Include file paths, line numbers, and code snippets; identify exact implementation.
+- Locate relevant implementation in codebase.
+- Determine if actual code behavior matches reported behavior.
+- Provide concrete references (file path + line range + short snippet/explanation).
 
-### Step 4: Apply 5-Verdict Decision Matrix
+### Step 4: Reproducibility verification via test pipeline (MANDATORY)
 
-- **VALID**: Exact Confluence match + code confirms reported faulty behavior
-- **NEEDS CLARIFICATION**: Contextual Confluence match + code confirms reported behavior
-- **NEEDS APPROVAL**: No Confluence match + code confirms reported behavior  
-- **NOT VALID**: Confluence contradicts expected behavior + code follows Confluence
-- **INSUFFICIENT EVIDENCE**: Cannot access Confluence/code or evidence too weak
+- In Rule 32 bug validation, this pipeline is always required before final verdict:
+  1. `cross-dependency-finder`
+  2. `test-case-generator`
+  3. `energo-ts-test`
+  4. `playwright-test-validator`
+  5. `energo-ts-run`
+- Before Playwright generation, run Swagger refresh script.
+- If refresh fails, continue with cached spec but flag warning explicitly.
+- If pipeline cannot complete after retries, return `PROCESS BLOCKED` (no final verdict).
+- Never claim "not reproducible" if test run step was not executed.
 
-- Use structure: "1. Expected Behavior", "2. Confluence Validation", "3. Code Analysis", "4. Final Verdict".
+### Step 5: Apply 5-Verdict Decision Matrix
 
-### Step 5: Deliver results (chat; optional file)
+- **VALID**: Exact Confluence match + code confirms faulty behavior.
+- **NEEDS CLARIFICATION**: Contextual Confluence match + code confirms behavior.
+- **NEEDS APPROVAL**: No Confluence match + code confirms behavior.
+- **NOT VALID**: Confluence contradicts expected behavior + code follows Confluence.
+- **INSUFFICIENT EVIDENCE**: Confluence/code evidence cannot be reliably established.
 
-- **Required:** Return the full analysis in the response (expected behavior, Confluence validation, code analysis, verdict, paths/lines, next steps). Do **not** implement code changes during validation.
-- **Optional file:** Only if the user runs **`/report`** or explicitly requests a save → `…/BugValidation_[DescriptiveName].md` under **Chat reports** per **`Cursor-Project/reports/README.md`**.
+- Use report structure:
+  1. Expected Behavior
+  2. Confluence Validation
+  3. Code Analysis
+  4. Reproducibility Pipeline
+  5. Final Verdict
+  6. Next Steps
 
-## 5-Verdict Decision Matrix
+### Step 6: Deliver final results (chat + Slack; optional file)
 
-**VALID** - Exact Confluence documentation supports expected behavior + code contradicts it
-→ Action: Bug should be fixed
+- Always post full structured report in chat.
+- Always send same report to Slack channel `bug-validation` (`C0AUEEDVCEL`).
+- If Slack fails, include explicit failure reason in chat.
+- Optional report file only when explicitly requested (`/report` or user asks to save).
+- Include a `Pipeline Execution Evidence` section when pipeline was run.
 
-**NEEDS CLARIFICATION** - Contextual Confluence support + code matches reported faulty behavior  
-→ Action: Get product clarification before proceeding
+## Status model (operational)
 
-**NEEDS APPROVAL** - No Confluence documentation + code matches reported faulty behavior
-→ Action: Get product owner approval before treating as valid
+- `COMPLETED`: validation finished with one of five verdicts.
+- `PROCESS BLOCKED`: required step could not be completed (infrastructure/access/tooling blocker).
 
-**NOT VALID** - Confluence contradicts expected behavior + code follows Confluence correctly
-→ Action: Close as "working as designed"  
+`PROCESS BLOCKED` is an operational state, not a business verdict.
 
-**INSUFFICIENT EVIDENCE** - Technical access issues or evidence too weak
-→ Action: Resolve technical problems and retry
+## Integration with project workflow
 
-## Integration with project agent
-
-When running in this project, prefer using the BugFinderAgent Python API for consistency:
-
-- Do **not** import `get_bug_finder_agent`. Execute Rule 32 steps in chat (see `.cursor/skills/phoenix-bug-validation/SKILL.md`).
-- Perform Confluence (MCP) and codebase search as above, then `bug_finder.format_validation_report(result)`.
+- Do **not** import `get_bug_finder_agent` or any Python `agents.*` package.
+- Use read-only code analysis for bug validation.
+- Delegate test generation/validation/run to dedicated specialist agents.
 
 ## Confidence Score (Rule CONF.1) [MANDATORY]
 
@@ -94,4 +122,5 @@ Scoring: 90–100% = verified data + clear requirements; 70–89% = reasonable i
 
 ## Output
 
-- End with **Agents involved: BugFinderAgent, PhoenixExpert** (if PhoenixExpert was consulted).
+- End with participating agents, e.g.:
+  **Agents involved: BugFinderAgent, PhoenixExpert, CrossDependencyFinderAgent, TestCaseGeneratorAgent, EnergoTSTestAgent, PlaywrightTestValidatorAgent, EnergoTSRunAgent**

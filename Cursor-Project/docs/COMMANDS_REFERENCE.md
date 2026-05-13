@@ -4,16 +4,45 @@ This document lists every Cursor command and what it can do in detail.
 
 ---
 
-## 1. Sync (Git – Phoenix from GitLab)
+## 1. Switch Phoenix repos to an environment branch (current command)
 
-**Trigger:** `/sync` or `!sync`, `!update <branch>`, `!checkout <branch>`
+**Command:** `.cursor/commands/switch-phoenix-branches.ps1`
+**Doc:** `.cursor/commands/switch-phoenix-branches.md`
+**Rule:** `.cursor/rules/integrations/phoenix_branch_switching.mdc` (Rule PHOENIX-SWITCH.0)
 
-**What it can do:**
-- **!sync** – Fetch all Phoenix projects from GitLab (`Cursor-Project/Phoenix/`): stash local changes → `git fetch origin --all` and `--prune` → unstash.
-- **!update &lt;branch&gt;** – Update the given branch (dev, dev2, dev-fix, test) in every Phoenix repo: stash → fetch → if behind, merge `origin/&lt;branch&gt;`; if diverged, stop and ask you.
-- **!checkout &lt;branch&gt;** – In every Phoenix repo: stash → fetch → checkout &lt;branch&gt; (or create tracking branch) → unstash.
+**What it does (per repo under `Cursor-Project/Phoenix/`, in order):**
+1. `git fetch origin --prune`
+2. Verify `origin/<branch>` exists; otherwise mark `missing-remote` and skip.
+3. **Discard uncommitted local changes** (`git reset --hard HEAD` + `git clean -fd`) — per workspace policy local Phoenix edits are NOT preserved during a switch.
+4. `git checkout -B <branch> origin/<branch>` (creates / re-points local tracking branch).
+5. `git reset --hard origin/<branch>` so the local branch matches the latest remote tip.
 
-**Scope:** Only repos under `Cursor-Project/Phoenix/`. Read-only for remote (no push). Uses token from `git_sync_workflow.mdc`.
+**Branch mapping (lowercase canonical):**
+
+| `-Environment` | Remote branch        |
+|----------------|----------------------|
+| `dev`          | `origin/dev`         |
+| `dev2`         | `origin/dev2`        |
+| `test`         | `origin/test`        |
+| `preprod`      | `origin/preprod`     |
+| `prod`         | `origin/prod`        |
+| `experiments`  | `origin/experiments` |
+
+**Usage:**
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment dev
+powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment test
+powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment experiments
+# Plan only, no destructive actions:
+powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment dev -DryRun
+```
+
+**When Cursor agents must run this:** before environment-sensitive Phoenix code reading — Phoenix Q&A, bug validation (Rule 32), cross-dependency analysis (Rule 35a), test case generation (Rule 35), and the HandsOff flow (Rule 37). See Rule PHOENIX-SWITCH.0.
+
+**Scope:** Only repos under `Cursor-Project/Phoenix/`. Read-only for the remote (no commits, no pushes, no MRs). Phoenix source files remain READ-ONLY for Cursor AI (Rule 0.8 Tier A). EnergoTS is unaffected — that path stays locked to `cursor` (Rule ENERGOTS.0).
+
+> **Legacy note:** the older `/sync`, `!update <branch>`, `!checkout <branch>` triggers and the `git_sync_workflow.mdc` rule are no longer present in this workspace. Use the command above for any Phoenix branch alignment.
 
 ---
 
@@ -255,8 +284,8 @@ This document lists every Cursor command and what it can do in detail.
 3. **Test cases** – Run test-case-generator with ticket description and cross_dependency_data; save under `Cursor-Project/test_cases/Flows/` or `Objects/` (per template).
 4. **Playwright tests** – Follow **`.cursor/agents/energo-ts-test.md`**: map test case `.md` → spec with EnergoTS framework; output **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**; stay on **`cursor`** branch (Rule ENERGOTS.0). No Python `get_energo_ts_test_agent()` in this workspace.
 5. **Run tests** – Run Playwright tests (e.g. by Jira key or newly created file); capture pass/fail and failure reasons.
-6. **Report (Step 9)** – Save report as **`HandsOff reports/…/YYYY/<english-month>/<DD>/{JIRA_KEY}.md`** per **`Cursor-Project/reports/README.md`** with: Jira key, title, tests run, per-test pass/fail and reason.
-7. **Slack** – Send **full** report per **`Slack_report_template.md`** to **Tester** (Jira custom field `customfield_10095`, DM via `slack_search_users`) and **#ai-report** (`C0AK96S1D7X`) only — see **`handsoff_playwright_report.mdc`**.
+6. **Report (Step 9)** – Save **detailed** report as **`HandsOff reports/…/YYYY/<english-month>/<DD>/{JIRA_KEY}.md`** per **`Cursor-Project/config/playwright/Playwright_run_detailed_report_template.md`** and **`Cursor-Project/reports/README.md`** (TC mapping, entity links, expected vs actual).
+7. **Slack** – **Three-block** text per **`Slack_report_summary_short_template.md`** + **upload** detailed `{JIRA_KEY}.md` via **`config/slack/upload-file-to-slack.ps1`** to Tester and **#ai-report** — see **`handsoff_playwright_report.mdc`** / **`config/slack/README.md`**. Long Slack only if explicitly requested (`Slack_report_template.md`).
 
 **When to use:** Run the full pipeline automatically for a Jira ticket: fetch → cross-deps → test cases → create Playwright tests → run → report (save + send to Slack). No user intervention after providing the ticket and /HandsOff.
 

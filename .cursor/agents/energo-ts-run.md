@@ -60,11 +60,18 @@ Scoring: 90–100% = tests ran cleanly, results are deterministic; 70–89% = te
 3. Optional: write markdown under **Chat reports** per **`Cursor-Project/reports/README.md`** if the user asks (Rule 0.6 default; no Python ReportingService).
 4. End with **Agents involved: EnergoTS Playwright Test Runner** (and PhoenixExpert if consulted).
 
+### Machine detailed Markdown (`playwright-report-detailed.md`) — Rule DPR.0
+
+- **HandsOff / path 3:** The orchestrator **generates and Slack-uploads** this file together with the smart report — see **`hands-off.md`** Step 6–7 and **`playwright_detailed_reporting.mdc`**.
+- **Ad-hoc test runs** (this agent only): If the user **explicitly** asks for the JSON → Markdown file or Slack upload **outside** HandsOff/path 3, run from **`EnergoTS/`**: `node ../config/playwright/generate-detailed-report.mjs` → **`Cursor-Project/EnergoTS/playwright-report-detailed.md`**, then follow **`README-detailed-reporting.md`** / user instructions for upload (do **not** invent new Slack channels).
+
+- **Smart report structure:** `Cursor-Project/config/playwright/Playwright_run_detailed_report_template.md`
+
 ## Constraints
 
 - **Branch: cursor only** (Rule ENERGOTS.0): Tests MUST run only from the `cursor` branch in EnergoTS. Before running, verify/checkout `cursor`; never run from main or any other branch.
 - **No code modification**: Only run tests; do not edit source or test files (Rule 0.8). Exception: Rule 0.8.1 does not apply here—this agent does not modify files.
-- **GitHub = local repo**: "Run tests from GitHub" means run tests from the local clone (on `cursor` branch); suggest `!sync` or `!update <branch>` only if the user explicitly asks to update cursor from main.
+- **GitHub = local repo**: "Run tests from GitHub" means run tests from the local clone (on `cursor` branch).
 - Follow project rules in `.cursor/rules/`. All documentation and report text in **English** (Rule 0.7).
 
 ## Example Prompts and Actions
