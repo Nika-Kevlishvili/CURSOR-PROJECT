@@ -1,0 +1,184 @@
+---
+description: Prevent improvised answers to project questions — require verifiable evidence from code, Confluence, Swagger, or DB.
+alwaysApply: true
+---
+
+# EVIDENCE-ONLY ANSWERS FOR PROJECT QUESTIONS [CRITICAL]
+
+## Purpose
+
+Prevent the assistant from answering **project-related questions** using personal interpretation or improvisation.
+For project scope, answers MUST be grounded in **verifiable sources**:
+
+1. **Codebase** (highest priority)
+2. **Confluence via MCP (read-only), or Confluence Cloud REST read fallback** when MCP is unavailable after retries — disclose **`Confluence source: REST fallback …`** in chat
+3. **Swagger/OpenAPI** (especially for API contracts: fields, enums, required properties)
+4. **Database evidence** (schema objects + read-only queries): tables/views, constraints, and stored routines
+
+If evidence is insufficient, the assistant MUST ask **1–2 targeted clarifying questions** and STOP instead of guessing.
+
+---
+
+## What counts as "project-related"
+
+A question is project-related if it asks about any of:
+
+- Application behavior, endpoints, validations, services, business rules
+- API payloads, DTOs, enums, field names, required fields, status codes
+- DB schema usage, query expectations, entity relationships, stored procedures / functions
+- Test cases, test patterns, workflows, scripts under this repo
+- Configuration, environment-dependent behavior
+
+If unclear whether it is project-related, treat it as project-related and request clarification.
+
+---
+
+## Evidence gate (MANDATORY)
+
+Before asserting behavior for project scope, the assistant MUST do ALL of the following:
+
+- **Locate evidence** in at least one approved source (code / Confluence / Swagger).
+- **Prefer code** when code and Confluence disagree (code wins).
+- **Do not generalize** beyond what the evidence supports.
+
+### Required citations in the answer
+
+When making a project-behavior claim, include at least one of:
+
+- **Code citation**: file path + line range(s)
+- **Confluence citation**: page title + page ID (and URL if available)
+- **Swagger citation**: swagger file path + endpoint + schema/DTO name + referenced fields/enums
+- **DB citation**: schema + object name and either the DDL reference or the read-only SQL used + summarized result
+
+If you cannot provide any citation for a claim, you MUST NOT claim it as fact.
+
+---
+
+## No-evidence behavior (MANDATORY)
+
+If evidence is missing, ambiguous, or cannot be accessed, the assistant MUST:
+
+1. State clearly: **"Cannot verify from code/Confluence/Swagger with the information available."**
+2. Ask **1–2** targeted questions that would unblock evidence gathering. Examples:
+   - Which **environment** (dev/test/staging/prod)?
+   - Which **endpoint** / DTO name / error message / file path?
+   - Provide the **Jira key** or **Confluence link/page ID**?
+3. After the user answers, re-run evidence gathering and only then respond with a sourced answer.
+
+The assistant MUST NOT:
+
+- Provide a "best guess" about project behavior
+- Invent field names, enum values, endpoints, or business rules
+- Use training-data memory of the project as a substitute for current repo/Confluence/Swagger evidence
+
+### Database-specific constraints
+
+- DB evidence MUST be gathered **read-only** (SELECT-only).
+- If the user does not specify DB environment, ask **one** clarifying question to pick the exact environment.
+
+---
+
+## Bootstrap mode (new / early-stage projects)
+
+When the project is **new** or has **minimal sources** (no Confluence, no Swagger, small codebase):
+
+- The evidence gate still applies, but the assistant MUST adapt:
+  - **Codebase is small:** Use what exists; do not demand evidence that cannot exist yet.
+  - **No Confluence:** Skip Confluence checks without blocking the workflow. Note `Confluence: not configured / empty` in the response.
+  - **No Swagger:** Skip Swagger validation. Note `Swagger: not available` in the response.
+  - **No DB:** Skip DB evidence. Note `Database: not configured`.
+- The assistant MAY use **general knowledge** to supplement when project-specific sources are insufficient, but MUST:
+  - Clearly label: **"Based on general knowledge (no project-specific evidence available)."**
+  - Lower the confidence score accordingly (typically 50–69%).
+  - Offer to refine the answer once sources become available.
+- As the project grows, the full evidence gate activates automatically when sources are present.
+
+> **Tip:** To enable full evidence-based answers, set up Confluence, Swagger specs (`config/swagger/`), and connect your DB via MCP.
+
+---
+
+## Non-project questions (allowed)
+
+For non-project/general programming questions (e.g. language syntax, generic Git usage, algorithms),
+the assistant MAY answer from general knowledge, but MUST still respect:
+
+- The workspace's clarification gate (ask when scope/env/target matters)
+- Safety rules (no secrets; no forbidden modifications)
+
+---
+
+## Jira ticket evidence completeness (MANDATORY)
+
+When the user asks to retrieve information from a Jira ticket, the assistant MUST NOT rely only on the `description` field.
+
+**Jira MCP unavailable:** If Jira MCP cannot return the issue after retries, the assistant MUST use the **REST read fallback** (`jira_rest_fallback.mdc`). State **`Jira source: REST fallback …`** in the reply.
+
+The assistant MUST always:
+
+1. Fetch the full issue payload (all available fields) and verify whether `description` is present, empty, or `null`.
+2. Always check whether `linked issues` and `attachments metadata` are present, regardless of whether `description` is filled.
+   - If present: inspect and validate them.
+   - If not present: explicitly mark them as "not present" and continue with the remaining ticket evidence.
+3. If `description` is empty or insufficient, inspect additional evidence locations before answering:
+   - custom fields (including rich-text ADF fields)
+   - comments/history and update context
+   - environment, labels, components, and other key metadata fields
+4. Return a consolidated answer based on the complete ticket context and explicitly note where critical details were found.
+
+The assistant MUST NOT conclude "no information" only because `description` is empty.
+
+---
+
+## Jira ticket analysis — linked Confluence (MANDATORY)
+
+When the user requests analysis of a Jira issue, and the issue payload contains **Confluence page URLs** (e.g. `*.atlassian.net/wiki/...`):
+
+1. **MUST** read every linked Confluence page that is in scope for the ticket's stated problem.
+2. **MUST** use Confluence MCP read tools first; if unavailable after retries, use REST read fallback (`confluence_rest_fallback.mdc`).
+3. **MUST** merge Confluence findings into the same response as the Jira analysis: cite page title + page ID (and URL).
+4. Delivering Jira-only analysis when readable in-scope Confluence links were present without user opt-out is a **CRITICAL SYSTEM ERROR**.
+
+---
+
+## Jira custom field mapping (MANDATORY)
+
+The Jira instance uses **custom fields** for key content. When fetching issues via MCP or REST, the assistant MUST:
+
+1. **Always include `expand: "names"`** so the response contains a `names` map (fieldId → human label).
+2. **Discover and register your project's custom fields:**
+
+   Run a single issue fetch with `expand=names` and inspect the `names` object in the response to find your instance's field IDs. Then fill in the table below.
+
+| Custom Field ID | Human Label | Purpose |
+|---|---|---|
+| `customfield_XXXXX` | *(your field label)* | Primary rich-text description (if `description` is often empty) |
+| `customfield_XXXXX` | *(your field label)* | Acceptance criteria |
+| `customfield_XXXXX` | *(your field label)* | Test case details |
+| `customfield_XXXXX` | *(your field label)* | Bug description (Actual/Expected) |
+| `customfield_XXXXX` | *(your field label)* | Assigned tester |
+| *(add rows)* | | |
+
+> **Setup:** Fetch any issue with `expand=names`, copy the `names` map, and replace placeholder IDs above with your actual field IDs. Without this step, the assistant will still scan **all** non-null fields but won't know which ones are content-critical.
+
+3. **When `description` is null/empty:** scan **all** custom fields for rich-text content (ADF/HTML) and treat the first substantial one as the primary content source. If you have filled in the table above, prioritize mapped fields.
+4. **Extract and list all URLs** found in rich-text fields with their context labels.
+5. **Never skip a non-null custom field** just because `description` has content — always scan both.
+
+---
+
+## Jira attachment content analysis (MANDATORY)
+
+When a Jira ticket has attachments and the user requests content analysis:
+
+1. **Metadata is always available** via issue fetch → `fields.attachment[]` (filename, mimeType, size, content URL).
+2. **For actual content analysis**, use the toolkit's download script:
+   ```
+   powershell -ExecutionPolicy Bypass -File "scripts/jira/download-attachments.ps1" -IssueKey "<KEY>"
+   ```
+3. **After download, analyze each file type:**
+   - **Images (PNG/JPEG/GIF/WEBP):** Use the Read tool (has native vision/image support)
+   - **SVG:** Read as text — contains diagram structure, labels, flow descriptions
+   - **DOCX:** Read the extracted `.txt` file (created by the download script alongside the `.docx`)
+   - **PDF:** Use the Read tool (has native PDF support)
+4. **Include attachment findings** in the consolidated ticket analysis with citation: "found in attachment: `<filename>`"
+5. **If credentials are not configured**, fall back to metadata-only analysis and note: "Attachment content not analyzed — API token not configured."

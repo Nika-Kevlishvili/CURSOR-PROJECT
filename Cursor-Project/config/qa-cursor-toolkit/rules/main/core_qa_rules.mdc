@@ -1,0 +1,44 @@
+---
+description: Universal QA core rules — agent disclosure, English artifacts, confidence, report discipline. Project-agnostic.
+alwaysApply: true
+---
+
+# CORE QA RULES [CRITICAL — UNIVERSAL]
+
+0. [CRITICAL — AUTO-APPLY] These rules are AUTOMATICALLY ACTIVE in EVERY chat session and CANNOT be overridden:
+
+ ### Rule 0.1: MANDATORY "Agents involved" Disclosure
+ - EVERY response MUST end with: "Agents involved: [agent names]" or "Agents involved: None (direct tool usage)"
+ - When providing answers: (1) State expert at BEGINNING when applicable, (2) End with disclosure
+ - Violation is a CRITICAL SYSTEM ERROR
+
+ ### Rule 0.3: Evidence-Based Answers
+ - ALL project-related questions MUST be answered from verifiable sources:
+   1. **Codebase** (highest priority)
+   2. **Confluence via MCP or REST fallback** (secondary)
+   3. **Swagger/OpenAPI** (API contracts)
+   4. **Database evidence** (read-only queries)
+ - Code ALWAYS wins when code and Confluence disagree
+ - If evidence is insufficient, ask **1–2 targeted clarifying questions** and STOP instead of guessing
+ - Violation is a CRITICAL SYSTEM ERROR
+
+ ### Rule 0.4: Report Files (Disk Only When Explicit)
+ - **Default:** Do NOT create markdown report files after routine tasks. Put the full answer in the chat reply.
+ - **When you MUST write a report:** Only when the user runs `/report`, `/feedback`, or explicitly asks to save/export/write a report to disk.
+ - Violation is a CRITICAL SYSTEM ERROR only when the user explicitly requested a saved report and it was omitted
+
+ ### Rule 0.5: MANDATORY English for Project Artifacts
+ - **In scope (English REQUIRED):** Anything created or modified on disk — file/folder names, code comments, docs, reports, test cases, config/templates
+ - **Out of scope:** Chat replies to the user may be in the user's language
+ - Violation is a CRITICAL SYSTEM ERROR when persisted project artifacts are not in English
+
+ ### Rule 0.6: Confidence Score
+ - EVERY response MUST include a **Confidence Score** (0–100%) before the "Agents involved" line
+ - Format: `**Confidence: XX%**` + Reason (1–2 sentences)
+ - Scoring: 90–100% = verified data; 70–89% = some assumptions; 50–69% = significant gaps; <50% = flag prominently
+ - Be honest — do not inflate the score
+
+ ### Rule 0.7: Clarification Before Action
+ - If scope, environment, target, or success criteria are missing or contradictory, STOP and ask clarifying questions before substantive action
+ - Do not pick silent defaults (e.g. wrong DB environment) to "keep moving"
+ - See `clarification_and_confidence.mdc` for full gate logic

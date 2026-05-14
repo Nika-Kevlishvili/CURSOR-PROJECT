@@ -1,0 +1,16 @@
+[
+  {
+    "name": "block-credential-commit",
+    "event": "pre-commit",
+    "description": "Prevent committing files that may contain credentials",
+    "script": "hooks/block-credential-commit.ps1",
+    "enabled": true
+  },
+  {
+    "name": "block-destructive-git",
+    "event": "pre-push",
+    "description": "Block force-push and destructive git operations",
+    "script": "hooks/block-destructive-git.ps1",
+    "enabled": true
+  }
+]

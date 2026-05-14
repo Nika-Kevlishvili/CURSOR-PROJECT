@@ -1,0 +1,87 @@
+---
+description: When Confluence MCP fails, use Confluence Cloud REST for read-equivalent data — read-only fallback with retry discipline.
+alwaysApply: true
+---
+
+# CONFLUENCE READ PATH — MCP PRIMARY, REST FALLBACK [CRITICAL]
+
+## Rule CONFLUENCE.1: When Confluence MCP fails, use REST for read-equivalent data [CRITICAL]
+
+**Intent.** Workflows that must **read** Confluence MUST prefer **Confluence MCP** first (`getConfluencePage`, `search`, `getConfluenceSpaces`, CQL helpers). If Confluence MCP is **unavailable** or **still fails after 2–3 retries** with backoff, agents MUST use the **Confluence Cloud REST** read path below.
+
+**READ-ONLY:** no Confluence creates, updates, deletes, or comments via this path.
+
+**Violation** is a **CRITICAL SYSTEM ERROR** when an agent abandons Confluence-dependent read work only because MCP failed while REST credentials and base URL exist.
+
+---
+
+## 1. Primary path
+
+- Use Confluence MCP read tools per descriptors.
+- **Code remains primary** when code and Confluence disagree.
+
+---
+
+## 2. When to switch to REST fallback
+
+Switch after MCP failure is **confirmed**:
+
+- Tool returns error, 401/403, or missing Confluence MCP server.
+- Repeated timeouts or connection errors after **2–3 retries** with short backoff.
+
+**Chat disclosure:** Every answer that used this REST path MUST include one line: **`Confluence source: REST fallback (MCP unavailable or failed after retries).`**
+
+---
+
+## 3. REST fallback — credentials and wiki base URL
+
+- **Never** paste tokens, passwords, or API keys into rules, chat, or commits.
+
+**Authentication (Atlassian Cloud):**
+
+- **`JIRA_EMAIL`** and **`JIRA_API_TOKEN`** — reuse when Confluence lives on the same `*.atlassian.net` site.
+- **Optional overrides:** **`CONFLUENCE_EMAIL`**, **`CONFLUENCE_API_TOKEN`** — if set, they take precedence for Confluence REST only.
+
+**Wiki base URL resolution order:**
+
+1. **`CONFLUENCE_WIKI_BASE`** — preferred. Example: `https://your-company.atlassian.net/wiki`
+2. **`CONFLUENCE_URL`** — normalized to `https://<host>/wiki`
+3. **`JIRA_BASE_URL`** + `/wiki` — when both point at the same Atlassian Cloud site
+
+If **both** MCP and REST fail (missing vars, 401, network): state the failure, stop substantive Confluence-dependent conclusions, and ask the user.
+
+---
+
+## 4. REST fallback — request shapes
+
+**Single page by numeric page ID:**
+
+- **v1:** `GET {CONFLUENCE_WIKI_BASE}/rest/api/content/{pageId}?expand=body.storage,body.view,version,space,ancestors,metadata.labels,children.page`
+- **v2:** `GET {CONFLUENCE_WIKI_BASE}/api/v2/pages/{pageId}?body-format=storage`
+
+**Search / CQL:**
+
+- `GET {CONFLUENCE_WIKI_BASE}/rest/api/content/search?cql={encodedCql}&limit=25`
+
+**Implementation in Cursor:** use **terminal** `Invoke-RestMethod` / `curl` with **Basic auth**, or the toolkit's scripts:
+
+```
+powershell -ExecutionPolicy Bypass -File "scripts/confluence/get-page.ps1" -PageId "<numericId>"
+powershell -ExecutionPolicy Bypass -File "scripts/confluence/cql-search.ps1" -Cql "<query>"
+```
+
+---
+
+## 5. Consistency with evidence-only and citations
+
+After REST fetch:
+
+- Cite **page title**, **page ID**, and **URL** when present in the JSON.
+- If body is HTML/storage, summarize or quote conservatively.
+- Continue to prefer **code** over Confluence when they conflict.
+
+---
+
+## 6. Write operations
+
+This rule governs **read** fallback only. Creating/updating Confluence pages or comments stays forbidden for agents. Do not improvise REST POST/PUT/DELETE to Confluence.

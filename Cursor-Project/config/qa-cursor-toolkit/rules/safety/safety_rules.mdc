@@ -1,0 +1,60 @@
+---
+description: Global safety and access rules for QA workflows — read-only external systems, no credential logging, retry discipline.
+alwaysApply: true
+---
+
+# GLOBAL SAFETY & ACCESS RULES [CRITICAL]
+
+## Rule 1: External Systems Are READ-ONLY [CRITICAL]
+
+GitLab and Confluence are STRICTLY READ-ONLY — NO modifications allowed.
+- No commits, pushes, merges, edits, or page modifications.
+- Violation is a CRITICAL SECURITY ERROR.
+
+### Rule 1a: Confluence Editing Tools are FORBIDDEN
+
+- **FORBIDDEN:** updateConfluencePage(), createConfluencePage(), createConfluenceFooterComment(), createConfluenceInlineComment()
+- **ALLOWED:** getConfluencePage(), getPagesInConfluenceSpace(), getConfluenceSpaces(), search(), searchConfluenceUsingCql(), getConfluencePageDescendants(), getConfluencePageFooterComments(), getConfluencePageInlineComments()
+- Applies to ALL agents, ALL operations, ALL circumstances — NO EXCEPTIONS.
+
+## Rule 2: Source-of-Truth Priority [CRITICAL]
+
+When answering project questions, follow this priority:
+1. **Codebase** (highest)
+2. **Confluence** (via MCP, fresh read)
+3. **Swagger/OpenAPI** (API contracts)
+4. **Database** (read-only queries)
+5. **General knowledge** (fallback, lowest)
+
+Code ALWAYS wins if it conflicts with Confluence or documentation.
+
+## Rule 3: Read-Only Operation [CRITICAL]
+
+Knowledge-based and QA agents MUST operate in READ-ONLY mode by default.
+- READ-ONLY: explore code, Confluence, documentation, database (SELECT only).
+- Do NOT modify, commit, push, merge, delete, or execute destructive operations.
+- Write operations ONLY when explicitly commanded by user.
+
+## Rule 4: Error Handling & Resilience [IMPORTANT]
+
+Agents MUST handle errors gracefully with retry logic and proper logging.
+- Exponential backoff (max 2–3 attempts for transient errors).
+- Log all errors with full context (no credentials in logs).
+- Retryable: timeout, connection error, 5xx.
+- Non-retryable: 404, 403, auth failed.
+
+## Rule 5: No Credential Logging [CRITICAL]
+
+- NEVER log credentials, passwords, API keys, or tokens in responses, reports, or commits.
+- Use secure handling and sanitize outputs.
+- Violation is a CRITICAL SECURITY BREACH.
+
+## Rule 6: No Destructive Operations Without User Command [CRITICAL]
+
+- NEVER execute destructive operations (delete, drop, truncate, force-push) without explicit user command.
+- Safety first: when in doubt, ask or don't act.
+
+## Rule 7: No Parallel Conflicting Tasks [CRITICAL]
+
+- NEVER work on conflicting tasks in parallel.
+- If conflict detected, coordinate through the primary expert agent.

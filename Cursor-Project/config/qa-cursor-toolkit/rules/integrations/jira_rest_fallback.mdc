@@ -1,0 +1,73 @@
+---
+description: When Jira MCP fails, use Atlassian REST API v3 for full issue read — read-only fallback with retry discipline.
+alwaysApply: true
+---
+
+# JIRA READ PATH — MCP PRIMARY, REST FALLBACK [CRITICAL]
+
+## Rule JIRA.1: When Jira MCP fails, use REST for full issue read [CRITICAL]
+
+**Intent.** Any workflow that must **read** Jira issue data MUST prefer **Jira MCP** first. If Jira MCP is **unavailable** or **still fails after 2–3 retries** with backoff, agents MUST use the **Atlassian Cloud REST API v3** read path below. **READ-ONLY:** no Jira writes via this fallback.
+
+**Violation** is a **CRITICAL SYSTEM ERROR** when an agent abandons Jira-backed work solely because MCP failed while REST credentials exist and the user did not block REST.
+
+---
+
+## 1. Primary path
+
+- Use Jira MCP tools per their descriptors (e.g. `getJiraIssue`, search helpers).
+- For evidence completeness: `expand: "names"`, required custom fields, linked issues, attachments, comments/history when needed.
+
+---
+
+## 2. When to switch to REST fallback
+
+Switch after MCP failure is **confirmed** (not a single transient glitch without retry):
+
+- Tool returns error, 401/403, or missing Jira MCP server.
+- Repeated timeouts or connection errors after **2–3 retries** with short backoff.
+
+**Chat disclosure:** Every answer that used REST MUST include one line: **`Jira source: REST fallback (MCP unavailable or failed after retries).`**
+
+---
+
+## 3. REST fallback — credentials
+
+- **Never** paste tokens, passwords, or API keys into rules, chat, or commits.
+- Use environment variables: **`JIRA_EMAIL`**, **`JIRA_API_TOKEN`**, **`JIRA_BASE_URL`** (from process env or `.env` file).
+- If **both** MCP and REST fail (missing vars, 401, network): state the failure, stop substantive Jira-dependent conclusions, and ask the user.
+
+---
+
+## 4. REST fallback — request shape
+
+Use **Jira Cloud REST API v3**:
+
+- **Single issue:** `GET {JIRA_BASE_URL}/rest/api/3/issue/{issueIdOrKey}`
+- **Query parameters (mandatory minimum):**
+  - `expand=names` — so field IDs map to human labels.
+  - Include **changelog** when the task needs history: add `changelog` to `expand`.
+  - Request all content-bearing fields (summary, description, issuetype, status, priority, environment, labels, components, assignee, reporter, attachment list, issuelinks, and custom fields).
+- **Linked issues:** Always inspect `fields.issuelinks`.
+- **Attachments — metadata:** Always read `fields.attachment[]` (filename, mimeType, size, content URL).
+- **Attachments — binary / DOCX / images for analysis:** run the toolkit's download script:
+  ```
+  powershell -ExecutionPolicy Bypass -File "scripts/jira/download-attachments.ps1" -IssueKey "<KEY>"
+  ```
+
+**Implementation in Cursor:** use **terminal** `Invoke-RestMethod` / `curl` with **Basic auth** (email + API token) and `Accept: application/json`, or the toolkit's `scripts/jira/fetch-issue.ps1`.
+
+---
+
+## 5. Consistency with evidence-only rules
+
+After REST fetch, apply the **same** consolidation rules as for MCP:
+
+- Do not rely on `description` alone; scan custom fields per `evidence_only_answers.mdc`.
+- List linked issues and attachment presence explicitly when relevant.
+
+---
+
+## 6. Write operations
+
+This rule governs **read** fallback only. Creating/updating Jira issues stays on MCP or other explicitly approved tooling; do not improvise REST POST/PUT for Jira unless the user and project docs explicitly allow it.
