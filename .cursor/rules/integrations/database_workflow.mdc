@@ -16,6 +16,22 @@ description: PostgreSQL MCP environment mapping, connect-first workflow, POD/con
 | Test | PostgreSQLTest |
 | PreProd | PostgreSQLPreProd |
 | Prod | PostgreSQLProd (read-only; see MCP tool / policy) |
+| Experiments | PostgreSQLexperiments |
+
+## Rule DB.0a: No silent environment for PostgreSQL MCP [CRITICAL]
+
+**Primary control (agents MUST follow in chat):** **Rule CONF.0** + **`.cursor/skills/phoenix-database/SKILL.md` Step 0** + **`.cursor/agents/database-query.md`**. Ask the environment **before** any PostgreSQL MCP. Hooks below are **backup only** — agents must not skip the skill because hooks exist or might not fire.
+
+**Before ANY PostgreSQL MCP call** (`connect_db`, `query`, `execute`, `describe_table`, `list_tables`, `list_schemas` on `PostgreSQLDev` / `PostgreSQLDev2` / `PostgreSQLTest` / `PostgreSQLPreProd` / `PostgreSQLProd` / `PostgreSQLexperiments`):
+
+1. The user MUST name the environment in the **current task** (`Dev`, `Dev2`, `Test`, `PreProd`, `Prod`, `Experiments`), **or** explicitly authorize `your choice` / `defaults` / `same as last time` (then state the assumption in chat).
+2. **NEVER** infer environment from ticket prefix (e.g. PDT), Playwright branch, prior chat, EnergoTS test defaults, or habit (e.g. defaulting to Test). **Example forbidden inference:** `PDT-2529-rfd-from-existing-reminder.spec.ts` default `RFD_EXISTING_REMINDER_ID` **2163** on **Dev** — that is test fixture data, **not** the user naming Dev.
+3. If environment is missing → **ask in chat** (prefer **AskQuestion** with the six options) and **do not** call PostgreSQL MCP until answered.
+4. **Secondary — hooks (safety net if an agent violates Step 0):**
+   - `beforeSubmitPrompt` → `.cursor/hooks/gate-database-environment-prompt.ps1`
+   - `beforeMCPExecution` → `.cursor/hooks/confirm-database-environment.ps1` (session `.cursor/.db-env-session.json`, TTL 2h)
+
+**Violation** is a **CRITICAL SYSTEM ERROR** (same class as Rule CONF.0 guessing a DB environment).
 
 ## Rule DB.1: MCP Connection [CRITICAL]
 

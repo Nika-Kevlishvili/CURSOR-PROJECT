@@ -1,17 +1,36 @@
 ---
 name: phoenix-database
-description: Runs PostgreSQL queries via MCP using the correct environment (Dev, Dev2, Test, PreProd, Prod), connect-first workflow, and standard contract/POD query patterns. Use when the user asks about database, queries, contracts, POD identifier, or a specific environment (Dev, Test, Prod).
+description: Runs PostgreSQL queries via MCP using the correct environment (Dev, Dev2, Test, PreProd, Prod). PRIMARY control is rules (DB.0, DB.0a, CONF.0) and this skill — ask environment before any MCP. Use for database, contracts, POD, reminder/RFD lookups, or environment-specific data.
 ---
 
 # Phoenix Database Queries
 
-Ensures database access uses the right PostgreSQL MCP server, connect-before-query workflow, and standard patterns. **Connection parameters** come from the MCP tool descriptor / Cursor MCP server config — not from workspace rules text; never embed or log passwords.
+**Primary enforcement:** **rules** (`.cursor/rules/integrations/database_workflow.mdc` Rule DB.0 / DB.0a, `.cursor/rules/main/clarification_and_confidence.mdc` Rule CONF.0) + **this skill** + **database-query** agent (`.cursor/agents/database-query.md`). The agent MUST follow Step 0 in chat **before** any PostgreSQL MCP call. Project hooks (`.cursor/hooks/*`) are a **secondary safety net only** — never skip Step 0 because hooks exist or might fail.
 
-## When to Apply
+Connection parameters come from the MCP tool descriptor / Cursor MCP config — never embed or log passwords.
 
-- User asks to query the database, check contracts, or find data by POD.
-- User mentions Dev, Dev2, Test, PreProd, or Prod environment.
-- Task requires Phoenix PostgreSQL data (contracts, POD, status, dates).
+## When to Apply [MANDATORY]
+
+Apply this skill **before** any PostgreSQL MCP (`connect_db`, `query`, `execute`, …) when:
+
+- User asks for data from the database (reminder/RFD/POD/contract/liability/etc.).
+- Task needs live DB evidence (IDs, links, “which X uses Y”).
+- Parent workflow delegates database work (bug validation, cross-dep, production reader, Q&A).
+
+## Step 0 — Environment gate (Rule DB.0a) [STOP — no MCP until done]
+
+**Order (non-negotiable):**
+
+1. **Read** whether the **user** named an environment in the **current task** (`Dev`, `Dev2`, `Test`, `PreProd`, `Prod`, `Experiments`) or said `your choice` / `defaults` / `same as last time`.
+2. If **missing** → **STOP**. Ask in chat (prefer **AskQuestion** with all six options). **Do not** grep/code-read as a substitute for DB env. **Do not** call PostgreSQL MCP.
+3. **Forbidden inference** (does NOT count as user naming env):
+   - PDT / Jira ticket prefix (e.g. PDT-2529, PDT-2861)
+   - EnergoTS test defaults (e.g. `PDT-2529` → reminder `2163` on **Dev**)
+   - `envVariables`, Playwright branch, prior chat, or habit (“usually Test”)
+4. Only after the user names env (or authorizes your choice) → map to MCP per table below → connect → query.
+5. State in chat: `DB environment: <Env>` before first query result.
+
+**Violation of Step 0 is a CRITICAL SYSTEM ERROR** (same as Rule CONF.0).
 
 ## Environment Selection (Rule DB.0)
 
@@ -24,6 +43,7 @@ Use the **exact** environment the user asks for. Do not switch.
 | Test | PostgreSQLTest |
 | PreProd | PostgreSQLPreProd |
 | Prod | PostgreSQLProd (read-only user) |
+| Experiments | PostgreSQLexperiments |
 
 ## Workflow
 

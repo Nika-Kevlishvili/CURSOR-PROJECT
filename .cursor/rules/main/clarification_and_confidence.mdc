@@ -24,7 +24,7 @@ Before substantive tool use or file edits, verify you know:
 
 **Ask if any of the above is missing, vague, or conflicting** — including:
 
-- Database or production data work **without** the user naming the environment (never infer Prod vs Test from habit).
+- Database or production data work **without** the user naming the environment (never infer Prod vs Test from habit, ticket prefix, or prior session). **Rule DB.0a** + hooks `gate-database-environment-prompt.ps1` / `confirm-database-environment.ps1` enforce this — agents must not bypass by calling MCP before asking.
 - “Run tests” / “run the query” **without** which test, which DB, or which app URL/environment.
 - “Fix it” / “update tests” **without** ticket key, file path, failure output, or acceptance hint.
 - **Conflicting** instructions — ask which takes priority.

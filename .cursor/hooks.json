@@ -2,7 +2,8 @@
   "version": 1,
   "hooks": {
     "beforeSubmitPrompt": [
-      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/block-jira-phoenix-delivery.ps1" }
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/block-jira-phoenix-delivery.ps1" },
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/gate-database-environment-prompt.ps1", "failClosed": true }
     ],
     "beforeFileEdit": [
       { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/protect-phoenix-code.ps1" }
@@ -11,6 +12,7 @@
       { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/warn-phoenix-code-edit.ps1" }
     ],
     "beforeMCPExecution": [
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/confirm-database-environment.ps1", "failClosed": true },
       { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/block-confluence-write.ps1" },
       { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/control-database-write.ps1" }
     ],

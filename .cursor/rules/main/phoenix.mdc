@@ -31,7 +31,7 @@ Cursor loads **all** `.mdc` files under `.cursor/rules/` **recursively** (subjec
 - **Safety:** `.cursor/rules/safety/safety_rules.mdc`
 - **Workflows:** `.cursor/rules/workflows/workflow_rules.mdc`, `.cursor/rules/workflows/handsoff_playwright_report.mdc`, `.cursor/rules/workflows/playwright_detailed_reporting.mdc`
 - **Files / test cases layout:** `.cursor/rules/workspace/file_organization_rules.mdc`, `.cursor/rules/workspace/test_cases_structure.mdc`
-- **DB / Git / EnergoTS / Prod / Jira (bug agent + REST read fallback) / Confluence REST read fallback / Phoenix branch switching:** `.cursor/rules/integrations/*.mdc`
+- **DB / Git / EnergoTS / Prod / Jira (bug agent + REST read fallback) / Confluence REST read fallback / Phoenix branch switching:** `.cursor/rules/integrations/*.mdc` — **DB.0a (primary):** `phoenix-database` SKILL Step 0 + CONF.0 — ask env before PostgreSQL MCP; hooks are backup only
 - **Slack reporting (three paths):** `Cursor-Project/config/template/Slack_reporting_paths.md` — short **Slack text** + **attach** detailed `.md` (`Cursor-Project/config/slack/upload-file-to-slack.ps1`)
 - **Workspace patterns (architecture):** `Cursor-Project/docs/WORKSPACE_PATTERNS.md` · **Rule → canon map:** `Cursor-Project/docs/RULES_CANONICAL_INDEX.md`
 

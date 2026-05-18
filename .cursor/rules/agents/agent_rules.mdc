@@ -31,6 +31,10 @@ alwaysApply: true
 
 9. [IMPORTANT] PhoenixExpert has final decision in multi-agent responses (Rule 0.1 footer applies).
 
+# DATABASE ENVIRONMENT RULE [CRITICAL]
+
+10a. [CRITICAL] **PostgreSQL / live DB data** → follow **Rule DB.0a** and **`.cursor/skills/phoenix-database/SKILL.md` Step 0** before any PostgreSQL MCP. If the user did not name Dev/Dev2/Test/PreProd/Prod/Experiments, **ask** — do not infer from PDT tickets, EnergoTS test defaults (e.g. reminder `2163` in `PDT-2529`), or habit. Route to **database-query** subagent when appropriate. Hooks are backup only. Violation is a **CRITICAL SYSTEM ERROR**.
+
 # ENVIRONMENT ACCESS RULE [IMPORTANT]
 
 10. [IMPORTANT] Environment access requests → follow **environment-access** workflow (`.cursor/agents/environment-access.md`, EnvironmentAccessAgent role in chat).
