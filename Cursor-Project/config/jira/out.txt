@@ -1,0 +1,46 @@
+﻿KEY PDT-2529
+SUMMARY Request for disconnection performance issues 
+STATUS Testing
+TYPE Bug
+FIELD 10103 : Reproduce Steps:https://apps.energo-pro.bg/phoenix-epres/request-for-disconnection/preview/pod?id=1020Actual Result:Expected Result:_________________Endpoint:Method:Status:Payload:Response:
+FIELD 10217 : Link:A.R.(ßâÉßâáßâíßâößâæßâúßâÜßâÿ ßâíßâÿßâóßâúßâÉßâ¬ßâÿßâÉ):E.R.( ßâíßâÉßâíßâúßâáßâòßâößâÜßâÿ ßâ¿ßâößâôßâößâÆßâÿ):
+COMMENTS 5
+C1 Dobromir.Kostov 2026-02-13
+Please use https://apps.energo-pro.bg/phoenix-epres/request-for-disconnection/preview/pod?id=1021, because we make 1020 EXECUTED
+C2 Mariam Kvitsiani 2026-02-16
+
+C3 Slack 2026-02-16
+Mariam Kvitsiani synced this conversation thread with the Slack thread . Replies in synced threads will automatically update across both Slack and Jira.
+C4 Gigi gamjashvili 2026-02-16
+ Could you please specify the expected performance criteria for this object?In particular, what response times are considered acceptable for POD loading:First pageLast page (for example, when loading ~1500 PODs)Also, what is the acceptable execution time for Request for Disconnection?LetΓÇÖs use 1500 PODs as the baseline scenario, based on the example you provided.
+C5 Tina Korinteli 2026-02-16
+ Number of pods could be 25000 , acceptable period: should be optimized
+---
+KEY PDT-2575
+SUMMARY Request for disconnection - Performance - In edit mode for draft requests, the buttons remain disabled for 15 seconds.
+STATUS Ready for testing
+TYPE Bug
+FIELD 10103 : Reproduce Steps:_________________Endpoint:Method:Status:Payload:Response:
+FIELD 10217 : Link:A.R.(ßâÉßâáßâíßâößâæßâúßâÜßâÿ ßâíßâÿßâóßâúßâÉßâ¬ßâÿßâÉ):E.R.( ßâíßâÉßâíßâúßâáßâòßâößâÜßâÿ ßâ¿ßâößâôßâößâÆßâÿ):
+COMMENTS 6
+C1 Kalina.Koleva 2026-02-20
+
+C2 Slack 2026-02-20
+Kalina.Koleva synced this conversation thread with the Slack thread . Replies in synced threads will automatically update across both Slack and Jira.
+C3 nika kevlishvili 2026-02-23
+ hello , we will check it.
+C4 Gigi gamjashvili 2026-02-23
+Hello,The buttons are being disabled due to a POD loading performance issue. They remain disabled until all existing PODs are loaded in this object, in order to prevent incorrect request submissions.Improving the performance of the ΓÇ£Request for DisconnectionΓÇ¥ process should also resolve this issue. Once PODs are loaded faster, the buttons will become available more quickly as well.We are already working on performance improvement ΓåÆ https://oppa-support.atlassian.net/browse/PDT-2529
+C5 Gigi gamjashvili 2026-02-23
+Should we close this bug and wait till performance improvement?
+C6 Kalina.Koleva 2026-02-23
+I prefer to test it after the fix of 2529. So, please don't close it.
+---
+KEY PDT-2565
+SUMMARY DB - Request for disconnection performance issues
+STATUS Testing
+TYPE Bug
+FIELD 10103 : Reproduce Steps:https://apps.energo-pro.bg/phoenix-epres/request-for-disconnection/preview/pod?id=1020Actual Result:Expected Result:_________________Endpoint:Method:Status:Payload:Response:
+FIELD 10217 : Link:A.R.(ßâÉßâáßâíßâößâæßâúßâÜßâÿ ßâíßâÿßâóßâúßâÉßâ¬ßâÿßâÉ):E.R.( ßâíßâÉßâíßâúßâáßâòßâößâÜßâÿ ßâ¿ßâößâôßâößâÆßâÿ):
+COMMENTS 0
+---

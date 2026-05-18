@@ -1,0 +1,98 @@
+﻿================================================================================
+PDT-2529 Request for disconnection performance issues 
+Type: Bug | Status: Testing
+Priority: Highest
+Environment field: None
+Labels: ['overdue']
+ Link <- PDT-2565 DB - Request for disconnection performance issues
+ Link -> PDT-2575 Request for disconnection - Performance - In edit mode for draft requests, the buttons remain disabl
+Attachments: []
+--- customfield_10103 ---
+Reproduce Steps:
+https://apps.energo-pro.bg/phoenix-epres/request-for-disconnection/preview/pod?id=1020
+
+Actual Result:
+Expected Result:
+_________________
+Endpoint:
+Method:
+Status:
+Payload:
+Response:
+
+--- customfield_10217 ---
+Link:
+A.R.(ßâÉßâáßâíßâößâæßâúßâÜßâÿ ßâíßâÿßâóßâúßâÉßâ¬ßâÿßâÉ):
+E.R.( ßâíßâÉßâíßâúßâáßâòßâößâÜßâÿ ßâ¿ßâößâôßâößâÆßâÿ):
+
+Comments total: 5
+--- Comment 1 by Dobromir.Kostov 2026-02-13T18:52 ---
+Please use https://apps.energo-pro.bg/phoenix-epres/request-for-disconnection/preview/pod?id=1021, because we make 1020 EXECUTED
+
+--- Comment 2 by Mariam Kvitsiani 2026-02-16T11:28 ---
+https://oppa-support.atlassian.net/browse/PDT-2529 
+
+--- Comment 3 by Slack 2026-02-16T11:28 ---
+Mariam Kvitsiani synced this conversation thread with the Slack thread https://asterbit.slack.com/archives/C0A2YDXTJKU/p1770993424628229 . Replies in synced threads will automatically update across both Slack and Jira.
+
+--- Comment 4 by Gigi gamjashvili 2026-02-16T12:35 ---
+ 
+Could you please specify the expected performance criteria for this object?
+In particular, what response times are considered acceptable for POD loading:
+- First page
+- Last page (for example, when loading ~1500 PODs)
+Also, what is the acceptable execution time for Request for Disconnection?
+LetΓÇÖs use 1500 PODs as the baseline scenario, based on the example you provided.
+
+--- Comment 5 by Tina Korinteli 2026-02-16T18:35 ---
+ Number of pods could be 25000 , acceptable period: should be optimized
+
+
+================================================================================
+PDT-2575 Request for disconnection - Performance - In edit mode for draft requests, the buttons remain disabled for 15 seconds.
+Type: Bug | Status: Ready for testing
+Priority: High
+Environment field: {'type': 'doc', 'version': 1, 'content': [{'type': 'paragraph', 'content': [{'type': 'text', 'text': 'PROD/TEST'}]}]}
+Labels: []
+ Link <- PDT-2529 Request for disconnection performance issues 
+ Link <- PDT-2565 DB - Request for disconnection performance issues
+Attachments: ['2-20-2026 (16-18-18).mp4', 'Screen Recording 2026-02-23 121629.mp4']
+--- customfield_10103 ---
+Reproduce Steps:
+
+_________________
+Endpoint:
+Method:
+Status:
+Payload:
+Response:
+
+--- customfield_10217 ---
+Link:
+A.R.(ßâÉßâáßâíßâößâæßâúßâÜßâÿ ßâíßâÿßâóßâúßâÉßâ¬ßâÿßâÉ):
+E.R.( ßâíßâÉßâíßâúßâáßâòßâößâÜßâÿ ßâ¿ßâößâôßâößâÆßâÿ):
+
+Comments total: 6
+--- Comment 1 by Kalina.Koleva 2026-02-20T18:27 ---
+https://oppa-support.atlassian.net/browse/PDT-2575 
+
+--- Comment 2 by Slack 2026-02-20T18:27 ---
+Kalina.Koleva synced this conversation thread with the Slack thread https://asterbit.slack.com/archives/C0A2YDXTJKU/p1771597651437929 . Replies in synced threads will automatically update across both Slack and Jira.
+
+--- Comment 3 by nika kevlishvili 2026-02-23T11:15 ---
+ hello , we will check it.
+
+--- Comment 4 by Gigi gamjashvili 2026-02-23T12:22 ---
+
+Hello,
+The buttons are being disabled due to a POD loading performance issue. They remain disabled until all existing PODs are loaded in this object, in order to prevent incorrect request submissions.
+Improving the performance of the ΓÇ£Request for DisconnectionΓÇ¥ process should also resolve this issue. Once PODs are loaded faster, the buttons will become available more quickly as well.
+We are already working on performance improvement ΓåÆ https://oppa-support.atlassian.net/browse/PDT-2529
+
+--- Comment 5 by Gigi gamjashvili 2026-02-23T12:23 ---
+Should we close this bug and wait till performance improvement?
+
+--- Comment 6 by Kalina.Koleva 2026-02-23T12:25 ---
+I prefer to test it after the fix of 2529. So, please don't close it.
+
+
