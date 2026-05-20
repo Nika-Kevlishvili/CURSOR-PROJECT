@@ -9,6 +9,6 @@ This folder is at the **Git workspace root** (next to `Cursor-Project/`).
 | **Agent paths (canonical map)** | [../Cursor-Project/docs/AGENT_SUBAGENT_MAP.md](../Cursor-Project/docs/AGENT_SUBAGENT_MAP.md) |
 | **Skills** | [skills/README.md](skills/README.md) |
 | **Commands** | `commands/*.md` |
-| **Hooks** | `hooks.json` + `hooks/*.ps1` — **DB.0a:** `gate-database-environment-prompt.ps1` + `confirm-database-environment.ps1` (session: `.cursor/.db-env-session.json`, TTL 2h) |
+| **Hooks** | `hooks.json` + `hooks/*.ps1` — Phoenix protect, Confluence read-only, DB write confirm, git push control |
 
 From `Cursor-Project/`, link here with e.g. `../.cursor/rules/README.md`.
