@@ -15,6 +15,33 @@ You find **cross-dependencies** for a given scope (feature, module, bug, or task
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. **Consult PhoenixExpert** when you need to study the project or scope (Rule 8). You MAY turn to the expert for: backend services, APIs, schemas, entry points, or where changes could have impact. Use parent context if already provided. Return the cross-dependency report to the parent so it can be passed to the **test-case-generator**.
 
+### Step 0 — MCP Health Check (Rule MCP.0) [MANDATORY — run BEFORE Step 0a]
+
+Before fetching Jira context or searching Confluence, verify required MCP servers are reachable:
+
+1. **Jira (Atlassian MCP):** Call `getAccessibleAtlassianResources`. Must return a non-empty resources list without error.
+2. **Confluence (Atlassian MCP):** Call `getConfluenceSpaces`. Must return at least one space without error.
+
+If either check fails → output the hard-stop block below and **stop entirely**:
+
+```
+MCP Health Check Failed — [ServerName]
+
+The [ServerName] MCP server could not be reached or returned an authentication error.
+This task requires [ServerName] to proceed correctly.
+
+Error: [exact error message or "no response received"]
+
+Action required:
+1. Open Cursor Settings → MCP
+2. Check that [ServerName] is enabled and authenticated
+3. Re-run your command once the issue is resolved
+
+Task execution has been stopped to prevent results based on assumptions.
+```
+
+If the parent agent (e.g. `hands-off`, `bug-validator`) already confirmed a passing health check for the same MCP servers in this session, note `MCP health check: reused from prior step` and skip the calls.
+
 ## Workflow
 
 ### 0a. Resolve environment + align Phoenix branches (Rule PHOENIX-SWITCH.0) [MANDATORY when scope reads Phoenix code]

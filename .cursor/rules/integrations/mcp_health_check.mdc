@@ -1,0 +1,134 @@
+# MCP HEALTH CHECK RULE [CRITICAL]
+
+## Rule MCP.0: Mandatory MCP Health Check Before Substantive Work [CRITICAL]
+
+**Intent:** Prevent agents from executing long workflows — cross-dependency analysis, bug validation, test-case generation, database queries, Confluence searches, HandsOff flows, etc. — only to discover at the end that an MCP server was unavailable or had authentication problems. Any result produced with a broken MCP connection is based on assumptions, not evidence, and is therefore unreliable.
+
+**MANDATORY:** Every agent that requires an MCP server MUST verify that server is reachable and authenticated **before** starting any substantive work. On failure, the agent MUST stop immediately and instruct the user to fix the issue.
+
+---
+
+## 1. Which agents require which MCP servers
+
+| Agent / Workflow | Required MCPs |
+|---|---|
+| `bug-validator` (Rule 32) | Confluence (Atlassian), Jira (Atlassian), Slack |
+| `bulk-bug-validator` (Rule 38) | Confluence (Atlassian), Jira (Atlassian), Slack |
+| `hands-off` (Rule 37) | Jira (Atlassian), Confluence (Atlassian), Slack |
+| `cross-dependency-finder` (Rule 35) | Jira (Atlassian), Confluence (Atlassian) |
+| `test-case-generator` (Rule 35) | Jira (Atlassian), Confluence (Atlassian) |
+| `phoenix-qa` (Rule 0.2) | Confluence (Atlassian) |
+| `environment-resolver` | Jira (Atlassian) |
+| `database-query` | PostgreSQL (env-specific) |
+| `production-data-reader` (Rule PDR.0) | PostgreSQL (PostgreSQLProd) |
+| `jira-bug` (Rule JIRA.0) | Jira (Atlassian) |
+
+---
+
+## 2. Health check protocol per MCP type
+
+### 2a. Confluence (Atlassian MCP)
+
+**Check:** Call `getConfluenceSpaces` (or `getAccessibleAtlassianResources`).
+
+**Pass condition:** Returns at least one space or resource without error.
+
+**Failure signals:** Exception thrown, empty response, authentication error, "not authorized", timeout, "MCP server not running".
+
+### 2b. Jira (Atlassian MCP)
+
+**Check:** Call `getAccessibleAtlassianResources` (the cloudId discovery call used at the start of all Jira workflows).
+
+**Pass condition:** Returns a non-empty resources list without error.
+
+**Failure signals:** Exception, auth error, empty result, timeout, "MCP server not running".
+
+### 2c. Slack MCP (`user-slack` / `plugin-slack-slack`)
+
+**Check:** Call a lightweight read operation — `slack_search_users(query: "test")` or `slack_list_channels`.
+
+**Pass condition:** Returns a response without authentication error.
+
+**Failure signals:** "invalid_auth", "not_authed", "token_revoked", exception, timeout, "MCP server not running".
+
+**Important:** Slack MCP failure ONLY blocks Slack-delivery steps (report upload, message send). For `bug-validator` and `bulk-bug-validator`, a Slack failure does NOT stop the analysis itself — it stops only the delivery step. The agent must clearly note "Slack delivery blocked: MCP unavailable" and continue with the analysis, stopping before the Slack delivery step. For `hands-off`, Slack is required for report delivery; failure MUST be surfaced as a blocker before the flow begins since Slack delivery is a mandatory step of that workflow.
+
+### 2d. PostgreSQL (any environment)
+
+**Check:** Call `mcp_PostgreSQL{Env}_connect_db(host=..., port=..., user=..., password=..., database=...)` followed immediately by `mcp_PostgreSQL{Env}_query(sql="SELECT 1")`.
+
+**Pass condition:** Query returns `1` without error.
+
+**Failure signals:** Connection refused, authentication failure, timeout, "MCP server not running", query error.
+
+Where `{Env}` matches the environment: `Dev`, `Dev2`, `Test`, `PreProd`, `Prod`.
+
+---
+
+## 3. Hard-stop message format [MANDATORY]
+
+When a health check fails, output EXACTLY this block (replace placeholders):
+
+```
+MCP Health Check Failed — [ServerName]
+
+The [ServerName] MCP server could not be reached or returned an authentication error.
+This task requires [ServerName] to proceed correctly.
+
+Error: [exact error message or "no response received"]
+
+Action required:
+1. Open Cursor Settings → MCP
+2. Check that [ServerName] is enabled and authenticated
+3. Re-run your command once the issue is resolved
+
+Task execution has been stopped to prevent results based on assumptions.
+```
+
+**Examples of [ServerName]:** `Confluence (Atlassian)`, `Jira (Atlassian)`, `Slack`, `PostgreSQLTest`, `PostgreSQLProd`.
+
+**After outputting this block:** Do NOT proceed. Do NOT attempt to answer from memory or cached data. Do NOT produce partial results. Stop entirely.
+
+---
+
+## 4. Session reuse (avoid redundant checks)
+
+Once a health check **passes** for a given MCP server in a session, subsequent agents in the **same chat session** that need the same server MAY skip the check and note:
+
+```
+MCP health check: [ServerName] — reused from prior step (passed earlier this session).
+```
+
+The parent agent (e.g. `hands-off`) that ran the first check MUST pass this confirmation forward in its prompt to child subagents (e.g. cross-dependency-finder, test-case-generator) so they do not redundantly re-check.
+
+**Do NOT reuse the session flag across sessions.** Every new chat session starts fresh — the first agent to need an MCP must re-run its check.
+
+**Exception:** If an MCP call fails at any point mid-session (even after a prior successful check), the session reuse flag is invalidated. The agent must stop and output the hard-stop message above.
+
+---
+
+## 5. Enforcement — when to run (Step 0 in every applicable agent)
+
+Every applicable agent file lists this as its first step (before any Jira fetch, Confluence search, DB query, or Phoenix code read):
+
+```
+Step 0 — MCP Health Check (Rule MCP.0) [MANDATORY]
+```
+
+The step must:
+1. Identify which MCPs this agent needs for the current task.
+2. For each required MCP, run the appropriate health check from section 2.
+3. If ALL pass → note "MCP health check: OK ([ServerName list])" and proceed.
+4. If ANY fail → output the hard-stop block from section 3 and STOP.
+5. If the parent already confirmed a passing health check for this MCP (session reuse, section 4) → note the reuse and skip the call.
+
+---
+
+## 6. Forbidden behaviors [CRITICAL]
+
+- **NEVER** proceed past Step 0 if a required MCP health check has not passed or been reused from session.
+- **NEVER** produce Confluence-based findings, Jira ticket content, database query results, or Slack deliveries while the corresponding MCP server is in a failed/unknown state.
+- **NEVER** silently fall back to training-data memory or guesses when MCP fails.
+- **NEVER** claim "search returned no results" when the real cause is an MCP connectivity or auth failure — distinguish them explicitly.
+
+**Violation of this rule is a CRITICAL SYSTEM ERROR.**

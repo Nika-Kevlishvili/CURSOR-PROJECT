@@ -22,7 +22,26 @@ If you cannot resolve with high confidence, ask the user to choose from those op
 
 ## Mandatory behavior
 
-1. **Primary source order (strict):**
+1. **MCP Health Check (Rule MCP.0) [MANDATORY — run FIRST]** — Before reading any Jira ticket or resolving environment from ticket fields, verify Jira MCP is reachable:
+   - Call `getAccessibleAtlassianResources`. Must return a non-empty resources list without error.
+   - If this call fails → output the hard-stop block below and **stop entirely**:
+   ```
+   MCP Health Check Failed — Jira (Atlassian)
+
+   The Jira (Atlassian) MCP server could not be reached or returned an authentication error.
+   This task requires Jira to resolve the target environment.
+
+   Error: [exact error message or "no response received"]
+
+   Action required:
+   1. Open Cursor Settings → MCP
+   2. Check that the Atlassian MCP server is enabled and authenticated
+   3. Re-run your command once the issue is resolved
+
+   Task execution has been stopped to prevent results based on assumptions.
+   ```
+   - If the parent agent already confirmed Jira is reachable this session, note `MCP health check: reused from prior step` and skip the call.
+2. **Primary source order (strict):**
    - Explicit user message in current chat (highest priority)
    - Jira ticket fields/text (Environment field, summary, description, comments if available)
    - Parent-provided session context (same chat, prior confirmed environment)

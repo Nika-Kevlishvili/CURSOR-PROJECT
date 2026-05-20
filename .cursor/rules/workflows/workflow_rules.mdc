@@ -17,152 +17,22 @@ alwaysApply: true
 
 # BUG VALIDATION RULE [CRITICAL]
 
-32. [CRITICAL] When analyzing bug reports or bug validation requests, ALWAYS follow the **BugFinder workflow** below (same behavior as the former BugFinderAgent; no Python package in this workspace).
-    
-    **MANDATORY: BugFinder workflow**
-    - ALL bug validation requests MUST follow this workflow in Cursor (Confluence MCP + codebase + full analysis **in chat**; disk file only if the user runs **`/report`** or explicitly asks to save under **Chat reports** — Rule 0.6)
-    - Do **not** rely on `from agents.Main import get_bug_finder_agent` — `Cursor-Project/agents/` was removed
-    - Execute the steps yourself; this ensures consistent, structured bug validation with proper reporting
-    
-    **CRITICAL: READ-ONLY MODE - NO CODE MODIFICATIONS**
-    - When validating bugs, you MUST work in READ-ONLY mode
-    - NEVER modify code during bug validation
-    - NEVER attempt to fix bugs during validation
-    - ONLY analyze, document, and report findings
-    - Code modifications are ONLY allowed if user explicitly requests bug fixing AFTER validation is complete
-    - Violation of this rule is a CRITICAL SYSTEM ERROR
-    
-    **BugFinderAgent Workflow (Rule 32) — implement in chat:**
-    
-    **Step 0: Resolve environment + align Phoenix branches (Rule PHOENIX-SWITCH.0)**
-    - **MANDATORY resolver call:** run `environment-resolver` (or `/environment-resolve`) using bug ticket context. It must return one environment among `dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`.
-    - If ambiguity remains, `environment-resolver` MUST ask the user via questionnaire (Rule CONF.0). Do not silently default.
-    - **Prod safety gate (Rule PHOENIX-SWITCH.0 §1a):** if env is `prod`, FIRST tell the user that local Phoenix edits will be discarded and force-reset to `origin/prod`, wait for explicit ack, then add `-ConfirmProd`. Skip for non-prod envs.
-    - **Subagent reuse (Rule PHOENIX-SWITCH.0 §7a):** if a previous step in this chat session already aligned Phoenix to the same env and exited `0`, do NOT re-run the script — reuse it.
-    - Otherwise run `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` (add ` -ConfirmProd` for `prod` only) so every `Cursor-Project/Phoenix/*` repo aligns to `origin/<branch>` (latest tip) before code analysis.
-    - Local uncommitted Phoenix edits are DISCARDED by the alignment script (per workspace policy); Phoenix source files remain READ-ONLY (Rule 0.8 Tier A).
-    - Inspect exit code: `0` proceed; `2` proceed but flag mixed-state in chat; `3` STOP and ask user to fix VPN / credentials before retrying.
-    - Report in chat which environment + branch were used, the exit code, and any per-repo issues (`missing-remote`, `no-origin`, `network-failure`, `auth-failure`, `fetch-failed`, `checkout-failed`, `reset-failed`, `error`) before proceeding.
-    
-    **Step 1: Extract Expected Behavior**
-    - Extract the bug's expected result from the ticket description
-    - Identify the specific behavior that should occur according to the bug reporter
-    - Document the claimed expected behavior clearly
-    
-    **Step 2: Validate Expected Behavior Against Confluence**
-    - FIRST: Search Confluence using MCP tools (mcp_Confluence_search(), mcp_Confluence_searchConfluenceUsingCql(), mcp_Confluence_getConfluencePage()) for related documentation
-    - Check for EXACT match: Does Confluence explicitly support the bug's expected behavior?
-    - Check for CONTEXTUAL match: Does Confluence provide similar/related rules that suggest the expected behavior?
-    - Check for CONTRADICTION: Does Confluence explicitly state different behavior than what the bug expects?
-    - Report findings: "Confluence validation: [exact match / contextual match / no match / contradicts] - [explanation]"
-    - Document all Confluence sources found (page IDs, titles, URLs)
-    
-    **Step 3: Validate Code Behavior**
-    - SECOND: Search codebase using semantic codebase search, `grep`/ripgrep, `read_file`, etc. to find relevant code
-    - Analyze actual code implementation behavior
-    - Check if code behavior matches the faulty behavior described in the bug report
-    - Report findings: "Code validation: [matches reported behavior / does not match reported behavior / could not verify] - [explanation]"
-    - Include specific file paths, line numbers, and code snippets
-    - Identify exact location of implementation
-    
-    **Step 4: Apply Decision Matrix**
-    - Use the 5-verdict decision matrix based on Confluence evidence strength and code behavior:
-      - **VALID**: Exact Confluence match + code confirms reported faulty behavior
-      - **NEEDS CLARIFICATION**: Contextual Confluence match + code confirms reported behavior  
-      - **NEEDS APPROVAL**: No Confluence match + code confirms reported behavior
-      - **NOT VALID**: Confluence contradicts expected behavior + code follows Confluence
-      - **INSUFFICIENT EVIDENCE**: Cannot access Confluence/code or evidence too weak
-    - Include specific code references and line numbers when relevant
-    - Use clear structure: "1. Expected Behavior", "2. Confluence Validation", "3. Code Analysis", "4. Final Verdict"
-    - Format the report in markdown using the structure in **Example Response Structure** below (no Python formatter)
-    
- **Step 5: Deliver results (chat + Slack; optional disk)**
- - **Required:** Reply in chat with the full structured analysis (same content as the former report file): Expected Behavior, Confluence validation, Code analysis, verdict, code references (paths + lines), next steps. Do **not** implement code changes during validation.
- - **Required Slack delivery:** After every completed bug validation, send the same full structured report to the Slack channel **`bug-validation`** (channel ID: `C0AUEEDVCEL`) using `slack_send_message(channel_id: "C0AUEEDVCEL", message: <full report>)` via plugin-slack-slack MCP. This is part of the Cursor BugFinder workflow and MUST happen automatically; it is not a parent-chat one-off send.
- - If Slack MCP/auth is unavailable, include `Slack delivery: failed` and the exact failure reason in the chat analysis. Do not silently skip Slack delivery.
-    - **Optional disk file:** Only if the user runs **`/report`** or **explicitly** asks to save the validation to **Chat reports** — then write `…/YYYY/<english-month>/<DD>/BugValidation_[BugName].md` per **`Cursor-Project/reports/README.md`**. Otherwise do **not** create `BugValidation_*.md` automatically.
-    
-    **DECISION MATRIX - 5 VERDICTS:**
-    
-    **VALID** - Use when:
-    - Confluence explicitly supports the bug's expected behavior (exact match), AND
-    - Code behavior matches the faulty behavior described in bug report
-    - Meaning: Bug is confirmed valid, should be fixed
-    
-    **NEEDS CLARIFICATION** - Use when:  
-    - Confluence provides contextual/related support but no exact rule, AND
-    - Code behavior matches the faulty behavior described in bug report
-    - Meaning: Bug may be valid but product expectation needs clarification
-    
-    **NEEDS APPROVAL** - Use when:
-    - No relevant Confluence documentation found for this specific case, AND  
-    - Code behavior matches the faulty behavior described in bug report
-    - Meaning: Technical issue exists but expected behavior is undocumented, needs product approval
-    
-    **NOT VALID** - Use when:
-    - Confluence explicitly contradicts the bug's expected behavior, AND
-    - Code behavior follows Confluence specification correctly  
-    - Meaning: Bug report expectation is incorrect, code is working as designed
-    
-    **INSUFFICIENT EVIDENCE** - Use when:
-    - Confluence search failed or returned no usable results, OR
-    - Code analysis could not be completed, OR  
-    - Evidence is too weak to make any determination
-    - Meaning: Validation could not be completed due to technical/access issues
-    
-    **Workflow Requirements:**
-    - ALWAYS run this full 5-step workflow for bug validation (not a Python import)
-    - ALWAYS extract expected behavior FIRST
-    - ALWAYS check Confluence SECOND (via MCP tools)
-    - ALWAYS check codebase THIRD  
-    - ALWAYS apply the 5-verdict decision matrix FOURTH
-    - If reproducibility pipeline is executed (cross-dependency → test cases → energo-ts-test), Swagger refresh is MANDATORY before Playwright generation: run `powershell -ExecutionPolicy Bypass -File ".cursor/commands/update-swagger-specs.ps1"`; if refresh fails, continue with cached specs only with explicit warning.
-    - ALWAYS provide all validations in response with clear verdict
-    - Do **NOT** automatically create a BugValidation file on disk; chat output satisfies Step 5 unless the user requests **`/report`** or an explicit save (Rule 0.6)
-    - NEVER skip any step
-    - NEVER modify code during validation (READ-ONLY mode)
-    - NEVER attempt to fix bugs unless explicitly requested AFTER validation
-    - NEVER use vague verdicts like "INCONCLUSIVE" - use the 5-verdict system
-    - Apply PhoenixExpert consultation and reporting per other rules (no Python IntegrationService/ReportingService in this workspace)
-    
-    **Example Response Structure:**
-    ```
-    ## Bug Validation Analysis
-    
-    ### 1. Expected Behavior
-    **Bug Claims:** [What the bug report says should happen]
-    **Context:** [Relevant business context or user scenario]
-    
-    ### 2. Confluence Validation  
-    **Evidence Strength:** [exact match / contextual match / no match / contradicts / search failed]
-    **Explanation:** [Detailed explanation of Confluence findings]
-    **Sources:** [List of Confluence pages found with page IDs, titles, URLs]
-    
-    ### 3. Code Analysis
-    **Behavior Match:** [matches reported behavior / does not match reported behavior / could not verify]
-    **Explanation:** [Detailed explanation of actual code behavior]
-    **Code References:**
-    - File: [path/to/file.java]
-    - Lines: [123-145]
-    - Implementation: [Description of what code actually does]
-    
-    ### 4. Final Verdict
-    **Verdict:** [VALID / NEEDS CLARIFICATION / NEEDS APPROVAL / NOT VALID / INSUFFICIENT EVIDENCE]
-    **Reasoning:** [Why this verdict was chosen based on evidence matrix]
-    **Next Steps:** [What should be done next - fix bug, get clarification, seek approval, etc.]
-    ```
-    
-    **Important Notes:**
-    - If (and only if) the user requested a saved file or **`/report`**: write **`…/BugValidation_[DescriptiveName].md`** under **Chat reports** per **`Cursor-Project/reports/README.md`**, with the same content quality as the chat analysis
-    - Chat (or file, when written) MUST include code references with file paths and line numbers
-    - Do NOT include code modifications — analysis and documentation only
-    - If user wants to fix the bug, they will request it separately AFTER validation
-    
-    **Why this workflow:**
-    - Ensures consistent bug validation
-    - Integrates Confluence + codebase + mandatory written analysis in chat (Rule 32); disk file only on user **`/report`** or explicit save request (Rule 0.6)
-    - Follows all critical rules (0.3, 0.4) as applicable in Cursor chat
-    
+32. [CRITICAL] When analyzing bug reports or bug validation requests, ALWAYS follow the **BugFinder workflow** (Rule 32). No Python `get_bug_finder_agent` in this workspace.
+
+    **Route to:** `.cursor/agents/bug-validator.md` + `.cursor/commands/bug-validate.md` + `.cursor/skills/phoenix-bug-validation/SKILL.md`
+
+    **Key constraints (enforce even without reading the full spec):**
+    - **READ-ONLY** — NEVER modify code during validation.
+    - Step sequence: env align → recovery intake → expected behavior → Confluence → code (+ ALREADY_FIXED check) → reproducibility pipeline → 6-verdict matrix → deliver.
+    - **Confluence first** (MCP); if unavailable after 3 retries → `PROCESS BLOCKED`, no verdict.
+    - **ALREADY_FIXED (Step 3):** if faulty code path no longer exists + Confluence confirms intent → `ALREADY_FIXED`. If Confluence silent → `NEEDS CLARIFICATION`.
+    - **Reproducibility hard gate:** verdicts `VALID`, `NEEDS CLARIFICATION`, `NEEDS APPROVAL`, `NOT VALID`, `ALREADY_FIXED` MUST NOT be issued before `/energo-ts-run` executes. Missing pipeline → `PROCESS BLOCKED`.
+    - **6 verdicts:** `VALID` / `NEEDS CLARIFICATION` / `NEEDS APPROVAL` / `NOT VALID` / `ALREADY_FIXED` / `INSUFFICIENT EVIDENCE`.
+    - **Delivery:** full report in chat + Slack `bug-validation` (`C0AUEEDVCEL`). Optional disk file only on `/report` or explicit save request.
+    - If reproducibility pipeline runs, Swagger refresh is MANDATORY first: `powershell -ExecutionPolicy Bypass -File ".cursor/commands/update-swagger-specs.ps1"`.
+
+    Full workflow details: `.cursor/agents/bug-validator.md`.
+
     Violation is a CRITICAL SYSTEM ERROR.
 
 # DATABASE WORKFLOW RULE [CRITICAL]
@@ -319,5 +189,23 @@ alwaysApply: true
     - If found, generation is invalid; rewrite to helper-function pattern before returning output.
 
     **Reference:** `Cursor-Project/config/playwright_generation/playwright instructions/precondition-data-creation.instructions.md`; `Cursor-Project/config/playwright_generation/playwright instructions/test-writing-rules.instructions.md`; `.cursor/rules/workflows/handsoff_playwright_report.mdc`.
+
+    - Violation is a CRITICAL SYSTEM ERROR.
+
+# BULK BUG VALIDATION RULE [CRITICAL]
+
+38. [CRITICAL] When the user invokes `/bug-validate-bulk` (with explicit Jira keys OR a Jira filter), ALWAYS route to the **BulkBugValidatorAgent** workflow. Rule 32 remains unchanged for single-bug validation.
+
+    **Route to:** `.cursor/agents/bulk-bug-validator.md` + `.cursor/commands/bug-validate-bulk.md` + `.cursor/skills/bulk-bug-validation/SKILL.md`
+
+    **Key constraints (enforce even without reading the full spec):**
+    - Delegate each bug through the full **Rule 32** pipeline independently (same ALREADY_FIXED detection + reproducibility hard gate).
+    - Run **cross-bug grouping pass** after all individual validations complete (non-blocking).
+    - Save **JSON run file** (gitignored) to `Cursor-Project/config/bug_validation/bulk_validation_runs/` after every run.
+    - Write **`BugValidation_Bulk_[label].md`** to **Chat reports** after every run — mandatory local artifact. No Slack delivery.
+    - Cap: max 20 bugs per run.
+    - Per-bug verdicts MUST NOT be issued before `/energo-ts-run` executes. `PROCESS BLOCKED` applies per-bug.
+
+    Full workflow details: `.cursor/agents/bulk-bug-validator.md`.
 
     - Violation is a CRITICAL SYSTEM ERROR.

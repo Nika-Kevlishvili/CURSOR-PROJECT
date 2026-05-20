@@ -11,7 +11,27 @@ You run **PostgreSQL** queries for the Phoenix project via MCP. Use the environm
 ## Before querying
 
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed if the task requires external context.
-2. **Choose environment** from user/parent request only:
+2. **MCP Health Check (Rule MCP.0) [MANDATORY]** — Before connecting to the database, verify the PostgreSQL MCP server for the target environment is reachable. Run the connect call and immediately execute `SELECT 1`:
+   - Call `mcp_PostgreSQL{Env}_connect_db(host=..., port=..., user=..., password=..., database=...)` then `mcp_PostgreSQL{Env}_query(sql="SELECT 1")`.
+   - If the connect or SELECT 1 fails → output the hard-stop block below and **stop entirely**:
+   ```
+   MCP Health Check Failed — PostgreSQL[Env]
+
+   The PostgreSQL[Env] MCP server could not be reached or returned an authentication error.
+   This task requires PostgreSQL[Env] to proceed correctly.
+
+   Error: [exact error message or "no response received"]
+
+   Action required:
+   1. Open Cursor Settings → MCP
+   2. Check that the PostgreSQL[Env] MCP server is enabled and the credentials are correct
+   3. Verify network/VPN access to the database host
+   4. Re-run your command once the issue is resolved
+
+   Task execution has been stopped to prevent results based on assumptions.
+   ```
+   - If the check passes, proceed — the connect call is already done, so use the same connection for queries.
+3. **Choose environment** from user/parent request only:
    - Dev → PostgreSQLDev
    - Dev2 → PostgreSQLDev2
    - Test → PostgreSQLTest

@@ -12,6 +12,33 @@ You generate **test cases** from bug or task descriptions (TestCaseGeneratorAgen
 
 When the **user requests test case creation**, the parent MUST run **cross-dependency-finder** first (Rule 35; Rule 35a = Jira + codebase + shallow Confluence — **no** local merge/git). Cross-dependency-finder may consult **PhoenixExpert**; it returns a report (including "what could break") as `context['cross_dependency_data']`. Do not run test-case-generator without this step when the user asked for test cases.
 
+### Step 0 — MCP Health Check (Rule MCP.0) [MANDATORY — run BEFORE anything else]
+
+Before fetching Jira context or searching Confluence, verify required MCP servers are reachable:
+
+1. **Jira (Atlassian MCP):** Call `getAccessibleAtlassianResources`. Must return a non-empty resources list without error.
+2. **Confluence (Atlassian MCP):** Call `getConfluenceSpaces`. Must return at least one space without error.
+
+If either check fails → output the hard-stop block below and **stop entirely**:
+
+```
+MCP Health Check Failed — [ServerName]
+
+The [ServerName] MCP server could not be reached or returned an authentication error.
+This task requires [ServerName] to proceed correctly.
+
+Error: [exact error message or "no response received"]
+
+Action required:
+1. Open Cursor Settings → MCP
+2. Check that [ServerName] is enabled and authenticated
+3. Re-run your command once the issue is resolved
+
+Task execution has been stopped to prevent results based on assumptions.
+```
+
+If the parent agent (e.g. `hands-off`, `bug-validator`) already confirmed a passing health check for the same MCP servers in this session, note `MCP health check: reused from prior step` and skip the calls.
+
 0. **Phoenix branch alignment (Rule PHOENIX-SWITCH.0)** — Confirm the parent resolved environment through `environment-resolver` and already aligned every `Cursor-Project/Phoenix/*` repo via `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` (`dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`). If not aligned yet (or environment is unknown), do not start generation — require `environment-resolver` + alignment first (Rule CONF.0). **Subagent reuse (Rule PHOENIX-SWITCH.0 §7a):** if the parent already ran cross-dependency-finder for the same environment in this session and the alignment exit code was `0`, do NOT re-run the script — reuse it. If the alignment exit code was `2`, generate test cases but flag mixed-state in chat. If it was `3`, stop and report. Local Phoenix edits are discarded during alignment; Phoenix code remains READ-ONLY (Rule 0.8 Tier A).
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. Consult **PhoenixExpert** if the task touches endpoints, validation rules, or business logic (Rule 8). Use parent context if already provided (cross-dependency-finder may have already consulted; reuse if passed).

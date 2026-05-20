@@ -14,6 +14,7 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 |---------------|------|-------------|
 | **phoenix-qa.md** | PhoenixExpert (Rule 0.2) | Phoenix Q&A; Confluence MCP + codebase. READ-ONLY. |
 | **bug-validator.md** | Bug validation (Rule 32) | Confluence → codebase → full analysis in chat; **Chat reports** file only if **`/report`** or explicit save. READ-ONLY. |
+| **bulk-bug-validator.md** | Bulk bug validation (Rule 38) | Multiple bugs at once: explicit Jira keys or Jira filter → per-bug Rule 32 pipeline → cross-bug grouping pass → JSON run file saved locally + mandatory `BugValidation_Bulk_*.md` in Chat reports. READ-ONLY. |
 | **test-runner.md** | TestAgent | Tests; consult PhoenixExpert first; report results. |
 | **report-generator.md** | Reports (Rule 0.6) | **`/report`**, **`/feedback`**, explicit save request, or **Rule 37 (HandsOff)** file only — per **`Cursor-Project/reports/README.md`**. |
 | **database-query.md** | DB workflow (Rule DB.0+) | PostgreSQL MCP; connect first; see `integrations/database_workflow.mdc`. |

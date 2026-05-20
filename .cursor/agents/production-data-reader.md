@@ -31,7 +31,27 @@ Specialized subagent for reading and analyzing production database data. Provide
 ## Workflow
 
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
-2. **Connect to Production Database** - Use PostgreSQLProd MCP with readonly_user credentials
+2. **MCP Health Check (Rule MCP.0) [MANDATORY — run FIRST]** — Before connecting to production, verify PostgreSQLProd is reachable:
+   - Call `mcp_PostgreSQLProd_connect_db(host="10.236.20.78", port=5000, user="readonly_user", password=..., database="phoenix")` then `mcp_PostgreSQLProd_query(sql="SELECT 1")`.
+   - If the connect or query fails → output the hard-stop block below and **stop entirely**:
+   ```
+   MCP Health Check Failed — PostgreSQLProd
+
+   The PostgreSQLProd MCP server could not be reached or returned an authentication error.
+   This task requires PostgreSQLProd to proceed correctly.
+
+   Error: [exact error message or "no response received"]
+
+   Action required:
+   1. Open Cursor Settings → MCP
+   2. Check that the PostgreSQLProd MCP server is enabled and credentials are correct
+   3. Verify network/VPN access to the production database host (10.236.20.78:5000)
+   4. Re-run your command once the issue is resolved
+
+   Task execution has been stopped to prevent results based on assumptions.
+   ```
+   - If the check passes, the connection is already established — proceed to Step 3 using the same connection.
+3. **Connect to Production Database** - Use PostgreSQLProd MCP with readonly_user credentials
    - Host: 10.236.20.78
    - Port: 5000
    - User: readonly_user

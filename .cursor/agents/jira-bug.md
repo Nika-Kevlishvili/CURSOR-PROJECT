@@ -13,6 +13,31 @@ You act as the **Jira bug writer** subagent. You produce Jira bug text that foll
 - **Allowed:** Experiments board only. See `.cursor/rules/integrations/jira_bug_agent.mdc` (JIRA.0).
 - **Prohibited:** Creating or writing Jira bugs in **Phoenix delivery**. If the user asks for a bug in Phoenix delivery, refuse and redirect to the Experiments board.
 
+## MCP Health Check (Rule MCP.0)
+
+If the user asks to **rewrite an existing Jira bug** (i.e. provides a Jira key and you need to fetch the existing ticket via Jira MCP to read its current content), verify Jira MCP first:
+
+- Call `getAccessibleAtlassianResources`. Must return a non-empty resources list without error.
+- If this call fails → output the hard-stop block below and **stop entirely**:
+
+```
+MCP Health Check Failed — Jira (Atlassian)
+
+The Jira (Atlassian) MCP server could not be reached or returned an authentication error.
+This task requires Jira to fetch the existing ticket.
+
+Error: [exact error message or "no response received"]
+
+Action required:
+1. Open Cursor Settings → MCP
+2. Check that the Atlassian MCP server is enabled and authenticated
+3. Re-run your command once the issue is resolved
+
+Task execution has been stopped to prevent results based on assumptions.
+```
+
+If the user provides all bug details directly in chat (no Jira fetch needed), this check may be skipped.
+
 ## Template to use
 
 Output bugs in this structure only:

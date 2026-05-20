@@ -22,6 +22,34 @@ Core principle: validate bugs with evidence, not assumptions.
 
 ## Workflow (Rule 32)
 
+### Step 0 — MCP Health Check (Rule MCP.0) [MANDATORY — run BEFORE everything else]
+
+Before fetching any Jira ticket, searching Confluence, or starting any other step, verify that required MCP servers are reachable:
+
+1. **Jira (Atlassian MCP):** Call `getAccessibleAtlassianResources`. Must return a non-empty resources list without error.
+2. **Confluence (Atlassian MCP):** Call `getConfluenceSpaces`. Must return at least one space without error.
+3. **Slack MCP:** Call a lightweight read (e.g. `slack_search_users(query: "test")`). Must respond without auth error. Note: Slack failure does NOT stop the analysis — it only blocks the Slack delivery step (Step 6). Note the failure explicitly and proceed with analysis; stop before the Slack send.
+
+If Jira **or** Confluence check fails → output the hard-stop block below and **stop entirely**:
+
+```
+MCP Health Check Failed — [ServerName]
+
+The [ServerName] MCP server could not be reached or returned an authentication error.
+This task requires [ServerName] to proceed correctly.
+
+Error: [exact error message or "no response received"]
+
+Action required:
+1. Open Cursor Settings → MCP
+2. Check that [ServerName] is enabled and authenticated
+3. Re-run your command once the issue is resolved
+
+Task execution has been stopped to prevent results based on assumptions.
+```
+
+If the parent agent (e.g. `hands-off`, `bulk-bug-validator`) already confirmed a passing health check for the same MCP servers in this session, note `MCP health check: reused from prior step` and skip the calls.
+
 ### Step 0a: Resolve environment + align Phoenix branches (Rule PHOENIX-SWITCH.0) [MANDATORY]
 
 - Resolve target environment (`dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`) via `environment-resolver`.
@@ -58,6 +86,10 @@ Core principle: validate bugs with evidence, not assumptions.
 - Locate relevant implementation in codebase.
 - Determine if actual code behavior matches reported behavior.
 - Provide concrete references (file path + line range + short snippet/explanation).
+- **`ALREADY_FIXED` detection (mandatory check):** If the faulty code path described in the ticket **no longer exhibits the reported behavior** in the currently aligned branch:
+  1. Flag verdict candidate as `ALREADY_FIXED`.
+  2. Cross-check Confluence (Step 2 evidence) to confirm the removal was intentional — not an accidental refactor or deletion.
+  3. If Confluence confirms the fix or documents new behavior, set verdict to `ALREADY_FIXED`. If Confluence is silent, escalate to `NEEDS CLARIFICATION` instead (fix exists but intent is undocumented).
 
 ### Step 4: Reproducibility verification via test pipeline (MANDATORY)
 
@@ -72,18 +104,19 @@ Core principle: validate bugs with evidence, not assumptions.
 - If pipeline cannot complete after retries, return `PROCESS BLOCKED` (no final verdict).
 - Never claim "not reproducible" if test run step was not executed.
 
-### Step 5: Apply 5-Verdict Decision Matrix
+### Step 5: Apply 6-Verdict Decision Matrix
 
 - **VALID**: Exact Confluence match + code confirms faulty behavior.
 - **NEEDS CLARIFICATION**: Contextual Confluence match + code confirms behavior.
 - **NEEDS APPROVAL**: No Confluence match + code confirms behavior.
 - **NOT VALID**: Confluence contradicts expected behavior + code follows Confluence.
+- **ALREADY_FIXED**: Code no longer exhibits the faulty pattern AND Confluence confirms (or clearly implies) the change was intentional. If code changed but Confluence is silent, use `NEEDS CLARIFICATION` instead.
 - **INSUFFICIENT EVIDENCE**: Confluence/code evidence cannot be reliably established.
 
 - Use report structure:
   1. Expected Behavior
   2. Confluence Validation
-  3. Code Analysis
+  3. Code Analysis (including ALREADY_FIXED detection result)
   4. Reproducibility Pipeline
   5. Final Verdict
   6. Next Steps
@@ -91,14 +124,13 @@ Core principle: validate bugs with evidence, not assumptions.
 ### Step 6: Deliver final results (chat + Slack; optional file)
 
 - Always post full structured report in chat.
-- Always send same report to Slack channel `bug-validation` (`C0AUEEDVCEL`).
-- If Slack fails, include explicit failure reason in chat.
-- Optional report file only when explicitly requested (`/report` or user asks to save).
+- Always send same report to Slack channel `bug-validation` (`C0AUEEDVCEL`) via `slack_send_message`. If Slack MCP fails, log `Slack delivery: failed — [reason]` in chat; do not stop.
+- Optional report file only when explicitly requested (`/report` or user asks to save) — write `BugValidation_[DescriptiveName].md` under **Chat reports** per `Cursor-Project/reports/README.md`.
 - Include a `Pipeline Execution Evidence` section when pipeline was run.
 
 ## Status model (operational)
 
-- `COMPLETED`: validation finished with one of five verdicts.
+- `COMPLETED`: validation finished with one of six verdicts.
 - `PROCESS BLOCKED`: required step could not be completed (infrastructure/access/tooling blocker).
 
 `PROCESS BLOCKED` is an operational state, not a business verdict.

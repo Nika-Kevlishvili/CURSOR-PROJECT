@@ -36,3 +36,6 @@ reports/**
 !reports/HandsOff reports/**
 !reports/Chat reports/
 !reports/Chat reports/**
+
+# Bulk bug validation run files (local-only, machine-generated)
+config/bug_validation/bulk_validation_runs/*.json

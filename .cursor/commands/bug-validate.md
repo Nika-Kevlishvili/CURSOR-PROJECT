@@ -48,7 +48,11 @@ ALL bug validation requests MUST be handled by BugFinderAgent - NO EXCEPTIONS.
 - Search codebase using code search tools
 - Analyze actual implementation behavior
 - Check if code matches faulty behavior described in bug
-- Report: "Code validation: [matches reported behavior/does not match/could not verify] - [explanation]"
+- **`ALREADY_FIXED` detection (mandatory):** If the faulty code path described in the ticket no longer exhibits the reported behavior in the currently aligned branch:
+  1. Flag verdict candidate as `ALREADY_FIXED`.
+  2. Cross-check Confluence (Step 2 result) to confirm the removal was intentional — not an accidental refactor or deletion.
+  3. If Confluence confirms the fix or documents updated behavior → set verdict to `ALREADY_FIXED`. If Confluence is silent on the change → escalate to `NEEDS CLARIFICATION` (fix exists but intent is undocumented).
+- Report: "Code validation: [matches reported behavior/does not match/could not verify/no longer present (ALREADY_FIXED candidate)] - [explanation]"
 
 ### Step 4: Reproducibility Test Pipeline (MANDATORY)
 
@@ -65,7 +69,7 @@ Use final test run outcomes to determine whether the bug condition is practicall
 
 ### Step 4a: Hard Gate Enforcement with Auto-Recovery (NO-SKIP)
 
-- Final bug verdict MUST be blocked until Step 5 pipeline evidence is complete.
+- Final bug verdict MUST be blocked until Step 4 pipeline evidence is complete.
 - Required completion checklist:
   - Swagger refresh status captured (`ok` or `failed_using_cache` with warning),
   - `/cross-dependency-finder` completed with output reference,
@@ -89,19 +93,19 @@ Use final test run outcomes to determine whether the bug condition is practicall
   - exact blocker,
   - required user action,
   - explicit question: "What should we do next?".
-- It is forbidden to issue `VALID`, `NEEDS CLARIFICATION`, `NEEDS APPROVAL`, or `NOT VALID` when `/energo-ts-run` has not executed.
+- It is forbidden to issue `VALID`, `NEEDS CLARIFICATION`, `NEEDS APPROVAL`, `NOT VALID`, or `ALREADY_FIXED` when `/energo-ts-run` has not executed.
 
-### Step 5: Apply 5-Verdict Decision Matrix
+### Step 5: Apply 6-Verdict Decision Matrix
 - Use evidence + behavior to determine verdict.
-- Apply one of 5 verdicts: `VALID` / `NEEDS CLARIFICATION` / `NEEDS APPROVAL` / `NOT VALID` / `INSUFFICIENT EVIDENCE`.
+- Apply one of 6 verdicts: `VALID` / `NEEDS CLARIFICATION` / `NEEDS APPROVAL` / `NOT VALID` / `ALREADY_FIXED` / `INSUFFICIENT EVIDENCE`.
 - Verdict is allowed only after mandatory Step 4 pipeline evidence is complete.
 
-### Step 6: Deliver final verdict (chat + Slack; file only on request)
+### Step 6: Deliver final verdict (chat + Slack; optional file)
 - Combine all findings with clear verdict and reasoning in the **chat reply** (full structured markdown).
-- **Mandatory behavior:** after **every** completed bug validation run, post the full report in the current chat. Do not skip chat posting even when other channels (for example Slack) are used by separate workflows.
-- **Mandatory Slack behavior:** after **every** completed bug validation run, send the same full report to the Slack channel **`bug-validation`** (channel ID: `C0AUEEDVCEL`) using `slack_send_message(channel_id: "C0AUEEDVCEL", message: <full report>)` via plugin-slack-slack MCP. This is part of the Cursor bug-validator workflow and must not depend on the user asking for a one-off Slack send.
-- If Slack MCP/auth is unavailable, include `Slack delivery: failed` and the failure reason in the chat output.
-- Do not substitute the chat report with a short status update like "report sent".
+- **Mandatory behavior:** after **every** completed bug validation run, post the full report in the current chat.
+- **Mandatory Slack behavior:** after **every** completed bug validation run, send the same full report to the Slack channel **`bug-validation`** (channel ID: `C0AUEEDVCEL`) using `slack_send_message(channel_id: "C0AUEEDVCEL", message: <full report>)` via plugin-slack-slack MCP.
+- If Slack MCP/auth is unavailable, include `Slack delivery: failed — [reason]` in the chat output. Do not skip silently.
+- Do not substitute the chat report with a short status update.
 - Include actionable next steps based on verdict.
 - **Final verdict rule:** Concluding validity must be based on full evidence, including Playwright pipeline outcomes.
 - **Disk:** Save `BugValidation_[DescriptiveName].md` under **Chat reports** only if the user runs **`/report`** or explicitly asks to save; otherwise no file (Rule 0.6).
@@ -149,7 +153,7 @@ Use final test run outcomes to determine whether the bug condition is practicall
 **Practical reproducibility:** [reproducible / not reproduced / inconclusive]
 
 ### 5. Final Verdict
-**Verdict:** [VALID / NEEDS CLARIFICATION / NEEDS APPROVAL / NOT VALID / INSUFFICIENT EVIDENCE]
+**Verdict:** [VALID / NEEDS CLARIFICATION / NEEDS APPROVAL / NOT VALID / ALREADY_FIXED / INSUFFICIENT EVIDENCE]
 **Reasoning:** [Why this verdict was chosen based on evidence matrix]
 **Next Steps:** [What should be done next based on verdict]
 ```
@@ -160,12 +164,13 @@ Use final test run outcomes to determine whether the bug condition is practicall
 - Use READ-ONLY mode (no code modifications)
 - Do **not** save a BugValidation file unless the user runs **`/report`** or explicitly requests a saved report under **Chat reports** (per **`Cursor-Project/reports/README.md`**). No Summary/agent files unless explicitly requested.
 
-## 5-Verdict Decision Matrix:
+## 6-Verdict Decision Matrix:
 
 - **VALID**: Exact Confluence match + code confirms reported faulty behavior → Fix the bug
 - **NEEDS CLARIFICATION**: Contextual Confluence match + code confirms reported behavior → Get product clarification  
 - **NEEDS APPROVAL**: No Confluence match + code confirms reported behavior → Get product approval
 - **NOT VALID**: Confluence contradicts expected behavior + code follows Confluence → Close as "working as designed"
+- **ALREADY_FIXED**: Code no longer exhibits the faulty pattern AND Confluence confirms the change was intentional → Close as fixed; if Confluence is silent, use NEEDS CLARIFICATION instead
 - **INSUFFICIENT EVIDENCE**: Confluence/code evidence unavailable or too weak → resolve evidence gap and rerun validation
 
 ## Response Must End With:

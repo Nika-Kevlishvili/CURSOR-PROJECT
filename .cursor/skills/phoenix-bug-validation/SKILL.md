@@ -16,7 +16,7 @@ Ensures bug validation follows **Rule 32** in `.cursor/rules/workflows/workflow_
 
 There is **no** `from agents.Main import get_bug_finder_agent` in this workspace. Run the steps below directly.
 
-## Workflow (Rule 32) - 5-Verdict System + mandatory reproducibility
+## Workflow (Rule 32) - 6-Verdict System + mandatory reproducibility
 
 ### Step 0: Resolve environment + align Phoenix branches (Rule PHOENIX-SWITCH.0) [MANDATORY]
 
@@ -51,7 +51,11 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
 - Search codebase (semantic search, grep, read_file) for relevant code.
 - Analyze actual code implementation behavior.
 - Check if code behavior matches the faulty behavior described in the bug report.
-- Report: "Code validation: [matches reported behavior / does not match reported behavior / could not verify] - [explanation]".
+- **`ALREADY_FIXED` detection (mandatory):** If the faulty code path described in the ticket no longer exhibits the reported behavior in the currently aligned branch:
+  1. Flag verdict candidate as `ALREADY_FIXED`.
+  2. Cross-check Confluence (Step 2 result) to confirm the removal was intentional.
+  3. If Confluence confirms the fix or documents new behavior → set verdict to `ALREADY_FIXED`. If Confluence is silent → escalate to `NEEDS CLARIFICATION` instead.
+- Report: "Code validation: [matches reported behavior / does not match reported behavior / could not verify / no longer present – ALREADY_FIXED candidate] - [explanation]".
 - Include file paths, line numbers, and code snippets; identify exact implementation.
 
 ### Step 4: Reproducibility verification via test pipeline (MANDATORY)
@@ -66,25 +70,24 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
 - If pipeline evidence is incomplete after retries, return `PROCESS BLOCKED` (no final verdict).
 - Never claim "not reproducible" if `energo-ts-run` was not executed.
 
-### Step 5: Apply 5-Verdict Decision Matrix
+### Step 5: Apply 6-Verdict Decision Matrix
 
 - **VALID**: Exact Confluence match + code confirms reported faulty behavior
 - **NEEDS CLARIFICATION**: Contextual Confluence match + code confirms reported behavior
 - **NEEDS APPROVAL**: No Confluence match + code confirms reported behavior
 - **NOT VALID**: Confluence contradicts expected behavior + code follows Confluence
+- **ALREADY_FIXED**: Code no longer exhibits the faulty pattern AND Confluence confirms the change was intentional; if Confluence is silent, use NEEDS CLARIFICATION instead
 - **INSUFFICIENT EVIDENCE**: Confluence/code evidence cannot be reliably established
 
 - Structure: "1. Expected Behavior", "2. Confluence Validation", "3. Code Analysis", "4. Reproducibility Pipeline", "5. Final Verdict", "6. Next Steps".
 
 ### Step 6: Results (chat + Slack; optional file)
 
-- **Required (every run):** Post the full structured analysis in **chat** after each completed validation (expected behavior, Confluence validation, code analysis, verdict, paths/lines, next steps).
-- **Required (every run):** Send the same full structured analysis to the Slack channel **`bug-validation`** (channel ID: `C0AUEEDVCEL`) after each completed validation. Use `slack_send_message(channel_id: "C0AUEEDVCEL", message: <full report>)` via plugin-slack-slack MCP.
-- Slack delivery is built into the Cursor bug-validator workflow; it is not a manual one-off send from the parent chat.
-- If Slack MCP/auth is unavailable, include `Slack delivery: failed` and the failure reason in the validation output.
-- Chat posting is mandatory even if Slack delivery succeeds or a markdown file is written.
-- Never send only "report sent" or summary-only text without the full chat analysis.
-- **Optional:** If the user runs **`/report`** or explicitly asks to save → write `…/YYYY/<english-month>/<DD>/BugValidation_[DescriptiveName].md` under **Chat reports** per **`Cursor-Project/reports/README.md`**.
+- **Required (every run):** Post the full structured analysis in **chat** after each completed validation.
+- **Required (every run):** Send the same full structured analysis to Slack channel **`bug-validation`** (`C0AUEEDVCEL`) via `slack_send_message`. Slack delivery is part of the workflow, not a manual one-off send.
+- If Slack MCP/auth fails, include `Slack delivery: failed — [reason]` in the chat output.
+- Never send only a "report sent" stub — always include the full analysis in chat.
+- **Optional:** If the user runs **`/report`** or explicitly asks to save → write `…/YYYY/<english-month>/<DD>/BugValidation_[DescriptiveName].md` under **Chat reports** per `Cursor-Project/reports/README.md`.
 
 ## Hard Gate: Reproducibility Pipeline Cannot Be Skipped
 
@@ -99,7 +102,7 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
   - Playwright validator result,
   - Playwright run result from `/energo-ts-run`.
 - If any evidence item is missing, trigger auto-recovery and retries; if still unresolved after max retries, return `PROCESS BLOCKED` with `Missing pipeline evidence`.
-- Do not issue `VALID`, `NEEDS CLARIFICATION`, `NEEDS APPROVAL`, or `NOT VALID` without `/energo-ts-run` execution evidence.
+- Do not issue `VALID`, `NEEDS CLARIFICATION`, `NEEDS APPROVAL`, `NOT VALID`, or `ALREADY_FIXED` without `/energo-ts-run` execution evidence.
 - Do not label a bug "not reproducible" when `/energo-ts-run` was not executed.
 - Auto-recovery is mandatory when a step fails:
   - capture failure reason,
@@ -120,7 +123,7 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
 
 - **Rule 0.3:** follow MCP/Jira when needed — no Python IntegrationService here.
 - Consult PhoenixExpert for context when needed.
-- **Rule 0.6:** No automatic `BugValidation_*.md`; file only on **`/report`** or explicit save request.
+- **Delivery:** full report in chat + Slack `bug-validation` channel (`C0AUEEDVCEL`). `BugValidation_[DescriptiveName].md` written to **Chat reports** only on **`/report`** or explicit save request (Rule 0.6).
 - End with: "Agents involved: BugFinderAgent (workflow), PhoenixExpert" (or as applicable).
 
 ## Decision Matrix Details
@@ -146,6 +149,12 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
 - Confluence explicitly contradicts the bug report's expected behavior
 - Code correctly implements what Confluence specifies
 - Action: Close bug as "working as designed"
+
+**ALREADY_FIXED**
+- Code no longer exhibits the faulty behavior described in the ticket
+- Confluence confirms (or clearly implies) the removal was intentional
+- If Confluence is silent about the change, use NEEDS CLARIFICATION instead
+- Action: Close bug as already fixed; link the fix commit/PR if identifiable
 
 **INSUFFICIENT EVIDENCE**
 - Confluence/code evidence is unavailable or too weak for a reliable business verdict

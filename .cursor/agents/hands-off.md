@@ -19,6 +19,30 @@ You orchestrate the **full HandsOff flow** when the user provides a **Jira ticke
 
 Follow **exactly** the steps in **`.cursor/commands/hands-off.md`**. Summary:
 
+0. **MCP Health Check (Rule MCP.0) [MANDATORY — run FIRST]** — Before fetching the Jira ticket or doing anything else, verify all required MCP servers:
+   - **Jira (Atlassian MCP):** Call `getAccessibleAtlassianResources`. Must return resources without error.
+   - **Confluence (Atlassian MCP):** Call `getConfluenceSpaces`. Must return at least one space without error.
+   - **Slack MCP:** Call `slack_search_users(query: "test")` or equivalent. Must respond without auth error. Slack failure is a blocker for this workflow because Slack delivery is a mandatory HandsOff step (Step 8) — if Slack fails, hard stop before starting.
+
+   If any check fails, output the hard-stop block below and **stop entirely** — do NOT proceed to Step 1:
+   ```
+   MCP Health Check Failed — [ServerName]
+
+   The [ServerName] MCP server could not be reached or returned an authentication error.
+   This task requires [ServerName] to proceed correctly.
+
+   Error: [exact error message or "no response received"]
+
+   Action required:
+   1. Open Cursor Settings → MCP
+   2. Check that [ServerName] is enabled and authenticated
+   3. Re-run your command once the issue is resolved
+
+   Task execution has been stopped to prevent results based on assumptions.
+   ```
+
+   If all checks pass, note `MCP health check: OK (Jira, Confluence, Slack)` and pass this confirmation to all child subagents (cross-dependency-finder, test-case-generator, bug-validator) so they apply session reuse (Rule MCP.0 §4) and skip redundant checks.
+
 1. **Get Jira ticket + align Phoenix branches** – Parse issue key from input. Jira MCP getJiraIssue(cloudId, issueKey) → description, summary, tester/assignee, **environment**. **MANDATORY resolver call:** invoke `environment-resolver` with Jira context and use only its resolved environment (`dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`). If ambiguous, resolver must ask the user via questionnaire (Rule CONF.0). **For `prod`:** first explain to the user that local Phoenix edits will be discarded and force-reset to `origin/prod`, wait for explicit ack, then call the script with `-ConfirmProd`. For non-prod envs, run `powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` to align every `Cursor-Project/Phoenix/*` repo to `origin/<branch>` (latest tip; local Phoenix edits are discarded; Phoenix files stay READ-ONLY, Rule 0.8 Tier A; Rule PHOENIX-SWITCH.0). Inspect exit code: `0` proceed; `2` proceed but flag mixed-state in the report; `3` STOP and ask user to fix VPN / credentials. Capture per-repo alignment outcome AND exit code for the report. Pass the resolved environment + exit code forward to cross-dependency-finder and test-case-generator so they can apply subagent reuse (Rule PHOENIX-SWITCH.0 §7a) instead of re-running the script. (**Rule 0.3:** no Python IntegrationService here.)
 2. **Cross-dependencies** – Run cross-dependency-finder for this Jira key (Rule 35a: Jira + codebase + shallow Confluence; no local merge-history archaeology/git-snapshot). Pass output as cross_dependency_data.
 3. **Test cases** – **MANDATORY:** test-case-generator MUST load **`Cursor-Project/config/playwright_generation/playwright instructions/`** (full set per `.cursor/commands/test-case-generate.md` step 0) before writing `.md` files. Then run test-case-generator; save as **two separate files** — `Cursor-Project/test_cases/Backend/<Topic_name>.md` (TC-BE-N only) and `Cursor-Project/test_cases/Frontend/<Topic_name>.md` (TC-FE-N only). **Verify** both `.md` files exist on disk; if missing, write them directly. Update `test_cases/README.md`, `test_cases/Backend/README.md`, and `test_cases/Frontend/README.md`.
