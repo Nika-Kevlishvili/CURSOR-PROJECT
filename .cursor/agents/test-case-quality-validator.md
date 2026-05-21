@@ -1,6 +1,6 @@
 ---
 name: test-case-quality-validator
-model: claude-4.6-sonnet-medium-thinking
+model: inherit
 description: Scores generated test cases against the quality rubric and returns per-TC scores, anti-pattern flags, and rewrite suggestions. READ-ONLY. Use after test-case-generator produces Backend/<Topic>.md and Frontend/<Topic>.md files, or via /test-case-quality command for ad-hoc validation.
 ---
 

@@ -26,6 +26,8 @@ Every `.md` file MUST follow **`Cursor-Project/config/template/Test_case_templat
 | Resources (Operations management) — business documents upload, list, search, sort, download, delete, edit | `Backend/Resources_Operations_management_PDT_2690.md` | `Frontend/Resources_Operations_management_PDT_2690.md` | PDT-2690 |
 | General business document library (Portal) — **restored twin** of PDT-2690 scenarios under distinct filenames | `Backend/General_business_document_library_Portal_PDT2690.md` | `Frontend/General_business_document_library_Portal_PDT2690.md` | PDT-2690 |
 | Payment mass import — automatic offsetting failure (`automatic_payment_offsetting_out`), transactional non-persistence, `:20:` bank header, process lifecycle | `Backend/Payment_Mass_Import_Offsetting_Failure_PDT_2713.md` | `Frontend/Payment_Mass_Import_Offsetting_Failure_PDT_2713.md` | PDT-2713 |
+| Contract version validity — Mass Email, Mass SMS, Penalty (description-vs-code gaps; PDT-2599 attachment) | `Backend/Version_Validity_Three_Processes_PDT_2815.md` | `Frontend/Version_Validity_Three_Processes_PDT_2815.md` | PDT-2815 |
+| Service Contract first version startDate re-alignment — auto-realign version 1 startDate to signingDate when signingDate < startDate during finalization; guard checks, version ordering, downstream impact | `Backend/Service_Contract_First_Version_StartDate_PDT_2846.md` | `Frontend/Service_Contract_First_Version_StartDate_PDT_2846.md` | PDT-2846 |
 
 ## Layout reference
 

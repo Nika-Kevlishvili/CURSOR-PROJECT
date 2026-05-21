@@ -6,7 +6,7 @@ alwaysApply: true
 
 ## Rule CONFLUENCE.1: When Confluence MCP fails, use REST for read-equivalent data [CRITICAL]
 
-**Intent.** Workflows that must **read** Confluence (bug validation Rule 32, PhoenixExpert Rule 0.5, cross-dependency shallow Confluence, linked pages from Jira, evidence-only answers) MUST prefer **Confluence MCP** first (`getConfluencePage`, `search`, `getConfluenceSpaces`, CQL helpers per tool descriptors). If Confluence MCP is **unavailable** (server disabled, tool errors, auth failure) or **still fails after 2–3 retries** with backoff (see **`.cursor/rules/safety/safety_rules.mdc`** Rule 15), agents MUST **not** stop solely at “Confluence MCP broken” when the user has not blocked REST — they MUST obtain **read-equivalent** page or search data via the **Confluence Cloud REST** read path below.
+**Intent.** Workflows that must **read** Confluence (bug validation Rule 32 **`bug-validator` only** for *broad* proactive discovery; PhoenixExpert Rule 0.5; cross-dependency **shallow** Confluence; linked pages from Jira; evidence-only answers) MUST prefer **Confluence MCP** first (`getConfluencePage`, `search`, `getConfluenceSpaces`, CQL helpers per tool descriptors). If Confluence MCP is **unavailable** (server disabled, tool errors, auth failure) or **still fails after 2–3 retries** with backoff (see **`.cursor/rules/safety/safety_rules.mdc`** Rule 15), agents MUST **not** stop solely at “Confluence MCP broken” when the user has not blocked REST — they MUST obtain **read-equivalent** page or search data via the **Confluence Cloud REST** read path below.
 
 **READ-ONLY:** no Confluence creates, updates, deletes, or comments via this path. Same absolute prohibition as **Rule 1** / Confluence edit tools in **`safety_rules.mdc`**.
 

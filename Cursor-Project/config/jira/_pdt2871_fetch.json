@@ -1,0 +1,1074 @@
+﻿{
+    "expand":  "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations,customfield_10026.requestTypePractice",
+    "id":  "72370",
+    "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/72370",
+    "key":  "PDT-2871",
+    "names":  {
+                  "statuscategorychangedate":  "Status Category Changed",
+                  "fixVersions":  "Fix versions",
+                  "customfield_10110":  "Goals",
+                  "statusCategory":  "Status Category",
+                  "resolution":  "Resolution",
+                  "customfield_10104":  "Design",
+                  "customfield_10745":  "Test Case",
+                  "customfield_11318":  "Tis",
+                  "customfield_10109":  "Sentiment",
+                  "lastViewed":  "Last Viewed",
+                  "customfield_10060":  "Category",
+                  "customfield_11151":  "BA ",
+                  "priority":  "Priority",
+                  "customfield_10101":  "Complexity level",
+                  "labels":  "Labels",
+                  "customfield_10103":  "Description formatted",
+                  "customfield_10217":  "Bug Description",
+                  "timeestimate":  "Remaining Estimate",
+                  "aggregatetimeoriginalestimate":  "Σ Original Estimate",
+                  "versions":  "Affects versions",
+                  "issuelinks":  "Linked Issues",
+                  "assignee":  "Assignee",
+                  "status":  "Status",
+                  "components":  "Components",
+                  "customfield_10052":  "Satisfaction date",
+                  "customfield_10053":  "Request language",
+                  "customfield_10054":  "Affected services",
+                  "customfield_10055":  "Open forms",
+                  "customfield_10056":  "Submitted forms",
+                  "customfield_10057":  "Locked forms",
+                  "customfield_10058":  "Total forms",
+                  "customfield_10844":  "Test",
+                  "aggregatetimeestimate":  "Σ Remaining Estimate",
+                  "creator":  "Creator",
+                  "subtasks":  "Sub-tasks",
+                  "customfield_10041":  "Target start",
+                  "customfield_10283":  "Clarification Reason",
+                  "customfield_10042":  "Target end",
+                  "reporter":  "Reporter",
+                  "aggregateprogress":  "Σ Progress",
+                  "customfield_10048":  "Acceptance Criteria",
+                  "customfield_10316":  "Complexity",
+                  "progress":  "Progress",
+                  "votes":  "Votes",
+                  "worklog":  "Log Work",
+                  "issuetype":  "Issue Type",
+                  "customfield_11080":  "Atlassian project status",
+                  "customfield_11081":  "Insights",
+                  "customfield_11082":  "Comments",
+                  "customfield_11083":  "Linked items",
+                  "timespent":  "Time Spent",
+                  "customfield_11084":  "Delivery progress",
+                  "customfield_11085":  "Delivery status",
+                  "customfield_10151":  "Pair Developers",
+                  "customfield_10030":  "Satisfaction",
+                  "project":  "Project",
+                  "customfield_10031":  "Satisfaction",
+                  "customfield_10032":  "End Date",
+                  "customfield_10033":  "Start Date",
+                  "aggregatetimespent":  "Σ Time Spent",
+                  "customfield_10027":  "Request participants",
+                  "customfield_10028":  "Story point estimate",
+                  "customfield_10029":  "Issue color",
+                  "customfield_10547":  "Approvals",
+                  "resolutiondate":  "Resolved",
+                  "workratio":  "Work Ratio",
+                  "watches":  "Watchers",
+                  "issuerestriction":  "Restrict to",
+                  "created":  "Created",
+                  "customfield_11076":  "Idea archived",
+                  "customfield_11077":  "Idea archived by",
+                  "customfield_11078":  "Idea archived on",
+                  "customfield_11079":  "Atlassian project",
+                  "customfield_10024":  "Flagged",
+                  "customfield_10025":  "Start date",
+                  "customfield_10026":  "Request Type",
+                  "customfield_10415":  "Focus Areas",
+                  "updated":  "Updated",
+                  "customfield_10093":  "Participants of an issue",
+                  "timeoriginalestimate":  "Original estimate",
+                  "customfield_10095":  "Tester",
+                  "customfield_10096":  "Tester",
+                  "customfield_10250":  "On Hold Reason",
+                  "customfield_10251":  "Testing On Hold Reason",
+                  "description":  "Description",
+                  "customfield_10010":  "Sprint",
+                  "customfield_10011":  "Rank",
+                  "customfield_10012":  "[CHART] Date of First Response",
+                  "customfield_10013":  "[CHART] Time in Status",
+                  "timetracking":  "Time tracking",
+                  "security":  "Security Level",
+                  "customfield_10008":  "Epic Link",
+                  "attachment":  "Attachment",
+                  "summary":  "Summary",
+                  "customfield_10481":  "Original story point estimate",
+                  "customfield_10482":  "Is Updated On Confluence",
+                  "customfield_10087":  "Project overview key",
+                  "customfield_10483":  "DB Points",
+                  "customfield_10484":  "Dev Points",
+                  "customfield_10000":  "Development",
+                  "customfield_10088":  "Project overview status",
+                  "customfield_10001":  "Team",
+                  "customfield_10485":  "QA points",
+                  "customfield_10486":  "Should be ready for testing",
+                  "customfield_10004":  "Organizations",
+                  "environment":  "Environment",
+                  "customfield_10877":  "Approved for Prod",
+                  "duedate":  "Due date",
+                  "comment":  "Comment"
+              },
+    "changelog":  {
+                      "startAt":  0,
+                      "maxResults":  10,
+                      "total":  10,
+                      "histories":  [
+                                        {
+                                            "id":  "645596",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ac4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                           "accountId":  "712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/48",
+                                                                              "24x24":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/24",
+                                                                              "16x16":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/16",
+                                                                              "32x32":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/32"
+                                                                          },
+                                                           "displayName":  "Ani Giorganashvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-05-20T14:07:19.756+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Description formatted",
+                                                              "fieldtype":  "custom",
+                                                              "fieldId":  "customfield_10103",
+                                                              "from":  "",
+                                                              "fromString":  "Adding accounting period id to the db table customer_receivable_transactions with the following logic: The accounting period should be the respective for operation_date, if the accounting period is opened, eles the accounting period should be the respective for the current date\n\nUpdate existing transactions as well.\n\nWe need to take accounting period for transactions created by reversal too.",
+                                                              "to":  "",
+                                                              "toString":  "Adding accounting period id to the db table customer_receivable_transactions with the following logic: The accounting period should be the respective for operation_date, if the accounting period is opened, eles the accounting period should be the respective for the current date\n\nGE Description:\n\nAdditionally - Update existing transactions as well.\n\nAlso, we need to take accounting period for transactions created by reversal too."
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "645595",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ac4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                           "accountId":  "712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/48",
+                                                                              "24x24":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/24",
+                                                                              "16x16":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/16",
+                                                                              "32x32":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/32"
+                                                                          },
+                                                           "displayName":  "Ani Giorganashvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-05-20T14:06:56.926+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Description formatted",
+                                                              "fieldtype":  "custom",
+                                                              "fieldId":  "customfield_10103",
+                                                              "from":  "",
+                                                              "fromString":  "Adding accounting period id to the db table customer_receivable_transactions with the following logic: The accounting period should be the respective for operation_date, if the accounting period is opened, eles the accounting period should be the respective for the current date",
+                                                              "to":  "",
+                                                              "toString":  "Adding accounting period id to the db table customer_receivable_transactions with the following logic: The accounting period should be the respective for operation_date, if the accounting period is opened, eles the accounting period should be the respective for the current date\n\nUpdate existing transactions as well.\n\nWe need to take accounting period for transactions created by reversal too."
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "645580",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ac4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                           "accountId":  "712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/48",
+                                                                              "24x24":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/24",
+                                                                              "16x16":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/16",
+                                                                              "32x32":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/32"
+                                                                          },
+                                                           "displayName":  "Ani Giorganashvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-05-20T13:35:16.941+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Tester",
+                                                              "fieldtype":  "custom",
+                                                              "fieldId":  "customfield_10095",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "712020:4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                              "toString":  "nika kevlishvili",
+                                                              "tmpFromAccountId":  null,
+                                                              "tmpToAccountId":  "712020:4639bb27-748b-483b-8d8b-99f4c841d7d2"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "645552",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A39027a71-eb13-44f4-9564-e6f6efb64a62",
+                                                           "accountId":  "712020:39027a71-eb13-44f4-9564-e6f6efb64a62",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/af0d9d99e2133fc7d1bb0a5dc6e71571?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-2.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/af0d9d99e2133fc7d1bb0a5dc6e71571?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-2.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/af0d9d99e2133fc7d1bb0a5dc6e71571?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-2.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/af0d9d99e2133fc7d1bb0a5dc6e71571?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-2.png"
+                                                                          },
+                                                           "displayName":  "tato",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-05-20T12:38:34.692+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "3",
+                                                              "fromString":  "In Progress",
+                                                              "to":  "10191",
+                                                              "toString":  "Ready for testing"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "645523",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A39027a71-eb13-44f4-9564-e6f6efb64a62",
+                                                           "accountId":  "712020:39027a71-eb13-44f4-9564-e6f6efb64a62",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/af0d9d99e2133fc7d1bb0a5dc6e71571?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-2.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/af0d9d99e2133fc7d1bb0a5dc6e71571?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-2.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/af0d9d99e2133fc7d1bb0a5dc6e71571?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-2.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/af0d9d99e2133fc7d1bb0a5dc6e71571?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-2.png"
+                                                                          },
+                                                           "displayName":  "tato",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-05-20T12:00:55.327+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10447",
+                                                              "fromString":  "Ready for development",
+                                                              "to":  "3",
+                                                              "toString":  "In Progress"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "645497",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ac4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                           "accountId":  "712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/48",
+                                                                              "24x24":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/24",
+                                                                              "16x16":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/16",
+                                                                              "32x32":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/32"
+                                                                          },
+                                                           "displayName":  "Ani Giorganashvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-05-20T11:48:02.118+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10594",
+                                                              "fromString":  "Needs Approval",
+                                                              "to":  "10447",
+                                                              "toString":  "Ready for development"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "644351",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "accountId":  "712020:7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png"
+                                                                          },
+                                                           "displayName":  "Mariam Kvitsiani",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Tbilisi",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-05-19T13:27:10.704+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Fix Version",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "fixVersions",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "14164",
+                                                              "toString":  "Hotfix 28.05"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "644350",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "accountId":  "712020:7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png"
+                                                                          },
+                                                           "displayName":  "Mariam Kvitsiani",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Tbilisi",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-05-19T13:27:10.349+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Fix Version",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "fixVersions",
+                                                              "from":  "14131",
+                                                              "fromString":  "Hotfix 20.05",
+                                                              "to":  null,
+                                                              "toString":  null
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "640176",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ac4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                           "accountId":  "712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/48",
+                                                                              "24x24":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/24",
+                                                                              "16x16":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/16",
+                                                                              "32x32":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/32"
+                                                                          },
+                                                           "displayName":  "Ani Giorganashvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-05-15T11:55:15.277+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10020",
+                                                              "fromString":  "Backlog",
+                                                              "to":  "10594",
+                                                              "toString":  "Needs Approval"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "640169",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ac4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                           "accountId":  "712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/48",
+                                                                              "24x24":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/24",
+                                                                              "16x16":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/16",
+                                                                              "32x32":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/32"
+                                                                          },
+                                                           "displayName":  "Ani Giorganashvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-05-15T11:49:11.377+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "assignee",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "assignee",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "712020:39027a71-eb13-44f4-9564-e6f6efb64a62",
+                                                              "toString":  "tato",
+                                                              "tmpFromAccountId":  null,
+                                                              "tmpToAccountId":  "712020:39027a71-eb13-44f4-9564-e6f6efb64a62"
+                                                          }
+                                                      ]
+                                        }
+                                    ]
+                  },
+    "fields":  {
+                   "statuscategorychangedate":  "2026-05-20T12:00:55.327+0400",
+                   "fixVersions":  [
+                                       {
+                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/version/14164",
+                                           "id":  "14164",
+                                           "description":  "",
+                                           "name":  "Hotfix 28.05",
+                                           "archived":  false,
+                                           "released":  false,
+                                           "releaseDate":  "2026-05-28"
+                                       }
+                                   ],
+                   "customfield_10110":  null,
+                   "statusCategory":  {
+                                          "self":  "https://oppa-support.atlassian.net/rest/api/3/statuscategory/4",
+                                          "id":  4,
+                                          "key":  "indeterminate",
+                                          "colorName":  "yellow",
+                                          "name":  "In Progress"
+                                      },
+                   "resolution":  null,
+                   "customfield_10104":  null,
+                   "customfield_10745":  {
+                                             "type":  "doc",
+                                             "version":  1,
+                                             "content":  [
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "PASSED:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\tyes/no"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Title:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Description:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Test Type:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Test Steps:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Expected Result:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Notes:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 }
+                                                                             ]
+                                                             }
+                                                         ]
+                                         },
+                   "customfield_11318":  5300.0,
+                   "customfield_10109":  null,
+                   "lastViewed":  "2026-05-20T14:06:55.824+0400",
+                   "customfield_10060":  null,
+                   "customfield_11151":  null,
+                   "priority":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/priority/1",
+                                    "iconUrl":  "https://oppa-support.atlassian.net/images/icons/priorities/highest_new.svg",
+                                    "name":  "Highest",
+                                    "id":  "1"
+                                },
+                   "customfield_10101":  null,
+                   "labels":  [
+
+                              ],
+                   "customfield_10103":  {
+                                             "type":  "doc",
+                                             "version":  1,
+                                             "content":  [
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Adding accounting period id to the db table customer_receivable_transactions with the following logic: The accounting period should be the respective for operation_date, if the accounting period is opened, eles the accounting period should be the respective for the current date"
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "8829811b11f8"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "GE Description:"
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "72e7e683c22b"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Additionally - Update existing transactions as well."
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "72e7e683c22b"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Also, we need to take accounting period for transactions created by reversal too."
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "72e7e683c22b"
+                                                                           }
+                                                             }
+                                                         ]
+                                         },
+                   "customfield_10217":  {
+                                             "type":  "doc",
+                                             "version":  1,
+                                             "content":  [
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Link:"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "A.R.(არსებული სიტუაცია):"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "E.R.( სასურველი შედეგი):"
+                                                                                 }
+                                                                             ]
+                                                             }
+                                                         ]
+                                         },
+                   "timeestimate":  null,
+                   "aggregatetimeoriginalestimate":  null,
+                   "versions":  [
+
+                                ],
+                   "issuelinks":  [
+
+                                  ],
+                   "assignee":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A39027a71-eb13-44f4-9564-e6f6efb64a62",
+                                    "accountId":  "712020:39027a71-eb13-44f4-9564-e6f6efb64a62",
+                                    "avatarUrls":  {
+                                                       "48x48":  "https://secure.gravatar.com/avatar/af0d9d99e2133fc7d1bb0a5dc6e71571?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-2.png",
+                                                       "24x24":  "https://secure.gravatar.com/avatar/af0d9d99e2133fc7d1bb0a5dc6e71571?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-2.png",
+                                                       "16x16":  "https://secure.gravatar.com/avatar/af0d9d99e2133fc7d1bb0a5dc6e71571?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-2.png",
+                                                       "32x32":  "https://secure.gravatar.com/avatar/af0d9d99e2133fc7d1bb0a5dc6e71571?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-2.png"
+                                                   },
+                                    "displayName":  "tato",
+                                    "active":  true,
+                                    "timeZone":  "Asia/Dubai",
+                                    "accountType":  "atlassian"
+                                },
+                   "status":  {
+                                  "self":  "https://oppa-support.atlassian.net/rest/api/3/status/10191",
+                                  "description":  "This status is managed internally by Jira Software",
+                                  "iconUrl":  "https://oppa-support.atlassian.net/",
+                                  "name":  "Ready for testing",
+                                  "id":  "10191",
+                                  "statusCategory":  {
+                                                         "self":  "https://oppa-support.atlassian.net/rest/api/3/statuscategory/4",
+                                                         "id":  4,
+                                                         "key":  "indeterminate",
+                                                         "colorName":  "yellow",
+                                                         "name":  "In Progress"
+                                                     }
+                              },
+                   "components":  [
+
+                                  ],
+                   "customfield_10052":  null,
+                   "customfield_10053":  null,
+                   "customfield_10054":  null,
+                   "customfield_10055":  null,
+                   "customfield_10056":  null,
+                   "customfield_10057":  null,
+                   "customfield_10058":  null,
+                   "customfield_10844":  null,
+                   "aggregatetimeestimate":  null,
+                   "creator":  {
+                                   "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=636cce6a524352f9c6e4cce9",
+                                   "accountId":  "636cce6a524352f9c6e4cce9",
+                                   "avatarUrls":  {
+                                                      "48x48":  "https://secure.gravatar.com/avatar/d0667cc906c3c00839fb023175f0181a?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FD-3.png",
+                                                      "24x24":  "https://secure.gravatar.com/avatar/d0667cc906c3c00839fb023175f0181a?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FD-3.png",
+                                                      "16x16":  "https://secure.gravatar.com/avatar/d0667cc906c3c00839fb023175f0181a?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FD-3.png",
+                                                      "32x32":  "https://secure.gravatar.com/avatar/d0667cc906c3c00839fb023175f0181a?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FD-3.png"
+                                                  },
+                                   "displayName":  "Dobromir.Kostov",
+                                   "active":  true,
+                                   "timeZone":  "Asia/Dubai",
+                                   "accountType":  "atlassian"
+                               },
+                   "subtasks":  [
+
+                                ],
+                   "customfield_10041":  null,
+                   "customfield_10283":  null,
+                   "customfield_10042":  null,
+                   "reporter":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=636cce6a524352f9c6e4cce9",
+                                    "accountId":  "636cce6a524352f9c6e4cce9",
+                                    "avatarUrls":  {
+                                                       "48x48":  "https://secure.gravatar.com/avatar/d0667cc906c3c00839fb023175f0181a?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FD-3.png",
+                                                       "24x24":  "https://secure.gravatar.com/avatar/d0667cc906c3c00839fb023175f0181a?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FD-3.png",
+                                                       "16x16":  "https://secure.gravatar.com/avatar/d0667cc906c3c00839fb023175f0181a?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FD-3.png",
+                                                       "32x32":  "https://secure.gravatar.com/avatar/d0667cc906c3c00839fb023175f0181a?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FD-3.png"
+                                                   },
+                                    "displayName":  "Dobromir.Kostov",
+                                    "active":  true,
+                                    "timeZone":  "Asia/Dubai",
+                                    "accountType":  "atlassian"
+                                },
+                   "aggregateprogress":  {
+                                             "progress":  0,
+                                             "total":  0
+                                         },
+                   "customfield_10048":  null,
+                   "customfield_10316":  null,
+                   "progress":  {
+                                    "progress":  0,
+                                    "total":  0
+                                },
+                   "votes":  {
+                                 "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/PDT-2871/votes",
+                                 "votes":  0,
+                                 "hasVoted":  false
+                             },
+                   "worklog":  {
+                                   "startAt":  0,
+                                   "maxResults":  20,
+                                   "total":  0,
+                                   "worklogs":  [
+
+                                                ]
+                               },
+                   "issuetype":  {
+                                     "self":  "https://oppa-support.atlassian.net/rest/api/3/issuetype/10143",
+                                     "id":  "10143",
+                                     "description":  "",
+                                     "iconUrl":  "https://oppa-support.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10322?size=medium",
+                                     "name":  "Customer Feedback ",
+                                     "subtask":  false,
+                                     "avatarId":  10322,
+                                     "hierarchyLevel":  0
+                                 },
+                   "customfield_11080":  null,
+                   "customfield_11081":  null,
+                   "customfield_11082":  null,
+                   "customfield_11083":  null,
+                   "timespent":  null,
+                   "customfield_11084":  null,
+                   "customfield_11085":  null,
+                   "customfield_10151":  null,
+                   "customfield_10030":  null,
+                   "project":  {
+                                   "self":  "https://oppa-support.atlassian.net/rest/api/3/project/10075",
+                                   "id":  "10075",
+                                   "key":  "PDT",
+                                   "name":  "Phoenix Delivery",
+                                   "projectTypeKey":  "software",
+                                   "simplified":  false,
+                                   "avatarUrls":  {
+                                                      "48x48":  "https://oppa-support.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10579",
+                                                      "24x24":  "https://oppa-support.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10579?size=small",
+                                                      "16x16":  "https://oppa-support.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10579?size=xsmall",
+                                                      "32x32":  "https://oppa-support.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10579?size=medium"
+                                                  }
+                               },
+                   "customfield_10031":  null,
+                   "customfield_10032":  null,
+                   "customfield_10033":  null,
+                   "aggregatetimespent":  null,
+                   "customfield_10027":  [
+
+                                         ],
+                   "customfield_10028":  null,
+                   "customfield_10029":  null,
+                   "customfield_10547":  null,
+                   "resolutiondate":  null,
+                   "workratio":  -1,
+                   "watches":  {
+                                   "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/PDT-2871/watchers",
+                                   "watchCount":  3,
+                                   "isWatching":  false
+                               },
+                   "issuerestriction":  {
+                                            "issuerestrictions":  {
+
+                                                                  },
+                                            "shouldDisplay":  false
+                                        },
+                   "created":  "2026-05-15T11:31:29.290+0400",
+                   "customfield_11076":  null,
+                   "customfield_11077":  null,
+                   "customfield_11078":  null,
+                   "customfield_11079":  null,
+                   "customfield_10024":  null,
+                   "customfield_10025":  null,
+                   "customfield_10026":  null,
+                   "customfield_10415":  null,
+                   "updated":  "2026-05-20T14:07:19.756+0400",
+                   "customfield_10093":  [
+                                             {
+                                                 "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ac4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                 "accountId":  "712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                 "avatarUrls":  {
+                                                                    "48x48":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/48",
+                                                                    "24x24":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/24",
+                                                                    "16x16":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/16",
+                                                                    "32x32":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/32"
+                                                                },
+                                                 "displayName":  "Ani Giorganashvili",
+                                                 "active":  true,
+                                                 "timeZone":  "Asia/Dubai",
+                                                 "accountType":  "atlassian"
+                                             },
+                                             {
+                                                 "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=636cce6a524352f9c6e4cce9",
+                                                 "accountId":  "636cce6a524352f9c6e4cce9",
+                                                 "avatarUrls":  {
+                                                                    "48x48":  "https://secure.gravatar.com/avatar/d0667cc906c3c00839fb023175f0181a?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FD-3.png",
+                                                                    "24x24":  "https://secure.gravatar.com/avatar/d0667cc906c3c00839fb023175f0181a?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FD-3.png",
+                                                                    "16x16":  "https://secure.gravatar.com/avatar/d0667cc906c3c00839fb023175f0181a?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FD-3.png",
+                                                                    "32x32":  "https://secure.gravatar.com/avatar/d0667cc906c3c00839fb023175f0181a?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FD-3.png"
+                                                                },
+                                                 "displayName":  "Dobromir.Kostov",
+                                                 "active":  true,
+                                                 "timeZone":  "Asia/Dubai",
+                                                 "accountType":  "atlassian"
+                                             },
+                                             {
+                                                 "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=63b7cf5c2c70aae1e6fc1cf5",
+                                                 "accountId":  "63b7cf5c2c70aae1e6fc1cf5",
+                                                 "avatarUrls":  {
+                                                                    "48x48":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                    "24x24":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                    "16x16":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                    "32x32":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png"
+                                                                },
+                                                 "displayName":  "Kalina.Koleva",
+                                                 "active":  true,
+                                                 "timeZone":  "Asia/Dubai",
+                                                 "accountType":  "atlassian"
+                                             },
+                                             {
+                                                 "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A39027a71-eb13-44f4-9564-e6f6efb64a62",
+                                                 "accountId":  "712020:39027a71-eb13-44f4-9564-e6f6efb64a62",
+                                                 "avatarUrls":  {
+                                                                    "48x48":  "https://secure.gravatar.com/avatar/af0d9d99e2133fc7d1bb0a5dc6e71571?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-2.png",
+                                                                    "24x24":  "https://secure.gravatar.com/avatar/af0d9d99e2133fc7d1bb0a5dc6e71571?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-2.png",
+                                                                    "16x16":  "https://secure.gravatar.com/avatar/af0d9d99e2133fc7d1bb0a5dc6e71571?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-2.png",
+                                                                    "32x32":  "https://secure.gravatar.com/avatar/af0d9d99e2133fc7d1bb0a5dc6e71571?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-2.png"
+                                                                },
+                                                 "displayName":  "tato",
+                                                 "active":  true,
+                                                 "timeZone":  "Asia/Dubai",
+                                                 "accountType":  "atlassian"
+                                             }
+                                         ],
+                   "timeoriginalestimate":  null,
+                   "customfield_10095":  {
+                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                             "accountId":  "712020:4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                             "emailAddress":  "n.kevlishvili@asterbit.io",
+                                             "avatarUrls":  {
+                                                                "48x48":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                "24x24":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                "16x16":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                "32x32":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png"
+                                                            },
+                                             "displayName":  "nika kevlishvili",
+                                             "active":  true,
+                                             "timeZone":  "Asia/Dubai",
+                                             "accountType":  "atlassian"
+                                         },
+                   "customfield_10096":  null,
+                   "customfield_10250":  null,
+                   "customfield_10251":  null,
+                   "description":  null,
+                   "customfield_10010":  null,
+                   "customfield_10011":  "1|i01dmf:",
+                   "customfield_10012":  "2026-05-15T11:55:11.650+0400",
+                   "customfield_10013":  null,
+                   "timetracking":  {
+
+                                    },
+                   "security":  null,
+                   "customfield_10008":  null,
+                   "attachment":  [
+
+                                  ],
+                   "summary":  "Adding accounting period to the db table customer_receivable_transactions",
+                   "customfield_10481":  null,
+                   "customfield_10482":  {
+                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/customFieldOption/10078",
+                                             "value":  "No",
+                                             "id":  "10078"
+                                         },
+                   "customfield_10087":  null,
+                   "customfield_10483":  null,
+                   "customfield_10484":  null,
+                   "customfield_10000":  "{}",
+                   "customfield_10088":  null,
+                   "customfield_10001":  null,
+                   "customfield_10485":  null,
+                   "customfield_10486":  null,
+                   "customfield_10004":  [
+
+                                         ],
+                   "environment":  null,
+                   "customfield_10877":  {
+                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/customFieldOption/10249",
+                                             "value":  "Yes",
+                                             "id":  "10249"
+                                         },
+                   "duedate":  null,
+                   "comment":  {
+                                   "comments":  [
+                                                    {
+                                                        "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/72370/comment/66751",
+                                                        "id":  "66751",
+                                                        "author":  {
+                                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ac4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                                       "accountId":  "712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                                       "avatarUrls":  {
+                                                                                          "48x48":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/48",
+                                                                                          "24x24":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/24",
+                                                                                          "16x16":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/16",
+                                                                                          "32x32":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/32"
+                                                                                      },
+                                                                       "displayName":  "Ani Giorganashvili",
+                                                                       "active":  true,
+                                                                       "timeZone":  "Asia/Dubai",
+                                                                       "accountType":  "atlassian"
+                                                                   },
+                                                        "body":  {
+                                                                     "type":  "doc",
+                                                                     "version":  1,
+                                                                     "content":  [
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "mention",
+                                                                                                             "attrs":  {
+                                                                                                                           "id":  "636cce6a524352f9c6e4cce9",
+                                                                                                                           "text":  "@Dobromir.Kostov",
+                                                                                                                           "accessLevel":  "",
+                                                                                                                           "localId":  "53fa63eb-de9f-461c-ac5a-0c7899b6dd34"
+                                                                                                                       }
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  " 1. Should we update existing transactions as well? 2. Should we take accounting period for transactions created by reversal too?"
+                                                                                                         }
+                                                                                                     ],
+                                                                                         "attrs":  {
+                                                                                                       "localId":  "a936b54dd4e0"
+                                                                                                   }
+                                                                                     }
+                                                                                 ]
+                                                                 },
+                                                        "updateAuthor":  {
+                                                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ac4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                                             "accountId":  "712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                                             "avatarUrls":  {
+                                                                                                "48x48":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/48",
+                                                                                                "24x24":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/24",
+                                                                                                "16x16":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/16",
+                                                                                                "32x32":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/32"
+                                                                                            },
+                                                                             "displayName":  "Ani Giorganashvili",
+                                                                             "active":  true,
+                                                                             "timeZone":  "Asia/Dubai",
+                                                                             "accountType":  "atlassian"
+                                                                         },
+                                                        "created":  "2026-05-15T11:55:11.650+0400",
+                                                        "updated":  "2026-05-15T12:30:19.659+0400",
+                                                        "jsdPublic":  true
+                                                    },
+                                                    {
+                                                        "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/72370/comment/66962",
+                                                        "id":  "66962",
+                                                        "author":  {
+                                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=63b7cf5c2c70aae1e6fc1cf5",
+                                                                       "accountId":  "63b7cf5c2c70aae1e6fc1cf5",
+                                                                       "avatarUrls":  {
+                                                                                          "48x48":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                          "24x24":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                          "16x16":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                          "32x32":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png"
+                                                                                      },
+                                                                       "displayName":  "Kalina.Koleva",
+                                                                       "active":  true,
+                                                                       "timeZone":  "Asia/Dubai",
+                                                                       "accountType":  "atlassian"
+                                                                   },
+                                                        "body":  {
+                                                                     "type":  "doc",
+                                                                     "version":  1,
+                                                                     "content":  [
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "mention",
+                                                                                                             "attrs":  {
+                                                                                                                           "id":  "712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                                                                                           "text":  "@Ani Giorganashvili",
+                                                                                                                           "accessLevel":  "",
+                                                                                                                           "localId":  "e2e47207d3ef"
+                                                                                                                       }
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  " Yes for both."
+                                                                                                         }
+                                                                                                     ],
+                                                                                         "attrs":  {
+                                                                                                       "localId":  "4384ab0ec8f3"
+                                                                                                   }
+                                                                                     }
+                                                                                 ]
+                                                                 },
+                                                        "updateAuthor":  {
+                                                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=63b7cf5c2c70aae1e6fc1cf5",
+                                                                             "accountId":  "63b7cf5c2c70aae1e6fc1cf5",
+                                                                             "avatarUrls":  {
+                                                                                                "48x48":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                                "24x24":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                                "16x16":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                                "32x32":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png"
+                                                                                            },
+                                                                             "displayName":  "Kalina.Koleva",
+                                                                             "active":  true,
+                                                                             "timeZone":  "Asia/Dubai",
+                                                                             "accountType":  "atlassian"
+                                                                         },
+                                                        "created":  "2026-05-20T11:46:38.956+0400",
+                                                        "updated":  "2026-05-20T11:46:38.956+0400",
+                                                        "jsdPublic":  true
+                                                    }
+                                                ],
+                                   "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/72370/comment",
+                                   "maxResults":  2,
+                                   "total":  2,
+                                   "startAt":  0
+                               }
+               }
+}

@@ -8,6 +8,8 @@ description: Validates bug reports using BugFinderAgent workflow (Rule 32). Envi
 
 You act as the **BugFinderAgent** subagent.
 
+**Confluence scope (exclusive):** **Only** this agent / **Rule 32** workflow performs **broad, proactive Confluence information gathering** on the bug domain (Step 2). **No other** subagent or rule (cross-dependency-finder, test-case-generator, HandsOff, PhoenixExpert Q&A, Jira triage, Rule 39 non-bug tasks) inherits this obligation — they keep **linked-only** or **shallow** Confluence per their own SKILL/rules.
+
 Core principle: validate bugs with evidence, not assumptions.
 
 - **READ-ONLY** for application code (no code edits/fixes during validation).
@@ -63,11 +65,44 @@ Supplementary detail also lives in **`.cursor/skills/phoenix-bug-validation/SKIL
 
 ### Step 2: Confluence validation (evidence strength assessment)
 
-- Search Confluence with MCP and classify evidence strength: `exact match` | `contextual match` | `no match` | `contradicts` | `search failed`.
-- **Decision-basis wiki URLs (MANDATORY):** For every Confluence page that informed the outcome, output **title**, **page ID**, and a **full browser wiki URL** in the final report (see **`### Confluence evidence (decision basis)`** in the template). Use MCP/REST `webUrl` / `webui` / composed URL from **`CONFLUENCE_WIKI_BASE`** per **`.cursor/rules/integrations/confluence_rest_fallback.mdc`**. Do not list decision-driving pages with ID only and no URL unless URL construction truly failed (then document why).
-- **Confluence MCP failure handling (MANDATORY):** Retry MCP calls up to 3 times with short backoff; if still failing, use **Confluence REST read fallback** per **`.cursor/rules/integrations/confluence_rest_fallback.mdc`** (helper: **`Cursor-Project/config/confluence/get-confluence-page-rest.ps1`**). Disclose **`Confluence source: REST fallback (MCP unavailable or failed after retries).`** in the output.
-- If **both** MCP (after retries) **and** REST fallback fail or credentials/base URL are missing, set status to **`PROCESS BLOCKED`** (no final verdict), include exact errors, and ask the user what to do next.
-- Do not continue to a final business verdict when mandatory Confluence evidence cannot be obtained after the above.
+**Scope (Rule 32 only — not other agents):** **Only bug-validator** must gather Confluence information broadly on the bug domain — **not** limited to URLs in the Jira ticket, and **not** limited to reporter SQL/`LIKE` or a single CQL `text ~` query. **Rule 39** and **cross-dependency-finder** shallow Confluence **still apply** to every other workflow (including bug *tickets* when handled by cross-dep, test cases, or HandsOff). Waiting for the user to paste a wiki link **before** completing Step 2 here is **forbidden**.
+
+**Step 2a — Topic scope (MANDATORY before any verdict)**
+
+- From the ticket, list the **business domain** and **concepts** to research in Confluence (processes, objects, fields, UI areas, integrations) — e.g. debit/credit note, invoice linkage, billing run, cancellation — not only strings copied from a reporter’s SQL `LIKE` clause.
+- Record that scope in the report (short bullets). **Do not** treat Confluence discovery as “repeat the ticket’s DB query in wiki search.”
+
+**Step 2b — Proactive Confluence information gathering (MANDATORY; not optional)**
+
+**Goal:** Find **any** Confluence content that helps validate expected vs actual behavior (requirements, flows, field rules, process diagrams, acceptance notes). Use **several discovery methods**; CQL `text ~` is **one option**, not the only one.
+
+**Step 2c — Phase 2 / experimental wiki exclusion (MANDATORY for Prod / PreProd)**
+
+For **Prod** and **PreProd** bug validation (default **Test** too unless the ticket is explicitly Phase-2-scoped):
+
+- **Decision basis only:** Phase 1 tree (**`Phoenix documentation- Phase 1`**, page **164356**) and pages **without** a `Phase 2 -` title prefix.
+- **PROHIBITED** for verdict / exact-match / expected behavior: titles starting **`Phase 2 -`**, trees **Phase 2 - Phoenix documentation**, **Phase 2 - Only Changes**, **Phase 2 - postponed**, **Phase 2 - Experimental Documentation**, **Experimental Documentation**.
+- Phase 2 hits may be cited as **read but excluded**; they must **not** be the sole Confluence proof for **VALID** or **NOT VALID**.
+- Prefer CQL: `ancestor = 164356` and/or `title !~ "Phase 2"`; disclose **`Phase 2 excluded: yes`** in **`### Confluence evidence (decision basis)`** (or **`no (user override)`**).
+- Full text: **`.cursor/skills/phoenix-bug-validation/SKILL.md`** § **2c**.
+
+1. **MCP (preferred):** Atlassian Confluence tools — e.g. `search`, `searchConfluenceUsingCql`, `getConfluenceSpaces`, `getPagesInConfluenceSpace`, `getConfluencePage`. Vary strategy: **title** search, **space** (e.g. Phoenix), **labels**, and **full-text/CQL** as available. Run **≥2 distinct** lookups (different tools or queries). Cap breadth (e.g. 10–25 hits per call); do not crawl the entire wiki.
+2. **REST fallback (Rule 43):** If MCP fails after **2–3 retries**, use **`search-confluence-rest.ps1`** (CQL) and/or **`get-confluence-page-rest.ps1`** for page bodies. Disclose **`Confluence source: REST fallback …`** when used.
+3. **Read relevant pages:** For every plausible hit (title, excerpt, or process name), read **page body** — not titles only. **Jira-linked wiki URLs** are **additional** reads; they never replace proactive discovery.
+4. **Supplements (optional):** Grep **`Cursor-Project/config/confluence/pages/*.json`** or related cached exports for the same domain — **after** attempting live MCP/REST discovery.
+
+**Classify evidence strength:** `exact match` | `contextual match` | `no match` | `contradicts` | `search failed`.
+
+- **`no match`** only after **multiple** discovery attempts (≥2 methods or queries) **succeeded** but no page body supported/contradicted the bug’s expected behavior.
+- **`search failed`** when Confluence MCP + REST discovery cannot run after retries (network/auth) — **not** “no documentation found”.
+- **PROHIBITED:** Skipping Confluence because the ticket has no wiki link; limiting research to reporter SQL/`LIKE` patterns; a single failed CQL and stop; asking the user for a Confluence URL **before** completing Step 2b.
+
+**Decision-basis wiki URLs (MANDATORY):** For every Confluence page that informed the outcome (from **search hits** or Jira links), output **title**, **page ID**, and a **full browser wiki URL** in the final report (see **`### Confluence evidence (decision basis)`** in the template). Use MCP/REST `webUrl` / `webui` / composed URL from **`CONFLUENCE_WIKI_BASE`** per **`.cursor/rules/integrations/confluence_rest_fallback.mdc`**. List pages **read during search** even if they only provided contextual match. Do not list decision-driving pages with ID only and no URL unless URL construction truly failed (then document why).
+
+**Confluence MCP failure handling (MANDATORY):** Retry MCP calls up to 3 times with short backoff; if still failing, use **Confluence REST** per **`.cursor/rules/integrations/confluence_rest_fallback.mdc`** for **search (CQL)** and **page read** (`get-confluence-page-rest.ps1`). Disclose **`Confluence source: REST fallback (MCP unavailable or failed after retries).`** in the output.
+
+- If **both** MCP (after retries) **and** REST fallback **discovery + read** cannot run (credentials/base URL/network), set status to **`PROCESS BLOCKED`** (no final verdict), include exact errors and **what was attempted** (tools/queries/spaces), and ask the user what to do next.
+- Do not continue to a final business verdict when mandatory Confluence **search/read** could not be attempted after the above.
 
 ### Step 3: Swagger / OpenAPI refresh and validation [MANDATORY]
 

@@ -1,0 +1,234 @@
+{
+  "jira_key": "PDT-2815",
+  "environment": "dev",
+  "jira_source": "REST fallback (fetch-issue-full-rest.ps1; Jira MCP not used)",
+  "phoenix_alignment": "Parent aligns Cursor-Project/Phoenix/* to origin/dev; this subagent did not re-run switch-phoenix-branches.ps1",
+  "confluence_source": "Shallow CQL search attempted; REST call failed (connection closed). No Confluence page cited.",
+  "scope": "Enforce contract version validity (Valid/Signed by both sides) in Mass Email, Mass SMS, and Penalty Calculation after product/service contract versioning (PDT-2599). Primary requirements in attachment 'Using validity in 3 processes.docx' and Jira description; linked issue PDT-2599 (Done).",
+  "entry_points": [
+    "POST EmailCommunicationController.createMassEmail — EmailCommunicationService.createMassEmail",
+    "POST EmailCommunicationController upload/import — EmailCommunicationService.processContractImport / processContractInfoVersionId / processContractInfoByLatestVersionId",
+    "POST SmsCommunicationController.createMassSms — SmsCommunicationService.createMassSms",
+    "POST SmsCommunicationController parse/import — SmsCommunicationService.processContractImport / processContractInfoVersionId / processContractInfoByLatestVersionId",
+    "CustomerRepository.fetchActiveContractsAndAssociatedCustomersForMassCommunication (all-customers mode)",
+    "ActionController.calculatePenaltyAmount — ActionPenaltyCalculationService.calculatePenaltyAmount",
+    "ActionValidatorService.getRespectiveContractVersion — ProductContractDetailsRepository.getContractDetailIdByExecutionDate / ServiceContractDetailsRepository.getContractDetailIdByExecutionDate",
+    "PenaltyFormulaEvaluationService.evaluateVariableValuesForProductContract / evaluateVariableValuesForServiceContract",
+    "ProductContractDetailsRepository.getPenaltyCalculationVariablesForProductContract",
+    "ServiceContractDetailsRepository.getPenaltyCalculationVariablesForServiceContract",
+    "PenaltyFormulaEvaluationService.collectPriceComponentTagValues (price component tag resolution)",
+    "ActionValidatorService.validatePods — PointOfDeliveryRepository.findPodsBelongingToContractForAction"
+  ],
+  "upstream": [
+    {
+      "type": "db",
+      "name": "product_contract.contract_details (versionStatus/status, start_date, end_date)",
+      "usage": "Product contract version rows; SIGNED used as 'Valid' in several queries"
+    },
+    {
+      "type": "db",
+      "name": "service_contract.contract_details (contractVersionStatus, start_date, end_date)",
+      "usage": "Service contract version rows; ContractVersionStatus.SIGNED = Valid in UI mapping"
+    },
+    {
+      "type": "db",
+      "name": "product_contract.contracts / service_contract.contracts (contract_status, sub_status)",
+      "usage": "Header-level signed-by-both-sides checks in some mass-comm and billing queries"
+    },
+    {
+      "type": "service",
+      "name": "PDT-2599 service contract versioning",
+      "usage": "Linked Jira PDT-2599 — version status on service contracts; parent change for validity enforcement"
+    },
+    {
+      "type": "lib",
+      "name": "ContractDetailsStatus / ContractVersionStatus enums",
+      "usage": "Domain mapping of Valid/Signed; SIGNED sub-statuses include SIGNED_BY_BOTH_SIDES"
+    },
+    {
+      "type": "db",
+      "name": "price_component.*, product price component links",
+      "usage": "Penalty Story 3 — tag-based price component resolution from product version tied to contract version"
+    }
+  ],
+  "downstream": [
+    {
+      "type": "consumer",
+      "name": "CRM Mass Email/SMS customer-contact persistence",
+      "usage": "Wrong contract detail version → wrong recipients and communication-customer links"
+    },
+    {
+      "type": "consumer",
+      "name": "Action penalty amount, documents, liabilities",
+      "usage": "Wrong version context → wrong consumption, term dates, PAV, price components, currency/min-max"
+    },
+    {
+      "type": "consumer",
+      "name": "Mass communication import error reports",
+      "usage": "Must surface backend rejection when version not eligible (Jira TO-BE)"
+    },
+    {
+      "type": "ui",
+      "name": "EnergoTS / portal Mass Email & Mass SMS screens",
+      "usage": "FE should display import rejection messages; no payload redesign per attachment"
+    }
+  ],
+  "shared": [
+    "ContractVersionStatus",
+    "ContractDetailsStatus",
+    "ProductContractDetails",
+    "ServiceContractDetails",
+    "MassCommunicationFileProcessedResultProjection",
+    "ActiveContractsAndAssociatedCustomersForMassCommunicationProjection",
+    "PenaltyFormulaEvaluationService",
+    "ActionValidatorService"
+  ],
+  "data_entities": [
+    "product_contract",
+    "service_contract",
+    "contract_details (version)",
+    "customer",
+    "customer_details",
+    "POD",
+    "contract_pods",
+    "price_component",
+    "price_parameter",
+    "product_details (versioned product)",
+    "action",
+    "penalty"
+  ],
+  "integration_points": [
+    "Mass Email contract import: explicit version vs latest-by-startDate fallback",
+    "Mass SMS contract import: same resolution paths as Mass Email",
+    "Mass Email/SMS all-customers-with-active-contract query",
+    "Penalty: execution-date version resolution (product vs service parity)",
+    "Penalty: POD scope for formulas 2/4/6/8 vs respective version only",
+    "Penalty: price component tag filtering (0 / 1 / many components)",
+    "Penalty: version-scoped variables (consumption, term dates, PAV, parameters, currency)",
+    "Cross-process consistency: same contract+date should pick same eligible version"
+  ],
+  "what_could_break": [
+    {
+      "item": "Mass Email/SMS explicit-version import",
+      "location": "ProductContractRepository.findCustomerIdentifierAndVersionIdByContractNumberAndContractVersionId; ServiceContractsRepository.findCustomerIdentifierAndVersionIdByContractNumberAndContractVersionId",
+      "reason": "Adding SIGNED/contractVersionStatus filter will reject rows that currently resolve"
+    },
+    {
+      "item": "Mass Email/SMS latest-version fallback",
+      "location": "findLatestProductContractDetailVersionId / findLatestServiceContractDetailVersionId",
+      "reason": "Changing from max(startDate) to max eligible SIGNED version changes selected recipients"
+    },
+    {
+      "item": "All-customers mass communication",
+      "location": "CustomerRepository.fetchActiveContractsAndAssociatedCustomersForMassCommunication",
+      "reason": "Service branch lacks contractVersionStatus=SIGNED; aligning may shrink recipient set vs product-only SIGNED filter"
+    },
+    {
+      "item": "Penalty service contract version resolution",
+      "location": "ServiceContractDetailsRepository.getContractDetailIdByExecutionDate",
+      "reason": "Adding contractVersionStatus=SIGNED may return null where penalties currently calculate"
+    },
+    {
+      "item": "Penalty POD validation",
+      "location": "PointOfDeliveryRepository.findPodsBelongingToContractForAction",
+      "reason": "Narrowing from respective+future to respective-only breaks actions that attach PODs from future versions"
+    },
+    {
+      "item": "Penalty pod-applicability multiplication",
+      "location": "ActionPenaltyCalculationService.getCalculationResultWhenApplicabilityPodAndTypeNotRelatedToPodTermination",
+      "reason": "Uses respective+future POD counts; TO-BE may require respective-version-only counts"
+    },
+    {
+      "item": "Historical penalty recalculation",
+      "location": "ActionPenaltyCalculationService scheduler / persist flows",
+      "reason": "Stricter version filter changes amounts for same execution date unless historical guard enforced"
+    }
+  ],
+  "technical_details": "Jira PDT-2815 (Customer Feedback, Testing): summary 'Changes in processes impacted by version validity'. Description: Mass Email, Mass SMS, and Penalty Calculation do not consistently consider contract version validity; expected consistent date-resolved version, version-scoped penalty variables/PODs, clear validation errors, stable historical traceability. customfield_10103 empty (media only); customfield_10048/10217 empty. Attachment 'Using validity in 3 processes.docx' (PDT-2599 follow-on) defines three stories: (1) Mass Email — only Valid/Signed-by-both-sides versions, explicit version must be eligible, latest eligible fallback, reject with report reason; (2) Mass SMS — same; (3) Penalty — resolve version by execution date + Valid/Signed, version-scoped variables, POD filter for formulas 2/4/6/8, price component tag rules, historical consistency. Linked PDT-2599 (Done): service contract version status. Code (dev-aligned read-only): Mass comm import accepts any existing versionId without status check; latest fallback uses max(startDate) only. All-customers: product CTE filters pccd.status='SIGNED'; service CTE does not filter contract_version_status. Penalty product getContractDetailIdByExecutionDate filters cd.status='SIGNED'; service equivalent does not filter contractVersionStatus. Penalty variable SQL uses date window on contract_details without SIGNED on product penalty query join; service penalty query has no SIGNED. validatePods allows PODs from respective OR future versions. Price component tag errors already match attachment text in PenaltyFormulaEvaluationService.",
+  "description_vs_code_gaps": [
+    {
+      "area": "Mass Email — explicit contract version import",
+      "jira_claim": "If contract number + version is provided, that version must be in status Valid/Signed by both sides; otherwise row rejected.",
+      "code_behavior": "processContractInfoVersionId loads projection by contractNumber + versionId only; no versionStatus/contractVersionStatus filter.",
+      "conflict_type": "missing",
+      "evidence": "ProductContractRepository.java ~1370-1385; ServiceContractsRepository.java ~808-823; EmailCommunicationService.processContractInfoVersionId"
+    },
+    {
+      "area": "Mass SMS — explicit contract version import",
+      "jira_claim": "Same eligibility and rejection as Mass Email for explicit import version.",
+      "code_behavior": "SmsCommunicationService.processContractInfoVersionId mirrors email path without status validation.",
+      "conflict_type": "missing",
+      "evidence": "SmsCommunicationService.java ~1882-1897"
+    },
+    {
+      "area": "Mass Email/SMS — latest version fallback",
+      "jira_claim": "Without explicit version, resolve latest version in status Valid/Signed by both sides only.",
+      "code_behavior": "findLatestProductContractDetailVersionId / findLatestServiceContractDetailVersionId select max(startDate) with no SIGNED/contractVersionStatus predicate.",
+      "conflict_type": "different",
+      "evidence": "ProductContractRepository.java ~1387-1397; ServiceContractsRepository.java ~825-835"
+    },
+    {
+      "area": "Mass Email/SMS — all customers with active contract",
+      "jira_claim": "All-customers mode must apply same eligibility (Valid/Signed) across product and service contract types.",
+      "code_behavior": "fetchActiveContractsAndAssociatedCustomersForMassCommunication filters product details with pccd.status='SIGNED' but service_contract_details CTE has no contract_version_status=SIGNED filter.",
+      "conflict_type": "different",
+      "evidence": "CustomerRepository.java ~1110-1158"
+    },
+    {
+      "area": "Penalty — service contract version by execution date",
+      "jira_claim": "Resolve respective version with status Valid/Signed by both sides and date window; if none, penalty not calculated with validation error.",
+      "code_behavior": "ServiceContractDetailsRepository.getContractDetailIdByExecutionDate filters contract ACTIVE and date range only; no contractVersionStatus=SIGNED.",
+      "conflict_type": "missing",
+      "evidence": "ServiceContractDetailsRepository.java ~142-160"
+    },
+    {
+      "area": "Penalty — product contract version by execution date (parity)",
+      "jira_claim": "Same Valid/Signed enforcement for product and service.",
+      "code_behavior": "Product getContractDetailIdByExecutionDate includes cd.status='SIGNED' in subquery — closer to Jira for product only.",
+      "conflict_type": "different",
+      "evidence": "ProductContractDetailsRepository.java ~203-222 vs ServiceContractDetailsRepository.java ~142-160"
+    },
+    {
+      "area": "Penalty — variable/POD data scoping query (product)",
+      "jira_claim": "All version-scoped variables read only from resolved Valid/Signed version context.",
+      "code_behavior": "getPenaltyCalculationVariablesForProductContract joins contract_details by execution date window with c.status='ACTIVE' but does not require cd.status='SIGNED' in main join (unlike getContractDetailIdByExecutionDate).",
+      "conflict_type": "different",
+      "evidence": "ProductContractDetailsRepository.java ~338-345 vs ~214-216"
+    },
+    {
+      "area": "Penalty — variable data scoping (service)",
+      "jira_claim": "Version-scoped penalty variables from eligible signed version only.",
+      "code_behavior": "getPenaltyCalculationVariablesForServiceContract uses date window on contract_details without contractVersionStatus=SIGNED.",
+      "conflict_type": "missing",
+      "evidence": "ServiceContractDetailsRepository.java ~196-225"
+    },
+    {
+      "area": "Penalty — POD scope formulas 2/4/6/8",
+      "jira_claim": "Use only PODs belonging to the same respective contract version; ignore extra PODs from action outside that version.",
+      "code_behavior": "findPodsBelongingToContractForAction accepts PODs where contract_detail is respective OR any future version (start_date > respective). validatePods error text references 'respective or any future version'.",
+      "conflict_type": "different",
+      "evidence": "PointOfDeliveryRepository.java ~230-253; ActionValidatorService.java ~416-447"
+    },
+    {
+      "area": "Penalty — price component tags",
+      "jira_claim": "None -> 'there is not valid price component'; duplicates -> 'more then 1 price component'; single -> use in calculation.",
+      "code_behavior": "PenaltyFormulaEvaluationService.collectPriceComponentTagValues emits matching infoErrorMessages for 0 and >1 primitive components.",
+      "conflict_type": "missing",
+      "evidence": "PenaltyFormulaEvaluationService.java ~454-458 (aligned — test should verify version-scoped productDetailId input)"
+    },
+    {
+      "area": "Terminology Valid vs SIGNED",
+      "jira_claim": "Status label 'Valid/Signed by both sides' in BA doc.",
+      "code_behavior": "DB/UI maps 'Valid' display to versionStatus/contractVersionStatus='SIGNED'; product uses contract_details.status; service uses contractVersionStatus. Sub-status SIGNED_BY_BOTH_SIDES is on contract header enums, not always applied in mass-comm queries.",
+      "conflict_type": "different",
+      "evidence": "ServiceContractDetailsRepository.java ~98-105; ContractDetailsStatus.SIGNED predicate"
+    },
+    {
+      "area": "Jira description vs attachment granularity",
+      "jira_claim": "Description bullets are high-level (consistent date-resolved version, clear errors).",
+      "code_behavior": "Attachment specifies explicit rejection messages, formula-specific POD rules, and per-variable families; code gaps are story-specific (not fully enumerated in short description).",
+      "conflict_type": "different",
+      "evidence": "issue-rest.json description vs Using validity in 3 processes.extracted.txt"
+    }
+  ]
+}
