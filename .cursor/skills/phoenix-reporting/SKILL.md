@@ -1,6 +1,7 @@
 ---
 name: phoenix-reporting
 description: On-demand only: writes markdown under Cursor-Project/reports/ using Chat reports, HandsOff reports, or Feedback plus YYYY/monthname/DD per reports/README.md. Rule 0.6 — no automatic post-task files; never use flat reports/YYYY-MM-DD/ at reports root.
+disable-model-invocation: true
 ---
 
 # Phoenix Reporting

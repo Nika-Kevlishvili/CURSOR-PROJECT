@@ -1,5 +1,6 @@
 ---
-alwaysApply: true
+description: "ProductionDataReaderAgent (Rule PDR.0): use when the user asks about ANY production database data — liabilities, receivables, payments, contracts, offsets, how an entity was created, data traceability, or any production table query. Connect via PostgreSQLProd MCP with readonly_user only."
+alwaysApply: false
 ---
 
 # PRODUCTION DATA READER RULE [CRITICAL]

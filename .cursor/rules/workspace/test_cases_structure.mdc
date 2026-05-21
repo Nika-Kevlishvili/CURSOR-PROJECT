@@ -1,5 +1,8 @@
 ---
-alwaysApply: true
+description: "Test cases folder structure (Rule 31): two-folder layout under Cursor-Project/test_cases/ — Backend/ for TC-BE-N files, Frontend/ for TC-FE-N files; same topic name in both folders; update READMEs. Apply when creating, organizing, or reviewing test case files."
+alwaysApply: false
+globs:
+  - "Cursor-Project/test_cases/**"
 ---
 
 # TEST CASES FOLDER STRUCTURE [MANDATORY]

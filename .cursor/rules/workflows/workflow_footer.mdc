@@ -1,0 +1,17 @@
+---
+alwaysApply: true
+---
+
+# MANDATORY RESPONSE FOOTER RULES [CRITICAL]
+
+3. [CRITICAL] Every response MUST end with "Agents involved: [agent names]" or "Agents involved: None (direct tool usage)".
+   - Ensures transparency, accountability, and traceability.
+   - Violation is a CRITICAL ERROR.
+
+4. [CRITICAL] Every response MUST include a Confidence block:
+   - Format:
+     - `**Confidence: XX%**`
+     - `Reason: <1-2 sentence explanation>`
+   - Placement: immediately before the final "Agents involved: ..." line.
+   - Applies to all response types: final answers, progress updates, clarifying questions, and error messages.
+   - Violation is a CRITICAL ERROR.

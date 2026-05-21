@@ -1,6 +1,7 @@
 ---
 name: phoenix-database
 description: Runs PostgreSQL queries via MCP using the correct environment (Dev, Dev2, Test, PreProd, Prod), connect-first workflow, and standard contract/POD query patterns. Use when the user asks about database, queries, contracts, POD identifier, or a specific environment (Dev, Test, Prod).
+paths: "Cursor-Project/Phoenix/**"
 ---
 
 # Phoenix Database Queries

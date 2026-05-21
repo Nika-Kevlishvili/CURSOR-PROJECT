@@ -1,3 +1,8 @@
+---
+description: "MCP health check (Rule MCP.0): verify Confluence, Jira, Slack, and PostgreSQL MCP servers are reachable and authenticated before starting bug validation, HandsOff, cross-dependency analysis, test-case generation, or database queries. On failure output the hard-stop block and stop entirely."
+alwaysApply: false
+---
+
 # MCP HEALTH CHECK RULE [CRITICAL]
 
 ## Rule MCP.0: Mandatory MCP Health Check Before Substantive Work [CRITICAL]

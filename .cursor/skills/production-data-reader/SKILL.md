@@ -1,6 +1,7 @@
 ---
 name: production-data-reader
 description: Production database analysis via PostgreSQLProd MCP (readonly): liabilities, receivables, payments, contracts, offsets, traceability. Use for ANY production data questions (Rule PDR.0).
+disable-model-invocation: true
 ---
 
 # Production Data Reader Skill

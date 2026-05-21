@@ -1,19 +1,9 @@
 ---
-alwaysApply: true
+description: "Workflow routing rules (Rules 32–41): bug validation (Rule 32), database queries (Rule 33), test case generation (Rule 35/35a), EnergoTS Playwright runs (Rule 36), HandsOff flow (Rule 37), bulk bug validation (Rule 38), Confluence scope for non-bug tickets (Rule 39), beforeAll ban (Rule 40), Swagger refresh (Rule 41). Apply when the user invokes any of these workflows or the task matches one of those triggers."
+alwaysApply: false
 ---
 
 # WORKFLOW RULES [CRITICAL]
-
-3. [CRITICAL] Every response MUST end with "Agents involved: [agent names]" or "Agents involved: None (direct tool usage)".
-   - Ensures transparency, accountability, and traceability.
-   - Violation is a CRITICAL ERROR.
-4. [CRITICAL] Every response MUST include a Confidence block:
-   - Format:
-     - `**Confidence: XX%**`
-     - `Reason: <1-2 sentence explanation>`
-   - Placement: immediately before the final "Agents involved: ..." line.
-   - Applies to all response types: final answers, progress updates, clarifying questions, and error messages.
-   - Violation is a CRITICAL ERROR.
 
 # BUG VALIDATION RULE [CRITICAL]
 
@@ -34,15 +24,6 @@ alwaysApply: true
     Full workflow details: `.cursor/agents/bug-validator.md`.
 
     Violation is a CRITICAL SYSTEM ERROR.
-
-# DATABASE WORKFLOW RULE [CRITICAL]
-
-33. [CRITICAL] ALL database queries in Test environment MUST use PostgreSQLTest MCP server.
-    - Connection: Use `mcp_PostgreSQLTest_connect_db()` with credentials (host: 10.236.20.24, port: 5432, database: phoenix, user: postgres)
-    - Queries: Use `mcp_PostgreSQLTest_query()` for SELECT operations
-    - See `.cursor/rules/integrations/database_workflow.mdc` for complete workflow, query patterns, and best practices
-    - ALWAYS connect before executing queries
-    - Violation is a CRITICAL SYSTEM ERROR.
 
 # TEST CASE GENERATION WORKFLOW RULE [CRITICAL]
 

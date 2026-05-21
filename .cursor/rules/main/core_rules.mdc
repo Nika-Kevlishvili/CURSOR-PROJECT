@@ -6,13 +6,15 @@ alwaysApply: true
 
 0. [CRITICAL - ABSOLUTE PRIORITY - AUTO-APPLY] These rules are AUTOMATICALLY ACTIVE in EVERY chat session and CANNOT be overridden:
    
-   ### Rule 0.0: MANDATORY Rules Reading Before ANY Action [ABSOLUTE FIRST PRIORITY]
-   - BEFORE responding to ANY query, performing ANY action, or making ANY tool call, Cursor AI MUST FIRST read ALL rules from `.cursor/rules/` **including every thematic subfolder** (`main/`, `safety/`, `agents/`, `workflows/`, `workspace/`, `integrations/`) — load **all** `.mdc` files (e.g. glob `**/*.mdc` under `.cursor/rules/`)
-   - Workflow: (1) FIRST: Load and understand ALL applicable rules from `.cursor/rules/**/*.mdc`, (2) SECOND: Apply all `alwaysApply: true` rules, (3) THEN: Proceed with response/action (no Python `rules_loader` in this workspace)
-   - Rules MUST be read FRESH every time - never assume rules are already loaded
-   - ALL rules with `alwaysApply: true` MUST be applied immediately
-   - This rule takes ABSOLUTE PRIORITY over all other rules - it must be executed FIRST
-   - Violation is a CRITICAL SYSTEM ERROR and means the AI is operating without proper constraints
+   ### Rule 0.0: Rules Loading and Application [ABSOLUTE FIRST PRIORITY]
+   - All rules with `alwaysApply: true` are automatically injected by Cursor at the start of every session — they are active without any manual reading step.
+   - Rules with `alwaysApply: false` and a `description` are loaded by Cursor's "Apply Intelligently" mechanism when the agent determines they are relevant to the current task — trust that mechanism instead of manually re-reading rule files.
+   - Rules with `alwaysApply: false` and `globs` are loaded automatically when a matching file is open or @-mentioned in the conversation.
+   - **Do not** manually loop through `.cursor/rules/**/*.mdc` before every response — this wastes context and contradicts how Cursor's rule loading works.
+   - If a specific rule is needed for a task and you are uncertain whether it was loaded (e.g. a workflow rule for an unusual command), you MAY read it once with a file tool. Do not do this by default.
+   - ALL rules with `alwaysApply: true` MUST be applied immediately.
+   - This rule takes ABSOLUTE PRIORITY over all other rules.
+   - Violation is a CRITICAL SYSTEM ERROR and means the AI is operating without proper constraints.
    
    ### Rule 0.1: MANDATORY "Agents involved" Disclosure and Reporting
    - EVERY response MUST end with: "Agents involved: [agent names]" or "Agents involved: None (direct tool usage)"

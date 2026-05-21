@@ -1,5 +1,6 @@
 ---
-alwaysApply: true
+description: "PostgreSQL MCP workflow (Rule DB.0–DB.6): environment selection (Dev/Dev2/Test/PreProd/Prod), connection credentials, connect-first pattern, standard contract/POD query templates. Apply when running DB queries, checking contracts, querying by POD identifier, or doing any production/test data work."
+alwaysApply: false
 ---
 
 # DATABASE WORKFLOW RULES [CRITICAL - MANDATORY]

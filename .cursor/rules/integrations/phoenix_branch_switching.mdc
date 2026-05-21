@@ -1,19 +1,8 @@
 ---
 description: "Phoenix branch switching (Rule PHOENIX-SWITCH.0): before any environment-sensitive code reading (Phoenix Q&A, bug validation, cross-dependency analysis, test case generation, HandsOff), Cursor agents MUST resolve the environment for the task and align every Cursor-Project/Phoenix/* repo to the matching origin/<branch> via .cursor/commands/switch-phoenix-branches.ps1, fetching the latest tip and discarding local Phoenix edits. Phoenix files themselves remain READ-ONLY (Rule 0.8 Tier A)."
-alwaysApply: true
+alwaysApply: false
 globs:
   - "Cursor-Project/Phoenix/**"
-  - ".cursor/agents/phoenix-qa.md"
-  - ".cursor/agents/bug-validator.md"
-  - ".cursor/agents/cross-dependency-finder.md"
-  - ".cursor/agents/test-case-generator.md"
-  - ".cursor/agents/hands-off.md"
-  - ".cursor/commands/phoenix.md"
-  - ".cursor/commands/bug-validate.md"
-  - ".cursor/commands/test-case-generate.md"
-  - ".cursor/commands/hands-off.md"
-  - ".cursor/commands/switch-phoenix-branches.md"
-  - ".cursor/commands/switch-phoenix-branches.ps1"
 ---
 
 # PHOENIX BRANCH SWITCHING RULE [CRITICAL]

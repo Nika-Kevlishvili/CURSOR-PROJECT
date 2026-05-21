@@ -1,6 +1,7 @@
 ---
 name: phoenix-file-organization
 description: Places new files in the correct project directories (docs, User story, reports, config, postman, test_cases, .cursor). Use when creating or saving files or when the user asks where to put a file.
+paths: "Cursor-Project/**"
 ---
 
 # Phoenix File Organization

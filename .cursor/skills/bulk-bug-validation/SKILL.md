@@ -1,6 +1,7 @@
 ---
 name: bulk-bug-validation
 description: Validates multiple bug reports in one run (Rule 38). Accepts explicit Jira keys or a Jira filter, delegates each bug to the Rule 32 single-bug pipeline, then runs a cross-bug grouping pass (duplicate detection, causal chains, similarity scoring). Saves a gitignored JSON run file for cross-session persistence. Use when the user invokes /bug-validate-bulk, provides multiple Jira keys to validate together, or wants to validate all bugs matching a filter.
+disable-model-invocation: true
 ---
 
 # Bulk Bug Validation Skill
