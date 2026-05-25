@@ -137,6 +137,45 @@ The **content** of each test case `.md` file MUST follow the **Test Case Templat
 
 ---
 
+## Rule TC-STANDALONE-PRE.0: Self-contained preconditions per test case [CRITICAL]
+
+**Intent:** A tester (or Playwright author) must execute **one** TC without opening another TC or inferring setup from shared prose.
+
+**MANDATORY for every `TC-BE-N` / `TC-FE-N`:**
+
+1. The TC's **`Preconditions:`** block MUST list the **full numbered setup chain** required for **that scenario only** (environment, auth, entities, amounts, billing run type, baselines).
+2. **FORBIDDEN in `Preconditions:`:**
+   - `Apply Test data steps 1–N` **without** repeating the underlying steps in the same TC block.
+   - `Delta:` / `see TC-BE-X` / `same as TC-BE-Y` / `run A / run B` **multi-scenario** in a single TC.
+   - Preconditions that only say an entity "exists" without endpoint + parameters.
+3. **Allowed:** Optional `## Test data (preconditions)` or `## Amount appendix` at file level as **reference tables only** (formulas, IDs from a prior run). They do **not** replace per-TC preconditions.
+4. **One scenario per TC** — if 4.99 and 0.00 are both needed, use **two** TCs with **two** full precondition blocks.
+
+**Violation** is a **CRITICAL SYSTEM ERROR** for test-case-generator and manual TC edits.
+
+---
+
+## Rule TC-NOSKIP-OBS.0: No skip / log / audit observability test cases [CRITICAL]
+
+**Intent:** Do not author TCs whose **primary** pass/fail criterion is internal skip mechanics (logs, row status after silent skip, exploratory "defect if observed").
+
+**FORBIDDEN as dedicated TCs or primary expected results:**
+
+- Verifying application log text (e.g. `"Skipping interim invoice"`, `"below 5"`).
+- Verifying `billing_run.run_interim_data.status` = `SUCCESS` vs `SKIPPED` when no invoice was created (audit-only).
+- Expected results framed as **"defect if observed"** / **"document actual"** without a product rule in Jira/Confluence.
+- Titles/descriptions centered on **skip** rather than **business outcome**.
+
+**REQUIRED for negative threshold / rejection scenarios:**
+
+- Assert **observable business outcomes only:** no `INTERIM_AND_ADVANCE_PAYMENT` invoice in `POST /invoice/listing` (or equivalent API), no new liability for that billing run, billing run reaches expected **API-visible** status — cite HTTP status and response fields.
+
+**Allowed:** Brief code citation in file header (References) for context; **not** a separate TC for log lines.
+
+**Violation** is a **CRITICAL SYSTEM ERROR** for test-case-generator.
+
+---
+
 ## Summary
 
 1. **Root:** `Cursor-Project/test_cases/`

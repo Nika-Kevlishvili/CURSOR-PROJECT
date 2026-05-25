@@ -1,0 +1,153 @@
+﻿=== ISSUE METADATA ===
+Key: PDT-2104 | Created: 2025-11-26T19:04:08.927+0400 | Updated: 2026-05-20T14:38:22.476+0400
+Status: QA Failed | Priority: Medium | Type: Bug
+Reporter: Yoana.Prodanova | Assignee: Ketevan Bardakovi
+Environment: 
+Labels: Backend
+Components: Billing
+
+=== DESCRIPTION ===
+
+
+=== BUG DESCRIPTION (customfield_10217) ===
+Link:
+
+A.R.(???????? ????????):
+
+E.R.( ????????? ??????):
+
+
+
+=== ACCEPTANCE CRITERIA ===
+
+
+=== LINKED ISSUES ===
+None
+
+=== COMMENTS (10) ===
+--- Comment 1 | Yoana.Prodanova | 2025-12-01T13:14:22.682+0400 | id=52920 ---
+Still impossible to upload the downloaded file:
+
+My unsuccessful test:
+
+Download the data file from this profile: 
+https://testapps.energo-pro.bg/app/phoenix-epres/data-by-profiles/preview?id=34864426&periodFrom=2025-10-01&periodTo=2025-10-31&periodType=FIFTEEN_MINUTES
+
+
+Try to upload it in this profile (same type for same month): 
+https://testapps.energo-pro.bg/app/phoenix-epres/data-by-profiles/edit?id=34864430&periodFrom=2025-10-01&periodTo=2025-10-31
+
+
+Error received: For input string: "0.26629155"
+
+
+
+
+
+--- Comment 2 | Keti Nanuashvili | 2025-12-01T13:54:06.193+0400 | id=52926 ---
+
+ Hello, It's completed on the dev environment for now, and it will be deployed with the upcoming update.
+
+
+
+--- Comment 3 | Yoana.Prodanova | 2025-12-01T14:00:57.182+0400 | id=52927 ---
+
+ thank you, the "Done" status misled me into thinking that it was ready in a test environment also.
+
+
+
+--- Comment 4 | Keti Nanuashvili | 2025-12-01T14:27:02.710+0400 | id=52929 ---
+
+ Sorry, I changed the status.
+
+
+
+--- Comment 5 | Yoana.Prodanova | 2025-12-01T14:28:10.157+0400 | id=52930 ---
+
+ no worries  
+
+  
+
+
+
+--- Comment 6 | Valeri.Valev | 2026-05-19T15:23:51.728+0400 | id=66898 ---
+
+ 
+
+ 
+
+Hello could you check this case:
+
+Exported file: 
+
+ 
+
+Trying to import here:
+
+https://testapps.energo-pro.bg/app/phoenix-epres/price-parameters/edit?id=1312
+
+
+
+
+
+--- Comment 7 | nika kevlishvili | 2026-05-20T14:23:27.494+0400 | id=66977 ---
+
+ Hello , i will check it 
+
+
+
+--- Comment 8 | Ketevan Bardakovi | 2026-05-20T14:31:56.240+0400 | id=66979 ---
+
+ It's because on the backend side we have restriction about the amount of rows in import. it exceeds the limit, which is 
+35138
+ for fifteen minutes period type and for hour type, it's 
+8786
+ max. I think it's because of application limitations.
+
+
+
+--- Comment 9 | Valeri.Valev | 2026-05-20T14:34:40.180+0400 | id=66980 ---
+
+ I don't think so. Try with this one:
+
+ 
+
+
+
+--- Comment 10 | Ketevan Bardakovi | 2026-05-20T14:38:22.476+0400 | id=66981 ---
+
+ there you got 35040 rows for fifteen minutes, and the limit is 35138. import for this latest file works
+
+
+
+
+=== CHANGELOG TIMELINE (23) ===
+2025-11-27T11:06:26.563+0400 | Mariam Kvitsiani | assignee: Mariam Kvitsiani -> 
+2025-11-27T11:23:36.451+0400 | Luka Tchrikishvili | STATUS: Backlog -> Ready for development
+2025-11-27T11:25:56.884+0400 | Mariam Kvitsiani | labels:  -> Frontend
+2025-11-27T12:05:55.399+0400 | Ketevan Bardakovi | assignee:  -> Ketevan Bardakovi
+2025-11-27T12:35:11.545+0400 | Mariam Kvitsiani | labels: Frontend -> Backend
+2025-11-27T17:34:04.740+0400 | Sopho Gurjishvili | assignee: Ketevan Bardakovi -> Sopho Gurjishvili
+2025-11-27T17:39:42.555+0400 | Ketevan Bardakovi | assignee: Sopho Gurjishvili -> Ketevan Bardakovi
+2025-11-27T17:39:45.161+0400 | Ketevan Bardakovi | STATUS: Ready for development -> In Progress
+2025-11-27T18:11:17.375+0400 | Keti Nanuashvili | Tester:  -> Keti Nanuashvili
+2025-11-27T18:45:24.900+0400 | Mariam Kvitsiani | Fix Version:  -> Prod_01.12; Fix Version: Prod_27.11 -> 
+2025-11-28T11:00:31.180+0400 | Ketevan Bardakovi | STATUS: In Progress -> Ready for testing
+2025-11-28T11:24:31.302+0400 | Keti Nanuashvili | STATUS: Ready for testing -> Testing
+2025-11-28T15:12:25.616+0400 | Keti Nanuashvili | resolution:  -> Done; STATUS: Testing -> Done
+2025-12-01T12:50:34.032+0400 | Mari Khuroshvili | Component:  -> Billing
+2025-12-01T13:12:06.328+0400 | Yoana.Prodanova | resolution: Done -> ; STATUS: Done -> QA Failed
+2025-12-01T13:58:17.877+0400 | Keti Nanuashvili | resolution:  -> Done; STATUS: QA Failed -> Done on Dev
+2025-12-01T17:59:28.120+0400 | Keti Nanuashvili | STATUS: Done on Dev -> Done
+2026-05-19T15:20:12.056+0400 | Valeri.Valev | resolution: Done -> ; STATUS: Done -> QA Failed
+2026-05-19T15:23:51.680+0400 | Valeri.Valev | ATTACHMENT: +prices (3).xlsx; ATTACHMENT: +image-20260519-112345.png
+2026-05-20T14:23:10.494+0400 | nika kevlishvili | Tester: Keti Nanuashvili -> 
+2026-05-20T14:23:15.647+0400 | nika kevlishvili | Tester:  -> nika kevlishvili
+2026-05-20T14:30:38.008+0400 | Mariam Kvitsiani | Fix Version:  -> Hotfix 28.05
+2026-05-20T14:34:40.127+0400 | Valeri.Valev | ATTACHMENT: +2026_B01.xlsx
+
+=== COMMENT DELETION CHECK ===
+No Comment field entries in changelog (Jira does not log comment deletions in standard changelog by default)
+
+=== DESCRIPTION EDITS ===
+No description edits in changelog

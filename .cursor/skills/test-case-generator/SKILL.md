@@ -72,33 +72,30 @@ Use **`prompt_type`** (`'bug'` vs `'task'`) from inputs — behavior differs.
 2. **No diagram in task description or linked pages:** search **`Cursor-Project/config/Diagrams/`** for plausible `.svg` matches. **Mandatory gate:** if any candidate fits, **do not** write TC files based on that diagram until the user confirms — ask explicitly whether to use it, naming **each candidate by full workspace path** (and one-line why it might match). If the user declines or multiple candidates remain ambiguous, omit local diagram from TC scope until clarified.
 3. **Authority:** same as bugs — **code + Confluence** override contradictory diagrams; document discrepancies in **References**.
 
-### 3. Precondition reuse — DRY (MANDATORY)
+### 3. Precondition reuse — DRY vs self-contained (MANDATORY)
 
-Precondition duplication is a **forbidden pattern**. Before writing any TC's `Preconditions:` block, follow this workflow:
+**Rule TC-STANDALONE-PRE.0** (`.cursor/rules/workspace/test_cases_structure.mdc`) takes precedence for generated files:
 
-1. **Build the full shared chain once** in `## Test data (preconditions)` — every entity, every endpoint, every key parameter.
-2. **Cluster TCs by shared slice** — identify which steps every TC needs vs. which steps only a subset needs.
-3. **Per TC: reference + deltas only.** Each TC's `Preconditions:` MUST start with `Apply Test data steps 1–N.` and then list **only the deltas** for that TC (different status, different amount, skipped entity, additional entity).
-4. **Self-check before writing files:** scan your draft for duplicated `POST /` or "Create … via" lines across multiple TCs. If the same line appears in ≥2 TCs, move it to `Test data` and replace each occurrence with a step reference.
+- Each TC's **`Preconditions:`** MUST contain the **full numbered setup** for that scenario (tester does not open another TC).
+- **FORBIDDEN:** `Apply Test data steps 1–N` without repeating steps in the same TC; `Delta from TC-BE-X`; multiple scenarios (run A/B) in one TC.
+- **Optional** `## Test data` / appendix at file top = reference tables only; **not** a substitute for per-TC preconditions.
 
-Do NOT re-state entity creation steps that already appear in `Test data`. Violation = duplicated preconditions = incomplete self-check.
-
-**Reference:** `Cursor-Project/config/template/Test_case_template.md` § "Reuse model — DRY preconditions".
+Duplicating `POST /customer`, `POST /pod`, etc. across TCs is **required** when each TC must stand alone (acceptable trade-off per project rule).
 
 ### 3b. Case-specific preconditions (MANDATORY — NEVER OMIT)
 
-For **every** TC, make the scenario-specific setup explicit in `Preconditions:`. Use this shape:
-
-1. `Apply Test data steps X–Y.`
-2. `Delta: ...` (what differs in this TC only).
-
-Allowed deltas: changed status/state, skipped entity, extra entity, different amount/date/value, alternative user role/permission.
+For **every** TC, **all** scenario-specific values (amounts, `billingType`, IAP `valueType`, contract type) MUST appear inside that TC's `Preconditions:` numbered list — not only in Description.
 
 Rules:
-- If no special setup exists, still write: `Delta: none (shared setup unchanged).`
-- Negative TCs MUST include a concrete failing delta (not generic text).
-- Two TCs must not have identical `Preconditions:` blocks unless they are true duplicates (duplicates are forbidden; merge/remove instead).
-- Do not leave TC-specific setup only in Description/Steps; it must appear in `Preconditions:`.
+- Negative TCs MUST state the exact parameter that yields rejection (e.g. `amountExcludingVat: 4.16` → total incl. VAT 4.99).
+- Two TCs with identical `Preconditions:` are duplicates — merge or differentiate.
+- Do not leave setup only in Description/Steps.
+
+### 3c. No skip / log / audit observability TCs (MANDATORY — Rule TC-NOSKIP-OBS.0)
+
+**FORBIDDEN:** TCs or expected results that primarily verify skip **logs**, interim row status without invoice, or "defect if observed" audit.
+
+**REQUIRED for negatives:** No invoice in `POST /invoice/listing` (or cited API); no new liability; HTTP/status fields — not log file grep.
 
 ### 3a. Precondition data completeness (MANDATORY — creation-step rule)
 

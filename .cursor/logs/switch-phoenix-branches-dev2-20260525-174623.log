@@ -1,0 +1,23 @@
+[2026-05-25 17:46:23.729] [INFO] Switch started. environment=dev2, branch=origin/dev2, dryRun=False, root=C:\Users\N.kevlishvili\Cursor\Cursor-Project\Phoenix
+[2026-05-25 17:46:24.526] [INFO] Pre-flight: all Phoenix repos have clean working trees.
+[2026-05-25 17:46:24.526] [INFO] Repo [mfe-poc-with-nx] start.
+[2026-05-25 17:46:29.390] [WARN] Repo [mfe-poc-with-nx] missing remote branch origin/dev2.
+[2026-05-25 17:46:29.390] [INFO] Repo [phoenix-api-gateway] start.
+[2026-05-25 17:46:33.637] [WARN] Repo [phoenix-api-gateway] missing remote branch origin/dev2.
+[2026-05-25 17:46:33.671] [INFO] Repo [phoenix-billing-run] start.
+[2026-05-25 17:46:38.717] [INFO] Repo [phoenix-billing-run] done. status=ok detail=HEAD=29bed22
+[2026-05-25 17:46:38.717] [INFO] Repo [phoenix-core] start.
+[2026-05-25 17:46:45.049] [INFO] Repo [phoenix-core] done. status=ok detail=HEAD=9333ea96cb
+[2026-05-25 17:46:45.063] [INFO] Repo [phoenix-core-lib] start.
+[2026-05-25 17:46:53.611] [INFO] Repo [phoenix-core-lib] done. status=ok detail=HEAD=5bd0c49a3
+[2026-05-25 17:46:53.611] [INFO] Repo [phoenix-mass-import] start.
+[2026-05-25 17:46:59.137] [INFO] Repo [phoenix-mass-import] done. status=ok detail=HEAD=ed8abd8
+[2026-05-25 17:46:59.137] [INFO] Repo [phoenix-migration] start.
+[2026-05-25 17:47:03.622] [WARN] Repo [phoenix-migration] missing remote branch origin/dev2.
+[2026-05-25 17:47:03.622] [INFO] Repo [phoenix-payment-api] start.
+[2026-05-25 17:47:08.884] [INFO] Repo [phoenix-payment-api] done. status=ok detail=HEAD=ff1cac8
+[2026-05-25 17:47:08.884] [INFO] Repo [phoenix-scheduler] start.
+[2026-05-25 17:47:14.400] [INFO] Repo [phoenix-scheduler] done. status=ok detail=HEAD=049d046
+[2026-05-25 17:47:14.402] [INFO] Repo [phoenix-ui] start.
+[2026-05-25 17:47:24.141] [INFO] Repo [phoenix-ui] done. status=ok detail=HEAD=58f10dd7c
+[2026-05-25 17:47:24.172] [INFO] Switch finished with exit code 2. partial failures.

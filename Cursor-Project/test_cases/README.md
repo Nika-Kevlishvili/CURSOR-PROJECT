@@ -28,6 +28,7 @@ Every `.md` file MUST follow **`Cursor-Project/config/template/Test_case_templat
 | Payment mass import — automatic offsetting failure (`automatic_payment_offsetting_out`), transactional non-persistence, `:20:` bank header, process lifecycle | `Backend/Payment_Mass_Import_Offsetting_Failure_PDT_2713.md` | `Frontend/Payment_Mass_Import_Offsetting_Failure_PDT_2713.md` | PDT-2713 |
 | Contract version validity — Mass Email, Mass SMS, Penalty (description-vs-code gaps; PDT-2599 attachment) | `Backend/Version_Validity_Three_Processes_PDT_2815.md` | `Frontend/Version_Validity_Three_Processes_PDT_2815.md` | PDT-2815 |
 | Service Contract first version startDate re-alignment — auto-realign version 1 startDate to signingDate when signingDate < startDate during finalization; guard checks, version ordering, downstream impact | `Backend/Service_Contract_First_Version_StartDate_PDT_2846.md` | `Frontend/Service_Contract_First_Version_StartDate_PDT_2846.md` | PDT-2846 |
+| Minimal interim payment — create interim invoice only when total incl. VAT ≥ 5 EUR (standard + manual paths; backend only) | `Backend/PDT_2872_minimal_interim_payment.md` | — | PDT-2872 |
 
 ## Layout reference
 

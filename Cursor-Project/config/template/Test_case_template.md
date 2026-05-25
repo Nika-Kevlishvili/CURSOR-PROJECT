@@ -127,6 +127,26 @@ One topic file typically has many TCs that share the same long entity-creation c
 
 ---
 
+### Self-contained preconditions per TC (MANDATORY — Rule TC-STANDALONE-PRE.0)
+
+Each TC's **`Preconditions:`** MUST be **executable on its own**: full numbered chain for that scenario (endpoints + parameters). Do **not** rely on another TC or on `Apply Test data steps …` alone.
+
+**FORBIDDEN:** `Apply Test data steps 1–14`; `Delta from TC-BE-3`; `run A / run B` in one TC; shared preconditions without TC-specific amounts in the same block.
+
+**GOOD:** Every TC lists its own steps 1…N (customer, POD, product, IAP with **exact** `calculationValue`, billing run `billingType`, baseline invoice count).
+
+See **`.cursor/rules/workspace/test_cases_structure.mdc`** § **TC-STANDALONE-PRE.0**.
+
+---
+
+### No skip / log / audit observability TCs (MANDATORY — Rule TC-NOSKIP-OBS.0)
+
+Do **not** create test cases whose main goal is to verify **skip logs**, interim row **SUCCESS** without invoice, or exploratory audit. Negative cases must assert **no invoice** / **no liability** via API (or DB read listed in steps), not log grep.
+
+See **`.cursor/rules/workspace/test_cases_structure.mdc`** § **TC-NOSKIP-OBS.0**.
+
+---
+
 ## Copy-paste blank — Backend file (`test_cases/Backend/<Topic_name>.md`)
 
 ````markdown

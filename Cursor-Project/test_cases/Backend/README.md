@@ -20,3 +20,4 @@ TC numbering: `TC-BE-1`, `TC-BE-2`, ...
 | `Version_Validity_Three_Processes_PDT_2815.md` | Mass Email/SMS/penalty version validity (Valid/Signed); description-vs-code gap tests; PDT-2599 attachment | PDT-2815 | TC-BE-1 through TC-BE-17 |
 
 | `Service_Contract_First_Version_StartDate_PDT_2846.md` | Service Contract first version startDate re-alignment � auto-realign v1 startDate to signingDate during finalization; guard checks, uniqueness, version ordering | PDT-2846 | TC-BE-1 through TC-BE-20 |
+| `PDT_2872_minimal_interim_payment.md` | Minimal interim payment — 5 EUR incl. VAT gate; self-contained preconditions per TC; no skip/log observability TCs | PDT-2872 | TC-BE-1 through TC-BE-14 |

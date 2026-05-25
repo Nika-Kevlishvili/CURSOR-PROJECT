@@ -1,0 +1,123 @@
+{
+  "jira_key": "PDT-2872",
+  "jira_source": "UNAVAILABLE — Jira MCP not configured; Atlassian Rovo search returned no PDT-2872 issue; REST fallback failed (JIRA_EMAIL/JIRA_API_TOKEN/JIRA_BASE_URL not resolved from Cursor-Project/.env or EnergoTS/.env). Scope derived from user-provided local diagram + Phoenix Test codebase (aligned branch not confirmed — see phoenix_alignment).",
+  "phoenix_alignment": {
+    "requested_environment": "test",
+    "target_branch": "origin/test",
+    "result": "NOT_ALIGNED",
+    "exit_code": 1,
+    "reason": "switch-phoenix-branches.ps1 blocked: Lock is active (pid=24356). Code reads reflect current local Phoenix working copy; label conclusions as possibly stale/mixed per Rule PHOENIX-SWITCH.0."
+  },
+  "confluence_shallow": "skipped_or_snippets_only — no linked Confluence URLs from Jira ticket (ticket unreadable). Atlassian search for PDT-2872 returned unrelated pages only.",
+  "local_diagram": "Cursor-Project/config/Diagrams/Bundle 5/EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Interim.drawio.svg (page: Price application model for volumes)",
+  "scope": "Product contract standard billing run — invoice creation for Price application model for volumes (BY_SCALES splitting path), including interim/advance-payment branch when billing run application model includes INTERIM_AND_ADVANCE_PAYMENT. Per-split validation: contract status, application model type on price component, price formula (fixed vs price profile/price parameter), billing-data-by-profile availability, dimension compatibility, numeric formula result, and percentage volume restrictions.",
+  "entry_points": [
+    "PATCH /billing-run/start-billing (BillingRunController → BillingRunStartBillingService.startProcess)",
+    "PATCH /billing-run/start-generation (BillingRunStartGenerationService — follows billing when RunStage includes GENERATE_AND_SIGN)",
+    "Scheduler: BillingRunStandardPreparationStateHandler.startStandardBillingProcessing (STANDARD_BILLING / INVOICE_CORRECTION)",
+    "DB: CALL billing_run.run_standard_billing_main_data_preparation(?) — BillingRunStandardPreparationService.startDataPreparation",
+    "DB: CALL billing_run.run_standard_billing_interim_data_preparation(?) — BillingRunStandardPreparationService.startInterimAdvancePaymentPreparation",
+    "BillingRunStandardInvoiceGenerationProcessor.processContract — FOR_VOLUMES → BillingRunProcessScaleCalculationService.splitAndEvaluateScales + BillingRunProcessSettlementService.evaluateSettlement (product contract only)",
+    "BillingRunStandardInvoiceGenerationProcessor.startInterimProcessing → BillingRunInterimProcessingService.process (InvoiceType.INTERIM_AND_ADVANCE_PAYMENT)",
+    "Product contract configuration: ProductContractBasicParametersService (untilVolume/hasUntilVolume), ProductContractProductParametersService (interim advance payments on contract third tab)"
+  ],
+  "upstream": [
+    { "type": "db", "name": "billing_run.run_standard_billing_main_data_preparation", "usage": "Prepares standard billing run contract/split/slot rows before Java generation" },
+    { "type": "db", "name": "billing_run.run_standard_billing_interim_data_preparation", "usage": "Prepares billing_run_interim_data rows for interim invoice generation" },
+    { "type": "db", "name": "price_component.application_models / am_for_volumes_by_scales / am_for_volumes_by_settlement_periods (+ restriction range tables)", "usage": "Price component application model config; restriction queries in BillingRunContractsRepository (kWh/CCY/percent)" },
+    { "type": "db", "name": "pod.billing_data_by_profile", "usage": "Price profile values for $PRICE_PROFILE$ in scale/settlement evaluation (BillingDataByProfileRepository.findPriceProfileByPodIdForExactDateWithType)" },
+    { "type": "db", "name": "product_contract.contracts / contract_details / contract_pods", "usage": "Product contract version, status (incl. TERMINATED), POD bindings for billing run scope" },
+    { "type": "service", "name": "BillingRunPriceComponentEvaluationService", "usage": "OGNL price formula evaluation; injects X variables, price parameters, price profile" },
+    { "type": "service", "name": "InterimAdvancePaymentService / ProductService", "usage": "Interim advance payment definitions on product; copied to product contract" },
+    { "type": "lib", "name": "ExpressionStringParser / AbstractPriceComponentPriceEvaluationStrategy", "usage": "Shared price formula parsing and evaluation" },
+    { "type": "enum", "name": "product ApplicationModelType: PRICE_AM_FOR_VOLUMES, PRICE_AM_OVERTIME, PRICE_AM_PER_PIECE", "usage": "Price component product-side application model type" },
+    { "type": "enum", "name": "product ApplicationType: BY_SCALES, BY_SETTLEMENT_PERIODS, …", "usage": "Volumes model sub-type (diagram: by scales)" },
+    { "type": "enum", "name": "billing ApplicationModelType: FOR_VOLUMES, INTERIM_AND_ADVANCE_PAYMENT, …", "usage": "Billing run selected application models; drives handler routing in BillingRunStandardPreparationStateHandler" }
+  ],
+  "downstream": [
+    { "type": "db", "name": "invoice.invoices + invoice.invoice_standard_detailed_data", "usage": "Draft REAL invoices; INTERIM_AND_ADVANCE_PAYMENT vs STANDARD detail types" },
+    { "type": "service", "name": "InvoiceService.generateExcel", "usage": "Called after interim processing completes (DRAFT invoices)" },
+    { "type": "service", "name": "BillingRunStartGenerationService", "usage": "Auto-chained when billing run reaches DRAFT and RunStage includes GENERATE_AND_SIGN" },
+    { "type": "service", "name": "CustomerLiabilityMapperService / receivable flows", "usage": "Liabilities created on invoice accounting (outside generation scope but regression-sensitive)" },
+    { "type": "ui", "name": "Billing run screens + product contract create/edit (interimAdvancePayments, untilVolume)", "usage": "User configures contract/product parameters consumed by preparation procedures" },
+    { "type": "consumer", "name": "Invoice cancellation / reversal / correction billing runs", "usage": "Reuse FOR_VOLUMES paths with INVOICE_CORRECTION type in BillingRunStandardInvoiceGenerationProcessor" }
+  ],
+  "shared": [
+    "phoenix-core-lib billingRun package (BillingRunStandardInvoiceGenerationProcessor, BillingRunProcessScaleCalculationService, BillingRunProcessSettlementService, BillingRunInterimProcessingService)",
+    "BillingRunContractsRepository.updateBgInvoiceSlotStatus — per-slot ERROR propagation without stopping entire run",
+    "SlotGrouping (bgInvoiceSlotId, podId, pcId)",
+    "PriceComponent / ApplicationModel entities and ApplicationModelService",
+    "BillingRunInterimData entity + BillingRunInterimDataRepository"
+  ],
+  "data_entities": [
+    "product_contract (contract, contract_details, contract_pods)",
+    "pod (pod, billing_data_by_profile, billing_by_profile)",
+    "price_component (price_components, application_models, am_for_volumes_by_scales, restriction ranges)",
+    "billing_run (billings, billing_run_contracts, billing_run_bdbs_splits_io_data, billing_run_settlement_period, billing_run_interim_data, bg_invoice_slot status)",
+    "invoice (invoices, invoice_standard_detailed_data, invoice_vat_rate_values)",
+    "interim_advance_payment (product/contract IAP configuration)",
+    "nomenclature (currency, vat_rate)"
+  ],
+  "integration_points": [
+    "Billing run creation with applicationModelType containing FOR_VOLUMES and/or INTERIM_AND_ADVANCE_PAYMENT → start-billing → preparation procedures → generation processor",
+    "FOR_VOLUMES product contract: settlement periods (BY_SETTLEMENT_PERIODS) and/or scale splits (BY_SCALES) → restriction calculation (kWh/CCY/percent) → discount processing → group by bgInvoiceSlotId → generateInvoice per slot",
+    "Scale split path: BillingRunBdbsSplitsIoData → month splits when price formula uses $PRICE_PROFILE$ or price-parameter tokens → evaluateExpression → meter-reading split adjustments",
+    "Interim path: billing_run_interim_data rows (EXACT_AMOUNT | PRICE_COMPONENT | PERCENT_FROM_PREVIOUS_INVOICE_AMOUNT) → parallel executor → draft INTERIM_AND_ADVANCE_PAYMENT invoice linked to productContractId/detailId",
+    "Failed slot isolation: failedSlots set + updateBgInvoiceSlotStatus(ERROR, message) — other slots continue",
+    "STANDARD_WITH_INTERIM: BillingRunStandardPreparationStateHandler runs standard generation then interim preparation/generation in sequence"
+  ],
+  "what_could_break": [
+    { "item": "Per-slot ERROR vs whole-contract FAIL", "location": "BillingRunStandardInvoiceGenerationProcessor + BillingRunProcessScaleCalculationService", "reason": "Diagram expects slot-level errors with continuation; code uses failedSlots but contract row can still set processingStatus FAILED on unhandled exceptions" },
+    { "item": "Price profile missing", "location": "BillingRunProcessScaleCalculationService.scaleExtractProfilePrice", "reason": "Missing billing_data_by_profile throws RuntimeException → slot ERROR; message differs from diagram wording" },
+    { "item": "Interim + price profile", "location": "BillingRunInterimProcessingService (PRICE_COMPONENT valueType)", "reason": "Explicitly throws if formula contains $PRICE_PROFILE$ — interim IAP cannot use price profile even if product PC supports volumes/scales model" },
+    { "item": "Interim price parameter gaps", "location": "BillingRunInterimProcessingService lines 206-210", "reason": "Throws 'Price wasn't calculated because of missing data' when previous 30 days not filled — different from standard scale/settlement messaging" },
+    { "item": "Application model enum drift", "location": "product ApplicationModelType vs billing ApplicationModelType", "reason": "Two enums with different names; mapping between PRICE_AM_FOR_VOLUMES and FOR_VOLUMES happens in preparation/SQL — test data must set both sides consistently" },
+    { "item": "Terminated contract handling", "location": "Diagram gate 'contract status is terminated' vs ProductContractRepository billing eligibility queries", "reason": "Repository still includes TERMINATED in some billing lookups; diagram implies branch/skip — verify preparation procedure vs Java alignment" },
+    { "item": "Percentage restriction on scales", "location": "BillingRunStandardInvoiceGenerationProcessor.calculateRestrictions + BillingRunContractsRepository.getScaleRestrictionPercent", "reason": "Diagram calls out percentage restriction volume/amount; incorrect restriction math affects invoice totals and slot zero-volume removal (finalRestrictionVolume == 0)" },
+    { "item": "VAT rate date for interim", "location": "BillingRunStandardInvoiceGenerationProcessor.startInterimProcessing line 380", "reason": "TODO uses LocalDate.now() for global VAT lookup instead of billing run invoice date — environment/date-sensitive regression" },
+    { "item": "Phoenix branch misalignment", "location": "All Phoenix paths cited", "reason": "Alignment lock prevented test-branch sync; code evidence may not match Test environment deployment" }
+  ],
+  "discrepancies": [
+    {
+      "area": "Error message — missing billing data by profile",
+      "diagram": "error for invoice slot: data is missing in billing data by profile with ID for billing data by profile",
+      "code": "RuntimeException: Price profile not found for PodId: {podId} and date: {startDayOfMonth} (BillingRunProcessScaleCalculationService.scaleExtractProfilePrice)",
+      "impact_risk": "UI/protocol/error-report tests keyed to diagram text will not match backend messages; support triage confusion"
+    },
+    {
+      "area": "Error message — dimension mismatch",
+      "diagram": "error in invoice slot: Price can't be calculated for selected dimension and continue process for other slots",
+      "code": "No exact string in Java billingRun package; closest: 'price cannot not be evaluated, invalid formula' (BillingRunPriceComponentEvaluationService) or preparation-layer/SQL messages not visible in repo Java",
+      "impact_risk": "Acceptance criteria may reference message not implemented in Java layer; verify DB procedure output"
+    },
+    {
+      "area": "Interim vs volumes price profile",
+      "diagram": "Checks price profile/price parameter usage in price formula for volumes/scales splits",
+      "code": "BillingRunInterimProcessingService rejects $PRICE_PROFILE$ outright for interim PRICE_COMPONENT calculations",
+      "impact_risk": "Task scope mixing standard volumes invoice + interim invoice may expect unified formula support; interim path is stricter"
+    },
+    {
+      "area": "Application model naming",
+      "diagram": "application model type is Price application model for volumes and application type is by scales",
+      "code": "Product: ApplicationModelType.PRICE_AM_FOR_VOLUMES + ApplicationType.BY_SCALES; Billing run: ApplicationModelType.FOR_VOLUMES",
+      "impact_risk": "Test preconditions must configure product PC and billing run applicationModelType consistently"
+    },
+    {
+      "area": "Fixed-only formula branch",
+      "diagram": "price include only fixed variable (when no price profile/parameter)",
+      "code": "processDefault in scale service evaluates formula with X variables only; interim PRICE_COMPONENT requires X1-X10 fixed values (no ranges)",
+      "impact_risk": "Partially aligned but different validation surfaces (interim vs standard scale)"
+    }
+  ],
+  "diagram_flow_summary": [
+    "contract status is terminated → branch",
+    "For each split check application model type in price component",
+    "application model type is Price application model for volumes and application type is by scales",
+    "check price formula for price profile or price parameter usage",
+    "if profile/parameter: validate dimension vs billing data by profile; missing data → slot error",
+    "if fixed-only: evaluate formula → must return one numeric result",
+    "Restriction type: Percentage restriction → calculate restricted volume and amount",
+    "On price calculation failure for dimension → slot error, continue other slots"
+  ],
+  "technical_details": "Endpoints: /billing-run/start-billing, /billing-run/start-generation, billing run CRUD under /billing-run (BillingRunController). Core services: BillingRunStandardPreparationStateHandler, BillingRunStandardPreparationService (procedures billing_run.run_standard_billing_main_data_preparation, billing_run.run_standard_billing_interim_data_preparation), BillingRunStandardInvoiceGenerationProcessor, BillingRunProcessScaleCalculationService, BillingRunProcessSettlementService, BillingRunInterimProcessingService, BillingRunPriceComponentEvaluationService. Key enums: billing.billings.ApplicationModelType {FOR_VOLUMES, INTERIM_AND_ADVANCE_PAYMENT, …}, product ApplicationModelType {PRICE_AM_FOR_VOLUMES, …}, ApplicationType {BY_SCALES, BY_SETTLEMENT_PERIODS, …}, InvoiceType.INTERIM_AND_ADVANCE_PAYMENT, InvoiceStandardDetailType {INTERIM_EXACT_AMOUNT, INTERIM_PRICE_COMPONENT, …}, BillingType.STANDARD_BILLING, ContractDetailsStatus.TERMINATED. DB tables/schemas (from repositories): billing.billings (application_model_type), price_component.am_for_volumes_by_scales*, pod.billing_data_by_profile, invoice.invoices, billing_run_interim_data (entity). Restriction SQL: BillingRunContractsRepository getScaleRestrictionByKwh/Ccy/Percent, getSettlementRestriction*. Jira ticket text, acceptance criteria, linked Confluence, and attachments were NOT retrieved — parent should supply ticket export or configure Jira credentials for full Rule 35a Jira anchoring."
+}
