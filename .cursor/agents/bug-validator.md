@@ -1,7 +1,7 @@
 ---
 name: bug-validator
 model: default
-description: Validates bug reports using BugFinderAgent workflow (Rule 32). Environment alignment, Confluence, mandatory Swagger refresh + OpenAPI evidence, Phoenix codebase; READ-ONLY. No automatic test cases or Playwright in this workflow.
+description: Validates bug reports using BugFinderAgent workflow (Rule 32). Environment alignment, Confluence, mandatory Swagger refresh + OpenAPI evidence, Phoenix codebase, database investigation (entity data, audit logs, relationships); READ-ONLY. No automatic test cases or Playwright in this workflow.
 ---
 
 # Bug Validator Subagent (BugFinderAgent)
@@ -120,14 +120,47 @@ For **Prod** and **PreProd** bug validation (default **Test** too unless the tic
 - Determine if actual code behavior matches reported behavior.
 - Provide concrete references (file path + line range + short snippet/explanation).
 
+### Step 4b: Database Investigation [RECOMMENDED]
+
+**Goal:** Gather database evidence to strengthen validation conclusions. Use the **same environment** from Step 0a.
+
+**MCP mapping:** `dev`→PostgreSQLDev, `dev2`→PostgreSQLDev2, `test`→PostgreSQLTest, `preprod`→PostgreSQLPreProd, `prod`→PostgreSQLProd, `experiments`→PostgreSQLexperiments.
+
+**What to investigate (best effort):**
+
+1. **Entity data state** — find the specific entity (contract, invoice, payment, receivable, etc.) from the ticket; query current status, dates, amounts, relationships.
+
+2. **Audit / change logs** — check `*_audit`, `*_history`, `*_log` tables for state transitions, who/when modified, unexpected changes.
+
+3. **Error logs** — query `error_log`, `scheduler_log`, `job_execution_log` for entity ID, date range, error keywords from ticket.
+
+4. **Relationships and dependencies** — find linked entities (e.g., invoice → contract → POD → customer); check FK consistency, orphaned records.
+
+5. **Data consistency** — verify business rules in data (e.g., sum of items = total); look for constraint violations, NULLs, invalid enums.
+
+**Classification:**
+- `supports_bug` — DB confirms faulty state from ticket
+- `contradicts_bug` — DB shows correct state
+- `reveals_root_cause` — DB exposes deeper issue (missing record, wrong FK, corruption)
+- `inconclusive` — relevant data not found
+- `query_failed` — MCP/query failed (document error)
+
+**Failure handling:** Retry MCP 2–3 times; if still failing, document `db_investigation=failed` and continue — DB failure does **not** block verdict (unlike Confluence), but reduces confidence.
+
+**Report section:** Include **`### Database Investigation`** with environment, classification, queries, findings, and evidence impact.
+
+Full procedure: **`.cursor/skills/phoenix-bug-validation/SKILL.md`** Step 4b.
+
 ### Step 5: Apply 5-Verdict Decision Matrix
 
-- Allowed when Steps **0a–4** are complete **or** status is **`PROCESS BLOCKED`** (then omit verdict — see below).
-- **VALID**: Exact Confluence match + code confirms faulty behavior.
-- **NEEDS CLARIFICATION**: Contextual Confluence match + code confirms behavior.
-- **NEEDS APPROVAL**: No Confluence match + code confirms behavior.
-- **NOT VALID**: Confluence contradicts expected behavior + code follows Confluence.
-- **INSUFFICIENT EVIDENCE**: Confluence and/or code and/or Swagger evidence cannot be reliably established.
+- Allowed when Steps **0a–4b** are complete **or** status is **`PROCESS BLOCKED`** (then omit verdict — see below).
+- **VALID**: Exact Confluence match + code confirms faulty behavior (+ DB may confirm faulty data state).
+- **NEEDS CLARIFICATION**: Contextual Confluence match + code confirms behavior (+ DB may reveal edge cases).
+- **NEEDS APPROVAL**: No Confluence match + code confirms behavior (+ DB strengthens the case).
+- **NOT VALID**: Confluence contradicts expected behavior + code follows Confluence (+ DB may confirm correct state).
+- **INSUFFICIENT EVIDENCE**: Confluence and/or code and/or Swagger and/or DB evidence cannot be reliably established.
+
+**DB evidence impact:** DB findings are **supporting evidence** — they strengthen conclusions but do not override code + Confluence. Root cause findings from DB can raise confidence significantly.
 
 Use the markdown structure in **“Markdown response template”** below (sections 1–5).
 
@@ -135,7 +168,7 @@ Use the markdown structure in **“Markdown response template”** below (sectio
 
 - **Mandatory:** Post the **full** structured report in the current chat after every completed validation run. Do not substitute with a short status-only reply. Follow **`.cursor/skills/phoenix-bug-validation/SKILL.md`** **Report section order** (Reproduce steps → Diagrams → Expected behavior → **Confluence evidence with full wiki URLs** → Swagger → Code → Verdict → …).
 - **Mandatory Slack:** Send the **same** full report to Slack channel **`bug-validation`** (`C0AUEEDVCEL`) via `slack_send_message(channel_id: "C0AUEEDVCEL", message: <full report>)` (plugin-slack-slack MCP). The Slack message MUST include the **same Confluence wiki URLs** as chat (Rule 32 product expectation). If Slack is unavailable, include `Slack delivery: failed` and the failure reason in chat.
-- **Final verdict rule:** Concluding validity must reflect **Confluence + Swagger + code** evidence from this workflow — not Playwright runs.
+- **Final verdict rule:** Concluding validity must reflect **Confluence + Swagger + code + DB** evidence from this workflow — not Playwright runs.
 - **Disk:** Save `BugValidation_[DescriptiveName].md` under **Chat reports** only if the user runs **`/report`** or explicitly asks to save (Rule 0.6).
 
 ### Step 6a: Evidence checklist (MANDATORY in final output when `COMPLETED`)
@@ -146,6 +179,7 @@ Include **`### Evidence Checklist`** with one line each:
 - Confluence decision wiki URLs: `complete` | `partial` | `n_a_blocked` — every decision-driving page must have a full wiki URL when Confluence read succeeded (see Step 2).
 - Swagger refresh: `ok` | `failed_using_cache` — cite spec path used.
 - Code analysis: `done` | `could_not_verify` — cite primary file:line references.
+- Database investigation: `done` | `failed` | `inconclusive` — cite environment, tables queried, key findings.
 
 If status is **`PROCESS BLOCKED`**, omit **Final Verdict** and instead include **Blocker Summary**, **Next action required from user**, and end with a direct question.
 
@@ -186,6 +220,20 @@ Use this structure when status is **`COMPLETED`**:
 - Lines: …
 - Implementation: …
 
+### Database Investigation
+**Environment:** <env> (PostgreSQL<Env>)
+**Classification:** supports_bug | contradicts_bug | reveals_root_cause | inconclusive | query_failed
+**Queries executed:**
+1. `SELECT ... FROM ... WHERE ...` — [purpose]
+2. …
+
+**Findings:**
+- [Key finding 1]
+- [Key finding 2]
+- …
+
+**Evidence impact:** [How DB findings affect the verdict]
+
 ### Final Verdict
 **Verdict:** …
 **Reasoning:** …
@@ -216,7 +264,7 @@ Your final response MUST include a **Confidence Score** (0–100%) at the end of
 Reason: <1-2 sentences explaining what raised or lowered confidence>
 ```
 
-Scoring: 90–100% = verified data + clear requirements; 70–89% = reasonable inference with some assumptions (list them); 50–69% = significant info gaps, user review needed; <50% = flag prominently, recommend verification. Be honest — a lower accurate score is more valuable than an inflated one.
+Scoring: 90–100% = verified data + clear requirements + DB confirms; 70–89% = reasonable inference with some assumptions (list them); 50–69% = significant info gaps, user review needed; <50% = flag prominently, recommend verification. DB evidence that reveals root cause or confirms data state can raise confidence by 5–15%. Be honest — a lower accurate score is more valuable than an inflated one.
 
 ## Output
 

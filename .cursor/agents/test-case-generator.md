@@ -17,6 +17,25 @@ When the **user requests test case creation**, the parent MUST run **cross-depen
 2. Consult **PhoenixExpert** if the task touches endpoints, validation rules, or business logic (Rule 8). Use parent context if already provided (cross-dependency-finder may have already consulted; reuse if passed).
 3. Confirm **prompt type**: bug (repro/verify) or task (feature/acceptance). The agent auto-detects; you can pass `prompt_type='bug'` or `'task'`.
 
+### MANDATORY: Ask about Frontend Test Cases (Rule TC-FRONTEND-ASK.0)
+
+**Before starting generation**, ask the user whether they want Frontend (UI) test cases:
+
+```
+Do you want to generate Frontend (UI) test cases?
+- Yes, generate both Backend and Frontend test cases
+- No, generate only Backend (API) test cases
+```
+
+| User answer | Action |
+|-------------|--------|
+| **Yes** | Generate `test_cases/Backend/<Topic>.md` + `test_cases/Frontend/<Topic>.md` |
+| **No** | Generate ONLY `test_cases/Backend/<Topic>.md`. Do NOT create Frontend file. |
+
+**Exception:** Skip the question if:
+- User explicitly said "frontend", "UI tests", "both backend and frontend" → include Frontend
+- User explicitly said "only backend", "API tests only", "no frontend" → exclude Frontend
+
 ### 0. MANDATORY – Playwright instructions (bridge to EnergoTS specs)
 
 Before generating or substantially editing test-case **`.md`** files, **read** (editor Read tool or equivalent) the instruction pack under **`Cursor-Project/config/playwright_generation/playwright instructions/`**. **Ignore** `__MACOSX` and `._*` junk.
@@ -101,13 +120,13 @@ When writing preconditions (document-level "Test data" and per-TC "Preconditions
 
 See `Cursor-Project/config/template/Test_case_template.md` for the full mandatory creation-step rule, examples, and data layer table.
 
-### 5. TC quality — apply rubric before saving (MANDATORY)
+### 5. TC quality — apply rubric before saving (MANDATORY — STRICT 0-100 SCORING)
 
-Score each TC against the quality rubric (`Cursor-Project/docs/test_case_quality_rubric.md`) on 6 axes (each 0–2): Intent uniqueness, Observable expected result, Endpoint specificity, Delta clarity, Risk coverage from cross_dep, Readability. Min passing score: **8/12**.
+Score each TC against the quality rubric (`Cursor-Project/docs/test_case_quality_rubric.md`) on **10 axes** (0–100 total). **Min passing score: 80/100**.
 
-- TCs scoring <8 MUST be rewritten (max 2 passes).
-- After all TCs pass (or max passes reached), invoke the **test-case-quality-validator** subagent (`.cursor/agents/test-case-quality-validator.md`) for second-pass verification. Apply its rewrite suggestions (max 2 rounds) before final file write.
-- Remaining failures after max passes: surface to user with the failing axis and reason — never silently keep a weak TC.
+- TCs scoring **<80** MUST be rewritten (max **3 iterations**).
+- After all TCs pass (or max iterations reached), invoke the **test-case-quality-validator** subagent (`.cursor/agents/test-case-quality-validator.md`) for second-pass verification. The validator operates in **STRICT MODE** — harsh, uncompromising. Apply its rewrite suggestions (max 3 rounds) before final file write.
+- After 3 iterations with failures: **BLOCK WORKFLOW** and escalate to user with all failing axes and reasons — never silently keep a weak TC.
 
 ### 6. Generate test cases (comprehensive coverage – mandatory)
 
@@ -135,29 +154,33 @@ Score each TC against the quality rubric (`Cursor-Project/docs/test_case_quality
 
 **Content:** Every test case document MUST follow the **Test Case Template**: **`Cursor-Project/config/template/Test_case_template.md`**. Use that template's structure and placeholders. Write in **maximally detailed**, **human-readable** language: full sentences where they help, no unexplained jargon, plain English. Each scenario MUST have: Test title (in the TC heading), Description, Preconditions (numbered — using mandatory creation-step format), Test steps (numbered), Expected test case results, and—for bugs—Actual result. See the template for the exact sections and the human-readable language rules.
 
-**Folder (two-folder layout):** Save as **two separate `.md` files** per topic:
+**Folder layout (based on user choice from Rule TC-FRONTEND-ASK.0):**
 
 **Root folder:** `Cursor-Project/test_cases/`
 
 **Structure:**
-- **Backend file:** `Cursor-Project/test_cases/Backend/<Topic_name>.md` — contains ONLY **Backend Test Cases** (`TC-BE-N`).
-- **Frontend file:** `Cursor-Project/test_cases/Frontend/<Topic_name>.md` — contains ONLY **Frontend Test Cases** (`TC-FE-N`).
-- Both files share the same `<Topic_name>` (e.g. `Invoice_cancellation.md`).
-- Each file must have at least one Positive and one Negative TC. If a layer is not applicable, create the file with an N/A note.
+
+| User choice | Files created |
+|-------------|---------------|
+| **Yes (Backend + Frontend)** | `Backend/<Topic>.md` + `Frontend/<Topic>.md` |
+| **No (Backend only)** | `Backend/<Topic>.md` ONLY |
+
+- **Backend file:** `Cursor-Project/test_cases/Backend/<Topic_name>.md` — contains ONLY **Backend Test Cases** (`TC-BE-N`). **ALWAYS created.**
+- **Frontend file:** `Cursor-Project/test_cases/Frontend/<Topic_name>.md` — contains ONLY **Frontend Test Cases** (`TC-FE-N`). **Created ONLY if user answered "Yes".**
+- Each created file must have at least one Positive and one Negative TC.
 - Use underscores for multi-word topic names.
 
 **Rules:**
-- Two `.md` files per topic (task, bug, feature) — Backend TCs in Backend/, Frontend TCs in Frontend/.
-- Each file MUST follow **`Cursor-Project/config/template/Test_case_template.md`**: document title, Jira, Type, Summary, Scope, Test data (preconditions with creation-step format), then test case scenarios. Backend file has only TC-BE-N; Frontend file has only TC-FE-N.
-- Regression/impact cases (from cross_dependency_data) go in the most relevant file (Backend or Frontend).
-- Content spec: **`Cursor-Project/config/template/Test_case_template.md`**.
+- Each file MUST follow **`Cursor-Project/config/template/Test_case_template.md`**: document title, Jira, Type, Summary, Scope, Test data (preconditions with creation-step format), then test case scenarios.
+- Regression/impact cases (from cross_dependency_data) go in Backend file (or Frontend if user confirmed and the risk is UI-related).
+- **Do NOT create an empty Frontend file** when user chose "No" — simply skip creating it.
 
-**Also include in output (e.g. in a summary or index):**
+**Also include in output:**
 - Confluence references – relevant Confluence pages.
 - Codebase analysis – code references (paths, snippets).
-- File paths where test cases were saved (e.g. `test_cases/Backend/Invoice_cancellation.md` and `test_cases/Frontend/Invoice_cancellation.md`).
+- File paths where test cases were saved.
 
-Update `test_cases/README.md`, `test_cases/Backend/README.md`, and `test_cases/Frontend/README.md` when adding new files.
+Update `test_cases/README.md` and `test_cases/Backend/README.md` always. Update `test_cases/Frontend/README.md` only if Frontend file was created.
 
 ## Constraints
 

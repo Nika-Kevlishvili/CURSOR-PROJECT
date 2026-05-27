@@ -1,11 +1,11 @@
 ---
 name: phoenix-bug-validation
-description: Validates bug reports using Rule 32 workflow — Confluence, refreshed Swagger/OpenAPI, Phoenix codebase, diagrams, recovery patterns — then 5-verdict analysis. No automatic test-case or Playwright pipeline. READ-ONLY.
+description: Validates bug reports using Rule 32 workflow — Confluence, refreshed Swagger/OpenAPI, Phoenix codebase, database evidence (logs, relationships, data state), diagrams, recovery patterns — then 5-verdict analysis. No automatic test-case or Playwright pipeline. READ-ONLY.
 ---
 
 # Phoenix Bug Validation
 
-Ensures **Rule 32** bug validation (mandated by `.cursor/rules/workflows/workflow_rules.mdc`; **this SKILL is the canonical procedure**): **primary evidence** from **Confluence**, **OpenAPI/Swagger** (after mandatory refresh), and **Phoenix code** (aligned to the target environment), plus ticket/diagram recovery patterns → **full reply in chat**. **READ-ONLY** — no code changes during validation. Persisted `BugValidation_*.md` only if the user runs **`/report`** or explicitly asks to save.
+Ensures **Rule 32** bug validation (mandated by `.cursor/rules/workflows/workflow_rules.mdc`; **this SKILL is the canonical procedure**): **primary evidence** from **Confluence**, **OpenAPI/Swagger** (after mandatory refresh), **Phoenix code** (aligned to the target environment), and **database** (entity data, audit logs, relationships) — plus ticket/diagram recovery patterns → **full reply in chat**. **READ-ONLY** — no code changes during validation; database queries are SELECT-only. Persisted `BugValidation_*.md` only if the user runs **`/report`** or explicitly asks to save.
 
 **Out of scope for Rule 32:** automatic **test case** generation, **Playwright** spec authoring, **playwright-test-validator**, and **energo-ts-run**. Those belong to **Rule 35** (test cases), **Rule 36/37** (runs / HandsOff), or explicit user requests — not the bug-validator workflow.
 
@@ -124,18 +124,109 @@ When the resolved environment is **Prod** or **PreProd** (and by default for **T
 - Report: "Code validation: [matches reported behavior / does not match reported behavior / could not verify] - [explanation]".
 - Include file paths, line numbers, and code snippets; identify exact implementation.
 
+### Step 4b: Database Investigation [RECOMMENDED]
+
+**Goal:** Gather database evidence to strengthen or clarify validation conclusions. Use the **same environment** resolved in Step 0.
+
+**4b.1 — Environment-to-MCP mapping (MANDATORY)**
+
+| Environment | PostgreSQL MCP Server |
+|-------------|----------------------|
+| dev         | PostgreSQLDev        |
+| dev2        | PostgreSQLDev2       |
+| test        | PostgreSQLTest       |
+| preprod     | PostgreSQLPreProd    |
+| prod        | PostgreSQLProd       |
+| experiments | PostgreSQLexperiments |
+
+Connect via `mcp_PostgreSQL{Env}_connect_db()` then query with `mcp_PostgreSQL{Env}_query()`. **SELECT-only** — no INSERT/UPDATE/DELETE.
+
+**4b.2 — What to investigate (best effort, prioritized)**
+
+1. **Entity data state**
+   - Find the specific entity (contract, invoice, payment, receivable, liability, customer, POD, etc.) mentioned in the bug ticket.
+   - Query current state: status, dates, amounts, flags, relationships.
+   - Example patterns from **`.cursor/rules/integrations/database_workflow.mdc`** Rule DB.2.
+
+2. **Audit / change logs**
+   - Check `*_audit`, `*_history`, `*_log` tables for the entity's schema.
+   - Look for recent changes, state transitions, who/when modified.
+   - Identify if data changed unexpectedly or at wrong time.
+
+3. **Error logs (if available)**
+   - Query `error_log`, `scheduler_log`, `job_execution_log`, or similar tables.
+   - Filter by entity ID, date range, or error keywords from ticket.
+   - Extract stack traces, error messages, timestamps.
+
+4. **Relationships and dependencies**
+   - Find linked entities that may affect the bug case (e.g., invoice → contract → POD → customer).
+   - Check foreign key consistency, orphaned records, broken links.
+   - Use JOINs to trace the entity graph.
+
+5. **Data consistency checks**
+   - Verify business rule compliance in data (e.g., sum of line items = invoice total).
+   - Look for constraint violations, NULL where unexpected, invalid enum values.
+   - Compare actual data state vs expected state per Confluence/code rules.
+
+**4b.3 — Query construction guidelines**
+
+- Always use `DISTINCT` when JOINing to avoid duplicates.
+- Include relevant timestamps (`create_date`, `update_date`, `effective_date`).
+- Limit result sets (e.g., `LIMIT 50`) to avoid huge outputs.
+- Use schema prefixes (e.g., `product_contract.contracts`, `invoice.invoices`).
+- Never query credentials, passwords, or PII columns directly.
+
+**4b.4 — Classification**
+
+- **`supports_bug`**: DB data confirms the faulty state described in the ticket.
+- **`contradicts_bug`**: DB data shows expected/correct state, contradicting the reporter.
+- **`reveals_root_cause`**: DB data exposes a deeper issue (e.g., missing record, wrong FK, data corruption).
+- **`inconclusive`**: Relevant data not found or query could not be constructed.
+- **`query_failed`**: MCP connection or query failed (document error).
+
+**4b.5 — Failure handling**
+
+- If MCP connection fails: retry 2–3 times with backoff.
+- If still failing: document `db_investigation=failed`, include error, continue to verdict with remaining evidence.
+- DB investigation failure does **not** block the verdict (unlike Confluence) — it reduces confidence.
+
+**4b.6 — Report section**
+
+Include **`### Database Investigation`** in the final report:
+
+```markdown
+### Database Investigation
+**Environment:** <env> (PostgreSQL<Env>)
+**Classification:** supports_bug | contradicts_bug | reveals_root_cause | inconclusive | query_failed
+**Queries executed:**
+1. `SELECT ... FROM ... WHERE ...` — [purpose]
+2. ...
+
+**Findings:**
+- [Key finding 1]
+- [Key finding 2]
+- ...
+
+**Evidence impact:** [How DB findings affect the verdict]
+```
+
 ### Step 5: Apply 5-Verdict Decision Matrix
 
-Use **Confluence classification + code analysis**, with **Swagger** as supporting contract evidence when the bug is API-shaped. Allowed **after** Steps 0–4 are executed to the extent possible; if Step 2 ends in **`PROCESS BLOCKED`**, do **not** issue a business verdict.
+Use **Confluence classification + code analysis + database evidence**, with **Swagger** as supporting contract evidence when the bug is API-shaped. Allowed **after** Steps 0–4b are executed to the extent possible; if Step 2 ends in **`PROCESS BLOCKED`**, do **not** issue a business verdict.
 
-- **VALID**: Exact Confluence match + code confirms reported faulty behavior (Swagger may strengthen contract-level claims).
-- **NEEDS CLARIFICATION**: Contextual Confluence match + code confirms reported behavior.
-- **NEEDS APPROVAL**: No Confluence match + code confirms reported behavior.
-- **NOT VALID**: Confluence contradicts expected behavior + code follows Confluence.
-- **INSUFFICIENT EVIDENCE**: Confluence and/or code and/or Swagger evidence cannot be reliably established for a business verdict.
+- **VALID**: Exact Confluence match + code confirms reported faulty behavior (Swagger may strengthen contract-level claims; DB may confirm faulty data state).
+- **NEEDS CLARIFICATION**: Contextual Confluence match + code confirms reported behavior (DB may reveal edge cases or data patterns).
+- **NEEDS APPROVAL**: No Confluence match + code confirms reported behavior (DB evidence strengthens case for product owner review).
+- **NOT VALID**: Confluence contradicts expected behavior + code follows Confluence (DB may confirm correct data state).
+- **INSUFFICIENT EVIDENCE**: Confluence and/or code and/or Swagger and/or DB evidence cannot be reliably established for a business verdict.
+
+**DB evidence impact on verdict:**
+- DB findings that **reveal root cause** (e.g., corrupted data, missing FK, wrong status) can elevate confidence or shift verdict toward VALID.
+- DB findings that **contradict bug** (data is correct) can shift verdict toward NOT VALID.
+- DB findings are **supporting evidence**, not overriding — code + Confluence remain primary for behavior rules.
 
 **Report section order (chat + Slack + optional disk):**  
-`### Reproduce steps` → `### Diagrams used in this validation` → `### Expected behavior` → **`### Confluence evidence (decision basis)`** (must include **full wiki URL per page** used; see Step 2) → Swagger → Code → Verdict → Next steps → Evidence checklist → Confidence.
+`### Reproduce steps` → `### Diagrams used in this validation` → `### Expected behavior` → **`### Confluence evidence (decision basis)`** (must include **full wiki URL per page** used; see Step 2) → Swagger → Code → **Database Investigation** → Verdict → Next steps → Evidence checklist → Confidence.
 
 ### Step 6: Results (chat + Slack; optional file)
 
@@ -174,26 +265,30 @@ Use **Confluence classification + code analysis**, with **Swagger** as supportin
 
 **VALID**
 - Confluence explicitly documents the expected behavior from the bug report
-- Code implementation contradicts that documented expectation  
+- Code implementation contradicts that documented expectation
+- DB may confirm faulty data state (e.g., wrong status, missing record, broken relationship)
 - Action: Fix the bug
 
 **NEEDS CLARIFICATION**  
 - Confluence has related/contextual documentation but no exact rule
 - Code behavior matches what the bug describes as faulty
+- DB may reveal edge cases or data patterns not covered by existing rules
 - Action: Get product clarification on expected behavior, then proceed
 
 **NEEDS APPROVAL**
 - No relevant Confluence documentation found for this specific case
-- Code behavior matches what the bug describes as faulty  
+- Code behavior matches what the bug describes as faulty
+- DB evidence strengthens the case (confirms the data anomaly exists)
 - Action: Get product owner approval before treating as valid bug
 
 **NOT VALID**
 - Confluence explicitly contradicts the bug report's expected behavior
 - Code correctly implements what Confluence specifies
+- DB may confirm correct data state (data is as expected)
 - Action: Close bug as "working as designed"
 
 **INSUFFICIENT EVIDENCE**
-- Confluence/code/Swagger evidence is unavailable or too weak for a reliable business verdict
+- Confluence/code/Swagger/DB evidence is unavailable or too weak for a reliable business verdict
 - Action: resolve evidence gaps, then rerun validation
 
 **PROCESS BLOCKED (operational status, not verdict)**
@@ -204,10 +299,11 @@ Use **Confluence classification + code analysis**, with **Swagger** as supportin
 - Never use vague verdicts like "INCONCLUSIVE"  
 - Always separate evidence quality from business verdict
 - Make recommendations actionable based on verdict type
+- DB evidence is **supporting**, not overriding — use it to strengthen conclusions from code + Confluence
 
 ## Confidence Score (Rule CONF.1) [MANDATORY]
 
-The final output MUST include a **Confidence Score** (0–100%). Format: `**Confidence: XX%** Reason: <explanation>`. Scoring: 90–100% = Confluence exact match + code confirms (+ Swagger aligned when API-scoped); 70–89% = contextual match or partial code/Swagger evidence; 50–69% = significant evidence gaps; <50% = validation incomplete, flag prominently. Be honest — do not inflate.
+The final output MUST include a **Confidence Score** (0–100%). Format: `**Confidence: XX%** Reason: <explanation>`. Scoring: 90–100% = Confluence exact match + code confirms + DB supports (+ Swagger aligned when API-scoped); 70–89% = contextual match or partial code/Swagger/DB evidence; 50–69% = significant evidence gaps; <50% = validation incomplete, flag prominently. DB evidence that reveals root cause or confirms data state can raise confidence by 5–15%. Be honest — do not inflate.
 
 ## Routing reference
 

@@ -18,32 +18,52 @@ When creating, moving, or organizing test cases, ALWAYS follow this structure. T
 
 ---
 
+## Rule TC-FRONTEND-ASK.0: Ask user before generating Frontend test cases [MANDATORY]
+
+**Before generating test cases**, the agent MUST ask the user whether they want Frontend (UI) test cases:
+
+```
+Do you want to generate Frontend (UI) test cases?
+- Yes, generate both Backend and Frontend test cases
+- No, generate only Backend (API) test cases
+```
+
+| User choice | Files created |
+|-------------|---------------|
+| **Yes** | `Backend/<Topic>.md` + `Frontend/<Topic>.md` |
+| **No** | `Backend/<Topic>.md` ONLY |
+
+**Exception:** If the user's initial request explicitly mentions "frontend", "UI tests", or "both" → include Frontend without asking. If they say "only backend", "API only" → exclude Frontend without asking.
+
+---
+
 ## Root layout (Backend/ and Frontend/ sub-folders)
 
 **Path:** `Cursor-Project/test_cases/`
 
-Test case files are split into **two sub-folders** by testing layer:
+Test case files are organized in **two sub-folders** by testing layer:
 
-| Folder | Contents |
-|--------|----------|
-| **Backend/** | Backend (API) test cases — `TC-BE-N`. One `.md` file per topic. |
-| **Frontend/** | Frontend (UI) test cases — `TC-FE-N`. One `.md` file per topic. |
-
-Each topic produces **two files** with the **same `<Topic_name>`** — one in each folder:
+| Folder | Contents | Required? |
+|--------|----------|-----------|
+| **Backend/** | Backend (API) test cases — `TC-BE-N`. One `.md` file per topic. | **ALWAYS** |
+| **Frontend/** | Frontend (UI) test cases — `TC-FE-N`. One `.md` file per topic. | **Only if user confirmed** |
 
 **Path patterns:**
-- `test_cases/Backend/<Topic_name>.md` — contains only **Backend Test Cases** (`TC-BE-N`).
-- `test_cases/Frontend/<Topic_name>.md` — contains only **Frontend Test Cases** (`TC-FE-N`).
+- `test_cases/Backend/<Topic_name>.md` — contains only **Backend Test Cases** (`TC-BE-N`). **ALWAYS created.**
+- `test_cases/Frontend/<Topic_name>.md` — contains only **Frontend Test Cases** (`TC-FE-N`). **Created ONLY if user answered "Yes" to Frontend question.**
 
 - **&lt;Topic_name&gt;** = descriptive name for the task, bug, feature, or flow being tested. Use underscores for multi-word names.
 - The Backend file MUST NOT contain Frontend test cases, and vice versa.
 
-**Examples:**
+**Examples (when user chose "Yes" for Frontend):**
 - `test_cases/Backend/Invoice_cancellation.md` + `test_cases/Frontend/Invoice_cancellation.md`
 - `test_cases/Backend/Product_contract_create.md` + `test_cases/Frontend/Product_contract_create.md`
-- `test_cases/Backend/Zero_amount_liability_receivable.md` + `test_cases/Frontend/Zero_amount_liability_receivable.md`
 
-If a topic genuinely has no backend or no frontend test cases, the file in that folder MUST still be created with a note: *"No backend test cases applicable for this scope."* or *"No frontend test cases applicable for this scope."*
+**Examples (when user chose "No" — Backend only):**
+- `test_cases/Backend/Invoice_cancellation.md` (NO Frontend file created)
+- `test_cases/Backend/Product_contract_create.md` (NO Frontend file created)
+
+**Do NOT create an empty Frontend file with "N/A" note** when user chose "No" — simply do not create the file.
 
 ---
 
@@ -179,10 +199,11 @@ The **content** of each test case `.md` file MUST follow the **Test Case Templat
 ## Summary
 
 1. **Root:** `Cursor-Project/test_cases/`
-2. **Layout:** Two sub-folders — `Backend/` for TC-BE-N files, `Frontend/` for TC-FE-N files.
-3. **Naming:** `<Topic_name>.md` with underscores — same name in both folders (e.g. `Backend/Invoice_cancellation.md` + `Frontend/Invoice_cancellation.md`).
-4. **Separation:** Backend file contains ONLY backend test cases; Frontend file contains ONLY frontend test cases. No mixing.
-5. **Coverage:** Each file must have positive + negative TCs (or an explicit N/A note).
-6. **READMEs:** `test_cases/README.md` (root index), `test_cases/Backend/README.md`, `test_cases/Frontend/README.md`.
+2. **Ask first (Rule TC-FRONTEND-ASK.0):** Before generating, ask user if they want Frontend test cases. **Never auto-generate Frontend without asking.**
+3. **Layout:** Two sub-folders — `Backend/` (always) and `Frontend/` (only if user confirmed).
+4. **Naming:** `<Topic_name>.md` with underscores.
+5. **Separation:** Backend file contains ONLY backend test cases; Frontend file contains ONLY frontend test cases. No mixing.
+6. **Coverage:** Each created file must have positive + negative TCs.
+7. **READMEs:** Update `test_cases/README.md` and `test_cases/Backend/README.md` always. Update `test_cases/Frontend/README.md` only if Frontend file was created.
 
-Always use this layout when creating or organizing test cases. Violation: place both backend and frontend TCs in a single file, omit the Backend/Frontend folder split, or use the old flat / Objects / Flows structure for new test cases.
+Always use this layout when creating or organizing test cases. Violation: place both backend and frontend TCs in a single file, auto-generate Frontend without asking, or use the old flat / Objects / Flows structure for new test cases.

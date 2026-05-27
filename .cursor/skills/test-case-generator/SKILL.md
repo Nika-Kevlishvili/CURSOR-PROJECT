@@ -14,6 +14,31 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 - User mentions "test cases", "test scenarios", "generate tests", or "derive tests".
 - Command or request references test-case-generate or TestCaseGeneratorAgent.
 
+## MANDATORY: Ask about Frontend Test Cases (Rule TC-FRONTEND-ASK.0)
+
+**Before starting test case generation**, the agent MUST ask the user whether they want Frontend test cases generated.
+
+**Question (use AskQuestion tool or equivalent):**
+
+```
+Do you want to generate Frontend (UI) test cases?
+
+Options:
+- Yes, generate both Backend and Frontend test cases
+- No, generate only Backend (API) test cases
+```
+
+**Behavior based on answer:**
+
+| User answer | Action |
+|-------------|--------|
+| **Yes** | Generate both `test_cases/Backend/<Topic>.md` (TC-BE-N) and `test_cases/Frontend/<Topic>.md` (TC-FE-N) |
+| **No** | Generate ONLY `test_cases/Backend/<Topic>.md` (TC-BE-N). Do NOT create the Frontend file at all. |
+
+**NEVER auto-generate Frontend test cases without asking first.**
+
+**Exception:** If the user explicitly mentions "frontend", "UI tests", or "both backend and frontend" in their initial request, skip the question and include Frontend. If they say "only backend", "API tests only", or similar, skip the question and exclude Frontend.
+
 ## Mandatory: Rule 35 workflow
 
 **Do not skip:** When the user requests test case creation, run **cross-dependency-finder** first, then **test-case-generator** with the finder's output.
@@ -145,15 +170,16 @@ Test cases MUST be written so that Playwright automation can implement them **wi
 - Store created entities in `Responses` arrays (not describe-level `let` variables)
 - Never query existing data instead of creating new data
 
-### 4. TC quality — apply rubric before saving (MANDATORY)
+### 4. TC quality — apply rubric before saving (MANDATORY — STRICT 0-100 SCORING)
 
-Before writing the final `.md` files, score each TC against the quality rubric in `Cursor-Project/docs/test_case_quality_rubric.md`. Score axes (each 0–2): Intent uniqueness, Observable expected result, Endpoint specificity, Delta clarity, Risk coverage from cross_dep, Readability. Minimum passing score: **8/12**.
+Before writing the final `.md` files, score each TC against the quality rubric in `Cursor-Project/docs/test_case_quality_rubric.md`. Score **10 axes** (0–100 total). **Minimum passing score: 80/100**.
 
-- TCs scoring <8 MUST be rewritten (max 2 passes).
-- After rewriting, re-score; any TC still below 8 after 2 passes is flagged to the user with the specific axis that failed — do not silently drop or keep weak TCs.
-- After generation completes, invoke the **test-case-quality-validator** subagent (`.cursor/agents/test-case-quality-validator.md`) to do a second-pass verification. If it returns rewrite suggestions, apply them (max 2 rounds) before final file write.
+- TCs scoring **<80** MUST be rewritten (max **3 iterations**).
+- After rewriting, re-score; any TC still below 80 after 3 iterations is **escalated to the user** with all failing axes and reasons — do not silently drop or keep weak TCs.
+- After generation completes, invoke the **test-case-quality-validator** subagent (`.cursor/agents/test-case-quality-validator.md`) to do a second-pass verification. The validator operates in **STRICT MODE** — harsh, uncompromising, no leniency. If it returns rewrite suggestions, apply them (max 3 rounds) before final file write.
+- After 3 failed iterations: **BLOCK WORKFLOW** and escalate to user.
 
-### 5. Generate and save as TWO files — Backend and Frontend (comprehensive coverage)
+### 5. Generate and save test case files (Backend always, Frontend only if user confirmed)
 
 **Coverage (CRITICAL):** Generate **exhaustive** test cases – **not** a random or minimal set. Cover **every scenario that could occur**: all positive (happy path, valid inputs), all negative (invalid inputs, errors, rejections), edge cases, boundaries, and regression from cross_dependency_data (what_could_break). Aim for the **maximum number** of test cases that **fully cover** the task or bug.
 
@@ -167,15 +193,19 @@ Before writing the final `.md` files, score each TC against the quality rubric i
 
 **Root folder:** `Cursor-Project/test_cases/`
 
-**Structure:** Two sub-folders — `Backend/` and `Frontend/`.
+**Structure (based on user choice from Rule TC-FRONTEND-ASK.0):**
 
-- **Backend file:** `Cursor-Project/test_cases/Backend/<Topic_name>.md` — contains ONLY **Backend Test Cases** (`TC-BE-N`).
-- **Frontend file:** `Cursor-Project/test_cases/Frontend/<Topic_name>.md` — contains ONLY **Frontend Test Cases** (`TC-FE-N`).
-- Both files share the same `<Topic_name>` (e.g. `Invoice_cancellation.md`).
-- Each file must have at least one Positive and one Negative TC. If a layer is not applicable, create the file with an N/A note.
+| User choice | Files created |
+|-------------|---------------|
+| **Yes (Backend + Frontend)** | `Backend/<Topic>.md` + `Frontend/<Topic>.md` |
+| **No (Backend only)** | `Backend/<Topic>.md` ONLY — do NOT create Frontend file |
+
+- **Backend file:** `Cursor-Project/test_cases/Backend/<Topic_name>.md` — contains ONLY **Backend Test Cases** (`TC-BE-N`). **ALWAYS created.**
+- **Frontend file:** `Cursor-Project/test_cases/Frontend/<Topic_name>.md` — contains ONLY **Frontend Test Cases** (`TC-FE-N`). **Created ONLY if user confirmed "Yes" to Frontend question.**
+- Each file must have at least one Positive and one Negative TC.
 - Use underscores for multi-word topic names.
 
-Regression/impact cases (from what_could_break) go in whichever file (Backend or Frontend) is most relevant. Update `test_cases/README.md`, `test_cases/Backend/README.md`, and `test_cases/Frontend/README.md` when adding new files.
+Regression/impact cases (from what_could_break) go in the Backend file (or Frontend if user confirmed and the risk is UI-related). Update `test_cases/README.md` and `test_cases/Backend/README.md` when adding new files. Update `test_cases/Frontend/README.md` only if Frontend file was created.
 
 ### 6. Output content
 
