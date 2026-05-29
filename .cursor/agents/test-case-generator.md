@@ -10,16 +10,25 @@ You generate **test cases** from bug or task descriptions (TestCaseGeneratorAgen
 
 ## Before generating (Rule 35)
 
-When the **user requests test case creation**, the parent MUST run **cross-dependency-finder** first (Rule 35; Rule 35a = Jira + codebase + shallow Confluence — **no** local merge/git). Cross-dependency-finder may consult **PhoenixExpert**; it returns a report (including "what could break") as `context['cross_dependency_data']`. Do not run test-case-generator without this step when the user asked for test cases.
+When the **user requests test case creation**, the **parent orchestrator** MUST complete gates in this order (`.cursor/rules/workspace/test_cases_structure.mdc` — **TC-ENV-ASK.0** then **TC-FRONTEND-ASK.0**):
 
-0. **Phoenix branch alignment (Rule PHOENIX-SWITCH.0)** — Confirm the parent resolved environment through `environment-resolver` and already aligned every `Cursor-Project/Phoenix/*` repo via `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` (`dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`). If not aligned yet (or environment is unknown), do not start generation — require `environment-resolver` + alignment first (Rule CONF.0). **Subagent reuse (Rule PHOENIX-SWITCH.0 §7a):** if the parent already ran cross-dependency-finder for the same environment in this session and the alignment exit code was `0`, do NOT re-run the script — reuse it. If the alignment exit code was `2`, generate test cases but flag mixed-state in chat. If it was `3`, stop and report. Local Phoenix edits are discarded during alignment; Phoenix code remains READ-ONLY (Rule 0.8 Tier A).
+| Order | Parent must complete |
+|-------|----------------------|
+| **1** | **Environment** — `environment-resolver` or AskQuestion (six envs). **No** Phoenix grep / `switch-phoenix-branches` before this. Jira read-only fetch is OK. |
+| **2** | **Frontend scope** — TC-FRONTEND-ASK.0 unless user already said backend-only / both / frontend |
+| **3** | **Phoenix alignment** — `switch-phoenix-branches.ps1 -Environment <env>` |
+| **4** | **cross-dependency-finder** → pass `cross_dependency_data` to this agent |
+
+Do not run test-case-generator without cross-dependency-finder when the user asked for test cases.
+
+0. **Phoenix branch alignment (Rule PHOENIX-SWITCH.0)** — Confirm the parent completed **TC-ENV-ASK.0** and aligned every `Cursor-Project/Phoenix/*` repo via `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>`. If environment is unknown, **PROCESS BLOCKED** — parent must ask env **before** Frontend question (Rule CONF.0 / TC-ENV-ASK.0). **Subagent reuse (Rule PHOENIX-SWITCH.0 §7a):** if the parent already ran cross-dependency-finder for the same environment in this session and the alignment exit code was `0`, do NOT re-run the script — reuse it. If the alignment exit code was `2`, generate test cases but flag mixed-state in chat. If it was `3`, stop and report. Local Phoenix edits are discarded during alignment; Phoenix code remains READ-ONLY (Rule 0.8 Tier A).
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. Consult **PhoenixExpert** if the task touches endpoints, validation rules, or business logic (Rule 8). Use parent context if already provided (cross-dependency-finder may have already consulted; reuse if passed).
 3. Confirm **prompt type**: bug (repro/verify) or task (feature/acceptance). The agent auto-detects; you can pass `prompt_type='bug'` or `'task'`.
 
 ### MANDATORY: Ask about Frontend Test Cases (Rule TC-FRONTEND-ASK.0)
 
-**Before starting generation**, ask the user whether they want Frontend (UI) test cases:
+**After environment is resolved (TC-ENV-ASK.0)** and **before writing** `.md` files, the parent (or this agent if parent did not ask) must confirm Frontend scope:
 
 ```
 Do you want to generate Frontend (UI) test cases?

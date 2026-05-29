@@ -14,9 +14,29 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 - User mentions "test cases", "test scenarios", "generate tests", or "derive tests".
 - Command or request references test-case-generate or TestCaseGeneratorAgent.
 
+## Gate order (MANDATORY — Rule 35; do not reorder)
+
+| Step | Gate | Blocks until done |
+|------|------|-------------------|
+| **0a** | **TC-ENV-ASK.0** — environment (`dev` … `experiments`) via **`environment-resolver`** / AskQuestion | Phoenix grep, `switch-phoenix-branches`, env-specific Swagger |
+| **0b** | **TC-FRONTEND-ASK.0** — Backend only vs Backend+Frontend | Writing `.md` under `test_cases/` |
+| **0c** | **Phoenix alignment** — `switch-phoenix-branches.ps1` (Rule PHOENIX-SWITCH.0) | cross-dep Phoenix codebase reads |
+| **1** | **cross-dependency-finder** (Rule 35a) | test-case-generator |
+| **2** | **test-case-generator** + quality validator | — |
+
+**Allowed before 0a:** Jira read (MCP/REST) only. **Forbidden before 0a:** inferring Test/Dev from ticket status, fix version, or "Testing" status.
+
+Canonical: `.cursor/rules/workspace/test_cases_structure.mdc` (Rules **TC-ENV-ASK.0**, **TC-FRONTEND-ASK.0**).
+
+## MANDATORY: Environment first (Rule TC-ENV-ASK.0)
+
+**Before Step 0b (Frontend) and before Phoenix alignment**, resolve target environment. Use **`environment-resolver`** or AskQuestion with: Dev, Dev2, Test, PreProd, Prod, Experiments. State in chat: `Target environment: <env>`.
+
+**Do not** proceed to Frontend question, `switch-phoenix-branches`, or Phoenix codebase reads until environment is confirmed in the **current chat** (or user authorized `your choice` / `defaults`).
+
 ## MANDATORY: Ask about Frontend Test Cases (Rule TC-FRONTEND-ASK.0)
 
-**Before starting test case generation**, the agent MUST ask the user whether they want Frontend test cases generated.
+**After environment is resolved (Step 0a)**, and **before writing** test-case `.md` files, ask whether the user wants Frontend test cases generated — unless the exceptions below apply.
 
 **Question (use AskQuestion tool or equivalent):**
 
@@ -41,9 +61,9 @@ Options:
 
 ## Mandatory: Rule 35 workflow
 
-**Do not skip:** When the user requests test case creation, run **cross-dependency-finder** first, then **test-case-generator** with the finder's output.
+**Do not skip:** When the user requests test case creation, complete **Gate order** (0a → 0b → 0c) then run **cross-dependency-finder**, then **test-case-generator** with the finder's output.
 
-0. **Step 0 – Environment (Rule PHOENIX-SWITCH.0):** Before any Phoenix code read for this workflow, resolve target env via **`environment-resolver`** (`dev` … `experiments`). Align every `Cursor-Project/Phoenix/*` repo using `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` (`-ConfirmProd` for `prod` only after explicit user acknowledgement). Pass resolved env + alignment exit code to cross-dependency-finder / generator prompts so subagents reuse alignment when the parent already ran the script (Rule PHOENIX-SWITCH.0 §7a). Details: `.cursor/rules/integrations/phoenix_branch_switching.mdc`.
+0. **Steps 0a–0c** — See **Gate order** table above (TC-ENV-ASK.0 → TC-FRONTEND-ASK.0 → Phoenix alignment per Rule PHOENIX-SWITCH.0). Align every `Cursor-Project/Phoenix/*` repo using `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` (`-ConfirmProd` for `prod` only after explicit user acknowledgement). Pass resolved env + alignment exit code to cross-dependency-finder / generator prompts (Rule PHOENIX-SWITCH.0 §7a). Details: `.cursor/rules/integrations/phoenix_branch_switching.mdc`.
 1. **Step 1 – Cross-dependency-finder:** Same scope (bug/task/feature). Finder MUST follow Rule 35a when user gives Jira/bug/task: **Jira MCP + codebase + shallow Confluence** — **no** local merge/git. **Pattern:** `Cursor-Project/docs/CROSS_DEPENDENCY_WORK_PATTERN.md`. Finder may consult PhoenixExpert. Obtain structured output (including what_could_break and technical_details).
 2. **Step 2 – Test-case-generator:** Call with `context['cross_dependency_data'] = <finder output>` (includes technical_details from merges when applicable), plus Confluence data and codebase_findings.
 

@@ -2,7 +2,8 @@
   "version": 1,
   "hooks": {
     "beforeSubmitPrompt": [
-      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/block-jira-phoenix-delivery.ps1" }
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/block-jira-phoenix-delivery.ps1" },
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/remind-test-case-env-first.ps1" }
     ],
     "beforeFileEdit": [
       { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/protect-phoenix-code.ps1" }

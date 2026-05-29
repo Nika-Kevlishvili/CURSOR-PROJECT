@@ -20,10 +20,17 @@ Route to cross-dependency-finder subagent / CrossDependencyFinderAgent. Do not d
 
 ## Workflow
 
-### 0. Jira-anchored analysis (Rule 35a) [when user gives a Jira/bug/task]
+### 0. Environment prerequisite (Rule TC-ENV-ASK.0 / PHOENIX-SWITCH.0) [MANDATORY before Phoenix codebase]
+
+- **Parent orchestrator** MUST resolve environment (`dev` … `experiments`) **before** invoking cross-dependency-finder when this run is part of **Rule 35** test-case generation (or any Phoenix code read).
+- If the prompt does not include `Target environment: <env>` (or equivalent) from a completed **TC-ENV-ASK.0** / **`environment-resolver`** step, **STOP** and return `PROCESS BLOCKED: environment not resolved — ask user (six options) before Phoenix reads` to the parent. Do **not** grep Phoenix or run `switch-phoenix-branches` on inferred Test/Dev.
+- **Jira-only fetch** may already exist from the parent; that does not satisfy environment resolution.
+- When environment is provided: align Phoenix via `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` unless parent already aligned same env (Rule PHOENIX-SWITCH.0 §7a).
+
+### 0b. Jira-anchored analysis (Rule 35a) [when user gives a Jira/bug/task]
 
 - **Jira:** Load issue (key, summary, description, links, key custom fields) via **Jira MCP** first; if MCP fails after retries, use **REST read fallback** per **`.cursor/rules/integrations/jira_rest_fallback.mdc`** (disclose `Jira source: REST fallback` in output to parent).
-- **Codebase:** Search/read Phoenix code (READ-ONLY) for entry points, callers, **what_could_break**.
+- **Codebase:** Search/read Phoenix code (READ-ONLY) for entry points, callers, **what_could_break** — **only after** step 0 environment + alignment.
 - **Prohibited (default):** local **`git log` / merge lookup** for the ticket key; **`git show`** archaeology; **git sync** triggered only because cross-dep ran; any removed **git snapshot** script.
 - **GitLab MR/merge:** **Only** if the user **explicitly** asks; read-only MCP.
 - **technical_details:** From Jira + codebase (paths, services, notes) — **not** mandatory MR/merge-commit lists.

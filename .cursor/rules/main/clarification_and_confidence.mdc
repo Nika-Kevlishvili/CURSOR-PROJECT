@@ -24,6 +24,7 @@ Before substantive tool use or file edits, verify you know:
 
 **Ask if any of the above is missing, vague, or conflicting** — including:
 
+- **Test case generation (Rule 35):** environment (**TC-ENV-ASK.0**) **before** Frontend scope (**TC-FRONTEND-ASK.0**) and **before** Phoenix alignment or Phoenix code reads. Asking Frontend alone does **not** satisfy the environment gate.
 - Database or production data work **without** the user naming the environment (never infer Prod vs Test from habit, ticket prefix, or prior session). **Rule DB.0a** — agents must ask before PostgreSQL MCP; do not bypass by calling MCP first.
 - “Run tests” / “run the query” **without** which test, which DB, or which app URL/environment.
 - “Fix it” / “update tests” **without** ticket key, file path, failure output, or acceptance hint.

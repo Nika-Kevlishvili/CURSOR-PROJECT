@@ -11,7 +11,7 @@ Single map from **rule / topic** to the **primary procedural** file(s). When `wo
 | 32 Bug validation | BugFinder: env alignment, diagrams, Confluence, mandatory Swagger refresh + OpenAPI, code, 5 verdicts, Slack — no TC/Playwright pipeline | `.cursor/skills/phoenix-bug-validation/SKILL.md`, `.cursor/agents/bug-validator.md` |
 | 33 DB Test | PostgreSQLTest MCP | `.cursor/rules/integrations/database_workflow.mdc` |
 | DB.0a DB env gate | Ask env in chat before MCP (`phoenix-database` SKILL Step 0, `database-query` agent) | `.cursor/skills/phoenix-database/SKILL.md`, `.cursor/rules/integrations/database_workflow.mdc`, `.cursor/agents/database-query.md` |
-| 35 / 35a Test cases | Cross-dep first, TC quality, diagrams | `.cursor/skills/cross-dependency-finder/SKILL.md`, `.cursor/skills/test-case-generator/SKILL.md`, `.cursor/agents/test-case-generator.md` |
+| 35 / 35a Test cases | **TC-ENV-ASK.0** → TC-FRONTEND-ASK.0 → Phoenix align → cross-dep → TC quality | `.cursor/rules/workspace/test_cases_structure.mdc` (TC-ENV-ASK.0, TC-FRONTEND-ASK.0), `.cursor/skills/cross-dependency-finder/SKILL.md`, `.cursor/skills/test-case-generator/SKILL.md`, `.cursor/agents/environment-resolver.md`, `.cursor/agents/test-case-generator.md` |
 | 36 EnergoTS run | `energo-ts-run`, `cursor` branch | `.cursor/skills/energo-ts-run/SKILL.md`, `.cursor/agents/energo-ts-run.md` |
 | 37 HandsOff | Full orchestration | `.cursor/commands/hands-off.md`, `.cursor/agents/hands-off.md` |
 | 39 Non-bug Confluence | Linked pages only | `workflow_rules.mdc` (short); Confluence MCP read tools |

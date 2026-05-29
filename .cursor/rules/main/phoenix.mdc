@@ -46,7 +46,7 @@ Cursor loads **all** `.mdc` files under `.cursor/rules/` **recursively** (subjec
 7. **Rule 0.4 / Rule 8:** PhoenixExpert consultation mandatory before tasks
 8. **Rule 11 / 0.3:** External automation may use IntegrationService; in Cursor chat follow MCP/Jira/GitLab steps — no `agents.*` imports here
 9. **Rule 32:** ALL bug validation → ALWAYS use BugFinderAgent
-10. **Rule 35/35a:** Test cases → cross-dependency-finder FIRST; Rule 35a: **Jira + codebase + shallow Confluence** — **no** local merge/git or git snapshot for cross-dep (see `workflow_rules.mdc`)
+10. **Rule 35/35a:** Test cases → **TC-ENV-ASK.0** (environment) → **TC-FRONTEND-ASK.0** → Phoenix align → cross-dependency-finder → generator; Rule 35a: **Jira + codebase + shallow Confluence** — **no** local merge/git (see `test_cases_structure.mdc`, `workflow_rules.mdc`)
 10a. **Rule 42 / JIRA.1:** Jira issue reads — **MCP first**; if Jira MCP fails after retries, use **REST read fallback** — **`.cursor/rules/integrations/jira_rest_fallback.mdc`**
 10b. **Rule 43 / CONFLUENCE.1:** Confluence reads — **MCP first**; if Confluence MCP fails after retries, use **REST read fallback** — **`.cursor/rules/integrations/confluence_rest_fallback.mdc`** (script: **`Cursor-Project/config/confluence/get-confluence-page-rest.ps1`**)
 10c. **Rule 44:** Jira ticket **analysis/triage/summary** with linked Confluence URLs → **must** read those pages same pass — **`.cursor/rules/main/evidence_only_project_answers.mdc`** (*Jira ticket analysis — linked Confluence*); **`workflow_rules.mdc`** Rule 44

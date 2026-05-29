@@ -22,6 +22,8 @@ If you cannot resolve with high confidence, ask the user to choose from those op
 
 ## Mandatory behavior
 
+0. **Rule 35 / test-case generation:** When the user asks to **generate test cases** (any language) and environment is not already confirmed in the **current chat**, this resolver (or equivalent AskQuestion) is **Step 0a** — **before** TC-FRONTEND-ASK.0 and **before** `switch-phoenix-branches`. Empty Jira `environment` → **always** questionnaire; do not let the parent substitute the Frontend question for this step.
+
 1. **Primary source order (strict):**
    - Explicit user message in current chat (highest priority)
    - Jira ticket fields/text (Environment field, summary, description, comments if available)

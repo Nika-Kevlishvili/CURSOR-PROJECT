@@ -6,8 +6,11 @@ globs:
   - "Cursor-Project/generated_test_cases/**"
   - ".cursor/commands/hands-off.md"
   - ".cursor/agents/test-case-generator.md"
+  - ".cursor/agents/cross-dependency-finder.md"
+  - ".cursor/agents/environment-resolver.md"
   - ".cursor/agents/hands-off.md"
   - ".cursor/skills/test-case-generator/**"
+  - ".cursor/skills/cross-dependency-finder/**"
 ---
 
 # TEST CASES FOLDER STRUCTURE [MANDATORY]
@@ -18,9 +21,38 @@ When creating, moving, or organizing test cases, ALWAYS follow this structure. T
 
 ---
 
+## Rule TC-ENV-ASK.0: Ask environment BEFORE Frontend and BEFORE Phoenix alignment [MANDATORY]
+
+**Intent:** Prevent agents from asking only the Frontend question (Rule TC-FRONTEND-ASK.0) while silently inferring Dev/Test/Prod. Aligns with **Rule CONF.0**, **Rule DB.0a**, **Rule PHOENIX-SWITCH.0**, and **`environment-resolver`**.
+
+### Gate order (Rule 35 / test-case generation — do not reorder)
+
+| Order | Gate | When skipped |
+|-------|------|----------------|
+| **1** | **TC-ENV-ASK.0** (this rule) — resolve `dev` … `experiments` | User named env in **current chat**, or `your choice` / `defaults` / `same as last time` (state assumption in chat) |
+| **2** | **TC-FRONTEND-ASK.0** — Backend only vs Backend+Frontend | User explicitly said frontend/UI/both or only backend/API only |
+| **3** | **Phoenix alignment** — `switch-phoenix-branches.ps1 -Environment <env>` | Parent already aligned same env in this chat (Rule PHOENIX-SWITCH.0 §7a) |
+| **4** | **cross-dependency-finder** → **test-case-generator** → quality validator | Never skip when user requested test cases |
+
+**Allowed before gate 1:** Jira issue read (MCP or REST) to understand scope — **no** Phoenix `grep`/codebase read, **no** `switch-phoenix-branches`, **no** env-specific Swagger as contract source until gate 1 is satisfied.
+
+**Ask environment** with **AskQuestion** (six options: Dev, Dev2, Test, PreProd, Prod, Experiments) when:
+
+- User did not name an environment in the **current task**, and
+- Jira `environment` is null/empty or ambiguous, and
+- **`environment-resolver`** would not resolve with ≥90% confidence.
+
+**Forbidden inference** (same as **`environment-resolver`**): Jira status "Testing"; fix version / hotfix; **Approved for Prod**; PDT-* prefix; linked ticket env; "usually Test"; EnergoTS defaults.
+
+**Same turn:** You MAY send **one** message with **two** AskQuestion blocks **only after** gate 1 is satisfied (env known) — e.g. Frontend question in the same turn as starting cross-dep. **Do NOT** ask Frontend **instead of** environment when env is still unknown.
+
+**Violation** is a **CRITICAL SYSTEM ERROR** (same class as Rule CONF.0).
+
+---
+
 ## Rule TC-FRONTEND-ASK.0: Ask user before generating Frontend test cases [MANDATORY]
 
-**Before generating test cases**, the agent MUST ask the user whether they want Frontend (UI) test cases:
+**After Rule TC-ENV-ASK.0** (environment resolved), and **before writing** test-case `.md` files, the agent MUST ask the user whether they want Frontend (UI) test cases — unless the Frontend exceptions below apply:
 
 ```
 Do you want to generate Frontend (UI) test cases?
@@ -199,7 +231,7 @@ The **content** of each test case `.md` file MUST follow the **Test Case Templat
 ## Summary
 
 1. **Root:** `Cursor-Project/test_cases/`
-2. **Ask first (Rule TC-FRONTEND-ASK.0):** Before generating, ask user if they want Frontend test cases. **Never auto-generate Frontend without asking.**
+2. **Ask first (Rule TC-ENV-ASK.0, then TC-FRONTEND-ASK.0):** Resolve **environment** before Frontend question and before Phoenix alignment. Then ask Frontend if applicable. **Never auto-generate Frontend without asking.**
 3. **Layout:** Two sub-folders — `Backend/` (always) and `Frontend/` (only if user confirmed).
 4. **Naming:** `<Topic_name>.md` with underscores.
 5. **Separation:** Backend file contains ONLY backend test cases; Frontend file contains ONLY frontend test cases. No mixing.

@@ -34,9 +34,12 @@ alwaysApply: true
 
 35. [CRITICAL] When the user requests creation of test cases (for a bug, task, or feature), ALWAYS follow this mandatory workflow:
 
-    Resolve environment + align Phoenix first (**Rule PHOENIX-SWITCH.0**; pass env + alignment exit code to subagents; prod `-ConfirmProd` + user ack). Then run the workflow below.
+    **Step 0 — Gates (order fixed; `.cursor/rules/workspace/test_cases_structure.mdc`):**
+    - **0a TC-ENV-ASK.0:** Ask environment (AskQuestion: Dev, Dev2, Test, PreProd, Prod, Experiments) when not named in current chat and Jira/resolver cannot resolve with high confidence — **before** Frontend question, Phoenix alignment, or Phoenix grep. Jira read-only fetch is allowed. **No** silent Test/Dev default (Rule CONF.0 / **`environment-resolver`** forbidden inference).
+    - **0b TC-FRONTEND-ASK.0:** Ask Backend vs Backend+Frontend **after** 0a unless user already stated scope.
+    - **0c PHOENIX-SWITCH.0:** Align Phoenix via `switch-phoenix-branches.ps1`; pass env + exit code to subagents; prod `-ConfirmProd` + user ack.
     
-    **Step 1: Run Cross-Dependency Finder FIRST (MANDATORY)**
+    **Step 1: Run Cross-Dependency Finder FIRST (MANDATORY)** — after Step 0c only
     - Delegate to **cross-dependency-finder** subagent (or run CrossDependencyFinderAgent) for the same scope (bug/task/feature).
     - Cross-dependency-finder MUST follow **Rule 35a** (Jira-anchored analysis; **no** local merge/git steps — see below).
     - Cross-dependency-finder MAY consult **PhoenixExpert** to study the project, scope, and dependencies (Rule 8).

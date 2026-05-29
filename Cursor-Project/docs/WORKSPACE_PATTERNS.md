@@ -29,13 +29,15 @@ Issue keys drive **HandsOff** (Rule 37), **bug validation** (Rule 32), and **tes
 
 Typical ordered chain:
 
-1. **environment-resolver** / user-stated environment → Phoenix branch alignment  
-2. **cross-dependency-finder** (mandatory before test cases; Rule 35a)  
-3. **test-case-generator** → two files under `Cursor-Project/test_cases/Backend/` and `Frontend/`  
-4. **test-case-quality-validator**  
-5. **energo-ts-test** (Playwright authoring — agent-only writes under `EnergoTS/tests/`)  
-6. **playwright-test-validator**  
-7. **energo-ts-run** (Rule 36: `cursor` branch only)
+1. **TC-ENV-ASK.0** — environment (`environment-resolver` / AskQuestion) **before** Frontend question and Phoenix reads  
+2. **TC-FRONTEND-ASK.0** — Backend only vs Backend+Frontend (when applicable)  
+3. Phoenix branch alignment (`switch-phoenix-branches.ps1`)  
+4. **cross-dependency-finder** (mandatory before test cases; Rule 35a)  
+5. **test-case-generator** → `test_cases/Backend/` and optionally `Frontend/`  
+6. **test-case-quality-validator**  
+7. **energo-ts-test** (Playwright authoring — agent-only writes under `EnergoTS/tests/`)  
+8. **playwright-test-validator**  
+9. **energo-ts-run** (Rule 36: `cursor` branch only)
 
 **Swagger:** Before creating or editing EnergoTS `.spec.ts`, run **`update-swagger-specs.ps1`** (Rule 41).
 
