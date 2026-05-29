@@ -30,6 +30,7 @@ Every `.md` file MUST follow **`Cursor-Project/config/template/Test_case_templat
 | Service Contract first version startDate re-alignment — auto-realign version 1 startDate to signingDate when signingDate < startDate during finalization; guard checks, version ordering, downstream impact | `Backend/Service_Contract_First_Version_StartDate_PDT_2846.md` | `Frontend/Service_Contract_First_Version_StartDate_PDT_2846.md` | PDT-2846 |
 | Minimal interim payment — create interim invoice only when total incl. VAT ≥ 5 EUR (standard + manual paths; backend only) | `Backend/PDT_2872_minimal_interim_payment.md` | — | PDT-2872 |
 | Product Contract creation — happy path, POD linkage, validation scenarios | `Backend/Product_contract_creation.md` | — | N/A (General) |
+| Single email to multiple recipients — Email Communication (one mass-comm send, shared `task_id`) | `Backend/Single_email_multiple_recipients_PDT_2881.md` | — | PDT-2881 |
 
 ## Layout reference
 

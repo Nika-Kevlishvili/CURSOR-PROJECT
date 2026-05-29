@@ -21,3 +21,4 @@ TC numbering: `TC-BE-1`, `TC-BE-2`, ...
 | `Service_Contract_First_Version_StartDate_PDT_2846.md` | Service Contract first version startDate re-alignment — auto-realign v1 startDate to signingDate during finalization; guard checks, uniqueness, version ordering | PDT-2846 | TC-BE-1 through TC-BE-20 |
 | `PDT_2872_minimal_interim_payment.md` | Minimal interim payment — 5 EUR incl. VAT gate; self-contained preconditions per TC; no skip/log observability TCs | PDT-2872 | TC-BE-1 through TC-BE-14 |
 | `Product_contract_creation.md` | Product Contract creation — happy path, POD linkage, validation errors (missing customer, grid operator mismatch, inactive product) | N/A (General) | TC-BE-1 through TC-BE-5 |
+| `Single_email_multiple_recipients_PDT_2881.md` | Email Communication — one physical outbound email for multiple recipients (shared `task_id`, semicolon addresses, invoice aggregation, resend) | PDT-2881 | TC-BE-1 through TC-BE-10 |
