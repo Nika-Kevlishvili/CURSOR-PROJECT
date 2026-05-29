@@ -1,0 +1,1192 @@
+<mxfile host="app.diagrams.net" modified="2026-05-28T12:00:00.000Z" agent="Cursor-AI" version="24.7.16" type="device">
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 1: LEGEND & DESIGN PRINCIPLES                      -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <diagram id="p1-legend" name="1. Legend and Principles">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="t1" value="&lt;b&gt;Legend &amp; Design Principles&lt;/b&gt;" style="text;html=1;align=center;fontSize=24;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1840" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Shape legend -->
+        <mxCell id="leg_title" value="&lt;b&gt;Shape Legend&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="300" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ls1" value="Rounded rect = Agent / workflow step" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="120" width="280" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="ls2" value="Hexagon = Orchestration layer&lt;br&gt;(rules, skills, hooks)" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;size=10;fillColor=#F5F5F5;strokeColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="180" width="280" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="ls3" value="Diamond = Decision gate&lt;br&gt;(mandatory check)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="250" width="280" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="ls4" value="Cylinder = Database" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="340" width="280" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="ls5" value="Cloud = External service&lt;br&gt;(Jira, Confluence, Slack)" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="420" width="280" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="ls6" value="Document = Artifact / file output" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=0.15;fillColor=#FFFFFF;strokeColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="520" width="280" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="ls7" value="Process box = Cross-cutting concern" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#FFFFFF;strokeColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="590" width="280" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- Color legend -->
+        <mxCell id="cl_title" value="&lt;b&gt;Color Scheme&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="400" y="80" width="300" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="cl1" value="Gold / yellow = Phoenix / PhoenixExpert domain" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="400" y="120" width="360" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="cl2" value="Red / pink = Bug validation / Safety guards" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="400" y="170" width="360" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="cl3" value="Blue = Test cases / analysis" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="400" y="220" width="360" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="cl4" value="Purple = HandsOff orchestration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="400" y="270" width="360" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="cl5" value="Green = EnergoTS / Playwright" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="400" y="320" width="360" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="cl6" value="Gray = Utility agents / supporting workflows" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="400" y="370" width="360" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Connector legend -->
+        <mxCell id="cn_title" value="&lt;b&gt;Connector Types&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="400" y="430" width="300" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="cn1a" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="400" y="470" width="40" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="cn1b" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="540" y="470" width="40" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="cn1e" value="Solid = Primary data flow" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="cn1a" target="cn1b">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="cn2a" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="400" y="500" width="40" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="cn2b" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="540" y="500" width="40" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="cn2e" value="Dashed = Read-only / lookup" style="endArrow=block;html=1;strokeColor=#333333;dashed=1;" edge="1" parent="1" source="cn2a" target="cn2b">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="cn3a" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="400" y="530" width="40" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="cn3b" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="540" y="530" width="40" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="cn3e" value="Red dashed = Error / failure path" style="endArrow=block;html=1;strokeColor=#FF0000;dashed=1;strokeWidth=2;" edge="1" parent="1" source="cn3a" target="cn3b">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="cn4a" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="400" y="560" width="40" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="cn4b" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="540" y="560" width="40" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="cn4e" value="Curved = Feedback / iteration loop" style="endArrow=block;html=1;strokeColor=#9673A6;curved=1;strokeWidth=2;" edge="1" parent="1" source="cn4a" target="cn4b">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Design Principles -->
+        <mxCell id="dp_title" value="&lt;b&gt;Design Principles&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="840" y="80" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="dp1" value="1. PhoenixExpert is mandatory before any Phoenix task (Rule 0.4/8)&lt;br&gt;2. Environment must be explicit — never inferred (Rule CONF.0 / DB.0a)&lt;br&gt;3. Phoenix code is NEVER edited — read-only via aligned branches (Rule 0.8)&lt;br&gt;4. EnergoTS tests/ writable ONLY by EnergoTSTestAgent (Rule 0.8.1)&lt;br&gt;5. Confluence + GitLab = read-only always (Rule 1)&lt;br&gt;6. Swagger refresh mandatory before .spec.ts files (Rule 41)&lt;br&gt;7. No beforeAll in EnergoTS preconditions (Rule 40)&lt;br&gt;8. Every response: Confidence % + Agents involved (Rules CONF.1 / 0.1)&lt;br&gt;9. Disk reports only on /report, /feedback, HandsOff — NOT by default (Rule 0.6)&lt;br&gt;10. Jira bugs: Experiments board only, never Phoenix delivery (Rule JIRA.0)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#333333;fontSize=12;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="840" y="120" width="600" height="240" as="geometry"/>
+        </mxCell>
+
+        <!-- Canonical sources -->
+        <mxCell id="cs_title" value="&lt;b&gt;Canonical Sources (single source of truth per workflow)&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="840" y="390" width="600" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="cs1" value="Rules: .cursor/rules/**/*.mdc (always injected by Cursor)&lt;br&gt;Agents: .cursor/agents/*.md (Task tool subagent specs)&lt;br&gt;Skills: .cursor/skills/*/SKILL.md (step-by-step procedure)&lt;br&gt;Commands: .cursor/commands/*.md (operational checklists)&lt;br&gt;Hooks: .cursor/hooks.json + .cursor/hooks/*.ps1 (enforcement)&lt;br&gt;&lt;br&gt;Rule → canon map: Cursor-Project/docs/RULES_CANONICAL_INDEX.md&lt;br&gt;Agent roster: Cursor-Project/docs/AGENT_SUBAGENT_MAP.md&lt;br&gt;Architecture: Cursor-Project/docs/WORKSPACE_PATTERNS.md" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#333333;fontSize=12;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="840" y="430" width="600" height="200" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 2: ORCHESTRATION LAYER (.cursor internals)         -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <diagram id="p2-orch" name="2. Orchestration Layer">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="t1" value="&lt;b&gt;Orchestration Layer — .cursor/ Internals&lt;/b&gt;" style="text;html=1;align=center;fontSize=22;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1840" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Rules -->
+        <mxCell id="rules_grp" value="&lt;b&gt;Rules (.cursor/rules/**/*.mdc)&lt;/b&gt;&lt;br&gt;Always injected — gates &amp; constraints" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;size=15;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="350" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="r_core" value="core_rules.mdc&lt;br&gt;Rule 0.x (PhoenixExpert, reports, path tiers)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="170" width="220" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="r_safety" value="safety_rules.mdc&lt;br&gt;Rules 1, 14, 18–31" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="270" y="170" width="200" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="r_workflow" value="workflow_rules.mdc&lt;br&gt;Rules 32, 35, 36, 37, 39–44" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="480" y="170" width="220" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="r_db" value="database_workflow.mdc&lt;br&gt;Rules DB.0–DB.6" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="710" y="170" width="200" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="r_integ" value="integrations/*.mdc&lt;br&gt;Jira/Conf fallback, branch switch,&lt;br&gt;Swagger, EnergoTS lock, prod reader" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="920" y="170" width="250" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Agents -->
+        <mxCell id="agents_grp" value="&lt;b&gt;Agents (.cursor/agents/*.md)&lt;/b&gt;&lt;br&gt;Task-tool subagent specs — 18 agents total" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;size=15;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="260" width="350" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag1" value="phoenix-qa" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="350" width="130" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag2" value="bug-validator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="180" y="350" width="130" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag3" value="cross-dependency-finder" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="320" y="350" width="160" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag4" value="test-case-generator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="490" y="350" width="140" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag5" value="tc-quality-validator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="640" y="350" width="140" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag6" value="energo-ts-test" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="395" width="130" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag7" value="playwright-test-validator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="180" y="395" width="160" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag8" value="energo-ts-run" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="350" y="395" width="130" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag9" value="hands-off" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="490" y="395" width="130" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag10" value="database-query" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="630" y="395" width="130" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag11" value="production-data-reader" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="440" width="160" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag12" value="postman-collection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="210" y="440" width="140" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag13" value="jira-bug" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="360" y="440" width="120" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag14" value="report-generator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="490" y="440" width="130" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag15" value="env-resolver" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="630" y="440" width="120" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag16" value="env-access" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="760" y="440" width="110" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag17" value="test-runner" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="485" width="120" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="ag18" value="shell" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="170" y="485" width="100" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Skills -->
+        <mxCell id="skills_grp" value="&lt;b&gt;Skills (.cursor/skills/*/SKILL.md)&lt;/b&gt;&lt;br&gt;Step-by-step procedural docs" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;size=15;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="550" width="350" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="sk_list" value="phoenix-bug-validation &amp;middot; phoenix-agent-workflow &amp;middot; phoenix-commands&lt;br&gt;phoenix-database &amp;middot; phoenix-safety-readonly &amp;middot; phoenix-file-organization&lt;br&gt;phoenix-reporting &amp;middot; production-data-reader &amp;middot; test-case-generator&lt;br&gt;cross-dependency-finder &amp;middot; energo-ts-run &amp;middot; jira-bug-template" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#333333;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="640" width="550" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Commands -->
+        <mxCell id="cmds_grp" value="&lt;b&gt;Commands (.cursor/commands/*.md)&lt;/b&gt;&lt;br&gt;Operational checklists" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;size=15;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="750" width="350" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="cmd_list" value="hands-off.md &amp;middot; switch-phoenix-branches.md &amp;middot; update-swagger-specs.md&lt;br&gt;git-sync.md &amp;middot; (others as needed)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#333333;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="840" width="550" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- Hooks -->
+        <mxCell id="hooks_grp" value="&lt;b&gt;Hooks (.cursor/hooks.json + hooks/*.ps1)&lt;/b&gt;&lt;br&gt;Automated enforcement on agent events" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;size=15;fillColor=#F8CECC;strokeColor=#B85450;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="910" width="400" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="hook_detail" value="Block Phoenix edits &amp;middot; Enforce EnergoTS cursor branch&lt;br&gt;Prevent forbidden Confluence writes &amp;middot; Swagger refresh check" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#B85450;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="990" width="550" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- Flow: how request routes through layers -->
+        <mxCell id="flow_title" value="&lt;b&gt;Request Flow Through Layers&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="700" y="550" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="1. User sends message" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#333333;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="700" y="590" width="200" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="2. alwaysApply rules inject" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;size=10;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="700" y="650" width="230" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="3. CONF.0: scope clear?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="710" width="180" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3_ask" value="Ask clarifying Qs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="920" y="720" width="140" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="f4" value="4. Route to agent/skill" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="700" y="800" width="200" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="f5" value="5. Read canon SKILL before work" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="700" y="860" width="250" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="f6" value="6. Execute (hooks enforce guards)" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;size=10;fillColor=#F8CECC;strokeColor=#B85450;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="700" y="920" width="270" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="f7" value="7. Respond: answer + Confidence + Agents involved" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#333333;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="700" y="980" width="350" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="ef12" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="f1" target="f2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ef23" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="f2" target="f3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ef3n" value="No" style="endArrow=block;html=1;strokeColor=#FF0000;dashed=1;strokeWidth=2;" edge="1" parent="1" source="f3" target="f3_ask">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ef3y" value="Yes" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="f3" target="f4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ef45" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="f4" target="f5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ef56" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="f5" target="f6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ef67" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="f6" target="f7">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 3: ROUTING BY USER REQUEST                         -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <diagram id="p3-routing" name="3. Routing by User Request">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="t1" value="&lt;b&gt;Routing: User Intent → Agent / Workflow&lt;/b&gt;" style="text;html=1;align=center;fontSize=22;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1840" height="35" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="req" value="User request arrives" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#333333;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="810" y="70" width="300" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- Decision diamond: what type? -->
+        <mxCell id="d1" value="What type of&lt;br&gt;request?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="860" y="150" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_req_d1" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="req" target="d1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Branches from the diamond -->
+        <mxCell id="b_phx" value="phoenix-qa&lt;br&gt;(PhoenixExpert)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="180" width="180" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_bug" value="bug-validator&lt;br&gt;(BugFinderAgent)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="180" width="180" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_tc" value="cross-dep → tc-gen&lt;br&gt;→ tc-qual-val" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="180" width="180" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_ho" value="hands-off&lt;br&gt;(full orchestrator)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="180" width="180" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_pw" value="energo-ts-run" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="180" width="150" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_db" value="database-query" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="180" width="140" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_pdr" value="prod-data-reader" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1430" y="180" width="140" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="b_other" value="Other: jira-bug,&lt;br&gt;postman, report,&lt;br&gt;env-access, shell" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1590" y="170" width="140" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Connect diamond to branches -->
+        <mxCell id="ed_phx" value="Phoenix Q&amp;A" style="endArrow=block;html=1;strokeColor=#D6B656;strokeWidth=2;" edge="1" parent="1" source="d1" target="b_phx">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ed_bug" value="Bug report" style="endArrow=block;html=1;strokeColor=#B85450;strokeWidth=2;" edge="1" parent="1" source="d1" target="b_bug">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ed_tc" value="Test cases" style="endArrow=block;html=1;strokeColor=#6C8EBF;strokeWidth=2;" edge="1" parent="1" source="d1" target="b_tc">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ed_ho" value="/HandsOff" style="endArrow=block;html=1;strokeColor=#9673A6;strokeWidth=2;" edge="1" parent="1" source="d1" target="b_ho">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ed_pw" value="Run tests" style="endArrow=block;html=1;strokeColor=#82B366;strokeWidth=2;" edge="1" parent="1" source="d1" target="b_pw">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ed_db" value="DB query" style="endArrow=block;html=1;strokeColor=#666666;strokeWidth=2;" edge="1" parent="1" source="d1" target="b_db">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ed_pdr" value="Prod data" style="endArrow=block;html=1;strokeColor=#666666;strokeWidth=2;" edge="1" parent="1" source="d1" target="b_pdr">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ed_oth" value="Other" style="endArrow=block;html=1;strokeColor=#666666;" edge="1" parent="1" source="d1" target="b_other">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Env resolution gate (shared) -->
+        <mxCell id="env_gate" value="Environment&lt;br&gt;needed?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="810" y="300" width="160" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="env_resolve" value="environment-resolver&lt;br&gt;(ask user or extract from ticket)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="500" y="310" width="250" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="phx_switch" value="switch-phoenix-branches.ps1&lt;br&gt;(align Phoenix repos to env branch)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="500" y="380" width="280" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ee1" style="endArrow=block;html=1;strokeColor=#333333;" edge="1" parent="1" source="b_bug" target="env_gate">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ee2" style="endArrow=block;html=1;strokeColor=#333333;" edge="1" parent="1" source="b_tc" target="env_gate">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ee3" style="endArrow=block;html=1;strokeColor=#333333;" edge="1" parent="1" source="b_ho" target="env_gate">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ee4" style="endArrow=block;html=1;strokeColor=#333333;" edge="1" parent="1" source="b_db" target="env_gate">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ee_res" value="Yes" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="env_gate" target="env_resolve">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ee_sw" style="endArrow=block;html=1;strokeColor=#D6B656;" edge="1" parent="1" source="env_resolve" target="phx_switch">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Proceed note -->
+        <mxCell id="proceed" value="Proceed to workflow&lt;br&gt;(see dedicated pages: 4–9)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="810" y="430" width="260" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="ee_proc" value="No / resolved" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="env_gate" target="proceed">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Rule mapping table -->
+        <mxCell id="map_title" value="&lt;b&gt;Intent → Rule → Agent Mapping&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="520" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="map_table" value="Intent → Rule → Agent(s) → Key Output&lt;hr&gt;Phoenix Q&amp;A → 0.2, 0.4 → phoenix-qa → Chat answer + citations&lt;br&gt;Bug validation → 32 → bug-validator → 5-verdict analysis + Slack&lt;br&gt;Test cases → 35/35a → cross-dep + tc-gen + tc-qual-val → Backend/ + Frontend/ .md&lt;br&gt;HandsOff → 37 → hands-off orchestrator → {KEY}.md + Playwright + Slack&lt;br&gt;Playwright run → 36 → energo-ts-run → Test results + JSON report&lt;br&gt;DB query → DB.0a → database-query → Query results in chat&lt;br&gt;Prod data → PDR.0 → production-data-reader → Entity analysis in chat&lt;br&gt;Postman → 17.P2 → postman-collection (consults PhoenixExpert) → .json&lt;br&gt;Jira bug → JIRA.0 → jira-bug (Experiments board only) → Jira ticket text&lt;br&gt;Report/Feedback → 0.6 → report-generator → .md under reports/&lt;br&gt;Env access → 10 → environment-access → Browser session" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#333333;fontSize=12;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="560" width="700" height="260" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 4: BUG VALIDATION (Rule 32)                        -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <diagram id="p4-bug" name="4. Bug Validation (Rule 32)">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="t1" value="&lt;b&gt;Bug Validation Workflow (Rule 32) — bug-validator / BugFinderAgent&lt;/b&gt;" style="text;html=1;align=center;fontSize=22;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1840" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="t1sub" value="READ-ONLY: no code edits, no test generation, no Playwright authoring during validation" style="text;html=1;align=center;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1840" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 0 -->
+        <mxCell id="s0" value="Step 0: Environment resolution&lt;br&gt;environment-resolver → switch-phoenix-branches.ps1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="90" width="360" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 1: Jira ticket -->
+        <mxCell id="s1" value="Step 1: Fetch Jira ticket&lt;br&gt;MCP → REST fallback (Rule 42)&lt;br&gt;+ linked Confluence (Rule 44)&lt;br&gt;+ attachments analysis" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="160" width="360" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="jira_cloud" value="Jira" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="450" y="160" width="120" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_s1_jira" style="endArrow=block;html=1;strokeColor=#6C8EBF;dashed=1;" edge="1" parent="1" source="s1" target="jira_cloud">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 1b: Diagrams -->
+        <mxCell id="s1b" value="Step 1b: Check diagrams&lt;br&gt;Ticket attachments → config/Diagrams/&lt;br&gt;(Bundle 4/5/6 .svg fallback)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#333333;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="250" width="360" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 2: Confluence broad search -->
+        <mxCell id="s2" value="Step 2: Confluence BROAD search&lt;br&gt;(ONLY bug-validator may do this)&lt;br&gt;MCP → REST fallback (Rule 43)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="325" width="360" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="conf_cloud" value="Confluence" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="450" y="325" width="140" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_s2_conf" style="endArrow=block;html=1;strokeColor=#6C8EBF;dashed=1;" edge="1" parent="1" source="s2" target="conf_cloud">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="s2c" value="Phase 2 exclusion: for Prod/PreProd,&lt;br&gt;exclude Phase 2 / experimental wiki trees" style="text;html=1;align=left;fontSize=10;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="600" y="340" width="280" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 3: Swagger refresh (mandatory) -->
+        <mxCell id="s3" value="Step 3: Swagger refresh (MANDATORY)&lt;br&gt;update-swagger-specs.ps1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="405" width="360" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="s3_fail" value="Swagger fail?&lt;br&gt;Continue with cached specs" style="text;html=1;align=left;fontSize=10;fontColor=#666666;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="420" y="415" width="220" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 4: Phoenix code analysis -->
+        <mxCell id="s4" value="Step 4a: Phoenix code analysis&lt;br&gt;(aligned to env branch — READ-ONLY)&lt;br&gt;Endpoints, services, validators, schedulers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="475" width="360" height="65" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 4b: DB evidence (optional) -->
+        <mxCell id="s4b" value="Step 4b: DB evidence (optional)&lt;br&gt;Same env via PostgreSQL MCP&lt;br&gt;Entity state, audit logs, error logs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="560" width="360" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="db_cyl" value="PostgreSQL" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="450" y="555" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_s4b_db" style="endArrow=block;html=1;strokeColor=#82B366;dashed=1;" edge="1" parent="1" source="s4b" target="db_cyl">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 5: Verdict -->
+        <mxCell id="s5" value="Step 5: 5-Verdict Matrix" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="640" width="360" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="v1" value="CONFIRMED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="700" width="140" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="v2" value="NOT A BUG" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="190" y="700" width="120" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="v3" value="INCONCLUSIVE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="320" y="700" width="130" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="v4" value="CANNOT REPRODUCE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="460" y="700" width="160" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="v5" value="PROCESS BLOCKED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#333333;strokeColor=#000000;fontColor=#FFFFFF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="630" y="700" width="150" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Output: Slack + chat -->
+        <mxCell id="out_chat" value="Full analysis → Chat" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=0.15;fillColor=#FFFFFF;strokeColor=#333333;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="760" width="200" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="out_slack" value="Slack → #bug-validation&lt;br&gt;(C0AUEEDVCEL)" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="280" y="755" width="200" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="out_disk" value="Disk: BugValidation_*.md&lt;br&gt;ONLY on /report or explicit save" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=0.15;fillColor=#F5F5F5;strokeColor=#999999;fontSize=11;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="760" width="250" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Error path: PROCESS BLOCKED -->
+        <mxCell id="err_title" value="&lt;b&gt;Error / Failure Paths&lt;/b&gt;" style="text;html=1;align=left;fontSize=14;fontColor=#FF0000;" vertex="1" parent="1">
+          <mxGeometry x="900" y="90" width="250" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="err1" value="Jira MCP fails → REST fallback (Rule 42)&lt;br&gt;REST fails → PROCESS BLOCKED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#FF0000;fontSize=11;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="125" width="320" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="err2" value="Confluence MCP fails → REST fallback (Rule 43)&lt;br&gt;REST fails → note in analysis, continue if partial" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#FF0000;fontSize=11;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="190" width="340" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="err3" value="Phoenix alignment fails (exit 2/3)&lt;br&gt;→ PROCESS BLOCKED, ask user" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#FF0000;fontSize=11;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="255" width="320" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="err4" value="Swagger refresh fails&lt;br&gt;→ continue with cached specs (non-fatal)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="320" width="320" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="err5" value="Slack token missing/expired&lt;br&gt;→ note in chat, skip Slack delivery" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="385" width="320" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Connectors between steps -->
+        <mxCell id="es01" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="s0" target="s1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="es1b" style="endArrow=block;html=1;strokeColor=#333333;" edge="1" parent="1" source="s1" target="s1b">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="es12" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="s1b" target="s2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="es23" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="s2" target="s3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="es34" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="s3" target="s4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="es44b" style="endArrow=block;html=1;strokeColor=#333333;" edge="1" parent="1" source="s4" target="s4b">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="es45" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="s4b" target="s5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 5: TEST CASES (Rule 35/35a) with iteration loop    -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <diagram id="p5-tc" name="5. Test Cases (Rule 35)">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="t1" value="&lt;b&gt;Test Case Generation Pipeline (Rule 35 / 35a)&lt;/b&gt;" style="text;html=1;align=center;fontSize=22;fontColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1840" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 0: Env resolve -->
+        <mxCell id="s0" value="Env resolve (PHOENIX-SWITCH.0)&lt;br&gt;switch-phoenix-branches.ps1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="80" width="300" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 1: Cross-dependency finder (MANDATORY FIRST) -->
+        <mxCell id="s1" value="Step 1: cross-dependency-finder (MANDATORY FIRST)&lt;br&gt;Jira-anchored analysis (Rule 35a)&lt;br&gt;No local merge/git — Jira + codebase + shallow Confluence" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="150" width="420" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="s1_out" value="Output:&lt;br&gt;scope, entry_points,&lt;br&gt;upstream, downstream,&lt;br&gt;impact_risk / what_could_break,&lt;br&gt;integration_points, technical_details" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=0.15;fillColor=#F5F5F5;strokeColor=#6C8EBF;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="530" y="140" width="260" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_s1_out" style="endArrow=block;html=1;strokeColor=#6C8EBF;" edge="1" parent="1" source="s1" target="s1_out">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 2: test-case-generator -->
+        <mxCell id="s2" value="Step 2: test-case-generator&lt;br&gt;Reads playwright instructions folder (MANDATORY)&lt;br&gt;Uses prompt + Confluence + codebase + cross_dependency_data&lt;br&gt;Writes Backend/&amp;lt;Topic&amp;gt;.md + Frontend/&amp;lt;Topic&amp;gt;.md" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="260" width="420" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="tc_be" value="test_cases/Backend/&amp;lt;Topic&amp;gt;.md&lt;br&gt;(TC-BE-N only)" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=0.15;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="530" y="255" width="240" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="tc_fe" value="test_cases/Frontend/&amp;lt;Topic&amp;gt;.md&lt;br&gt;(TC-FE-N only)" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=0.15;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="530" y="315" width="240" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_s2_be" style="endArrow=block;html=1;strokeColor=#6C8EBF;" edge="1" parent="1" source="s2" target="tc_be">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_s2_fe" style="endArrow=block;html=1;strokeColor=#6C8EBF;" edge="1" parent="1" source="s2" target="tc_fe">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 2.5: Quality validator with ITERATION LOOP -->
+        <mxCell id="s25" value="Step 2.5: test-case-quality-validator&lt;br&gt;STRICT 0–100 scoring (10 axes)&lt;br&gt;Pass threshold: 80/100" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="390" width="420" height="65" as="geometry"/>
+        </mxCell>
+
+        <!-- Decision: pass? -->
+        <mxCell id="d_pass" value="All TCs&lt;br&gt;≥ 80?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="190" y="490" width="140" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_s25_d" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="s25" target="d_pass">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Fail path: loop back to tc-gen (max 3 iterations) -->
+        <mxCell id="loop_back" value="Fail: return failing TCs + detailed fixes&lt;br&gt;to test-case-generator for rewrite" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#FF0000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="430" y="500" width="280" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_fail" value="&lt; 80" style="endArrow=block;html=1;strokeColor=#FF0000;dashed=1;strokeWidth=2;" edge="1" parent="1" source="d_pass" target="loop_back">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_loop" value="max 3 iterations" style="endArrow=block;html=1;strokeColor=#9673A6;curved=1;strokeWidth=2;" edge="1" parent="1" source="loop_back" target="s2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="800" y="400"/>
+              <mxPoint x="800" y="300"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Still failing after 3? -->
+        <mxCell id="d_iter" value="3 iterations&lt;br&gt;exhausted?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="440" y="575" width="140" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="blocked" value="BLOCK WORKFLOW&lt;br&gt;Escalate to user with all&lt;br&gt;failing axes and reasons" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#333333;strokeColor=#000000;fontColor=#FFFFFF;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="650" y="580" width="260" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_iter_check" style="endArrow=block;html=1;strokeColor=#FF0000;dashed=1;" edge="1" parent="1" source="loop_back" target="d_iter">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_blocked" value="Yes" style="endArrow=block;html=1;strokeColor=#FF0000;strokeWidth=2;" edge="1" parent="1" source="d_iter" target="blocked">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Pass path -->
+        <mxCell id="done" value="TCs saved and validated — workflow complete" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="110" y="610" width="350" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_pass" value="≥ 80 ✓" style="endArrow=block;html=1;strokeColor=#82B366;strokeWidth=2;" edge="1" parent="1" source="d_pass" target="done">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Connectors -->
+        <mxCell id="es01" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="s0" target="s1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="es12" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="s1" target="s2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="es225" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="s2" target="s25">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- DRY preconditions note -->
+        <mxCell id="dry_note" value="DRY creation-step rule:&lt;br&gt;## Test data once per topic; each TC&lt;br&gt;references slice + deltas only." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#999999;fontSize=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="800" y="255" width="230" height="60" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 6: HANDSOFF (Rule 37) — full pipeline              -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <diagram id="p6-handsoff" name="6. HandsOff (Rule 37)">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1300" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="t1" value="&lt;b&gt;HandsOff Full Pipeline (Rule 37 — hands-off orchestrator)&lt;/b&gt;" style="text;html=1;align=center;fontSize=22;fontColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1840" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="t1sub" value="Triggered by: Jira ticket + /HandsOff or !HandsOff — must NOT skip any step" style="text;html=1;align=center;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1840" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- Pipeline: left-to-right flow with boxes -->
+        <mxCell id="h0" value="0. Env resolve&lt;br&gt;+ Phoenix align" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="150" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="h1" value="1. Jira ticket&lt;br&gt;fetch (Rule 42/44)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="220" y="100" width="150" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="h2" value="2. cross-dep&lt;br&gt;finder (Rule 35a)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="400" y="100" width="150" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="h3" value="3. test-case&lt;br&gt;generator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="580" y="100" width="130" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="h3v" value="3b. tc-quality&lt;br&gt;validator (≥80)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="740" y="100" width="140" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="h4" value="4. energo-ts-test&lt;br&gt;(Playwright author)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="910" y="100" width="150" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="h4v" value="4b. playwright&lt;br&gt;test-validator (≥80)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="100" width="150" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="h5" value="5. energo-ts-run&lt;br&gt;(cursor branch)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="100" width="140" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="h6" value="6. Report&lt;br&gt;{JIRA_KEY}.md" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=0.15;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="95" width="140" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="h7" value="7. Slack upload&lt;br&gt;Tester + #ai-report" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1610" y="85" width="180" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Connectors -->
+        <mxCell id="eh01" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="h0" target="h1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eh12" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="h1" target="h2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eh23" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="h2" target="h3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eh33v" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="h3" target="h3v">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eh3v4" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="h3v" target="h4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eh44v" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="h4" target="h4v">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eh4v5" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="h4v" target="h5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eh56" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="h5" target="h6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="eh67" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="h6" target="h7">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Iteration loops for validators -->
+        <mxCell id="loop_tc" value="Rewrite loop&lt;br&gt;(max 3x)" style="endArrow=block;html=1;strokeColor=#9673A6;curved=1;strokeWidth=2;dashed=1;" edge="1" parent="1" source="h3v" target="h3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="770" y="180"/>
+              <mxPoint x="650" y="180"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="loop_pw" value="Regen loop&lt;br&gt;(until ≥80)" style="endArrow=block;html=1;strokeColor=#9673A6;curved=1;strokeWidth=2;dashed=1;" edge="1" parent="1" source="h4v" target="h4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1130" y="180"/>
+              <mxPoint x="990" y="180"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Detail boxes below pipeline -->
+        <mxCell id="det_title" value="&lt;b&gt;Step Details&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="220" width="200" height="25" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="det_s4" value="&lt;b&gt;Step 4: Playwright authoring (energo-ts-test)&lt;/b&gt;&lt;br&gt;&lt;br&gt;1. Read playwright instructions pack (project-description, general-rules,&lt;br&gt;   test-writing-rules, SKILL.md)&lt;br&gt;2. Swagger refresh (MANDATORY — Rule 41)&lt;br&gt;3. No beforeAll for preconditions (Rule 40)&lt;br&gt;4. Write .spec.ts under EnergoTS/tests/cursor/&lt;br&gt;5. Only EnergoTSTestAgent may write (Rule 0.8.1)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="260" width="430" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="det_s5" value="&lt;b&gt;Step 5: Test execution (energo-ts-run)&lt;/b&gt;&lt;br&gt;&lt;br&gt;1. EnergoTS must be on cursor branch (Rule ENERGOTS.0)&lt;br&gt;2. npx playwright test --reporter=json&lt;br&gt;3. Produces playwright-report.json&lt;br&gt;4. generate-detailed-report.mjs → playwright-report-detailed.md" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="500" y="260" width="400" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="det_s67" value="&lt;b&gt;Steps 6–7: Report + Slack delivery&lt;/b&gt;&lt;br&gt;&lt;br&gt;1. Smart report: {JIRA_KEY}.md under HandsOff reports/ (YYYY/month/DD/)&lt;br&gt;2. Machine report: playwright-report-detailed.md (if JSON exists)&lt;br&gt;3. Slack short summary (3-block) to #ai-report (C0AK96S1D7X)&lt;br&gt;4. Both .md files uploaded as attachments (not pasted)&lt;br&gt;5. Tester DM (customfield_10095) when available&lt;br&gt;6. upload-file-to-slack.ps1 for file delivery" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="930" y="260" width="430" height="150" as="geometry"/>
+        </mxCell>
+
+        <!-- Mandatory pre-requisites box -->
+        <mxCell id="prereqs" value="&lt;b&gt;Mandatory Prerequisites for all HandsOff&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Swagger refresh before .spec.ts (Rule 41)&lt;br&gt;• No beforeAll in preconditions (Rule 40)&lt;br&gt;• EnergoTS cursor branch locked (Rule ENERGOTS.0)&lt;br&gt;• Phoenix alignment checked (PHOENIX-SWITCH.0)&lt;br&gt;• Hooks enforce all gates automatically" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="450" width="400" height="130" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 7: ENERGOTS PLAYWRIGHT (Rules 36, 40, 41)          -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <diagram id="p7-ets" name="7. EnergoTS Playwright">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="t1" value="&lt;b&gt;EnergoTS Playwright — Authoring (energo-ts-test) &amp; Running (energo-ts-run)&lt;/b&gt;" style="text;html=1;align=center;fontSize=22;fontColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1840" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Write path: energo-ts-test -->
+        <mxCell id="write_title" value="&lt;b&gt;Authoring Path (energo-ts-test / EnergoTSTestAgent)&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="600" height="25" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="w1" value="1. Read playwright instructions&lt;br&gt;project-description → general-rules →&lt;br&gt;test-writing-rules → SKILL.md" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="110" width="280" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2" value="2. Swagger refresh&lt;br&gt;update-swagger-specs.ps1&lt;br&gt;(MANDATORY — Rule 41)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="110" width="240" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3_gate" value="beforeAll&lt;br&gt;banned?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="620" y="105" width="130" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3_yes" value="Use test.step('Precondition: …')&lt;br&gt;+ helpers (Rule 40)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="790" y="100" width="250" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3_no" value="BLOCKED:&lt;br&gt;Fix code" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#FF0000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="790" y="155" width="120" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="w4" value="3. Write .spec.ts&lt;br&gt;EnergoTS/tests/cursor/&lt;br&gt;(ONLY EnergoTSTestAgent — Rule 0.8.1)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="210" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="w5" value="4. playwright-test-validator&lt;br&gt;STRICT 0–100 scoring&lt;br&gt;Pass: ≥80" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="380" y="210" width="230" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="w5_loop" value="Regen until ≥80" style="endArrow=block;html=1;strokeColor=#9673A6;curved=1;strokeWidth=2;dashed=1;" edge="1" parent="1" source="w5" target="w4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="300"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="ew12" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="w1" target="w2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ew23" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="w2" target="w3_gate">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ew3y" value="OK" style="endArrow=block;html=1;strokeColor=#82B366;" edge="1" parent="1" source="w3_gate" target="w3_yes">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ew3n" value="Violation" style="endArrow=block;html=1;strokeColor=#FF0000;dashed=1;" edge="1" parent="1" source="w3_gate" target="w3_no">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ew34" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="w3_yes" target="w4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="910" y="210"/>
+              <mxPoint x="340" y="235"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ew45" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="w4" target="w5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Run path: energo-ts-run -->
+        <mxCell id="run_title" value="&lt;b&gt;Execution Path (energo-ts-run — Rule 36)&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="40" y="350" width="600" height="25" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r_branch" value="Verify: cursor branch&lt;br&gt;(Rule ENERGOTS.0)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="390" width="190" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="r_resolve" value="Resolve test file&lt;br&gt;(newly created / Jira key /&lt;br&gt;file path / domain)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="280" y="395" width="230" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="r_exec" value="npx playwright test&lt;br&gt;--reporter=json" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="395" width="200" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="r_json" value="playwright-report.json" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=0.15;fillColor=#F5F5F5;strokeColor=#333333;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="810" y="395" width="190" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="r_detail" value="generate-detailed-report.mjs&lt;br&gt;→ playwright-report-detailed.md" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="395" width="260" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="r_fail_branch" value="Wrong branch&lt;br&gt;→ BLOCKED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#FF0000;fontSize=11;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="485" width="160" height="35" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="er_br" value="OK" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="r_branch" target="r_resolve">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="er_brf" value="Fail" style="endArrow=block;html=1;strokeColor=#FF0000;dashed=1;" edge="1" parent="1" source="r_branch" target="r_fail_branch">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="er_re" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="r_resolve" target="r_exec">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="er_ej" style="endArrow=block;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1" source="r_exec" target="r_json">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="er_jd" style="endArrow=block;html=1;strokeColor=#333333;" edge="1" parent="1" source="r_json" target="r_detail">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Access tiers diagram -->
+        <mxCell id="tier_title" value="&lt;b&gt;EnergoTS Access Tiers (Rule 0.8)&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="560" width="400" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="tier_a" value="EnergoTS/tests/cursor/**&lt;br&gt;WRITABLE by EnergoTSTestAgent ONLY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="600" width="300" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="tier_b" value="EnergoTS/** (except tests/)&lt;br&gt;NO AI writes (fixtures, config, app code)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="600" width="300" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="tier_c" value="EnergoTS/.env&lt;br&gt;READ-ONLY (secrets)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="600" width="200" height="50" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 8: DATA & INTEGRATIONS                             -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <diagram id="p8-data" name="8. Data and Integrations">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="t1" value="&lt;b&gt;Data Sources &amp; Integrations&lt;/b&gt;" style="text;html=1;align=center;fontSize=22;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1840" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Jira -->
+        <mxCell id="jira_title" value="&lt;b&gt;Jira (Rules 42, 44, JIRA.0)&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="400" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="jira_cloud" value="Jira Cloud" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="105" width="170" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="jira_mcp" value="Jira MCP (primary)&lt;br&gt;getJiraIssue + expand=names&lt;br&gt;+ all custom fields" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="240" y="100" width="230" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="jira_rest" value="REST fallback (Rule 42)&lt;br&gt;Atlassian Cloud REST API v3&lt;br&gt;Same field parity" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6C8EBF;fontSize=11;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="100" width="220" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="jira_attach" value="Attachments&lt;br&gt;download-jira-attachments.ps1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="240" y="165" width="230" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="ej1" style="endArrow=block;html=1;strokeColor=#6C8EBF;" edge="1" parent="1" source="jira_cloud" target="jira_mcp">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ej2" value="fails after retries" style="endArrow=block;html=1;strokeColor=#FF0000;dashed=1;" edge="1" parent="1" source="jira_mcp" target="jira_rest">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Confluence -->
+        <mxCell id="conf_title" value="&lt;b&gt;Confluence (Rules 39, 43, 1a)&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="40" y="230" width="400" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="conf_cloud" value="Confluence&lt;br&gt;Cloud" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="265" width="170" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="conf_mcp" value="Confluence MCP (primary)&lt;br&gt;READ-ONLY tools only&lt;br&gt;getConfluencePage, search, CQL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="240" y="265" width="250" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="conf_rest" value="REST fallback (Rule 43)&lt;br&gt;get-confluence-page-rest.ps1&lt;br&gt;Confluence Cloud REST" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6C8EBF;fontSize=11;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="265" width="230" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="conf_scope" value="Scope gate (Rule 39):&lt;br&gt;Bug-validator → broad search allowed&lt;br&gt;All others → linked URLs only" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="240" y="335" width="250" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="conf_ban" value="FORBIDDEN: create, update,&lt;br&gt;delete, comment (Rule 1a)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="520" y="350" width="230" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="ec1" style="endArrow=block;html=1;strokeColor=#6C8EBF;" edge="1" parent="1" source="conf_cloud" target="conf_mcp">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ec2" value="fails after retries" style="endArrow=block;html=1;strokeColor=#FF0000;dashed=1;" edge="1" parent="1" source="conf_mcp" target="conf_rest">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- PostgreSQL -->
+        <mxCell id="pg_title" value="&lt;b&gt;PostgreSQL MCP (Rules DB.0–DB.6)&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="40" y="440" width="400" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="pg_cyl" value="PostgreSQL" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="480" width="160" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="pg_env_gate" value="User must name&lt;br&gt;environment first&lt;br&gt;(DB.0a — CRITICAL)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="240" y="475" width="200" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="pg_dev" value="Dev" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="480" y="470" width="70" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="pg_dev2" value="Dev2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="560" y="470" width="70" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="pg_test" value="Test" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="640" y="470" width="70" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="pg_pre" value="PreProd" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="480" y="510" width="80" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="pg_prod" value="Prod" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="570" y="510" width="70" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="pg_exp" value="Experiments" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="650" y="510" width="90" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="pg_prod_note" value="Prod = read-only (SELECT only)&lt;br&gt;production-data-reader uses PostgreSQLProd" style="text;html=1;align=left;fontSize=10;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="480" y="550" width="300" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="epg1" style="endArrow=block;html=1;strokeColor=#82B366;" edge="1" parent="1" source="pg_cyl" target="pg_env_gate">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Slack -->
+        <mxCell id="slack_title" value="&lt;b&gt;Slack (3 reporting paths)&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="600" width="400" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="slack_cloud" value="Slack" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="640" width="150" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="slack_p1" value="Path 1: Bug validation&lt;br&gt;#bug-validation (C0AUEEDVCEL)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="230" y="630" width="240" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="slack_p2" value="Path 2: HandsOff&lt;br&gt;Tester DM + #ai-report (C0AK96S1D7X)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="230" y="680" width="260" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="slack_p3" value="Path 3: Scoped Playwright run&lt;br&gt;Tester DM + #ai-report (C0AK96S1D7X)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="230" y="730" width="260" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="slack_upload" value="upload-file-to-slack.ps1&lt;br&gt;(file attachments, not pasted text)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#333333;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="530" y="680" width="240" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Swagger -->
+        <mxCell id="sw_title" value="&lt;b&gt;Swagger / OpenAPI (Rule 41)&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="40" y="800" width="400" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="sw_script" value="update-swagger-specs.ps1&lt;br&gt;MANDATORY before any .spec.ts create/edit" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="840" width="350" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="sw_specs" value="config/swagger/&lt;env&gt;/swagger-spec.json" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=0.15;fillColor=#F5F5F5;strokeColor=#333333;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="430" y="840" width="280" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="esw1" style="endArrow=block;html=1;strokeColor=#D6B656;strokeWidth=2;" edge="1" parent="1" source="sw_script" target="sw_specs">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 9: SAFETY GUARDS & GUARDRAILS                      -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <diagram id="p9-safety" name="9. Safety Guards">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="t1" value="&lt;b&gt;Safety Guards, Prohibitions &amp; Quality Gates&lt;/b&gt;" style="text;html=1;align=center;fontSize=22;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1840" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Code modification tiers -->
+        <mxCell id="tier_title" value="&lt;b&gt;Code Modification Tiers (Rule 0.8)&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="400" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="tier_a" value="&lt;b&gt;TIER A — ABSOLUTELY FORBIDDEN&lt;/b&gt;&lt;br&gt;Phoenix (Cursor-Project/Phoenix/**)&lt;br&gt;NEVER create, modify, or delete any file.&lt;br&gt;Hooks enforce. Only read/analyze/search/recommend." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="105" width="550" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="tier_b" value="&lt;b&gt;TIER B — EnergoTS (restricted)&lt;/b&gt;&lt;br&gt;EnergoTS/** outside tests/ → NO AI writes&lt;br&gt;EnergoTS/tests/** → ONLY EnergoTSTestAgent (Rule 0.8.1)&lt;br&gt;Generic Cursor AI MUST NOT edit even if user asks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="195" width="550" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="tier_c" value="&lt;b&gt;TIER C — ALLOWED (default)&lt;/b&gt;&lt;br&gt;docs/, examples/, config/, postman/, reports/,&lt;br&gt;test_cases/, User story/, .cursor/, workspace root&lt;br&gt;User-requested edits permitted" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="290" width="550" height="75" as="geometry"/>
+        </mxCell>
+
+        <!-- External systems: read-only -->
+        <mxCell id="ext_title" value="&lt;b&gt;External System Permissions (Rule 1)&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="390" width="400" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="ext_conf" value="Confluence — READ-ONLY&lt;br&gt;FORBIDDEN: create, update, delete pages/comments" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="425" width="400" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="ext_gl" value="GitLab — READ-ONLY&lt;br&gt;No commits, pushes, merges, edits" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="480" width="400" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="ext_prod" value="Production DB — SELECT-ONLY&lt;br&gt;Never INSERT/UPDATE/DELETE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="535" width="400" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- Quality gates -->
+        <mxCell id="qg_title" value="&lt;b&gt;Quality Gates (mandatory checks)&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="650" y="70" width="400" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="qg1" value="PhoenixExpert consultation (Rule 0.4/8)&lt;br&gt;BEFORE any Phoenix-related task — mandatory" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="650" y="105" width="320" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="qg2" value="Confidence gate (Rule CONF.0)&lt;br&gt;If scope/env/target unclear → ASK first&lt;br&gt;Never guess environment or defaults" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="650" y="200" width="320" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="qg3" value="DB environment gate (Rule DB.0a)&lt;br&gt;User MUST name environment explicitly&lt;br&gt;No inference from tickets/tests/habit" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="650" y="300" width="320" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="qg4" value="Swagger refresh (Rule 41)&lt;br&gt;MANDATORY before .spec.ts create/edit&lt;br&gt;update-swagger-specs.ps1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="650" y="400" width="320" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="qg5" value="beforeAll ban (Rule 40)&lt;br&gt;No test.beforeAll/beforeAll in EnergoTS&lt;br&gt;Use helpers + test.step('Precondition: …')" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="650" y="495" width="320" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="qg6" value="EnergoTS branch lock (Rule ENERGOTS.0)&lt;br&gt;cursor branch only for test execution" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="650" y="595" width="320" height="75" as="geometry"/>
+        </mxCell>
+
+        <!-- Response requirements -->
+        <mxCell id="resp_title" value="&lt;b&gt;Mandatory Response Elements&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="70" width="400" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="resp1" value="Confidence: XX% + Reason&lt;br&gt;(Rule CONF.1 — every response)" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#FFFFFF;strokeColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="105" width="350" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="resp2" value="Agents involved: [list]&lt;br&gt;(Rule 0.1 — every response)" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#FFFFFF;strokeColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="170" width="350" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="resp3" value="Citations: file path + lines / page title + ID&lt;br&gt;(evidence_only_project_answers.mdc)" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#FFFFFF;strokeColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="235" width="350" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="resp4" value="English for all disk artifacts (Rule 0.7)&lt;br&gt;Chat may use user's language" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#FFFFFF;strokeColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="300" width="350" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Reporting rules -->
+        <mxCell id="rep_title" value="&lt;b&gt;Reporting Rules (Rule 0.6)&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="380" width="400" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="rep1" value="DEFAULT: Full answer in chat only&lt;br&gt;No automatic disk files" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="415" width="350" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="rep2" value="HandsOff (Rule 37):&lt;br&gt;{JIRA_KEY}.md MANDATORY under HandsOff reports/" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="470" width="350" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="rep3" value="/report → Chat reports/ (on demand)&lt;br&gt;/feedback → Feedback/ (on demand)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#333333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="525" width="350" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="rep4" value="Bug validation (Rule 32):&lt;br&gt;Chat only — disk only on /report or explicit save" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="580" width="350" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- Jira bug scope -->
+        <mxCell id="jira_title2" value="&lt;b&gt;Jira Bug Scope (Rule JIRA.0)&lt;/b&gt;" style="text;html=1;align=left;fontSize=16;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="610" width="400" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="jira_exp" value="ALLOWED: Experiments board" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="645" width="250" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="jira_phx" value="FORBIDDEN: Phoenix delivery" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="310" y="645" width="250" height="40" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+</mxfile>

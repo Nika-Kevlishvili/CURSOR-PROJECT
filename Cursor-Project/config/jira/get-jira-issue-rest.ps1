@@ -4,6 +4,8 @@ param(
     [string]$OutFile
 )
 
+$ErrorActionPreference = 'Stop'
+
 function Get-EnvVar($name) {
     $v = [Environment]::GetEnvironmentVariable($name)
     if ($v) { return $v }
@@ -32,10 +34,16 @@ $base = Get-EnvVar 'JIRA_BASE_URL'
 $email = Get-EnvVar 'JIRA_EMAIL'
 $token = Get-EnvVar 'JIRA_API_TOKEN'
 
-if (-not $base -or -not $email -or -not $token) {
-    Write-Error 'Missing JIRA_BASE_URL, JIRA_EMAIL, or JIRA_API_TOKEN'
+if (-not $email -or -not $token) {
+    Write-Error 'Missing JIRA_EMAIL or JIRA_API_TOKEN'
     exit 1
 }
+
+if (-not $base) {
+    $base = 'https://oppa-support.atlassian.net'
+}
+
+$base = $base.Trim().TrimEnd('/')
 
 $fields = @(
     'summary', 'description', 'status', 'priority', 'issuetype', 'environment', 'labels',
@@ -51,8 +59,14 @@ $headers = @{
     Accept        = 'application/json'
 }
 
-$url = "$base/rest/api/3/issue/$IssueKey?expand=names,changelog&fields=$fields"
-$issue = Invoke-RestMethod -Uri $url -Headers $headers -Method Get
+$url = "$base/rest/api/3/issue/${IssueKey}?expand=names,changelog&fields=$fields"
+try {
+    $issue = Invoke-RestMethod -Uri $url -Headers $headers -Method Get
+}
+catch {
+    Write-Error "Failed to fetch Jira issue '$IssueKey' (url: $url). $($_.Exception.Message)"
+    exit 1
+}
 
 if (-not $OutFile) {
     $OutFile = Join-Path $PSScriptRoot "$IssueKey-full.json"

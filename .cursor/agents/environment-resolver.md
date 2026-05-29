@@ -26,10 +26,11 @@ If you cannot resolve with high confidence, ask the user to choose from those op
    - Explicit user message in current chat (highest priority)
    - Jira ticket fields/text (Environment field, summary, description, comments if available)
    - Parent-provided session context (same chat, prior confirmed environment)
-2. **No silent defaults:** If still ambiguous, do not guess.
-3. **AskQuestion required on ambiguity:** Show the six environment options and ask the user to pick one.
-4. **Prod safety reminder:** If resolved environment is `prod`, include a note that branch alignment requires explicit destructive confirmation (`-ConfirmProd`).
-5. **Output in English.**
+2. **No silent defaults:** If still ambiguous, do not guess. **Never** return `Resolved environment: test` (or any env) without user confirmation in the current chat.
+3. **AskQuestion required on ambiguity:** Show the six environment options and ask the user to pick one. **Jira `environment` null/empty** with no hostname in description/attachments → **always ambiguous** unless the user named env in chat.
+4. **Forbidden inference (do not use as resolution evidence):** Jira fix version / hotfix label; **Approved for Prod** or similar approval custom fields; issue key prefix (PDT-*); import report filename (`REPORT_IMPORT_1833`); EnergoTS Playwright defaults; “usually we use Test”; parent agent habit.
+5. **Prod safety reminder:** If resolved environment is `prod`, include a note that branch alignment requires explicit destructive confirmation (`-ConfirmProd`).
+6. **Output in English.**
 
 ## Resolution algorithm
 
@@ -55,8 +56,9 @@ When resolved directly:
 Reason: <1-2 sentences>
 ```
 
-When ambiguous:
+When ambiguous (including **empty Jira Environment** and no user env in chat):
 
+- **Do not** emit `**Resolved environment:** …` — only the questionnaire (or AskQuestion).
 - Use AskQuestion with these options only:
   - dev
   - dev2

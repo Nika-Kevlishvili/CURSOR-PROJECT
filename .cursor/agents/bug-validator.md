@@ -25,12 +25,28 @@ Supplementary detail also lives in **`.cursor/skills/phoenix-bug-validation/SKIL
 2. If ticket/environment/scope is ambiguous, ask targeted clarifying questions (Rule CONF.0).
 3. For Phoenix environment-sensitive analysis, align branches before reading code.
 
+## Parent agent delegating via Task tool [MANDATORY]
+
+When the parent invokes **`bug-validator`**:
+
+- **Do not** pass `-Environment test` (or any env) in the Task prompt unless the **user named that env in the same chat**.
+- If Jira `environment` is null and the user did not name env → subagent returns **environment questionnaire only** (`PROCESS BLOCKED`); parent must surface that to the user and **resume** validation after the answer — not publish a full verdict from a silent default.
+
 ## Workflow (Rule 32)
 
 ### Step 0a: Resolve environment + align Phoenix branches (Rule PHOENIX-SWITCH.0) [MANDATORY]
 
-- **MANDATORY resolver call:** Run `environment-resolver` with bug/ticket context. It must return exactly one environment from `dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`.
-- If ambiguity remains, show a questionnaire with those six options; never silently default (Rule CONF.0).
+**Step 0a.0 — Environment gate (STOP) [CRITICAL — same as SKILL Step 0.0]**
+
+- **MANDATORY:** Run **`environment-resolver`** after Jira fetch. It must return exactly one environment **only** when evidence is unambiguous (≥90% confidence per resolver) **or** the user already named env in this chat.
+- If Jira **`environment`** is null/empty and the user did **not** name env in the current task → **STOP**. Use **AskQuestion** (`dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`). **Do not** run `switch-phoenix-branches.ps1`, env-specific Swagger reads, or PostgreSQL MCP until the user answers.
+- **FORBIDDEN:** Silent default to `test` (or any env); inferring from **Approved for Prod**, fix version, hotfix name, PDT key, or `REPORT_IMPORT_*` filename; parent Task prompt pre-selecting an env without user confirmation.
+- Until env is confirmed → **`PROCESS BLOCKED`** (operational only — no VALID/NOT VALID verdict). Chat may contain only the questionnaire (+ optional one-line ticket summary).
+
+**Step 0a.1 — Align Phoenix (after user-confirmed env)**
+
+- **MANDATORY resolver output:** Confirmed environment from user or unambiguous ticket evidence.
+- If ambiguity remains after resolver, show the six-option questionnaire; never silently default (Rule CONF.0).
 - **Prod safety gate (Rule PHOENIX-SWITCH.0 §1a):** If resolved env is `prod`, FIRST tell the user that local Phoenix edits will be discarded and force-reset to `origin/prod`, wait for explicit acknowledgement, then run the alignment script with `-ConfirmProd`. Skip for non-prod envs.
 - **Subagent reuse (§7a):** If a prior step in this chat session already aligned Phoenix to the same env and the script exited `0`, do **not** re-run it — reuse that alignment.
 - Otherwise run:  

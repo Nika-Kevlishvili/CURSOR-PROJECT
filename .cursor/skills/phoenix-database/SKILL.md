@@ -27,6 +27,7 @@ Apply this skill **before** any PostgreSQL MCP (`connect_db`, `query`, `execute`
    - PDT / Jira ticket prefix (e.g. PDT-2529, PDT-2861)
    - EnergoTS test defaults (e.g. `PDT-2529` → reminder `2163` on **Dev**)
    - `envVariables`, Playwright branch, prior chat, or habit (“usually Test”)
+   - **Rule 32 / bug-validator:** empty Jira `environment` + “code-only validation” — still ask before PostgreSQL MCP; parent must not pre-pick `test` in Task prompt without user confirmation
 4. Only after the user names env (or authorizes your choice) → map to MCP per table below → connect → query.
 5. State in chat: `DB environment: <Env>` before first query result.
 

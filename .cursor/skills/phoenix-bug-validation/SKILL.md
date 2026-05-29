@@ -24,7 +24,24 @@ There is **no** `from agents.Main import get_bug_finder_agent` in this workspace
 
 ### Step 0: Resolve environment + align Phoenix branches (Rule PHOENIX-SWITCH.0) [MANDATORY]
 
-- Pick the environment from the bug ticket: Environment field, ticket text, attached logs, screenshots showing URL hostnames. Map to one of `dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`. If genuinely ambiguous, ASK the user (Rule CONF.0).
+**Step 0.0 — Environment gate (STOP before alignment, Swagger env folder, or DB) [CRITICAL]**
+
+1. **Invoke `environment-resolver`** (or follow **`.cursor/agents/environment-resolver.md`** with the same rules) after Jira fetch.
+2. **User must confirm environment in chat** when any of these apply (Rule CONF.0, Rule DB.0a):
+   - Jira `environment` field is **null / empty / missing**
+   - Ticket text, attachments, and screenshots do **not** name a runtime host or env (dev, dev2, test, preprod, prod, experiments)
+   - Evidence **conflicts** (e.g. multiple hosts)
+3. On ambiguity → **STOP** substantive steps. Use **AskQuestion** with exactly: `dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`. Wait for the answer in chat before Step 0.1.
+4. **PROHIBITED — silent defaults and false signals:**
+   - Defaulting to **`test`** (or any env) because “code/Confluence-only” or “validation can continue without DB”
+   - Inferring env from Jira **fix version**, **Approved for Prod**, **Hotfix** labels, PDT prefix, import process id in a filename, EnergoTS/Playwright habits, or prior sessions
+   - Parent agent or **`bug-validator`** Task prompt passing `-Environment test` without **user** selection in the **current** chat
+5. **Narrow exception:** User explicitly names env in the **same** message as the bug request, or says `your choice` / `defaults` / `same as last time` — then state the assumption once and proceed.
+6. If user has **not** answered yet → return a short **environment questionnaire only** (no verdict, no Slack full report). Status: **`PROCESS BLOCKED`** (operational) until env is confirmed.
+
+**Step 0.1 — Align Phoenix (after Step 0.0 passes)**
+
+- Map confirmed environment to `dev`, `dev2`, `test`, `preprod`, `prod`, or `experiments`.
 - Run `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` so every `Cursor-Project/Phoenix/*` repo aligns to `origin/<branch>` (latest tip). For `prod` you MUST first explain to the user that local Phoenix edits will be discarded, wait for explicit ack, and only then call the script with `-ConfirmProd`.
 - Inspect the exit code: `0` proceed; `2` proceed but flag mixed-state in chat; `3` stop and ask the user to fix connectivity / VPN / credentials before continuing. Local Phoenix edits are discarded by the script; Phoenix files remain READ-ONLY (Rule 0.8 Tier A).
 - If a previous step in this chat session already aligned Phoenix to the same environment (e.g. parent ran `/phoenix` first), do NOT re-run alignment — reuse it (Rule PHOENIX-SWITCH.0 §7a).
@@ -241,6 +258,7 @@ Use **Confluence classification + code analysis + database evidence**, with **Sw
 ## Operational gates (no Playwright / test-case pipeline)
 
 - **`PROCESS BLOCKED`** (operational status, **not** a business verdict) when:
+  - **Environment not confirmed** — Jira `environment` empty (or ambiguous) and user has not chosen from the six env options (**Step 0.0**), **or**
   - Phoenix alignment script exits **`3`** (all repos failed) and code-based conclusions would be unreliable, **or**
   - Confluence mandatory read path failed after MCP retries **and** REST fallback failed or could not run (**Step 2**), **or**
   - The user must confirm **prod** alignment and has not acknowledged yet.
