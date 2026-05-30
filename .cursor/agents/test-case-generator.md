@@ -88,34 +88,24 @@ Follow **`.cursor/skills/test-case-generator/SKILL.md`** § **2b** exactly.
 - Use this data so test cases cover: integration points, upstream/downstream behaviour, data entities, and **what_could_break** (regression and impact risks).
 - See `.cursor/agents/cross-dependency-finder.md` and `Cursor-Project/docs/CROSS_DEPENDENCY_FINDER_AGENT.md`.
 
-### 4. Precondition reuse — DRY (MANDATORY)
+### 4. Self-contained preconditions (Rule TC-STANDALONE-PRE.0 — MANDATORY)
 
-Precondition duplication is a **forbidden pattern**. Before writing any TC's `Preconditions:` block:
+Each TC's **`Preconditions:`** MUST contain the **full numbered setup chain** for that scenario (endpoint + parameters). A tester must execute **one** TC without opening another TC.
 
-1. **Build the full shared chain once** in `## Test data (preconditions)`.
-2. **Per TC: reference + deltas only.** Each TC's `Preconditions:` MUST start with `Apply Test data steps 1–N.` then list only its **deltas** (different status, skipped entity, additional entity).
-3. **Self-check:** scan your draft for duplicated `POST /` or "Create … via" lines across TCs. If the same line appears in ≥2 TCs, move it to `Test data` and replace with a step reference.
+1. **FORBIDDEN:** `Apply Test data steps 1–N` without repeating steps in the same TC; `Delta from TC-BE-X`; `same as TC-BE-Y`; multiple scenarios (run A/B) in one TC.
+2. **Optional** `## Test data (preconditions)` at file top = reference tables only — **not** a substitute for per-TC preconditions.
+3. Duplicating `POST /customer`, `POST /pod`, etc. across TCs is **required** when each TC must stand alone.
 
-**Reference:** `Cursor-Project/config/template/Test_case_template.md` § "Reuse model — DRY preconditions".
+**Reference:** `.cursor/rules/workspace/test_cases_structure.mdc` § **TC-STANDALONE-PRE.0**; `Cursor-Project/config/template/Test_case_template.md` § "Self-contained preconditions per TC".
 
 ### 4b. Case-specific preconditions (MANDATORY — NEVER OMIT)
 
-DRY does **not** mean "all TCs have the same preconditions." For every TC, you MUST explicitly declare the TC-specific setup delta.
+For **every** TC, **all** scenario-specific values (amounts, `billingType`, IAP `valueType`, contract type, status overrides) MUST appear inside that TC's `Preconditions:` numbered list — not only in Description or Steps.
 
-Required format in each TC `Preconditions:` block:
-1. `Apply Test data steps X–Y.`
-2. `Delta:` line(s) describing what is different **for this TC only**:
-   - changed status/state,
-   - missing/skipped entity,
-   - additional entity,
-   - different amount/date/value.
-
-If a TC has no special setup, write `Delta: none (uses shared setup exactly as-is).`
-
-Hard checks before final file write:
-- If two TCs have identical `Preconditions:` text, rewrite to make the per-TC delta explicit.
-- Negative TCs MUST include at least one concrete delta that explains why the scenario fails.
-- Do not hide TC-specific setup differences inside `Description` or `Expected` only; they must be in `Preconditions:`.
+Rules:
+- Negative TCs MUST state the exact parameter that yields rejection (e.g. `amountExcludingVat: 4.16` → total incl. VAT 4.99) in the numbered precondition chain.
+- Two TCs with identical `Preconditions:` are duplicates — merge or differentiate.
+- Do not leave setup only in Description/Steps.
 
 ### 4a. Precondition data completeness (MANDATORY — creation-step rule)
 

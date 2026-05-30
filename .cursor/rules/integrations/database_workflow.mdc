@@ -1,6 +1,17 @@
 ---
-alwaysApply: true
-description: PostgreSQL MCP environment mapping, connect-first workflow, POD/contract SQL patterns. Connection secrets live in Cursor MCP config — not in this file.
+alwaysApply: false
+description: "PostgreSQL MCP environment mapping, connect-first workflow, POD/contract SQL patterns. Loads for DB MCP, bug validation DB steps, and production-data reads."
+globs:
+  - ".cursor/agents/database-query.md"
+  - ".cursor/skills/phoenix-database/**"
+  - ".cursor/skills/production-data-reader/**"
+  - ".cursor/agents/production-data-reader.md"
+  - ".cursor/skills/phoenix-bug-validation/**"
+  - ".cursor/agents/bug-validator.md"
+  - ".cursor/commands/hands-off.md"
+  - ".cursor/agents/hands-off.md"
+  - ".cursor/agents/cross-dependency-finder.md"
+  - ".cursor/skills/cross-dependency-finder/**"
 ---
 
 # DATABASE WORKFLOW RULES [CRITICAL - MANDATORY]

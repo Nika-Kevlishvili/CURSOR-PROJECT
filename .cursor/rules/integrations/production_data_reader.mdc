@@ -1,6 +1,9 @@
 ---
-alwaysApply: true
-description: "Prod DB questions → ProductionDataReader role, PostgreSQLProd MCP readonly, MCP-driven workflow. Detail: production-data-reader skill."
+alwaysApply: false
+description: "Prod DB questions → ProductionDataReader role, PostgreSQLProd MCP readonly. Rule PDR.0."
+globs:
+  - ".cursor/agents/production-data-reader.md"
+  - ".cursor/skills/production-data-reader/**"
 ---
 
 # PRODUCTION DATA READER RULE [CRITICAL]

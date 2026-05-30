@@ -1,5 +1,11 @@
 ---
-alwaysApply: true
+alwaysApply: false
+description: "Navigation index for .cursor/rules — thematic layout and quick reference. Load when editing rules or onboarding."
+globs:
+  - ".cursor/**"
+  - "Cursor-Project/docs/RULES_CANONICAL_INDEX.md"
+  - "Cursor-Project/docs/CURSOR_OPERATING_MODEL.md"
+  - "Cursor-Project/docs/WORKSPACE_PATTERNS.md"
 ---
 
 # PHOENIX PROJECT RULES - MAIN INDEX

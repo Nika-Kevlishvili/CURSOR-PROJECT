@@ -117,7 +117,7 @@ Use **`prompt_type`** (`'bug'` vs `'task'`) from inputs — behavior differs.
 2. **No diagram in task description or linked pages:** search **`Cursor-Project/config/Diagrams/`** for plausible `.svg` matches. **Mandatory gate:** if any candidate fits, **do not** write TC files based on that diagram until the user confirms — ask explicitly whether to use it, naming **each candidate by full workspace path** (and one-line why it might match). If the user declines or multiple candidates remain ambiguous, omit local diagram from TC scope until clarified.
 3. **Authority:** same as bugs — **code + Confluence** override contradictory diagrams; document discrepancies in **References**.
 
-### 3. Precondition reuse — DRY vs self-contained (MANDATORY)
+### 3. Self-contained preconditions (Rule TC-STANDALONE-PRE.0 — MANDATORY)
 
 **Rule TC-STANDALONE-PRE.0** (`.cursor/rules/workspace/test_cases_structure.mdc`) takes precedence for generated files:
 
@@ -144,7 +144,7 @@ Rules:
 
 ### 3a. Precondition data completeness (MANDATORY — creation-step rule)
 
-When writing **Preconditions** (both document-level "Test data" and per-TC), follow the **mandatory creation-step precondition rule** from `Cursor-Project/config/template/Test_case_template.md`:
+When writing **Preconditions**, follow the **mandatory creation-step precondition rule** and **TC-STANDALONE-PRE.0** from `Cursor-Project/config/template/Test_case_template.md`:
 
 - **ALWAYS describe HOW to create every entity** in the data chain — never just write "entity X exists."
 - Every precondition step MUST include: the **API endpoint** (or UI action), **key parameters** (type, status, amount, dates, linked entities), and **references to earlier steps** (e.g. "customer ID from step 1").

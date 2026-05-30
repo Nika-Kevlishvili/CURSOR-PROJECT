@@ -1,5 +1,19 @@
 ---
-alwaysApply: true
+alwaysApply: false
+description: "Jira MCP primary, Atlassian REST v3 read fallback after retries. Loads for Jira-backed workflows."
+globs:
+  - ".cursor/commands/hands-off.md"
+  - ".cursor/agents/hands-off.md"
+  - ".cursor/agents/bug-validator.md"
+  - ".cursor/agents/cross-dependency-finder.md"
+  - ".cursor/agents/test-case-generator.md"
+  - ".cursor/agents/environment-resolver.md"
+  - ".cursor/agents/jira-bug.md"
+  - ".cursor/skills/phoenix-bug-validation/**"
+  - ".cursor/skills/cross-dependency-finder/**"
+  - ".cursor/skills/jira-bug-template/**"
+  - ".cursor/skills/test-case-generator/**"
+  - ".cursor/skills/environment-resolver/**"
 ---
 
 # JIRA READ PATH — MCP PRIMARY, REST FALLBACK [CRITICAL]

@@ -26,7 +26,7 @@ Ensures new files are saved in the correct directories (Rule 31 under `workspace
 | User stories, flows | **`User story/`** (project root) | **Mandatory** for story/flow files |
 | Reports | **`Cursor-Project/reports/`** → `Chat reports/`, `HandsOff reports/`, `Feedback/` | See `reports/README.md` |
 | Postman | `Cursor-Project/postman/` | |
-| Test cases | **`Cursor-Project/test_cases/Backend/<Topic>.md`** + **`test_cases/Frontend/<Topic>.md`** (two-folder layout) | Per `test_cases_structure.mdc` |
+| Test cases | **`Cursor-Project/test_cases/Backend/<Topic>.md`** always; **`Frontend/<Topic>.md`** when TC-FRONTEND scope includes UI | Per `test_cases_structure.mdc` |
 | Phoenix code | `Cursor-Project/Phoenix/**` | AI: read-only (Rule 0.8) |
 
 **Optional Python agent package:** If `Cursor-Project/agents/` is reintroduced later, organize per project owner — it is **not** present in this workspace now.

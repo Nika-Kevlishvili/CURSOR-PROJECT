@@ -1,5 +1,16 @@
 ---
-alwaysApply: true
+alwaysApply: false
+description: "Confluence MCP primary, Cloud REST read fallback after retries. Loads for Confluence-backed workflows."
+globs:
+  - ".cursor/agents/phoenix-qa.md"
+  - ".cursor/agents/bug-validator.md"
+  - ".cursor/agents/cross-dependency-finder.md"
+  - ".cursor/agents/test-case-generator.md"
+  - ".cursor/agents/hands-off.md"
+  - ".cursor/commands/hands-off.md"
+  - ".cursor/skills/phoenix-bug-validation/**"
+  - ".cursor/skills/cross-dependency-finder/**"
+  - ".cursor/skills/test-case-generator/**"
 ---
 
 # CONFLUENCE READ PATH — MCP PRIMARY, REST FALLBACK [CRITICAL]

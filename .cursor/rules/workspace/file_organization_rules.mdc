@@ -1,5 +1,14 @@
 ---
-alwaysApply: true
+description: "Mandatory directory layout for new workspace files (reports, test_cases, User story, agents, config). Loads when creating or organizing persisted artifacts."
+alwaysApply: false
+globs:
+  - "Cursor-Project/**"
+  - "User story/**"
+  - ".cursor/**"
+  - "agents/**"
+  - "examples/**"
+  - "docs/**"
+  - "postman/**"
 ---
 
 # FILE ORGANIZATION RULES [CRITICAL - ABSOLUTE REQUIREMENT]

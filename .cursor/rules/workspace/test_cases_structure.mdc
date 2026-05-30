@@ -101,7 +101,7 @@ Test case files are organized in **two sub-folders** by testing layer:
 
 ## READMEs (index files)
 
-- **test_cases/README.md** — Root index listing all topics with links to both Backend and Frontend files.
+- **test_cases/README.md** — Root index listing topics; link Backend always; link Frontend when that file exists.
 - **test_cases/Backend/README.md** — Index of all backend test case files.
 - **test_cases/Frontend/README.md** — Index of all frontend test case files.
 
@@ -185,7 +185,7 @@ Each TC heading includes its type: `TC-BE-1 (Positive): {title}` or `TC-FE-2 (Ne
 
 The **content** of each test case `.md` file MUST follow the **Test Case Template**: **`Cursor-Project/config/template/Test_case_template.md`**. That template defines: document header (title, Jira, Type, Summary, Scope), Test data (preconditions), then test case scenarios with TC-BE-N or TC-FE-N numbering. Each scenario has: Test title (in the TC heading), Description, Preconditions, Test steps, Expected test case results, Actual result (if bug), References. Test cases must be **maximally detailed** and **human-readable** (plain English, full sentences where helpful, no unexplained jargon). See the template for placeholders, examples, and the **mandatory creation-step precondition rule**.
 
-**DRY preconditions (mandatory):** The full entity-creation chain belongs in `## Test data (preconditions)` once. Each individual TC's `Preconditions:` block MUST reference the shared steps (`Apply Test data steps 1–N.`) and only list **deltas** (overridden status, amount, missing entity, additional entity). Re-stating a creation step that already appears in Test data is forbidden. See **`Cursor-Project/config/template/Test_case_template.md`** § "Reuse model — DRY preconditions" for the complete rule, BAD/GOOD examples, and self-check instruction.
+**Preconditions (canonical):** Follow **Rule TC-STANDALONE-PRE.0** below and **`Cursor-Project/config/template/Test_case_template.md`** § "Self-contained preconditions per TC". Optional `## Test data (preconditions)` at file level is **reference only** — it does **not** replace per-TC preconditions.
 
 ---
 

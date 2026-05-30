@@ -1,11 +1,16 @@
 # Test Cases
 
-Test case files are organized into **two sub-folders** by testing layer:
+Test case files use a **two-folder layout** by testing layer:
 
-- **`Backend/`** — Backend (API) test cases (`TC-BE-N`). One `.md` file per topic.
-- **`Frontend/`** — Frontend (UI) test cases (`TC-FE-N`). One `.md` file per topic.
+- **`Backend/`** — Backend (API) test cases (`TC-BE-N`). **Always** one `.md` file per topic when test cases are generated.
+- **`Frontend/`** — Frontend (UI) test cases (`TC-FE-N`). Created **only when** the user chose Backend+Frontend (TC-FRONTEND-ASK.0).
 
-Each topic produces two files with the same name — one in each folder.
+Topics may exist in Backend only (e.g. API-only bugs). The index table may show `—` in the Frontend column for those topics.
+
+## Preconditions (STANDALONE vs legacy)
+
+- **New topics (mandatory):** Rule **TC-STANDALONE-PRE.0** — each TC's `Preconditions:` lists the **full numbered setup chain** for that scenario. See `Cursor-Project/config/template/Test_case_template.md`.
+- **Legacy topics (read-only):** Older files may use `Apply Test data steps 1–N` when `## Test data (preconditions)` contains the full chain. Do **not** copy that pattern into new files. Migration to STANDALONE is optional per topic when those files are next edited.
 
 ## Template
 

@@ -1,5 +1,9 @@
 ---
-alwaysApply: true
+alwaysApply: false
+description: "Jira bug agent — Experiments board only; never Phoenix delivery bugs. Rule JIRA.0."
+globs:
+  - ".cursor/agents/jira-bug.md"
+  - ".cursor/skills/jira-bug-template/**"
 ---
 
 # JIRA BUG AGENT RULE [CRITICAL]

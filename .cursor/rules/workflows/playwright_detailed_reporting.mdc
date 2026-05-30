@@ -1,6 +1,15 @@
 ---
-description: "playwright-report-detailed.md (JSON→MD) next to EnergoTS JSON: HandsOff/path 3 generate + upload with smart report to Tester + #ai-report; no path-only substitute when upload works. Rule DPR.0."
-alwaysApply: true
+description: "playwright-report-detailed.md (JSON→MD) next to EnergoTS JSON: HandsOff/path 3 generate + upload with smart report to Tester + #ai-report. Rule DPR.0."
+alwaysApply: false
+globs:
+  - ".cursor/commands/hands-off.md"
+  - ".cursor/agents/hands-off.md"
+  - ".cursor/commands/send-playwright-results-slack.md"
+  - ".cursor/agents/energo-ts-run.md"
+  - ".cursor/skills/energo-ts-run/**"
+  - ".cursor/rules/workflows/handsoff_playwright_report.mdc"
+  - "Cursor-Project/config/playwright/**"
+  - "Cursor-Project/EnergoTS/playwright-report.json"
 ---
 
 # PLAYWRIGHT MACHINE DETAILED MARKDOWN (Rule DPR.0)
@@ -32,6 +41,38 @@ This rule governs **`playwright-report-detailed.md`** written next to **`playwri
 2. **Do NOT** skip uploading **`playwright-report-detailed.md`** to **`C0AK96S1D7X`** (and Tester when applicable) when the file exists and **`SLACK_API_TOKEN`/`SLACK_BOT_TOKEN`** allows upload — same **mandatory file** policy as the smart **`{JIRA_KEY}.md`**.
 3. **Do NOT** deliver Playwright detailed narratives **only** as long chat messages instead of **file attachments** when upload is possible.
 4. **Do NOT** use Slack **Notes** with local disk paths as the **primary** delivery when **`upload-file-to-slack.ps1`** can run with a valid token — paths in Notes are **only** after a **failed** upload attempt (see **`Slack_report_summary_short_template.md`**).
+
+### Two report locations (canonical — supersedes former NPR rule)
+
+| Artifact | Path | Role |
+|----------|------|------|
+| **Smart (human) report** | `Cursor-Project/reports/HandsOff reports/…/{JIRA_KEY}.md` or `Cursor-Project/reports/Chat reports/…/ScopedPlaywright_*.md` | Per **`Playwright_run_detailed_report_template.md`**; primary narrative for testers |
+| **Machine report** | `Cursor-Project/EnergoTS/playwright-report-detailed.md` (next to JSON) | JSON→MD via **`generate-detailed-report.mjs`**; uploaded with smart report to Slack |
+
+**Forbidden as the primary detailed deliverable:** `playwright-report.json`, `playwright-report/index.html`, or any non-Markdown format used **instead of** the smart `.md` under **`reports/`**.
+
+**Ad-hoc detailed reports (outside HandsOff / path 3):** Save smart `.md` only under **`Cursor-Project/reports/Chat reports/YYYY/<english-month>/<DD>/`** (or HandsOff/Feedback when that workflow applies). Do **not** treat EnergoTS JSON/HTML as the final human report.
+
+### Smart report content (when user requests a detailed report)
+
+The smart `.md` under **`reports/`** MUST include:
+
+1. **Run context:** Jira key, spec path, exact command, date/time, environment/branch.
+2. **Per-test-case section** for every executed TC in scope — not only aggregate totals.
+3. **Expected Result** and **Actual Result** per test case; status (`PASSED` / `FAILED` / `SKIPPED`) and failure excerpt when failed.
+4. **Clickable workspace-relative paths** for spec, report file, and evidence artifacts.
+5. **Summary block** with totals and duration.
+6. **Portal data links** (service-contract / billing-run preview URLs) when tests captured them — never invent URLs.
+
+If any item is missing, fix the report before Slack upload.
+
+### Pre-upload validation (smart report)
+
+Before upload: confirm `.md` under **`reports/`**; every in-scope TC has Expected + Actual; paths readable; portal URLs from real run output (state explicitly if missing due to early failure).
+
+### Routine runs without explicit report request
+
+Provide a **concise in-chat summary only**; do not persist detailed report files (Rule 0.6 default). Machine **`playwright-report-detailed.md`** generation applies only during **HandsOff**, **path 3**, or when the user explicitly asks.
 
 ### Relation to other rules
 

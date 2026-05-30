@@ -20,7 +20,7 @@ Any TC scoring below 80 MUST be rewritten. No exceptions.
 | **1. Intent uniqueness** | 10 | **10**: TC has a crystal-clear, unique verification goal that no other TC in the file covers; title alone tells what's being tested. **7**: Title unique but description overlaps slightly with another TC. **4**: Title is generic ("Error case", "Invalid input") but content differs. **0**: Duplicate of another TC or so vague it overlaps with ≥2 others. |
 | **2. Observable expected result** | 15 | **15**: Expected result includes: exact HTTP status code + specific response body field(s) and value(s) + side effect verification + error message text (for negatives). **10**: Has status code + some response details but missing side effects or error semantics. **5**: Only status code ("HTTP 200") with no other detail. **0**: "System works correctly", "operation succeeds", "no error", or any non-verifiable statement. |
 | **3. Endpoint specificity** | 12 | **12**: Every API call has HTTP method + full path + all key payload fields with example values/types. **8**: Method + path present, payload fields listed but no example values. **4**: Endpoint mentioned but parameters described as "{parameters}" or "required fields". **0**: No API endpoint named in steps. |
-| **4. Delta clarity** | 10 | **10**: Delta explicitly stated at start of Preconditions with exact field/value difference (e.g., "Delta: status=INACTIVE instead of ACTIVE"). **6**: Delta exists but buried in prose. **3**: Difference can be inferred but not stated. **0**: Negative TC has identical preconditions to positive; no delta visible. |
+| **4. Scenario differentiation (STANDALONE)** | 10 | **10**: Negative/variant TC's **Preconditions** list the **full chain** AND state the exact parameter/value/status that differs from the positive case (e.g. step 7 omits payment; step 3 uses `amountExcludingVat: 4.16`). **6**: Difference present but buried. **3**: Inferable only by diffing another TC. **0**: Identical preconditions to positive with no scenario-specific change. **Legacy read-only:** `Apply Test data steps X–Y` allowed only when `## Test data` contains the full chain and slice + scenario delta are unambiguous — score 6–8, not 10. **New files:** `Apply Test data steps` without full chain in same TC → 0. |
 | **5. Risk coverage (cross_dep)** | 10 | **10**: TC explicitly names and tests ≥1 item from `what_could_break` or `integration_points`. **6**: TC addresses a cross-dep risk implicitly. **3**: TC is in unrelated domain (stated clearly why cross-dep N/A). **0**: Cross-dep data exists but TC ignores all risks. |
 | **6. Precondition completeness** | 15 | **15**: Every entity creation step has: endpoint + HTTP method + key parameters + expected response. Full chain documented. **10**: Most entities have creation details but 1-2 are vague. **5**: Says "entity X exists" without explaining how to create it. **0**: Preconditions missing or say "assume data exists". |
 | **7. Step granularity** | 8 | **8**: Each step is ONE atomic action; all steps numbered; no compound steps. **5**: Steps numbered but some combine 2 actions. **2**: Steps unnumbered or mix multiple actions. **0**: Steps are paragraphs, not discrete actions. |
@@ -56,7 +56,7 @@ TC-BE-3 (Negative): Create billing run with missing contractId field
   Axis 1  Intent uniqueness:          10/10
   Axis 2  Observable expected:         8/15  ← Missing error message text and failing field name
   Axis 3  Endpoint specificity:       12/12
-  Axis 4  Delta clarity:              10/10  ← "Delta: contractId omitted from payload"
+  Axis 4  Scenario differentiation:  10/10  ← step 7 omits payment; contractId null in payload
   Axis 5  Risk coverage:               6/10  ← Implicitly covers validation, not explicitly linked to cross-dep
   Axis 6  Precondition completeness:  15/15
   Axis 7  Step granularity:            8/8
@@ -74,7 +74,7 @@ TC-BE-7 (Negative): Invalid input
   Axis 1  Intent uniqueness:           0/10  ← "Invalid input" is generic; 3 other TCs could have same title
   Axis 2  Observable expected:         0/15  ← "system rejects the request" — not verifiable
   Axis 3  Endpoint specificity:        4/12  ← Endpoint named but no payload fields
-  Axis 4  Delta clarity:               0/10  ← No delta stated; identical to positive TC setup
+  Axis 4  Scenario differentiation:   0/10  ← Identical setup to positive; no scenario-specific change
   Axis 5  Risk coverage:               0/10  ← Cross-dep provided risks, TC addresses none
   Axis 6  Precondition completeness:   5/15  ← "An active customer exists" — no creation steps
   Axis 7  Step granularity:            5/8   ← Step 2 combines login + navigation
@@ -87,7 +87,7 @@ TC-BE-7 (Negative): Invalid input
   MANDATORY fixes before resubmission:
     - Axis 1: Rename to specific scenario (e.g., "Billing run rejected when contractId is null")
     - Axis 2: Add "HTTP 400; response.errors[0].field='contractId'; message contains 'required'"
-    - Axis 4: Add "Delta: payload.contractId = null (instead of valid ID)"
+    - Axis 4: Document full chain; step 7 must omit payment / use null contractId (not generic "invalid input")
     - Axis 6: Document full entity creation chain with endpoints and parameters
     - Axis 9: Specify exact error semantics expected
 ```
@@ -114,8 +114,9 @@ These are **automatic deductions**. If any of these patterns are detected, the c
 | Preconditions say "An active customer exists." | 6 | -15 (to 0) | No creation steps — FORBIDDEN |
 | Preconditions say "Assume X is set up" | 6 | -15 (to 0) | No creation steps — FORBIDDEN |
 | Preconditions say "entity exists" without how | 6 | -10 | Must document creation endpoint + params |
-| Negative TC has identical preconditions to positive | 4 | -10 (to 0) | Cannot tell what triggers the failure |
-| No "Delta:" line for negative/variant TC | 4 | -7 | Reader must manually diff against base |
+| Negative TC has identical preconditions to positive (no scenario-specific change) | 4 | -10 (to 0) | Cannot tell what triggers the failure |
+| New TC uses `Apply Test data steps` without full chain in same Preconditions block | 4, 6 | -10 each | Violates TC-STANDALONE-PRE.0 |
+| Legacy TC uses `Apply Test data steps` but `## Test data` lacks full creation chain | 6 | -10 | Reference target missing |
 | cross_dep provided risks but TC covers none | 5 | -10 (to 0) | Ignores known regression risks |
 | Step = "Verify the result is correct." | 7, 8 | -8, -10 | Not atomic; "correct" undefined |
 | Two or more actions in one step | 7 | -6 | Hard to isolate failures |
@@ -131,7 +132,7 @@ These are **automatic deductions**. If any of these patterns are detected, the c
 
 1. **Zero tolerance for vague language**: "works", "succeeds", "correct", "valid", "proper" — all score 0 for that axis.
 2. **Every entity must have creation steps**: "Exists" is not a precondition; HOW to create it is.
-3. **Every negative TC must have a Delta**: What differs from the positive case?
+3. **Every negative TC must show scenario-specific setup** in its full Preconditions chain (what differs from the positive case — amounts, omitted entities, invalid fields).
 4. **Every assertion must be specific**: Field name + expected value + comparison type.
 5. **Cross-dep risks must be explicitly addressed**: If cross-dep data was provided, at least 1 risk must be tested.
 
@@ -151,7 +152,7 @@ These are **automatic deductions**. If any of these patterns are detected, the c
 
 ## Relationship to other documents
 
-- **Template:** `Cursor-Project/config/template/Test_case_template.md` — governs structure and precondition DRY rules.
+- **Template:** `Cursor-Project/config/template/Test_case_template.md` — structure and **TC-STANDALONE-PRE.0** preconditions.
 - **TC structure rule:** `.cursor/rules/workspace/test_cases_structure.mdc` — governs folder layout, numbering, coverage.
 - **Validator subagent:** `.cursor/agents/test-case-quality-validator.md` — applies this rubric independently after generation.
 - **Generator skill:** `.cursor/skills/test-case-generator/SKILL.md` — applies this rubric during self-check before file write.

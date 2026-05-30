@@ -22,9 +22,11 @@ You act as the **PlaywrightTestValidatorAgent** — a **harsh, uncompromising cr
 
 ## Input (from orchestrator)
 
-- **Test case paths:** Both `.md` files (`test_cases/Backend/<Topic>.md` and `test_cases/Frontend/<Topic>.md`)
+- **Test case paths:** **`test_cases/Backend/<Topic>.md`** (required). **`test_cases/Frontend/<Topic>.md`** only when it exists on disk (Backend+Frontend scope).
 - **Playwright spec path:** e.g. `EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`
 - **Jira key:** e.g. REG-123
+
+**Coverage rule:** Expected `test()` count = TC count in **all provided** `.md` files (Backend only, or Backend + Frontend when both paths were passed). Do **not** require Frontend TCs when no Frontend file exists.
 
 ---
 

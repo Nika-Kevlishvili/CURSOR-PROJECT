@@ -112,22 +112,25 @@ flowchart TD
 | `evidence_only_project_answers.mdc` | true | true |
 | `workflow_rules.mdc` | true | true |
 | `agent_rules.mdc` | true | true |
-| `phoenix.mdc` | true | merge into index / scope |
-| `playwright_detailed_reporting.mdc` | true | true (DPR) or scoped to HandsOff globs |
-| `file_organization_rules.mdc` | true | scoped (file writes) |
-| `database_workflow.mdc` | true | scoped (DB MCP) |
-| `jira_rest_fallback.mdc` | true | scoped (Jira reads) |
-| `confluence_rest_fallback.mdc` | true | scoped (Confluence reads) |
-| `jira_bug_agent.mdc` | true | scoped (Jira bug agent) |
-| `production_data_reader.mdc` | true | scoped (PDR) |
+| `phoenix.mdc` | false + globs | false + globs (index) |
+| `playwright_detailed_reporting.mdc` | false + globs | false + globs (HandsOff/path 3) |
+| `file_organization_rules.mdc` | false + globs | false + globs (file writes) |
+| `database_workflow.mdc` | false + globs | false + globs (DB MCP) |
+| `jira_rest_fallback.mdc` | false + globs | false + globs (Jira reads) |
+| `confluence_rest_fallback.mdc` | false + globs | false + globs (Confluence reads) |
+| `jira_bug_agent.mdc` | false + globs | false + globs (Jira bug agent) |
+| `production_data_reader.mdc` | false + globs | false + globs (PDR) |
 | `test_cases_structure.mdc` | false + globs | false + globs |
 | `handsoff_playwright_report.mdc` | false + globs | false + globs |
 | `swagger_refresh_mandatory.mdc` | false + globs | false + globs |
 | `phoenix_branch_switching.mdc` | false + globs | false + globs |
 | `energots_branch_lock.mdc` | false + globs | false + globs |
-| `no_auto_playwright_report_files.mdc` | none | **remove** (merge NPR into DPR) |
 
-**Note:** Cursor injects all `alwaysApply: true` rules every session. Agents must still follow **target** loading mentally until Phase 3 reduces injection size.
+**Removed (Phase 1):** `no_auto_playwright_report_files.mdc` — merged into **`playwright_detailed_reporting.mdc`** (DPR).
+
+**Note (Phase 3 complete):** Cursor injects **six** `alwaysApply: true` core rules every session; integration/workflow detail loads via **globs** or **Rule 0.0** canonical SKILL/agent reads.
+
+**CI:** `Cursor-Project/scripts/validate-cursor-rules.ps1` + **`validate-cursor-consistency.ps1`** (alwaysApply count, hooks, STANDALONE invariants).
 
 ### 2.2 Scoped (globs / explicit workflow)
 
@@ -301,17 +304,15 @@ flowchart LR
 |------|-------------|-------|--------------|--------|
 | JIRA.0 Experiments only | `block-jira-phoenix-delivery.ps1` | beforeSubmitPrompt | Wired | Wired |
 | TC-ENV remind | `remind-test-case-env-first.ps1` | beforeSubmitPrompt | Wired (non-blocking) | Wired |
-| ENERGOTS.0 prompts | `block-energots-branch-requests.ps1` | beforeSubmitPrompt | **Not wired** | Phase 1 |
+| ENERGOTS.0 prompts | `block-energots-branch-requests.ps1` | beforeSubmitPrompt | Wired | Wired |
 | Phoenix Tier A | `protect-phoenix-code.ps1` | beforeFileEdit | Wired | Wired |
-| EnergoTS Tier B | `protect-energots-writes.ps1` | beforeFileEdit | **File planned** | Phase 2 |
+| EnergoTS Tier B | `protect-energots-writes.ps1` | beforeFileEdit | Wired | Wired |
 | Confluence read-only | `block-confluence-write.ps1` | beforeMCPExecution | Wired | Wired |
 | DB writes | `control-database-write.ps1` | beforeMCPExecution | Wired | Wired |
 | Git push | `control-git-push.ps1` | beforeShellExecution | Wired | Wired |
-| ENERGOTS.0 shell | `block-energots-branch-switch.ps1` | beforeShellExecution | **Not wired** | Phase 1 |
+| ENERGOTS.0 shell | `block-energots-branch-switch.ps1` | beforeShellExecution | Wired | Wired |
 
 **Invariant:** If a rule cites a hook, that hook **must** appear in `hooks.json` or the rule must say “rules-only (no hook).”
-
-**Today:** `energots_branch_lock.mdc` claims hooks enforce ENERGOTS.0 — scripts exist but are **not** in `hooks.json` (Phase 1).
 
 ---
 
@@ -319,16 +320,19 @@ flowchart LR
 
 | Area | Current (repo today) | Target (this doc) | Phase |
 |------|----------------------|-------------------|-------|
-| TC preconditions | DRY and STANDALONE both CRITICAL | STANDALONE only | 1 |
-| TC quality skill | 6-axis / 8/12 in SKILL | 10-axis / 80 sync with agent | 1 |
-| Reports | NPR vs DPR conflict | DPR + smart report; NPR removed | 1 |
-| EnergoTS hooks | Scripts exist, not in hooks.json | Wired | 1 |
-| HandsOff Frontend | Always both files in hands-off.md | Respect Backend-only | 1 |
-| alwaysApply rules | ~14 files | ~6 core + scoped | 3 |
-| Agent/skills README | Gaps (quality-validator, 3 skills) | Full 1:1 matrix | 2 |
-| warn-phoenix hook | Over-broad path match | Match protect-phoenix paths only | 2 |
-| Missing skills | 3 agents without SKILL | Add thin SKILL routers | 2 |
-| This document §8 | Gap list | Rows marked DONE as phases complete | ongoing |
+| TC preconditions | STANDALONE only (DRY removed) | STANDALONE only | **Done (1)** |
+| TC quality skill | 10-axis / 80 sync with agent | 10-axis / 80 sync with agent | **Done (1)** |
+| Reports | DPR + smart report; NPR removed | DPR + smart report; NPR removed | **Done (1)** |
+| EnergoTS hooks | Wired in hooks.json | Wired | **Done (1)** |
+| HandsOff Frontend | Respects Backend-only (TC-FRONTEND-ASK.0) | Respect Backend-only | **Done (1)** |
+| alwaysApply rules | **6 core** + scoped globs | ~6 core + scoped | **Done (3)** |
+| Rule 35 in workflow_rules | Slim table → SKILL links | Summary only | **Done (3)** |
+| Agent/skills README | Full 1:1 matrix (16 skills) | Full 1:1 matrix | **Done (2)** |
+| warn-phoenix hook | Matches protect-phoenix paths only | Match protect-phoenix paths only | **Done (2)** |
+| Missing skills | 3 agents had no SKILL | Thin SKILL routers added | **Done (2)** |
+| EnergoTS Tier B hook | protect-energots-writes.ps1 wired | Wired | **Done (2)** |
+| validate-cursor-consistency | Cross-file + 6 core alwaysApply | CI script | **Done (3)** |
+| Post-audit remediation | HandsOff Backend-only aligned; rubric Axis 4 STANDALONE; template example; legacy TC policy | Consistent orchestration | **Done (audit)** |
 
 ---
 
@@ -338,7 +342,7 @@ flowchart LR
 |-------|-----------------|---------|
 | **1 Truth** | 1–2 | NPR→DPR; STANDALONE canonical; TC quality skill sync; wire EnergoTS hooks; HandsOff Backend-only |
 | **2 Registry** | 2–3 | README indexes; 3 new skills; `protect-energots-writes.ps1`; fix warn-phoenix |
-| **3 Slim** | ongoing | Dedupe Rule 35 text; reduce alwaysApply; `validate-cursor-consistency.ps1` |
+| **3 Slim** | done | Dedupe Rule 35 in `workflow_rules.mdc`; **6** alwaysApply core; `validate-cursor-consistency.ps1` |
 
 **Exit criterion Phase 1:** no pair of CRITICAL rules contradict on TC preconditions, reports, or rubric.
 
@@ -358,12 +362,12 @@ flowchart LR
 
 | When | Action |
 |------|--------|
-| Phase 1 merged | Update §8; set §7 EnergoTS hooks to Wired; remove NPR from §2.1a |
-| Phase 2 merged | Add skill paths to §4; update `.cursor/skills/README.md` link |
-| New mandatory workflow | Add row to RULES_CANONICAL_INDEX + §4 cheat sheet + §2.2 |
+| Phase 1 merged | §8 Phase 1 rows marked Done; §7 hooks Wired; NPR removed from §2.1a |
+| Phase 2 merged | Skills README + 3 new skills; protect-energots + warn-phoenix fixed |
+| Phase 3 merged | Six alwaysApply core; slim workflow_rules; run both validate scripts in CI |
 | Rule contradiction found | Fix rules first; then §3 canonical truths; then this doc |
 
-**Self-score target for this file:** ≥90/100 when Phase 1 repo changes match §8 “Target” column.
+**Self-score target for this file:** ≥90/100 when repo matches §8 Target column. **Post-audit (2026-05):** reconciliation + cross-file checks → **~96/100** (residual: legacy TC content not bulk-migrated; scoped-rule load depends on Cursor globs + Rule 0.0).
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Scope:** All `.md` files under `Cursor-Project/test_cases/Backend/` and `Cursor-Project/test_cases/Frontend/` MUST follow this structure. Use **plain English**, full sentences where helpful, no unexplained jargon.
 
-**Two-folder layout (mandatory):** Each topic produces **two separate files** — one in `Backend/` (TC-BE-N only) and one in `Frontend/` (TC-FE-N only). A Backend file MUST NOT contain Frontend test cases, and vice versa. See `.cursor/rules/workspace/test_cases_structure.mdc`.
+**Two-folder layout:** **`Backend/<Topic>.md`** is **always** created (TC-BE-N only). **`Frontend/<Topic>.md`** (TC-FE-N only) is created **only when** the user chose Backend+Frontend (TC-FRONTEND-ASK.0). Never mix layers in one file. See `.cursor/rules/workspace/test_cases_structure.mdc`.
 
 **Positive and negative (mandatory):** Each file MUST include at least one **(Positive)** and one **(Negative)** scenario (when the layer is applicable). Label every TC in its heading: `TC-BE-1 (Positive): …` or `TC-FE-2 (Negative): …`.
 
@@ -68,62 +68,6 @@ Preconditions MUST describe the **full data creation chain** required by the tes
 **Rule of thumb:** Every entity that must exist for the test to run MUST have its own creation step with endpoint and key parameters. If a tester cannot set up the test without guessing how to create an entity, the precondition is incomplete.
 
 **Reference:** `.cursor/rules/workspace/test_cases_structure.mdc`
-
----
-
-### Reuse model — DRY preconditions (MANDATORY)
-
-One topic file typically has many TCs that share the same long entity-creation chain. **Write that chain once** in `## Test data (preconditions)`, then have each TC's `Preconditions:` block reference the shared steps and only add **deltas** (the things that differ for that TC — a different status, amount, date, or missing field).
-
-**Pattern:**
-- `## Test data` — full numbered creation chain (every entity, endpoint, parameters).
-- `TC-BE-N Preconditions:` — reference the slice (`Apply Test data steps 1–N.`) + list only TC-specific overrides/additions.
-
-**Per-TC mandatory lines:**
-- Line 1: `Apply Test data steps X–Y.`
-- Line 2: `Delta: ...` (what is unique for this TC)
-- If no difference exists: `Delta: none (shared setup unchanged).`
-
-**Important:** Each TC MUST have an explicit delta declaration. Do not rely on Description/Expected results to imply setup differences.
-
-**BAD (FORBIDDEN) — repeated creation chain across TCs:**
-
-```
-### TC-BE-1 Preconditions:
-1. Create customer via POST /customer (PRIVATE, ACTIVE).
-2. Create POD via POST /pod (ELECTRICITY, ACTIVE).
-3. Create product via POST /product …
-…
-11. Payment package lock status = LOCKED.
-
-### TC-BE-2 Preconditions:
-1. Create customer via POST /customer (PRIVATE, ACTIVE).   ← identical to TC-BE-1
-2. Create POD via POST /pod (ELECTRICITY, ACTIVE).          ← identical to TC-BE-1
-…
-```
-
-**GOOD (REQUIRED) — shared chain in Test data, only deltas per TC:**
-
-```
-## Test data (preconditions)
-1. Create customer via POST /customer (type: PRIVATE, status: ACTIVE).
-2. Create POD via POST /pod (type: ELECTRICITY, status: ACTIVE, activation date: 2024-01-01).
-…
-11. Payment package lock status: LOCKED.
-
-### TC-BE-1 Preconditions:
-1. Apply Test data steps 1–11.
-2. Delta: confirm invoice status = PAID (step 10).
-3. Delta: confirm payment package lock = LOCKED (step 11).
-
-### TC-BE-2 Preconditions:
-1. Apply Test data steps 1–9 only (payment not yet created).
-2. Delta: do NOT create a payment — invoice stays in status GENERATED.
-```
-
-**Self-check rule:** Before finalising a TC file, scan for duplicated `POST /` or "Create … via" lines across multiple TCs. If the same creation step appears in two or more TCs, move it into `## Test data` and replace each occurrence with an "Apply Test data steps …" reference.
-
-**Self-check rule (case-specific):** Before finalising, confirm every TC `Preconditions:` has an explicit `Delta:` line. If two TCs have identical Preconditions text, rewrite so each TC-specific setup difference is explicit.
 
 ---
 
@@ -314,7 +258,13 @@ Shared setup for this file (environment + entity creation chain). Describe step-
 
 ---
 
-## Example (filled) — Backend file
+## Test data (preconditions) — optional reference appendix
+
+Optional **reference table** at file level (formulas, ID lists from a prior run). **Does not replace** per-TC `Preconditions:` (Rule **TC-STANDALONE-PRE.0**). Each TC MUST still list its **full numbered setup chain** in its own `Preconditions:` block.
+
+---
+
+## Example (filled) — Backend file (STANDALONE preconditions)
 
 ````markdown
 # Invoice cancellation – paid invoice, locked payment package (NT-1)
@@ -327,23 +277,6 @@ Shared setup for this file (environment + entity creation chain). Describe step-
 
 ---
 
-## Test data (preconditions)
-
-- **Environment:** Test
-1. Create a customer via `POST /customer` (type: PRIVATE, status: ACTIVE, customerIdentifier: auto-generated).
-2. Create a POD (Point of Delivery) via `POST /pod` (type: ELECTRICITY, status: ACTIVE, activation date: 2024-01-01).
-3. Create a product via `POST /product` (term: INDEFINITE, data delivery type: BY_PROFILE).
-4. Create terms for the product via `POST /terms` (linked to product from step 3).
-5. Create a price component via `POST /price-component` (type: ENERGY, rate: 0.15 BGN/kWh, currency: BGN, linked to product from step 3).
-6. Create a product contract via `POST /product-contract` (linking customer from step 1, POD from step 2, product from step 3; status: ACTIVE, entry-into-force date: 2025-01-01, no termination date).
-7. Create energy data / billing profile for the contract-POD combination via the energy data endpoint (linked to contract from step 6 and POD from step 2).
-8. Create a billing run via `POST /billing-run` (type: STANDARD, period: 2025-01-01 to 2025-01-31, linked to product contract from step 6).
-9. Execute the billing run to completion — the run generates an invoice with total amount > 0, status: GENERATED.
-10. Create a payment via `POST /payment` (amount matching the invoice total from step 9, linked to the invoice). After payment, invoice status becomes PAID.
-11. The payment from step 10 belongs to a payment package with lock status: **LOCKED**.
-
----
-
 ## Backend Test Cases
 
 ### TC-BE-1 (Positive): Cancel paid invoice while package stays locked
@@ -351,18 +284,25 @@ Shared setup for this file (environment + entity creation chain). Describe step-
 **Description:** Check that the cancellation API succeeds and the service does not require an UNLOCKED payment package.
 
 **Preconditions:**
-1. Apply Test data steps 1–11.
-2. Delta: confirm invoice status = PAID (result of step 10).
-3. Delta: confirm payment package lock status = **LOCKED** (step 11).
-4. No prior cancellation exists for this invoice.
+1. Create a customer via `POST /customer` (type: PRIVATE, status: ACTIVE, customerIdentifier: auto-generated).
+2. Create a POD via `POST /pod` (type: ELECTRICITY, status: ACTIVE, activation date: 2024-01-01).
+3. Create a product via `POST /product` (term: INDEFINITE, data delivery type: BY_PROFILE).
+4. Create terms via `POST /terms` (linked to product from step 3).
+5. Create a price component via `POST /price-component` (type: ENERGY, rate: 0.15 BGN/kWh, currency: BGN, linked to product from step 3).
+6. Create a product contract via `POST /product-contract` (customer step 1, POD step 2, product step 3; status: ACTIVE; entry-into-force: 2025-01-01).
+7. Create energy data for contract-POD (contract step 6, POD step 2).
+8. Create billing run via `POST /billing-run` (type: STANDARD, period: 2025-01-01 to 2025-01-31, contract step 6); execute to invoice status GENERATED.
+9. Create payment via `POST /payment` (amount = invoice total from step 8); invoice status becomes **PAID**.
+10. Confirm payment package lock status = **LOCKED** for the payment from step 9.
+11. No prior cancellation exists for this invoice.
 
 **Test steps:**
-1. Submit invoice cancellation via `POST /invoice-cancellation` with the invoice identifier from step 9.
+1. Submit invoice cancellation via `POST /invoice-cancellation` with the invoice identifier from step 8.
 2. Read response status and body; check cancellation record / invoice state.
 
-**Expected test case results:** The invoice cancellation is created successfully (HTTP 200/201). The system does not require the payment package to be UNLOCKED for this flow. No error message referencing lock status.
+**Expected test case results:** HTTP 200/201; cancellation created; no error requiring UNLOCKED payment package.
 
-**Actual result (if bug):** Error: "Payment package not found with id … and lock status in UNLOCKED"; cancellation blocked.
+**Actual result (if bug):** Error referencing UNLOCKED package; cancellation blocked.
 
 **References:** NT-1.
 
@@ -370,33 +310,35 @@ Shared setup for this file (environment + entity creation chain). Describe step-
 
 ### TC-BE-2 (Negative): Reject cancel when invoice id is invalid
 
-**Description:** Check that invalid or missing invoice reference is rejected clearly and no cancellation is stored.
+**Description:** Invalid invoice reference is rejected; no cancellation stored.
 
 **Preconditions:**
-1. Apply Test data steps 1–6 only (customer, POD, product, terms, price component, contract — no billing run or payment needed for this case).
-2. Delta: do NOT create a billing run or invoice — no valid invoice identifier exists in the system for the value used in this test (use a non-existent UUID or malformed invoice number).
+1. Create a customer via `POST /customer` (type: PRIVATE, status: ACTIVE).
+2. Create a POD via `POST /pod` (type: ELECTRICITY, status: ACTIVE, activation date: 2024-01-01).
+3. Create a product via `POST /product` (term: INDEFINITE, data delivery type: BY_PROFILE).
+4. Create terms via `POST /terms` (linked to product from step 3).
+5. Create a price component via `POST /price-component` (linked to product from step 3).
+6. Create a product contract via `POST /product-contract` (customer step 1, POD step 2, product step 3; status: ACTIVE).
+7. **Do not** create a billing run, invoice, or payment — use a non-existent or malformed invoice id in steps.
 
 **Test steps:**
-1. Call `POST /invoice-cancellation` with an empty, malformed, or non-existent invoice identifier.
-2. Inspect response status and body; verify no cancellation record was created for any valid invoice.
+1. Call `POST /invoice-cancellation` with empty, malformed, or non-existent invoice identifier.
+2. Verify no cancellation record was created.
 
-**Expected test case results:** Validation or not-found error (HTTP 400 or 404); message explains the problem; no orphan or incorrect cancellation row in the database.
+**Expected test case results:** HTTP 400 or 404 with clear validation/not-found message; no cancellation row created.
 
 **References:** Invoice cancellation API input validation.
-
----
-
-## References
-
-- **Jira:** NT-1 – Locked package blocks cancellation.
-- **Related:** Invoice cancellation service; payment package lock; PaymentService.cancel.
 ````
 
+**FORBIDDEN in new files:** `Apply Test data steps 1–N` without repeating steps in the same TC; standalone `Delta:` lines without full chain; `see TC-BE-X`.
+
 ---
 
-## File layout
+## File layout (legacy note)
 
-- **Backend files:** `Cursor-Project/test_cases/Backend/<Topic_name>.md`
-- **Frontend files:** `Cursor-Project/test_cases/Frontend/<Topic_name>.md`
+- **Backend files:** `Cursor-Project/test_cases/Backend/<Topic_name>.md` — **always**
+- **Frontend files:** `Cursor-Project/test_cases/Frontend/<Topic_name>.md` — **only when** TC-FRONTEND scope includes UI
 
-Update `test_cases/README.md`, `test_cases/Backend/README.md`, and `test_cases/Frontend/README.md` when adding new files.
+Update `test_cases/README.md` and `test_cases/Backend/README.md` always; `test_cases/Frontend/README.md` when Frontend file is added.
+
+**Legacy files** may still use `Apply Test data steps` — see `test_cases/README.md` § Legacy preconditions; **new** topics MUST use STANDALONE only.
