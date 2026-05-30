@@ -1,6 +1,6 @@
 # Workspace work patterns (canonical)
 
-This document describes **how this repository is intended to be used**: layout, dominant flows, tooling, and quality gates. It is derived from the actual **`.cursor/`** orchestration and **`Cursor-Project/`** deliverable layout. For rule-to-file mapping, see **`RULES_CANONICAL_INDEX.md`**.
+This document describes **how this repository is intended to be used**: layout, dominant flows, tooling, and quality gates. It is derived from the actual **`.cursor/`** orchestration and **`Cursor-Project/`** deliverable layout. For rule-to-file mapping, see **`RULES_CANONICAL_INDEX.md`**. For **target** `.cursor/` layer flow, intent routing, and diagrams (ASCII + minimal Mermaid), see **`CURSOR_OPERATING_MODEL.md`**.
 
 ## 1. Repository layout
 

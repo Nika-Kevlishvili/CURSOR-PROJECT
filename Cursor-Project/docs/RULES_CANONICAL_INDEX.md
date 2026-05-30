@@ -28,4 +28,5 @@ Single map from **rule / topic** to the **primary procedural** file(s). When `wo
 
 **Rules index (navigation):** `.cursor/rules/main/phoenix.mdc`  
 **Agent role → file:** `Cursor-Project/docs/AGENT_SUBAGENT_MAP.md`  
-**Intended work pattern (architecture):** `Cursor-Project/docs/WORKSPACE_PATTERNS.md`
+**Intended work pattern (architecture):** `Cursor-Project/docs/WORKSPACE_PATTERNS.md`  
+**`.cursor` operating model (layers, workflows, cheat sheet):** `Cursor-Project/docs/CURSOR_OPERATING_MODEL.md`

@@ -10,5 +10,6 @@ This folder is at the **Git workspace root** (next to `Cursor-Project/`).
 | **Skills** | [skills/README.md](skills/README.md) |
 | **Commands** | `commands/*.md` |
 | **Hooks** | `hooks.json` + `hooks/*.ps1` — Phoenix protect, Confluence read-only, DB write confirm, git push control |
+| **Operating model (target)** | [../Cursor-Project/docs/CURSOR_OPERATING_MODEL.md](../Cursor-Project/docs/CURSOR_OPERATING_MODEL.md) — layers, workflows, cheat sheet, ASCII diagrams |
 
 From `Cursor-Project/`, link here with e.g. `../.cursor/rules/README.md`.
