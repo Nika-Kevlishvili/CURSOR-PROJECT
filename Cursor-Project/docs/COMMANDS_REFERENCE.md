@@ -248,9 +248,9 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 - **Step 1 (mandatory):** Run cross-dependency-finder for the same scope (Rule 35a); get report including what_could_break and technical_details; pass as `context['cross_dependency_data']`.
 - **Step 2:** Follow Rule 0.3; consult PhoenixExpert; search Confluence and codebase; run **test-case-generator** workflow (subagent/skill) with `cross_dependency_data` from step 1.
 - Save test cases under **`Cursor-Project/test_cases/`** per **`test_cases_structure.mdc`**:
-  - **`Objects/<Entity>/`** – e.g. `Product_contract/Create.md`.
-  - **`Flows/<Flow_name>/`** – e.g. `Contract_termination/Multi_version_termination_date.md`.
-- Legacy **`generated_test_cases/`** may still exist in older material; prefer **`test_cases/`** for new work.
+  - **`Backend/<Topic_name>.md`** — TC-BE-N only; **always** when test cases are generated.
+  - **`Frontend/<Topic_name>.md`** — TC-FE-N only; **only** if user chose Backend+Frontend (TC-FRONTEND-ASK.0 = Yes).
+- Legacy **`test_cases/Objects/`**, **`Flows/`** and **`generated_test_cases/`** may appear in older material; prefer **`Backend/`** + **`Frontend/`** for new work.
 - One `.md` per group with title, steps, expected result.
 - Save reports (Rule 0.6). Read-only for Phoenix code.
 
@@ -283,11 +283,15 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 **What it can do:**
 1. **Get Jira ticket** – Parse issue key; call Jira MCP getJiraIssue → description, summary, tester/assignee.
 2. **Cross-dependencies** – Run cross-dependency-finder for this Jira key (Rule 35a: Jira + codebase + shallow Confluence; no local merge/git); get cross_dependency_data.
-3. **Test cases** – Run test-case-generator with ticket description and cross_dependency_data; save under `Cursor-Project/test_cases/Flows/` or `Objects/` (per template).
-4. **Playwright tests** – Follow **`.cursor/agents/energo-ts-test.md`**: map test case `.md` → spec with EnergoTS framework; output **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**; stay on **`cursor`** branch (Rule ENERGOTS.0). No Python `get_energo_ts_test_agent()` in this workspace.
-5. **Run tests** – Run Playwright tests (e.g. by Jira key or newly created file); capture pass/fail and failure reasons.
-6. **Report (Step 9)** – Save **detailed** report as **`HandsOff reports/…/YYYY/<english-month>/<DD>/{JIRA_KEY}.md`** per **`Cursor-Project/config/playwright/Playwright_run_detailed_report_template.md`** and **`Cursor-Project/reports/README.md`** (TC mapping, entity links, expected vs actual).
-7. **Slack** – **Three-block** text per **`Slack_report_summary_short_template.md`** + **upload** detailed `{JIRA_KEY}.md` via **`config/slack/upload-file-to-slack.ps1`** to Tester and **#ai-report** — see **`handsoff_playwright_report.mdc`** / **`config/slack/README.md`**. Long Slack only if explicitly requested (`Slack_report_template.md`).
+3. **Test cases** – Run test-case-generator; save **`test_cases/Backend/<Topic>.md`** always; **`Frontend/<Topic>.md`** only if TC-FRONTEND-ASK.0 = Yes.
+4. **TC quality (Step 3.5)** – **test-case-quality-validator**; 10-axis ≥80/100; max 3 rewrites; **BLOCK** if still failing.
+5. **Playwright tests** – **`energo-ts-test`** + **`energo-ts-test/SKILL.md`** → **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**; **`cursor`** branch (Rule ENERGOTS.0).
+6. **Spec validation (Step 4.5)** – **playwright-test-validator**; **BLOCK** after 3 failed iterations unless user opts out.
+7. **Run tests** – Playwright by Jira key or spec path; capture pass/fail and failure reasons.
+8. **Report** – **`HandsOff reports/…/{JIRA_KEY}.md`** + **`playwright-report-detailed.md`** (DPR.0).
+9. **Slack** – Three-block text + upload both `.md` files to Tester + **#ai-report**.
+
+**Canonical:** **`.cursor/commands/hands-off.md`**
 
 **When to use:** Run the full pipeline automatically for a Jira ticket: fetch → cross-deps → test cases → create Playwright tests → run → report (save + send to Slack). No user intervention after providing the ticket and /HandsOff.
 

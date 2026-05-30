@@ -14,37 +14,43 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 
 ## Subagents in This Project
 
-| Subagent | File | Maps to | Purpose |
-|----------|------|---------|---------|
-| **Phoenix Q&A** | `phoenix-qa.md` | PhoenixExpert (Rule 0.2) | Answer Phoenix questions from Confluence (MCP) + codebase. READ-ONLY. |
-| **Bug Validator** | `bug-validator.md` | BugFinderAgent (Rule 32) | Validate bug: Phoenix alignment, Confluence, mandatory Swagger refresh + OpenAPI, codebase; Slack **`bug-validation`**; save under **Chat reports** only on **`/report`** or explicit request. READ-ONLY. No TC/Playwright pipeline in Rule 32. |
-| **Test Runner** | `test-runner.md` | TestAgent (Rule 8, 17) | Run tests; consult PhoenixExpert first; report results. |
-| **Report Generator** | `report-generator.md` | Rule 0.6 | Save markdown per **`Cursor-Project/reports/README.md`** (no Python ReportingService). |
-| **Database Query** | `database-query.md` | database_workflow.mdc | Run PostgreSQL MCP queries; correct env (Dev/Test/Prod); connect first; contract/POD patterns. |
-| **Production Data Reader** | `production-data-reader.md` | ProductionDataReaderAgent (Rule PDR.0) | Read production database data; analyze liability offsets, receivable history; explain step-by-step creation process. READ-ONLY. |
-| **Git Sync** | `git-sync.md` | GitLabUpdateAgent / git_sync_workflow.mdc | Sync/update/checkout Phoenix repos from GitLab; READ-ONLY (fetch/checkout/merge only). |
-| **Shell / CLI** | `shell.md` | Delegated terminal | Bash/PowerShell tasks, diagnostics; respects hooks; multi-repo GitLab sync still maps to git-sync / git_sync_workflow. |
-| **Environment Access** | `environment-access.md` | EnvironmentAccessAgent (Rule 10) | Access Dev or Dev2; navigation, login, environment selection. |
-| **Postman Collection** | `postman-collection.md` | PostmanCollectionGenerator (Rule 8, 17) | Generate Postman collections; consult PhoenixExpert first. |
-| **Test Case Generator** | `test-case-generator.md` | TestCaseGeneratorAgent (role in chat) | Generate test cases from bug/task; Confluence + codebase; save under `Cursor-Project/test_cases/` (Objects/Flows per `test_cases_structure.mdc`). |
-| **Cross-Dependency Finder** | `cross-dependency-finder.md` | CrossDependencyFinderAgent (Rule 35, 35a) | Dependencies + what_could_break; **pattern:** [`CROSS_DEPENDENCY_WORK_PATTERN.md`](CROSS_DEPENDENCY_WORK_PATTERN.md) — Jira + codebase + shallow Confluence; **no** local merge/git. |
+| Subagent | File | Skill | Purpose |
+|----------|------|-------|---------|
+| **Phoenix Q&A** | `phoenix-qa.md` | `phoenix-agent-workflow` | Answer Phoenix questions from Confluence (MCP) + codebase. READ-ONLY. |
+| **Bug Validator** | `bug-validator.md` | `phoenix-bug-validation` | Rule 32: Confluence, Swagger, code, optional DB; Slack **`bug-validation`**; disk only on **`/report`**. |
+| **Environment Resolver** | `environment-resolver.md` | `environment-resolver` | Resolve Dev/Dev2/Test/PreProd/Prod/Experiments before env-sensitive work (TC-ENV, DB.0a). |
+| **Cross-Dependency Finder** | `cross-dependency-finder.md` | `cross-dependency-finder` | Rule 35a: Jira + codebase + shallow Confluence; **no** local merge/git. |
+| **Test Case Generator** | `test-case-generator.md` | `test-case-generator` | Rule 35: after cross-dep; **`test_cases/Backend/`** always; **`Frontend/`** if TC-FRONTEND-ASK.0 = Yes. |
+| **Test Case Quality Validator** | `test-case-quality-validator.md` | `test-case-quality-validator` | 10-axis rubric, ≥80/100, max 3 rewrites (Rule 35 Step 2.5). |
+| **HandsOff** | `hands-off.md` | `commands/hands-off.md` | Rule 37 full pipeline: TC → Playwright → reports → Slack. |
+| **EnergoTS Test Author** | `energo-ts-test.md` | `energo-ts-test` | Rule 0.8.1: write only under `EnergoTS/tests/`. |
+| **Playwright Test Validator** | `playwright-test-validator.md` | `playwright-test-validator` | HandsOff Step 4.5: spec vs test cases before run. |
+| **EnergoTS Run** | `energo-ts-run.md` | `energo-ts-run` | Rule 36: run Playwright on **`cursor`** branch only. |
+| **Test Runner** | `test-runner.md` | — | Run tests; consult PhoenixExpert first. |
+| **Database Query** | `database-query.md` | `phoenix-database` | PostgreSQL MCP; correct env; connect first. |
+| **Production Data Reader** | `production-data-reader.md` | `production-data-reader` | Rule PDR.0: production DB read-only traceability. |
+| **Jira Bug** | `jira-bug.md` | `jira-bug-template` | Rule JIRA.0: Experiments board only. |
+| **Postman Collection** | `postman-collection.md` | — (stub) | Generate Postman collections; consult PhoenixExpert. |
+| **Environment Access** | `environment-access.md` | — (stub) | Dev/Dev2 portal access (Rule 10). |
+| **Report Generator** | `report-generator.md` | `phoenix-reporting` | Rule 0.6: HandsOff, **`/report`**, **`/feedback`**. |
+| **Shell / CLI** | `shell.md` | — | Bash/PowerShell; respects hooks. |
+
+**Git / Phoenix sync (no subagent):** use **`.cursor/commands/switch-phoenix-branches.ps1`** and workspace sync commands (`sync-workspace-repo`, `sync-cursor-with-staging`). Historical **`git-sync.md`** subagent removed.
 
 ---
 
 ## Relation to Project Agents
 
-- **PhoenixExpert** → Cursor subagent **phoenix-qa**: same “Phoenix Q&A” role; subagent runs in isolated context.
-- **BugFinderAgent** → Cursor subagent **bug-validator**: same Rule 32 workflow (alignment → Confluence → Swagger + code → verdict; see **`phoenix-bug-validation`** skill).
-- **TestAgent** → Cursor subagent **test-runner**: same “run tests + consult PhoenixExpert” pattern.
-- **Rule 0.6 reporting** → Cursor subagent **report-generator**: save markdown per **`Cursor-Project/reports/README.md`**.
-- **Database workflow** (Rule DB.0–DB.5) → Cursor subagent **database-query**: same env selection and query patterns.
-- **GitLabUpdateAgent** / **git_sync_workflow.mdc** → Cursor subagent **git-sync**: same sync/update/checkout workflow; read-only.
-- **Delegated CLI / Task `shell`** → Cursor subagent **shell**: terminal work in isolation; use **git-sync** when the task is full Phoenix GitLab sync.
-- **EnvironmentAccessAgent** (Rule 10) → Cursor subagent **environment-access**: same Dev/Dev2 access workflow.
-- **PostmanCollectionGenerator** (Rule 8, 17) → Cursor subagent **postman-collection**: same “consult PhoenixExpert → generate collection” pattern.
-- **TestCaseGeneratorAgent** → Cursor subagent **test-case-generator**: same "Confluence + codebase → generate test cases" workflow; save to test_cases/.
+- **PhoenixExpert** → **`phoenix-qa`**
+- **BugFinderAgent** → **`bug-validator`** (Rule 32; **`phoenix-bug-validation`** skill)
+- **TestCaseGeneratorAgent** → **`test-case-generator`** + **`cross-dependency-finder`** first
+- **Database workflow** (Rule DB.0–DB.5) → **`database-query`** + **`phoenix-database`** skill
+- **ProductionDataReaderAgent** → **`production-data-reader`**
+- **EnvironmentAccessAgent** → **`environment-access`**
+- **PostmanCollectionGenerator** → **`postman-collection`**
+- **EnergoTSTestAgent** → **`energo-ts-test`** (sole writer for `EnergoTS/tests/`)
 
-**This workspace:** The **`Cursor-Project/agents/`** Python package is **not** present. Roles are implemented **in Cursor chat** via **`.cursor/agents/*.md`**, **`.cursor/rules/**/*.mdc`**, **skills**, and **MCP** (Jira, Confluence, PostgreSQL, Slack, etc.). **Rule 0.3:** external automation elsewhere may still use `IntegrationService.update_before_task()` where that code exists; in Cursor chat follow MCP/Jira/GitLab steps — no `from agents ...` imports.
+**This workspace:** The **`Cursor-Project/agents/`** Python package is **not** present. Roles are implemented **in Cursor chat** via **`.cursor/agents/*.md`**, **`.cursor/rules/**/*.mdc`**, **skills**, and **MCP**. **Rule 0.3:** no `from agents ...` imports in Cursor chat.
 
 ---
 
@@ -58,7 +64,6 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 
 ## Rules and Skills
 
-- **Rules:** `.cursor/rules/**/*.mdc` – index: `main/phoenix.mdc`; subagents refer to Rule 0.2, 0.3, 0.6, 8, 32, 35, 35a, DB.0–DB.5, etc.
-- **Skills:** `.cursor/skills/` – phoenix-agent-workflow, phoenix-bug-validation, phoenix-reporting, phoenix-database, etc. Skills guide when/how to use workflows; subagents are the actual delegation targets for those workflows.
-
-Together, rules + skills + subagents keep Phoenix workflows consistent whether the main agent does the work or delegates to a subagent.
+- **Rules:** `.cursor/rules/**/*.mdc` — obligations and gates (WHAT).
+- **Skills:** `.cursor/skills/**/SKILL.md` — canonical procedure (HOW).
+- **Index:** [`RULES_CANONICAL_INDEX.md`](RULES_CANONICAL_INDEX.md) · [`CURSOR_OPERATING_MODEL.md`](CURSOR_OPERATING_MODEL.md)

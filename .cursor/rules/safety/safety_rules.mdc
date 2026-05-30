@@ -2,94 +2,87 @@
 alwaysApply: true
 ---
 
-# GLOBAL SAFETY & ACCESS RULES [CRITICAL]
+# GLOBAL SAFETY & ACCESS RULES
 
 1. [CRITICAL] GitLab and Confluence are STRICTLY READ-ONLY - NO modifications allowed.
    - No commits, pushes, merges, edits, or page modifications.
    - **GitLab/Confluence pages:** no modifications. **Jira/GitLab automation:** only via approved external tooling (e.g. Python IntegrationService where that stack still exists). **This workspace** has no `Cursor-Project/agents/` package — Cursor AI does not run IntegrationService in chat.
-   - Violation is a CRITICAL SECURITY ERROR.
+   - Violation is a **BLOCK** (security).
    
    1a. [CRITICAL] Confluence Editing Tools are FORBIDDEN - READ-ONLY ONLY.
       - FORBIDDEN: updateConfluencePage(), createConfluencePage(), createConfluenceFooterComment(), createConfluenceInlineComment()
       - ALLOWED: getConfluencePage(), getPagesInConfluenceSpace(), getConfluenceSpaces(), search(), searchConfluenceUsingCql(), getConfluencePageDescendants(), getConfluencePageFooterComments(), getConfluencePageInlineComments()
       - Applies to ALL agents, ALL operations, ALL circumstances - NO EXCEPTIONS.
 
-# SOURCE-OF-TRUTH RULES [CRITICAL]
+# SOURCE-OF-TRUTH RULES
 
-6. [CRITICAL] PhoenixExpert priority: (1) Codebase (highest), (2) Confluence (via MCP, fresh), (3) General knowledge (fallback)
+6. PhoenixExpert priority: (1) Codebase (highest), (2) Confluence (via MCP, fresh), (3) General knowledge (fallback)
    - Code ALWAYS wins if conflicts with Confluence.
 
-7. [CRITICAL] Code modification per Rule 0.8 tiers (`.cursor/rules/main/core_rules.mdc`):
+7. Code modification per Rule 0.8 tiers (`.cursor/rules/main/core_rules.mdc`):
    - **Phoenix (`Cursor-Project/Phoenix/**`):** NEVER modified by Cursor AI.
    - **EnergoTS:** Only **EnergoTSTestAgent** may write under `EnergoTS/tests/`; rest of EnergoTS is no-write for AI.
    - **Elsewhere:** Allowed when user requests (provisional).
-   - Violation is a CRITICAL SYSTEM ERROR.
+   - Violation is a **BLOCK** (hooks enforce Tier A/B).
 
-# READ-ONLY OPERATION RULE [CRITICAL]
+# READ-ONLY OPERATION RULE
 
-14. [CRITICAL] PhoenixExpert and knowledge-based agents MUST operate in READ-ONLY mode.
+14. PhoenixExpert and knowledge-based agents MUST operate in READ-ONLY mode.
    - READ-ONLY: explore code, Confluence, documentation.
    - Do NOT modify, commit, push, merge, delete, or execute.
    - Write operations ONLY when explicitly commanded by user.
 
-# ERROR HANDLING & RESILIENCE RULE [IMPORTANT]
+# ERROR HANDLING & RESILIENCE RULE [SHOULD]
 
-15. [IMPORTANT] Agents MUST handle errors gracefully with retry logic and proper logging.
+15. Agents SHOULD handle errors gracefully with retry logic and proper logging.
    - Exponential backoff (max 2-3 attempts for transient errors).
    - Log all errors with full context (no Python AgentLogger package in this workspace — use clear error text in chat and reports).
    - Retryable: timeout, connection error, 5xx. Non-retryable: 404, 403, auth failed.
 
-# PERFORMANCE & TIMEOUT RULE [RECOMMENDED]
+# PERFORMANCE & TIMEOUT RULE [SHOULD]
 
-16. [RECOMMENDED] Agents MUST respect timeout limits (30s default) and optimize for performance.
-   - Use caching for consultation results when appropriate.
+16. Agents SHOULD respect timeout limits (30s default) and optimize for performance.
 
-# NEGATIVE RULES - WHAT MUST NEVER HAPPEN [CRITICAL - ABSOLUTE PROHIBITIONS]
+# NEGATIVE RULES - ABSOLUTE PROHIBITIONS
 
-18. [CRITICAL] Agents MUST NOT work independently — PhoenixExpert consultation mandatory (Rule 0.4). Violation is a CRITICAL ERROR.
+18. PhoenixExpert consultation per **Rule 0.4 (scoped)** — Phoenix/env-sensitive workflows only. Violation is a **MUST**.
     
-19. [CRITICAL] Agents MUST route work per **`.cursor/agents/`**, skills, and rules — there is **no** Python `AgentRouter` in this workspace.
+19. Agents MUST route work per **`.cursor/agents/`**, skills, and rules — no Python `AgentRouter` in this workspace.
     - Use Task tool / subagents or explicit specialist roles in chat; do not ignore prescribed workflows.
-    - Violation is a CRITICAL ERROR.
+    - Violation is a **MUST**.
     
-20. [CRITICAL] Agents MUST NOT skip required **external** update steps when **Python IntegrationService** exists in executed automation.
+20. Agents MUST NOT skip required **external** update steps when **Python IntegrationService** exists in executed automation.
     - In **Cursor chat** without that package: follow Rule **0.3** — MCP/Jira/GitLab workflows from rules; do not import `agents.*`.
-    - Violation is a CRITICAL SYSTEM ERROR when applicable automation skips mandated calls.
+    - Violation is a **MUST** when applicable automation skips mandated calls.
     
-21. [CRITICAL] Agents MUST NEVER modify GitLab or Confluence (see Rule 1).
-    - Violation is a CRITICAL SECURITY ERROR.
+21. Agents MUST NEVER modify GitLab or Confluence (see Rule 1).
+    - Violation is a **BLOCK** (security).
     
-22. [CRITICAL] Phoenix questions without PhoenixExpert are forbidden (Rule 0.2). Violation breaks single source of truth.
+22. Phoenix questions without PhoenixExpert are forbidden (Rule 0.2). Violation is a **MUST**.
     
-23. [CRITICAL] Agents MUST NEVER operate outside their domain without PhoenixExpert approval.
+23. Agents MUST NOT operate outside their domain without PhoenixExpert approval.
     - Stay within specialization unless explicitly approved.
-    - Violation causes incorrect results.
     
-24. [CRITICAL] "Agents involved" disclosure is mandatory (Rule 0.1). Violation is a CRITICAL SYSTEM ERROR.
+24. "Agents involved" disclosure for agent/workflow responses (Rule 0.1). Violation is a **MUST** when applicable.
     
-25. [CRITICAL] Agents MUST NEVER execute destructive operations without explicit user command.
+25. Agents MUST NOT execute destructive operations without explicit user command.
     - Safety first: when in doubt, ask or don't act.
     
-26. [CRITICAL] Agents MUST NEVER work in parallel on conflicting tasks.
-    - Coordinate via parent agent, subagents, and explicit handoffs (no Python AgentRouter/AgentRegistry in this workspace).
-    - If conflict detected, coordinate through PhoenixExpert.
+26. Agents MUST NOT work in parallel on conflicting tasks.
+    - Coordinate via parent agent, subagents, and explicit handoffs.
     
-27. [CRITICAL] Agents MUST NEVER ignore PhoenixExpert rejection or change requests.
-    - Consultation is MANDATORY and binding.
-    - Violation breaks approval workflow.
+27. Agents MUST NOT ignore PhoenixExpert rejection or change requests when consultation applies (Rule 0.4 scoped).
     
-28. [CRITICAL] Agents MUST NEVER share or leak sensitive information.
+28. Agents MUST NEVER share or leak sensitive information.
     - Do NOT log credentials, passwords, API keys, tokens.
     - Use secure logging and sanitize outputs.
-    - Violation is a CRITICAL SECURITY BREACH.
+    - Violation is a **BLOCK** (security).
     
-29. [CRITICAL] Agents MUST NEVER skip error handling and retry logic.
-    - All errors MUST be logged with full context.
-    - Violation prevents proper error diagnosis.
+29. Agents SHOULD handle errors with retry logic and context logging (see Rule 15).
     
-30. [CRITICAL] Cursor AI MUST NEVER skip **mandated** report-file steps when Rule **37 (HandsOff)** requires **`{JIRA_KEY}.md`** under **HandsOff reports** (`YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`**) or when the user ran **`/report`** / **`/feedback`** / explicitly requested a saved file under **Chat reports** or **Feedback** (or **Feedback/** if they named it for a generic report). Rule 32 does **not** mandate a disk file — only chat analysis unless the user asks for persistence.
-    - Omitting **optional** disk reports after routine tasks is **not** a violation (see Rule 0.6 default).
-    - Violation is a CRITICAL SYSTEM ERROR only when a required workflow artifact or explicit user file request is skipped.
+30. Cursor AI MUST NOT skip **mandated** report-file steps when Rule **37 (HandsOff)** requires **`{JIRA_KEY}.md`** or when the user ran **`/report`** / **`/feedback`** / explicitly requested a saved file. Rule 32 does **not** mandate a disk file.
+    - Omitting **optional** disk reports after routine tasks is **not** a violation (Rule 0.6 default).
+    - Violation is a **MUST** when a required workflow artifact or explicit user file request is skipped.
     
-31. [CRITICAL] Cursor AI MUST follow Rule 0.8 path tiers (`.cursor/rules/main/core_rules.mdc`): never edit Phoenix; never edit EnergoTS except EnergoTSTestAgent in `tests/` only; may edit other paths when user requests.
-    - Violation is a CRITICAL SYSTEM ERROR.
+31. Cursor AI MUST follow Rule 0.8 path tiers: never edit Phoenix; never edit EnergoTS except EnergoTSTestAgent in `tests/` only; may edit other paths when user requests.
+    - Violation is a **BLOCK** (hooks enforce).

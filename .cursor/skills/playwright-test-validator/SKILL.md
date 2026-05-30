@@ -1,28 +1,65 @@
 ---
 name: playwright-test-validator
-description: STRICT Playwright spec validator (0–100, pass ≥80). Compares spec vs test case .md files and playwright instructions. Use for HandsOff Step 4.5 before running tests. READ-ONLY.
-disable-model-invocation: true
+description: STRICT Playwright spec validator (0–100, pass ≥80). Compares spec vs test case .md files and playwright instructions. HandsOff Step 4.5 before run. READ-ONLY.
 ---
 
 # Playwright Test Validator Skill
 
-Routes to **playwright-test-validator** subagent (`.cursor/agents/playwright-test-validator.md`).
+**Subagent (report format):** `.cursor/agents/playwright-test-validator.md`
 
 ## When to apply
 
-- **HandsOff Step 4.5** — after energo-ts-test creates the spec, before Step 5 run.
-- User asks to validate or QC a Playwright spec against test cases.
+- **HandsOff Step 4.5** — after energo-ts-test creates spec, before Step 5 run.
+- User asks to validate a Playwright spec against test cases.
 
 ## Inputs
 
-- Backend test case path (required); Frontend path when it exists.
-- Playwright spec path under `EnergoTS/tests/cursor/`.
+- Backend TC path (required); Frontend path when it exists on disk.
+- Spec path: `EnergoTS/tests/cursor/{KEY}-*.spec.ts`
 - Jira key for naming checks.
 
-## Pass criteria
+**Coverage:** Expected `test()` count = TC count in **provided** `.md` files only. Do not require Frontend when no Frontend file.
 
-- **≥80/100** on validator rubric; **1:1** TC coverage; no `beforeAll` for preconditions; EnergoTS fixtures; Swagger-aligned payloads.
+## Scoring model (0–100, pass ≥80)
 
-## Subagent reference
+| Criterion | Max | Scoring |
+|-----------|-----|---------|
+| 1. Syntax correctness | 10 | 10 valid TS; 0 won't compile |
+| 2. Coverage completeness | 15 | 15 = 1:1 TC:test(); −5 per missing |
+| 3. TC-to-test alignment | 15 | Steps + expected match TC |
+| 4. Assertion specificity | 15 | Status + body fields; 0 = expect(true) only |
+| 5. Framework compliance | 10 | EnergoTS fixtures; 0 = ad-hoc getToken |
+| 6. Hook ban (beforeAll) | 10 | 0 if any beforeAll for preconditions |
+| 7. Precondition data creation | 10 | 0 = hardcoded IDs / assume exists |
+| 8. Entity creation order | 5 | Matches precondition-data-creation.instructions.md |
+| 9. Swagger compliance | 5 | Field names/enums from refreshed spec |
+| 10. Test naming & structure | 5 | `[JIRA-KEY]`, TC ref in title |
 
-`.cursor/agents/playwright-test-validator.md`
+## Automatic deductions
+
+| Anti-pattern | Deduction |
+|--------------|-----------|
+| `beforeAll` for preconditions | Criterion 6 → 0 |
+| Hardcoded ID / query existing row | Criterion 7 → 0 |
+| Missing test for TC | Criterion 2 −5 each |
+| `expect(true)` / no expect | Criterion 4 → 0 |
+| `toBeOK()` only | Criterion 4 −10 |
+| Ad-hoc getToken/apiRequest | Criterion 5 → 0 |
+| Wrong Swagger field/enum | Criterion 9 −3 each |
+
+## Process
+
+1. Read playwright instructions pack (at least test-writing-rules, SKILL, general-rules, precondition-data-creation).
+2. Read TC file(s); extract every TC with steps + expected.
+3. Read spec; count tests, grep forbidden patterns.
+4. Score each criterion harshly (start at max, deduct).
+5. Total ≥80 = PASS; else FAIL with numbered issues (location + fix).
+6. Max **3** regeneration loops via energo-ts-test; then **BLOCK** and escalate.
+
+## READ-ONLY
+
+Do not modify spec or TC files.
+
+## Footer
+
+Structured report + **Confidence** + `Agents involved: PlaywrightTestValidatorAgent`

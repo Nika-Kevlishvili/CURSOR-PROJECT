@@ -132,6 +132,27 @@ $crossFileChecks = @(
         Required = @('TC-FRONTEND-ASK.0', 'STANDALONE', 'FORBIDDEN in new files')
     }
     @{
+        Path = '.cursor\commands\hands-off.md'
+        Forbidden = @(
+            'may still proceed to Step 5',
+            'After the limit, proceed to Step 5'
+        )
+        Required = @('Step 3.5', 'test-case-quality-validator', 'BLOCK WORKFLOW', 'TC quality')
+    }
+    @{
+        Path = '.cursor\agents\hands-off.md'
+        Forbidden = @('may still proceed', 'proceed to run tests and **include validation')
+        Required = @('Step 3.5', 'test-case-quality-validator', 'BLOCK', 'TC quality')
+    }
+    @{
+        Path = '.cursor\rules\workflows\handsoff_playwright_report.mdc'
+        Forbidden = @(
+            'proceed to run tests and **include validation',
+            'Step 1.5):** test-case-quality'
+        )
+        Required = @('Step 3.5', 'BLOCK WORKFLOW', 'test-case-quality-validator')
+    }
+    @{
         Path = 'Cursor-Project\test_cases\README.md'
         Forbidden = @('Each topic produces two files with the same name')
         Required = @('Legacy topics', 'STANDALONE', 'TC-FRONTEND-ASK.0')
@@ -183,6 +204,44 @@ if (Test-Path -LiteralPath $wfPath) {
     }
 }
 
+# --- evidence_only slim (Jira detail in jira-evidence SKILL)
+$evidencePath = Join-Path $RulesRoot 'main\evidence_only_project_answers.mdc'
+$jiraSkillPath = Join-Path $CursorRoot 'skills\jira-evidence\SKILL.md'
+if (-not (Test-Path -LiteralPath $jiraSkillPath)) {
+    Add-Failure 'Missing jira-evidence SKILL: .cursor/skills/jira-evidence/SKILL.md'
+}
+if (Test-Path -LiteralPath $evidencePath) {
+    $ev = Get-Content -LiteralPath $evidencePath -Raw
+    $evLines = ($ev -split '\r?\n').Count
+    if ($evLines -gt 110) {
+        Add-Warning "evidence_only_project_answers.mdc has $evLines lines (target <=110 after Jira slim)"
+    }
+    if ($ev -match 'customfield_10103') {
+        Add-Failure 'evidence_only still contains Jira custom field table — move to jira-evidence SKILL'
+    }
+    if ($ev -notmatch 'jira-evidence/SKILL') {
+        Add-Failure 'evidence_only missing pointer to jira-evidence SKILL'
+    }
+}
+
+# --- Phoenix hook: block all files under Phoenix (not extension-only)
+$protectPhoenix = Join-Path $CursorRoot 'hooks\protect-phoenix-code.ps1'
+if (Test-Path -LiteralPath $protectPhoenix) {
+    $ph = Get-Content -LiteralPath $protectPhoenix -Raw
+    if ($ph -match '\$isCodeFile' -and $ph -match '\$isPhoenixPath -and \$isCodeFile') {
+        Add-Warning 'protect-phoenix-code.ps1 still uses extension-only gate (target: all files under Phoenix/**)'
+    }
+}
+
+# --- EnergoTS hook: tests/ allowlist
+$protectEnergo = Join-Path $CursorRoot 'hooks\protect-energots-writes.ps1'
+if (Test-Path -LiteralPath $protectEnergo) {
+    $eg = Get-Content -LiteralPath $protectEnergo -Raw
+    if ($eg -notmatch '\.spec\.ts' -or $eg -notmatch '\.fixtures\.ts') {
+        Add-Warning 'protect-energots-writes.ps1 may not restrict tests/ to spec/fixtures only'
+    }
+}
+
 # --- Agent/skill coverage
 $agentsDir = Join-Path $CursorRoot 'agents'
 $skillsDir = Join-Path $CursorRoot 'skills'
@@ -191,7 +250,7 @@ $skillAliases = @{
     'database-query' = 'phoenix-database'
     'jira-bug' = 'jira-bug-template'
 }
-$noSkillOk = @('hands-off', 'phoenix-qa', 'report-generator', 'shell', 'test-runner', 'environment-access', 'postman-collection')
+$noSkillOk = @('hands-off', 'phoenix-qa', 'report-generator', 'shell', 'test-runner', 'environment-access', 'postman-collection', 'jira-bug')
 
 Get-ChildItem -Path $agentsDir -Filter '*.md' -File | Where-Object { $_.Name -ne 'README.md' } | ForEach-Object {
     $baseName = $_.BaseName
@@ -199,6 +258,71 @@ Get-ChildItem -Path $agentsDir -Filter '*.md' -File | Where-Object { $_.Name -ne
     $skillPath = Join-Path $skillsDir "$skillName\SKILL.md"
     if (-not (Test-Path -LiteralPath $skillPath) -and $baseName -notin $noSkillOk) {
         Add-Warning "Agent without matching skill: .cursor/agents/$($_.Name) (expected skills/$skillName/SKILL.md)"
+    }
+}
+
+# --- CRITICAL → BLOCK/MUST tiering (Rule 0.9)
+$legacyCritical = 0
+Get-ChildItem -Path $RulesRoot -Recurse -Filter '*.mdc' -File | ForEach-Object {
+    $raw = Get-Content -LiteralPath $_.FullName -Raw
+    $hits = ([regex]::Matches($raw, 'Violation is a CRITICAL|CRITICAL SYSTEM ERROR')).Count
+    if ($hits -gt 0) {
+        $legacyCritical += $hits
+        Add-Warning "Legacy CRITICAL in $($_.FullName.Replace($RepoRoot, '').TrimStart('\')): $hits occurrence(s) — migrate to BLOCK/MUST/SHOULD per Rule 0.9"
+    }
+}
+if ($legacyCritical -gt 5) {
+    Add-Failure "Too many legacy CRITICAL occurrences in .mdc rules: $legacyCritical (target <=5 for Rule 0.9 definitions only)"
+}
+
+# --- phoenix_branch_switching.mdc should be slim (detail in SKILL)
+$phoenixSwitch = Join-Path $RulesRoot 'integrations\phoenix_branch_switching.mdc'
+if (Test-Path -LiteralPath $phoenixSwitch) {
+    $psLines = ((Get-Content -LiteralPath $phoenixSwitch -Raw) -split '\r?\n').Count
+    if ($psLines -gt 55) {
+        Add-Warning "phoenix_branch_switching.mdc has $psLines lines (target <=55; detail in phoenix-branch-switching SKILL)"
+    }
+    $ps = Get-Content -LiteralPath $phoenixSwitch -Raw
+    if ($ps -notmatch 'phoenix-branch-switching/SKILL') {
+        Add-Failure 'phoenix_branch_switching.mdc missing pointer to phoenix-branch-switching SKILL'
+    }
+}
+
+# --- Confluence hook: fail-secure on error
+$blockConfluence = Join-Path $CursorRoot 'hooks\block-confluence-write.ps1'
+if (Test-Path -LiteralPath $blockConfluence) {
+    $bc = Get-Content -LiteralPath $blockConfluence -Raw
+    if ($bc -match 'catch\s*\{[^}]*permission\s*=\s*"allow"') {
+        Add-Failure 'block-confluence-write.ps1 catch block must deny (fail-secure), not allow'
+    }
+}
+
+# --- handsoff_playwright_report.mdc should be slim (detail in SKILL)
+$handsoffReport = Join-Path $RulesRoot 'workflows\handsoff_playwright_report.mdc'
+if (Test-Path -LiteralPath $handsoffReport) {
+    $hrLines = ((Get-Content -LiteralPath $handsoffReport -Raw) -split '\r?\n').Count
+    if ($hrLines -gt 55) {
+        Add-Warning "handsoff_playwright_report.mdc has $hrLines lines (target <=55; detail in hands-off-playwright-report SKILL)"
+    }
+    $hr = Get-Content -LiteralPath $handsoffReport -Raw
+    if ($hr -notmatch 'hands-off-playwright-report/SKILL') {
+        Add-Failure 'handsoff_playwright_report.mdc missing pointer to hands-off-playwright-report SKILL'
+    }
+}
+
+# --- Fat agents must be thin I/O contracts (P1b)
+$thinAgentMaxLines = 90
+$thinAgents = @('bug-validator', 'test-case-generator', 'cross-dependency-finder', 'energo-ts-test', 'environment-resolver', 'playwright-test-validator', 'test-case-quality-validator', 'production-data-reader', 'energo-ts-run')
+foreach ($agentName in $thinAgents) {
+    $agentPath = Join-Path $agentsDir "$agentName.md"
+    if (-not (Test-Path -LiteralPath $agentPath)) { continue }
+    $agentRaw = Get-Content -LiteralPath $agentPath -Raw
+    $lineCount = ($agentRaw -split '\r?\n').Count
+    if ($lineCount -gt $thinAgentMaxLines) {
+        Add-Warning "Agent $agentName.md has $lineCount lines (P1b target <= $thinAgentMaxLines — procedure belongs in SKILL)"
+    }
+    if ($agentRaw -notmatch 'Procedure \(HOW\):') {
+        Add-Warning "Agent $agentName.md missing 'Procedure (HOW):' pointer to SKILL"
     }
 }
 

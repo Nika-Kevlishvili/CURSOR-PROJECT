@@ -22,7 +22,7 @@ globs:
 
 **Intent.** Any workflow that must **read** Jira issue data (HandsOff, bug validation, cross-dependency, test cases, ticket triage, attachment workflows) MUST prefer **Jira MCP** first. If Jira MCP is **unavailable** (server disabled, tool errors, auth failure) or **still fails after 2–3 retries** with backoff (see **`.cursor/rules/safety/safety_rules.mdc`** Rule 15), agents MUST **not** stop at “MCP broken” — they MUST fetch the **same class of information** via the **Atlassian Cloud REST API v3** read path below. **READ-ONLY:** no Jira writes via this fallback unless a separate user-approved workflow explicitly allows them.
 
-**Violation** is a **CRITICAL SYSTEM ERROR** when an agent abandons Jira-backed work solely because MCP failed while REST credentials exist and the user did not block REST.
+**Violation** is a **MUST** when an agent abandons Jira-backed work solely because MCP failed while REST credentials exist and the user did not block REST.
 
 ---
 

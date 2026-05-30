@@ -42,5 +42,10 @@ try {
     
     $response | ConvertTo-Json -Compress
 } catch {
-    @{ continue = $true; permission = "allow" } | ConvertTo-Json -Compress
+    @{
+        continue = $true
+        permission = "deny"
+        user_message = "[HOOK BLOCKED] Confluence protection hook error — blocked for safety (fail-secure)."
+        agent_message = "BLOCK: block-confluence-write hook failed to parse input. Deny all Confluence MCP until hook is fixed. Error: $_"
+    } | ConvertTo-Json -Compress
 }

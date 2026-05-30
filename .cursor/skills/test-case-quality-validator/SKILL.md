@@ -1,27 +1,65 @@
 ---
 name: test-case-quality-validator
-description: STRICT quality validator — scores test case .md files on 10 axes (0–100 total, pass ≥80/100). Returns per-TC scores, anti-pattern flags, and rewrite suggestions. Use after test-case-generator produces files, or ad-hoc with /test-case-quality <Topic_name>. READ-ONLY — does not modify files.
-disable-model-invocation: true
+description: STRICT test case .md validator — 10 axes, 0–100 total, pass ≥80/100. Rule 35 Step 2.5 and HandsOff Step 3.5. Max 3 rewrites. READ-ONLY.
 ---
 
 # Test Case Quality Validator Skill
 
-Routes to the **test-case-quality-validator** subagent (`.cursor/agents/test-case-quality-validator.md`).
+**Subagent (report template):** `.cursor/agents/test-case-quality-validator.md`  
+**Rubric:** `Cursor-Project/docs/test_case_quality_rubric.md`
 
 ## When to apply
 
-- After test-case-generator saves `test_cases/Backend/<Topic>.md` (+ `Frontend/<Topic>.md` when TC-FRONTEND scope includes Frontend) — invoke as Step 2.5 / HandsOff Step 1.5 before Playwright bridge.
-- User runs `/test-case-quality <Topic_name>` — ad-hoc check on existing files.
-- Parent agent (test-case-generator, hands-off) needs second-pass verification after self-scoring.
+- After test-case-generator saves Backend (+ Frontend when scope includes it).
+- HandsOff Step 3.5 (mandatory before Playwright).
+- `/test-case-quality <Topic_name>`
 
-## What it does
+## Inputs
 
-1. Reads the rubric: `Cursor-Project/docs/test_case_quality_rubric.md` (**10-axis, 0–100 model**).
-2. Reads TC file(s) for the topic (Backend required; Frontend when it exists).
-3. Scores every TC on **10 axes**. **Pass threshold: 80/100**. **STRICT MODE** — no leniency.
-4. Returns structured per-TC scores, failing axis reasons, and mandatory fixes.
-5. Parent re-invokes test-case-generator with feedback (**max 3 rewrite iterations**).
+- `topic_name` — e.g. `Invoice_cancellation`
+- `backend_path` — default `Cursor-Project/test_cases/Backend/<topic>.md` (**required**)
+- `frontend_path` — optional; score only if file exists — **do not fail** Backend-only scope
 
-## Subagent reference
+## Workflow
 
-`.cursor/agents/test-case-quality-validator.md`
+### Step 1 — Read rubric (mandatory first)
+
+Read **`test_case_quality_rubric.md`** completely. **10-axis, 0–100**, pass **≥80**. Apply anti-pattern catalog.
+
+### Step 2 — Read TC file(s)
+
+Extract every TC-BE-N from Backend; TC-FE-N from Frontend when present.
+
+### Step 3 — Score each TC (strict)
+
+Start at max per axis; deduct for every weakness.
+
+**Axis flunks (examples):**
+- Vague expected ("succeeds", "works correctly") → Axis 2 = 0
+- "Customer exists" without creation steps → Axis 6 = 0
+- Negative TC same setup as positive without delta → Axis 4 = 0
+- Legacy `Apply Test data steps` without inlined chain → Axis 6 = 0 (new files must be STANDALONE)
+
+Per-TC block: all 10 axis scores + TOTAL + PASS/FAIL + mandatory fixes if FAIL.
+
+### Step 4 — Anti-pattern scan
+
+Re-scan rubric catalog; rescore if missed deductions.
+
+### Step 5 — Summary verdict
+
+Backend table + optional Frontend table + OVERALL VERDICT + failed TC list + iteration (1–3).
+
+### Step 6 — Return to parent
+
+- `validation_passed`: true only if **all** TCs ≥80
+- `failed_tcs`, `fixes_required`, `iteration`
+- Parent re-invokes test-case-generator; after 3 failures → **BLOCK** user escalation
+
+## READ-ONLY
+
+Do not modify TC files.
+
+## Footer
+
+**Confidence** (CONF.1) + `Agents involved: test-case-quality-validator`

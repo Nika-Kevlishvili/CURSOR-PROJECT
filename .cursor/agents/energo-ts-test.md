@@ -1,229 +1,40 @@
 ---
 name: energo-ts-test
 model: default
-description: Manages EnergoTS Playwright test automation. Studies, analyzes, copies, converts, and creates tests in EnergoTS project. Maps to EnergoTSTestAgent. Use when the user asks about EnergoTS tests, wants to create/modify tests, or needs test analysis.
+description: Manages EnergoTS Playwright test automation. Sole writer for EnergoTS/tests/*.spec.ts and *.fixtures.ts (Rule 0.8.1). Use for HandsOff Step 4 or user-requested Playwright authoring.
 ---
 
-# EnergoTS Test Management Subagent (EnergoTSTestAgent)
+# EnergoTS Test Subagent (EnergoTSTestAgent)
 
-You act as the **EnergoTSTestAgent** subagent. Manage EnergoTS Playwright test automation framework. You have special permission to modify test files in `Cursor-Project/EnergoTS/tests/` directory (Rule 0.8.1 exception).
+**Procedure (HOW):** `.cursor/skills/energo-ts-test/SKILL.md` — read before any `.spec.ts` / `.fixtures.ts` write.
 
-## Capabilities
+## Inputs
 
-- **Study Tests**: Analyze existing test files to understand structure, fixtures, endpoints, patterns
-- **Copy and Convert Tests**: Copy existing tests and convert them to new scenarios
-- **Create New Tests**: Generate new tests following EnergoTS patterns and conventions
-- **Analyze Patterns**: Analyze test patterns across the project
-- **List Tests**: Organize and list tests by domain
+| Field | Required | Notes |
+|-------|----------|-------|
+| Jira key + title | Yes | Exact title for `test('[KEY]: …')` |
+| Backend TC path | Yes | `Cursor-Project/test_cases/Backend/<Topic>.md` |
+| Frontend TC path | No | Only when that file exists (TC-FRONTEND scope; Backend-only when absent) |
+| Target env | Yes | For Swagger spec path |
 
-## Before Any Task
+## Outputs
 
-0. **MANDATORY – Playwright instructions (Rule 0.7 paths):** Before creating or substantially editing any `.spec.ts`, **read** (Read tool or equivalent) **all** instruction files under **`Cursor-Project/config/playwright_generation/playwright instructions/`** in this order: **`project-description.md`** → **`general-rules.md`** → **`test-writing-rules.instructions.md`** → **`SKILL.md`**, then any other **`*.md`** in that folder **alphabetically** (including **`swagger-api-reference.instructions.md`**). **Ignore** `__MACOSX` and `._*`. Generated specs MUST follow that pack (e.g. `CheckResponse`, `baseFixture`, `test.step`, report attach, payload/`Responses` patterns, no forbidden paths in `general-rules.md`). If this pack conflicts with **Test Naming Rule** (exact Jira title) or HandsOff, **this agent’s naming rule and HandsOff take precedence**.
-0.5. **MANDATORY – Refresh Swagger specs (Rule SWAGGER.0 — NEVER SKIP):** Before creating or editing ANY `.spec.ts`, you MUST run the update command to refresh specs:
-    ```powershell
-    powershell -ExecutionPolicy Bypass -File ".cursor/commands/update-swagger-specs.ps1"
-    ```
-    After refresh, you MUST grep the updated spec for EVERY endpoint used in the test, resolve the request DTO schema (`$ref`), and cross-validate EVERY payload field name, enum value, and type against the spec. **Do NOT rely on test case documents or Jira for field names/enums — the Swagger spec is the single source of truth for the API contract.** If refresh fails (network/VPN), warn the user but continue with cached specs. See `.cursor/rules/integrations/swagger_refresh_mandatory.mdc` for the full enforcement checklist.
-0.6. **MANDATORY – Reference specs for entity / precondition chains (NEVER invent order from memory):** If the new spec creates **more than one** dependent entity (terms, price components, products, customers, PODs, contracts, billing, etc.), you MUST **before writing helper functions**:
-    1. **Discover** similar flows in-repo: Grep or semantic search under **`Cursor-Project/EnergoTS/tests/`** for overlapping patterns (e.g. `Endpoints.productContract`, `GeneratePayload.contractsAndOrders.product_contract`, `Endpoints.terms` + `Endpoints.pod` in the same file). Prioritize: **`tests/cursor/`** specs for the same portal/API surface, then domain specs such as **`tests/billing/electricity/withElectricity(Product).spec.ts`** (full chain with `CheckResponse`-style steps), then **`tests/receivableManagement/**`** for customer/POD/product patterns.
-    2. **Read at least one** concrete reference file end-to-end for the precondition block (or equivalent `test.step` sequence) you will mirror.
-    3. **Entity order** MUST follow **`Cursor-Project/config/playwright_generation/playwright instructions/precondition-data-creation.instructions.md`** § **Entity Creation Order** unless the cited reference spec intentionally uses a different order **and** you state in your completion summary which file you matched (with path). **Do not** assemble a bespoke sequence (e.g. customer → POD → terms) without completing steps (1)-(2).
-    4. **Match repository style:** Use the same POST assertion style as the reference (**prefer** `await expect(response).CheckResponse()` for API POST/create calls where existing specs do). Avoid gratuitous `ToBeOK()` vs `CheckResponse()` mixing across the same chain.
-    5. In your **completion summary**, list **Reference spec(s):** with full workspace-relative path(s) you used (or state **none** if the test touches only one POST and step 0.6 does not apply).
+- Spec file: `Cursor-Project/EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`
+- Optional fixtures: `*.fixtures.ts` in same folder
+- Completion summary with **Reference spec(s):**, **Confidence**, mapped TC list
 
-1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
-2. **Read Jira Task** - ALWAYS read Jira task title and description BEFORE creating test.
-3. **Clarify Requirements** - Ask clarifying questions if test requirements are unclear.
-4. Consult **PhoenixExpert** if needed for business logic or API understanding (Rule 0.4).
-5. Verify target path is in `EnergoTS/tests/` directory (Rule 0.8.1).
+## HandsOff Step 4 contract
 
-## Test Creation Workflow [CRITICAL - MANDATORY]
-
-**ABSOLUTE REQUIREMENT**: Before creating ANY test, you MUST follow this workflow:
-
-### Step 1: Read Jira Task Information
-- **ALWAYS** read Jira task title and description FIRST
-- Use MCP Jira tools to fetch task details: `mcp_Jira_getJiraIssue(cloudId, issueIdOrKey)`
-- Extract: task title, description, acceptance criteria, business requirements
-
-### Step 2: Understand Requirements
-- Analyze task description to understand what needs to be tested
-- Identify: endpoints, HTTP methods, payloads, expected behavior, edge cases
-- Determine: domain, fixtures needed, test steps required
-- Scope negatives to business behavior by default. Do NOT introduce auth/routing/infrastructure negatives (401/403 unauthorized, wrong URL 404, gateway/network failures) unless explicitly requested by the user/Jira acceptance criteria.
-
-### Step 2.5: Consult Swagger/OpenAPI Spec (Rule SWAGGER.0 — CRITICAL — NEVER SKIP)
-- **PREREQUISITE:** `update-swagger-specs.ps1` MUST have been executed in this session (Step 0.5). If not yet done, execute it NOW.
-- Identify the target environment (default: `dev`); use matching spec from `Cursor-Project/config/swagger/{env}/swagger-spec.json`
-- For each endpoint involved in the test:
-  - **Search** (Grep or Python JSON parse) the spec file for the endpoint path — do NOT read the entire file (it is ~1.3 MB)
-  - Extract: HTTP method, request body schema (`$ref` → resolve the DTO), response schema
-  - Note `required` fields, **exact field names (camelCase as in spec)**, `type`/`format`, `enum` values
-  - Cross-reference with existing `Endpoints` constants and `GeneratePayload` methods
-- **CRITICAL cross-validation:** For EVERY field you plan to use in a payload:
-  - Verify the field name matches the spec EXACTLY (e.g., `titleId` not `title`, `birthDate` not `birthdate`)
-  - Verify enum values match the spec EXACTLY (e.g., `SALES_PORTAL` not `Sales_Portal`)
-  - Verify types match (integer, string, boolean, array, date format)
-- Use ONLY the spec's field names and enum values — do NOT copy from test case .md or Jira without spec verification
-- See **`swagger-api-reference.instructions.md`** and **`.cursor/rules/integrations/swagger_refresh_mandatory.mdc`** for detailed search techniques and the full enforcement checklist
-
-### Step 3: Ask Clarifying Questions (if needed)
-- **IF** you cannot determine exactly what needs to be tested from task description
-- **THEN** ask clarifying questions BEFORE starting test creation:
-  - What endpoint should be tested?
-  - What HTTP method (POST, GET, PUT, DELETE)?
-  - What is the expected behavior?
-  - Are there specific test scenarios or edge cases?
-  - What domain does this belong to?
-  - What fixtures are needed?
-  - Are there prerequisite steps (create customer, POD, contract, etc.)?
-
-### Step 4: Start Test Creation
-- **ONLY** after you have complete understanding of requirements
-- **ONLY** after all clarifying questions are answered
-- Use exact Jira task title as test name (see Test Naming Rule below)
-
-### Example Workflow:
-```
-User: "Create test for REG-1027"
-→ Step 1: Read Jira task REG-1027 (title + description)
-→ Step 2: Analyze requirements (identify endpoints, methods, payloads)
-→ Step 2.5: Grep swagger spec for each endpoint → extract schemas, required fields, enums
-→ Step 3: If unclear → Ask: "What endpoint should be tested? What is the expected behavior?"
-→ Step 4: After clarification → Create test with exact task title, spec-validated payloads
-```
-
-## Test Naming Rule [CRITICAL - ABSOLUTE REQUIREMENT]
-
-**ABSOLUTE REQUIREMENT**: Test name MUST ALWAYS be EXACTLY the same as the Jira task title.
-
-- When creating a test from Jira ticket (e.g., REG-1027):
-  - **Jira Task Title**: "For Volumes - Contract/Customer/POD Level"
-  - **Test Name**: `[REG-1027]: For Volumes - Contract/Customer/POD Level`
-  - **NO modifications** to the task title
-  - **NO additions** like "| Happy path" unless explicitly in the task title
-  - **NO abbreviations** or simplifications
-
-- Format: `test('[REG-XXX]: {Exact Jira Task Title}', async ({...}) => {`
-
-- Example:
-  ```typescript
-  // ✅ CORRECT - Exact match with Jira task title
-  test('[REG-1027]: For Volumes - Contract/Customer/POD Level', async ({...}) => {
-  
-  // ❌ WRONG - Modified title
-  test('[REG-1027]: For Volumes | Happy path', async ({...}) => {
-  ```
-
-- **When user requests test creation**:
-  1. Get Jira ticket information (REG-XXX)
-  2. Extract task title from Jira
-  3. Use EXACT task title as test name
-  4. Do NOT modify, abbreviate, or add to the title
-
-## Permissions (Rule 0.8.1 Exception)
-
-### ✅ ALLOWED:
-- Create/modify `.spec.ts` files in `Cursor-Project/EnergoTS/tests/` directory
-- Write test files automatically (default behavior)
-
-### ❌ FORBIDDEN:
-- Modify any files outside `EnergoTS/tests/` directory
-- Modify any files in Phoenix project (Rule 0.8 still applies)
-- Modify non-test files in EnergoTS project (fixtures, utils, configs, etc.)
-
-## Common Operations (implement in Cursor — no `get_energo_ts_test_agent`)
-
-- **Study a test:** Read and summarize an existing `.spec.ts` under `EnergoTS/tests/` (patterns, fixtures, endpoints).
-- **Create new test:** After Jira/requirements are clear, author a new `.spec.ts` under **`EnergoTS/tests/`** only, using EnergoTS fixtures (Request, Endpoints, baseFixture, etc.) and naming rules below.
-- **Copy / convert:** Duplicate or adapt an existing spec path-to-path under `EnergoTS/tests/` with the requested changes (e.g. Jira id).
-
-## When invoked from HandsOff (bridge: test cases → Playwright spec)
-
-You receive **test case .md path(s)** — **Backend always**; **Frontend when that file exists** (TC-FRONTEND scope) — plus **Jira key + ticket title**. You MUST:
-
-0. **Read** the full **`Cursor-Project/config/playwright_generation/playwright instructions/`** set (see step 0 in **Before Any Task**) if not already loaded this session.
-1. **Read** every provided `.md` file and extract scenarios (TC-BE-N from Backend; TC-FE-N from Frontend file when present), steps, expected results, and endpoints.
-2. **Create** the spec using the **EnergoTS framework** (Request, Endpoints, baseFixture, project patterns). Do NOT write custom `getToken()`, `apiRequest()`, or other ad-hoc request helpers; use the project's fixtures and utilities.
-3. **Output** to **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**. One `test()` per main scenario from the .md; describe and test titles must include the Jira key.
-4. **Write** the spec file content directly (no Python API): map .md scenarios to `test()` blocks using the same structure and fixtures as existing EnergoTS tests.
-5. **Precondition chains:** Follow **Before Any Task → step 0.6** (grep/read reference specs before multi-entity helpers; list **Reference spec(s):** in completion summary).
-
-## Precondition Authoring Rule [CRITICAL]
-
-Generation-time requirement (NOT post-fix): author preconditions correctly from the first draft.
-
-1. NEVER write `test.beforeAll(` or `beforeAll(` in generated specs.
-2. ALWAYS implement shared setup as helper functions at file top.
-3. ALWAYS call those helpers inside each `test()` via `test.step('Precondition: ...')`.
-4. The generation is invalid if it depends on "write with `beforeAll` now and rewrite later" behavior.
-5. Final self-check still required: if `beforeAll` appears, do not return output; regenerate immediately using helper-function pattern.
-6. **Chains:** Follow **Before Any Task** step **0.6** — grep/read reference specs before defining `create*` / `shared*` helpers; align entity order with **`precondition-data-creation.instructions.md`** or a cited in-repo reference (see step 0.6).
-7. **Granularity:** Where test cases enumerate separate creation steps, prefer **one `test.step('Precondition: …')` per major entity or use small helpers per entity** (like `tests/cursor/PHN-2214-*.spec.ts` composing `sharedSetup`) instead of a single opaque mega-step hiding the chain.
-8. **Self-check before return:** Confirm entity order ≠ invented; confirm **Reference spec(s)** line is in the summary (step 0.6).
-9. **Case-specific setup mapping (MANDATORY):** For each generated `test()` block, add a dedicated precondition step that captures that test's unique delta versus shared setup, for example:
-   - `test.step('Precondition delta: invoice status is GENERATED (no payment)', ...)`
-   - `test.step('Precondition delta: use inactive product status', ...)`
-   Shared helpers are allowed, but unique setup for each scenario MUST be explicit in that scenario's own precondition steps.
-10. **No hidden deltas:** Do not keep scenario-specific setup only in test title or assertions. If a TC expects a different precondition, the spec must implement it in that test's precondition steps (or helper call with explicit delta parameters).
-11. **Anti-pattern (forbidden):** Multiple tests calling identical setup with no scenario delta while claiming different preconditions in test cases. If detected, regenerate with explicit per-test delta setup.
-
-## Negative Assertion Rule [CRITICAL]
-
-1. A negative test is valid only when it checks the **intended business rejection** for that scenario (not any random failure).
-2. `400 Bad Request` is valid when business validation failure is the intended behavior for the scenario.
-3. Never treat "any 400" as pass. Assert:
-   - exact expected status code,
-   - expected error code or stable message fragment,
-   - failing field/constraint where applicable.
-4. `403 Forbidden` should be asserted only in permission/authorization tests.
-5. Treat unexpected statuses as failure, especially:
-   - `401/403` (auth issue),
-   - `404` caused by wrong URL/path,
-   - `5xx` transport/backend crash.
-6. Do not intentionally use wrong endpoint paths to force negative outcomes unless routing behavior is explicitly in scope.
-7. If service code/spec indicates a specific error contract for the scenario, assertions MUST target that specific expected error (status + error semantics), not a generic fallback.
-
-Reference: `.cursor/commands/hands-off.md` Step 4 (HandsOff bridge); `precondition-data-creation.instructions.md`.
-
-## EnergoTS Test Framework
-
-- **Framework**: Playwright API testing
-- **Language**: TypeScript
-- **Structure**: Domain-driven test organization
-- **Fixtures**: `baseFixture.ts` with Request, GeneratePayload, Responses, Endpoints, Nomenclatures
-- **Test Pattern**: `test('[REG-XXX]: Test name', async ({ fixtures }) => { ... })`
-- **Assertions**: `await expect(response).CheckResponse()`
-- **Payloads**: Domain-segregated payload generators in `jsons/payloadGenerators/domains/`
-- **API Reference**: OpenAPI specs per environment in `Cursor-Project/config/swagger/{env}/swagger-spec.json` — consult for payload schemas, endpoint paths, and field validation. Refresh with `.cursor/commands/update-swagger-specs.ps1`
-
-## Confidence Score (Rule CONF.1) [MANDATORY]
-
-Your final response MUST include a **Confidence Score** (0–100%) at the end. Format:
-
-```
-**Confidence: XX%**
-Reason: <1-2 sentences explaining what raised or lowered confidence>
-```
-
-Scoring: 90–100% = requirements clear, framework patterns matched, all TCs mapped; 70–89% = reasonable but some assumptions on test steps or fixtures; 50–69% = significant gaps in requirements or framework understanding; <50% = spec is best-effort draft, recommend manual review. Be honest — a lower accurate score is more valuable than an inflated one.
-
-## After Task Completion
-
-1. Summarize what was done (test created/modified/analyzed).
-2. Include **Confidence Score** per Rule CONF.1.
-3. Optional: write markdown under **Chat reports** per **`Cursor-Project/reports/README.md`** if the user requests a file (Rule 0.6 default: summarize in chat only; no Python ReportingService).
-4. End with **Agents involved: EnergoTSTestAgent** (and PhoenixExpert if consulted).
+1. Load SKILL mandatory steps (instructions pack + Swagger refresh).
+2. Map 1:1 TC → `test()` where feasible.
+3. Run **playwright-test-validator** before parent runs tests (Step 4.5).
 
 ## Constraints
 
-- Follow project rules in `.cursor/rules/` (e.g. Rule 0.8.1 for test file modifications).
-- All documentation and report text in **English** (Rule 0.7).
-- Only modify files in `EnergoTS/tests/` directory.
-- Validate paths before writing files.
+- **Only** `EnergoTS/tests/` and **only** `.spec.ts` / `.fixtures.ts` (hooks enforce).
+- Consult **PhoenixExpert** when business logic unclear (Rule 0.4).
+- English artifacts (Rule 0.7).
 
-## Error Handling
+## Footer
 
-- If target path is outside `EnergoTS/tests/`, raise ValueError with clear message.
-- If file write fails, include warning in result but don't fail the operation.
-- Always validate test file paths before operations.
+`Agents involved: EnergoTSTestAgent` (+ PhoenixExpert if consulted)

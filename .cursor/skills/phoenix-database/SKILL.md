@@ -31,7 +31,7 @@ Apply this skill **before** any PostgreSQL MCP (`connect_db`, `query`, `execute`
 4. Only after the user names env (or authorizes your choice) → map to MCP per table below → connect → query.
 5. State in chat: `DB environment: <Env>` before first query result.
 
-**Violation of Step 0 is a CRITICAL SYSTEM ERROR** (same as Rule CONF.0).
+**Violation of Step 0 is a BLOCK** (same as Rule CONF.0).
 
 ## Environment Selection (Rule DB.0)
 
@@ -54,9 +54,45 @@ Use the **exact** environment the user asks for. Do not switch.
 
 ## Standard Patterns (Rule DB.2)
 
-**Contracts by POD identifier:** Use DISTINCT, include `contract_type` (PRODUCT_CONTRACT / SERVICE_CONTRACT), contract and POD IDs, status, dates. Product contracts: `product_contract.contracts` → `contract_details` → `contract_pods` → `pod_details` → `pod.pod`. Service contracts: `service_contract.contracts` → `contract_details` → `contract_pods` → `pod.pod`. POD identifier is in `pod.pod.identifier` (varchar 33).
+### Product Contracts by POD
 
-**Best practices:** DISTINCT on joins, order by contract_number and id, include status and date fields. See `database_workflow.mdc` for full SQL templates.
+```sql
+SELECT DISTINCT
+  'PRODUCT_CONTRACT' as contract_type, c.id, c.contract_number, c.status, c.contract_status,
+  c.create_date, c.entry_into_force_date, c.termination_date,
+  p.identifier as pod_identifier, cp.id as contract_pod_id,
+  cp.activation_date, cp.deactivation_date, cp.status as contract_pod_status
+FROM product_contract.contracts c
+JOIN product_contract.contract_details cd ON cd.contract_id = c.id
+JOIN product_contract.contract_pods cp ON cp.contract_detail_id = cd.id
+JOIN pod.pod_details pd ON cp.pod_detail_id = pd.id
+JOIN pod.pod p ON pd.pod_id = p.id
+WHERE p.identifier = 'POD_IDENTIFIER_HERE'
+ORDER BY c.contract_number, c.id
+```
+
+### Service Contracts by POD
+
+```sql
+SELECT DISTINCT
+  'SERVICE_CONTRACT' as contract_type, c.id, c.contract_number, c.status, c.contract_status,
+  c.create_date, c.entry_into_force_date, c.termination_date,
+  p.identifier as pod_identifier, cp.id as contract_pod_id, cp.status as contract_pod_status
+FROM service_contract.contracts c
+JOIN service_contract.contract_details cd ON cd.contract_id = c.id
+JOIN service_contract.contract_pods cp ON cp.contract_detail_id = cd.id
+JOIN pod.pod p ON cp.pod_id = p.id
+WHERE p.identifier = 'POD_IDENTIFIER_HERE'
+ORDER BY c.contract_number, c.id
+```
+
+### Key schemas
+
+- Product: `contracts` → `contract_details` → `contract_pods` → `pod_details` → `pod.pod`
+- Service: `contracts` → `contract_details` → `contract_pods` → `pod.pod` (direct pod_id)
+- POD identifier: `pod.pod.identifier` (varchar 33)
+
+**Best practices:** DISTINCT on joins; include contract_type; order by contract_number; include status + date fields; LIMIT result sets; schema prefixes.
 
 ## Security (Rule DB.5)
 
@@ -65,4 +101,4 @@ Use the **exact** environment the user asks for. Do not switch.
 
 ## Rules Source
 
-Environment mapping, connect-first workflow, and SQL templates: `.cursor/rules/integrations/database_workflow.mdc`. Rule 33: Test environment queries use PostgreSQLTest MCP.
+Environment mapping and connect-first workflow: `.cursor/rules/integrations/database_workflow.mdc` (summary). SQL templates now live here in this SKILL. Rule 33: Test environment queries use PostgreSQLTest MCP.

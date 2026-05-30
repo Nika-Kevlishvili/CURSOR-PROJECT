@@ -2,7 +2,7 @@
 
 **Scope:** Orchestration (`.cursor/`) **and** how it connects to deliverables under `Cursor-Project/` (test cases, EnergoTS, reports).  
 **Purpose:** Single reference for how the workspace **should** work after reconciliation (Phase 1–3).  
-**Status:** **TARGET** design — not fully implemented in repo yet. See [§ Current vs target](#8-current-vs-target).  
+**Status:** **Phase 1–3 reconciliation implemented** in repo (see [§8](#8-current-vs-target)). Residual debt: context bloat, thin router skills, hook gaps, legacy TC content — see audit notes in §11.  
 **Related:** [WORKSPACE_PATTERNS.md](WORKSPACE_PATTERNS.md) · [RULES_CANONICAL_INDEX.md](RULES_CANONICAL_INDEX.md) · [../.cursor/README.md](../.cursor/README.md) · [../config/template/Slack_reporting_paths.md](../config/template/Slack_reporting_paths.md)
 
 ---
@@ -168,13 +168,13 @@ flowchart TD
 |-------------|-------|-----------------|-----------|
 | Phoenix Q&A | `phoenix-qa` | `phoenix-agent-workflow` | 0.2, evidence |
 | Validate bug | `bug-validator` | `phoenix-bug-validation` | 32, 41, PHOENIX-SWITCH |
-| Resolve environment | `environment-resolver` | **missing** — use [environment-resolver.md](../.cursor/agents/environment-resolver.md) until Phase 2 skill | CONF.0, TC-ENV, DB.0a |
+| Resolve environment | `environment-resolver` | `environment-resolver` | CONF.0, TC-ENV, DB.0a |
 | Cross-dependencies | `cross-dependency-finder` | `cross-dependency-finder` | 35a, 39 |
-| Generate test cases | `test-case-generator` | `test-case-generator` | 35, STANDALONE |
-| Score test cases | `test-case-quality-validator` | `test-case-quality-validator` — **sync to 10-axis in Phase 1** | rubric 10-axis |
+| Generate test cases | `test-case-generator` | `test-case-generator` | 35, STANDALONE; Backend always; Frontend if TC-FRONTEND-ASK.0 = Yes |
+| Score test cases | `test-case-quality-validator` | `test-case-quality-validator` | rubric 10-axis, ≥80/100 |
 | Full HandsOff | `hands-off` | `commands/hands-off.md` | 37, DPR |
-| Write Playwright spec | `energo-ts-test` | **missing** — use [energo-ts-test.md](../.cursor/agents/energo-ts-test.md) until Phase 2 skill | 0.8.1, 41, 40 |
-| Validate spec | `playwright-test-validator` | **missing** — use [playwright-test-validator.md](../.cursor/agents/playwright-test-validator.md) until Phase 2 skill | handsoff §2a |
+| Write Playwright spec | `energo-ts-test` | `energo-ts-test` | 0.8.1, 41, 40 |
+| Validate spec | `playwright-test-validator` | `playwright-test-validator` | handsoff §2a |
 | Run Playwright | `energo-ts-run` | `energo-ts-run` | 36, ENERGOTS.0 |
 | Scoped Playwright + Slack | parent or energo-ts-run | `send-playwright-results-slack.md` | DPR, path 3 |
 | DB query | `database-query` | `phoenix-database` | 33, DB.0a |
@@ -333,6 +333,23 @@ flowchart LR
 | EnergoTS Tier B hook | protect-energots-writes.ps1 wired | Wired | **Done (2)** |
 | validate-cursor-consistency | Cross-file + 6 core alwaysApply | CI script | **Done (3)** |
 | Post-audit remediation | HandsOff Backend-only aligned; rubric Axis 4 STANDALONE; template example; legacy TC policy | Consistent orchestration | **Done (audit)** |
+| Doc map sync | AGENT_SUBAGENT_MAP, §4 cheat sheet, CURSOR_SUBAGENTS, COMMANDS_REFERENCE | Match Backend/Frontend layout; no git-sync ghost | **Done (P0 audit)** |
+| Repo hygiene | `.cursor/logs/` gitignored; tracked switch logs removed | No operational log noise in git | **Done (P0 audit)** |
+| Jira evidence slim | Heavy Jira blocks → `jira-evidence` SKILL; alwaysApply evidence gate only | −~90 lines alwaysApply | **Done (P1)** |
+| Router skills expanded | environment-resolver, energo-ts-test, playwright-test-validator, test-case-quality-validator | Real HOW in SKILL; thin agents | **Done (P1)** |
+| Hook hardening | Phoenix = all file types; EnergoTS tests/ = *.spec.ts + *.fixtures.ts only | Tier A/B enforcement | **Done (P1)** |
+| Legacy TC STANDALONE | expand script **disabled** (multiline bug); 4 DRY topics reverted | Manual migration when editing | **Reverted — safe** |
+| HandsOff Step 3.5 | TC quality gate in command + agent + handsoff report | Mandatory before Playwright | **Done (remediation)** |
+| Strict validator exit | Playwright 4.5 BLOCK after 3 failures | No silent proceed to run | **Done (remediation)** |
+| Fat agent thinning (P1b) | bug-validator, test-case-generator, cross-dependency-finder → I/O contract (~45–65 lines) | Procedure only in SKILL | **Done (P1b)** |
+| P2 agent thinning | production-data-reader, energo-ts-run → I/O contract | Procedure in SKILL | **Done (P2)** |
+| P2 gate dedupe | HandsOff Steps 3–4.5 → SKILL pointers; TC gates authoritative in test_cases_structure.mdc | Less triplication | **Done (P2 partial)** |
+| Critical audit P0 | Rule 0.4 scoped; 0.8.1 hook honesty; Confluence fail-secure; handsoff .mdc slim + SKILL | Runtime honesty | **Done (audit)** |
+| CI validate | `.github/workflows/validate-cursor-rules.yml` on `.cursor/**` PRs | Regression detection | **Done (audit)** |
+| P2b jira-bug + phoenix-switch slim | jira-bug.md 86→30; phoenix_branch_switching.mdc 306→43 + SKILL | Maintainability | **Done (P2b)** |
+| P3 CRITICAL → BLOCK/MUST | All `.mdc` files migrated to Rule 0.9 tiering (0 legacy CRITICAL violations left) | LLM followability | **Done (P3)** |
+| R7 mega-slim + meta-scope | test_cases_structure 241→90; bug-validation SKILL 328→211; database_workflow 144→61; CONF.1+0.1 workflow-only | Context + UX | **Done (R7)** |
+| Compliance tiers | Rule 0.9 BLOCK / MUST / SHOULD | Less CRITICAL inflation | **Done (P1)** |
 
 ---
 
@@ -367,7 +384,15 @@ flowchart LR
 | Phase 3 merged | Six alwaysApply core; slim workflow_rules; run both validate scripts in CI |
 | Rule contradiction found | Fix rules first; then §3 canonical truths; then this doc |
 
-**Self-score target for this file:** ≥90/100 when repo matches §8 Target column. **Post-audit (2026-05):** reconciliation + cross-file checks → **~96/100** (residual: legacy TC content not bulk-migrated; scoped-rule load depends on Cursor globs + Rule 0.0).
+**Self-score (reconciliation scope only):** ~94/100 when §8 Done rows match repo and both validate scripts PASS.
+
+**Whole control plane (strict audit):** ~92/100 **repo artifact** after R7 (orchestration 5300→3911 lines; meta-output scoped).
+
+**Effective LLM compliance (honest):** ~73–76/100 — hooks enforce Tier A/B edits and Confluence writes; workflow gates and SKILL loads depend on model discipline; validate scripts lint markdown consistency, not chat behavior. Meta-output scoping (CONF.1 + 0.1 workflow-only) reduces token waste but does not change runtime enforcement.
+
+Do **not** conflate repo score with runtime compliance. Treat `.cursor/` as **runbook + safety rails**, not a guaranteed orchestration engine.
+
+Remaining for 95+: legacy TC migrate/policy, EnergoTS hook + Rule 0.8.1 alignment.
 
 ---
 

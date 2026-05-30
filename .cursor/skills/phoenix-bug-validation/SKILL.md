@@ -98,29 +98,15 @@ When the resolved environment is **Prod** or **PreProd** (and by default for **T
 4. **Report:** In **`### Confluence evidence (decision basis)`**, add **`Phase 2 excluded: yes`** and list any Phase 2 pages **read but excluded** (title + ID + URL). CQL/Rovo queries should prefer `ancestor = 164356` and/or `title !~ "Phase 2"` where supported.
 5. **User override:** If the user explicitly asks to include Phase 2 for this ticket, document **`Phase 2 excluded: no (user override)`**.
 
-1. **MCP:** Use Confluence read/search tools (`search`, `searchConfluenceUsingCql`, `getPagesInConfluenceSpace`, `getConfluencePage`, etc.). Apply **≥2 distinct** discovery approaches (e.g. space browse + search, title-oriented CQL + full-text). Cap result size; no full-wiki crawl.
-2. **REST fallback (Rule 43):** MCP failure after retries → **`search-confluence-rest.ps1`** and/or **`get-confluence-page-rest.ps1`**.
-3. **Read** bodies of relevant hits. Jira-linked pages are **additive**, never a substitute for proactive discovery.
-4. Optional: grep cached **`config/confluence/pages/*.json`** after live attempts.
+**Methods:** Use MCP Confluence tools (`search`, `searchConfluenceUsingCql`, `getConfluencePage`, etc.). Apply **>=2 distinct** discovery approaches. Cap result size. Jira-linked pages are additive, not a substitute.
+
+**REST fallback (Rule 43):** MCP failure after retries → REST per `.cursor/rules/integrations/confluence_rest_fallback.mdc`. Disclose fallback in output. If both fail → **`PROCESS BLOCKED`**.
 
 **Classify:** EXACT match / contextual match / no match / contradicts / **search failed**.
 
-- **no match** = discovery **succeeded** (multiple attempts) but no applicable rule in pages read.
-- **search failed** = Confluence unavailable after retries (list attempts).
-- **PROHIBITED:** Skip Confluence when ticket has no link; wiki research limited to reporter `LIKE`/CQL `text ~` only; stop after one failed query.
+**Decision-basis URLs (MANDATORY):** For every Confluence page that informed the verdict, list **page title**, **page ID**, and **full wiki URL** (from MCP/REST payload or compose from env base). Do not silently omit pages.
 
-- Use MCP Confluence tools: search, getSpaces, getPages, getConfluencePage.
-- Check for EXACT match: Does Confluence explicitly support the bug's expected behavior?
-- Check for CONTEXTUAL match: Does Confluence provide similar/related rules that suggest the expected behavior?
-- Check for CONTRADICTION: Does Confluence explicitly state different behavior than what the bug expects?
-- Report: "Confluence validation: [exact match / contextual match / no match / contradicts / search failed] - [explanation]".
-- **Decision-basis URLs (MANDATORY):** For **every** Confluence page that informed the classification, narrative, or verdict (**including all pages read from search hits** and any Jira-linked URLs), list **page title**, **page ID**, and a **full browser wiki URL** in the final report (chat + Slack + optional disk). Build the URL from MCP/REST payload links (`webui`, `_links.base` + relative path, or v2 `webUrl`) or compose from **`CONFLUENCE_WIKI_BASE`** / **`CONFLUENCE_URL`** / **`JIRA_BASE_URL`+`/wiki`** per **`.cursor/rules/integrations/confluence_rest_fallback.mdc`** — never rely on page ID alone without a resolvable link. If a page was read but no absolute URL can be formed after one repair attempt, state **why** and paste the best available path fragment; do not silently omit pages that drove the decision.
-- If Confluence MCP fails:
-  - retry up to 3 times with short backoff,
-  - if still failing, attempt **Confluence REST fallback** per **`.cursor/rules/integrations/confluence_rest_fallback.mdc`** for **CQL search** (`search-confluence-rest.ps1`) **and** page read (`get-confluence-page-rest.ps1`). Disclose **`Confluence source: REST fallback (MCP unavailable or failed after retries).`** in the validation output.
-  - if **both** MCP (after retries) **and** REST fallback fail or credentials/base URL are missing, return **`PROCESS BLOCKED`** (operational status), report exact errors, **discovery methods attempted**, and ask the user what to do next.
-- If REST fallback succeeds, complete Confluence validation from the REST payload (same evidence rules as MCP) and keep **`Confluence source: REST fallback …`** in the output.
-- Never continue to final bug verdict when Confluence **search/read** remains unavailable after MCP retries **and** REST fallback has failed or could not be attempted (**`PROCESS BLOCKED`** per above).
+**PROHIBITED:** Skipping Confluence when no ticket link; limiting to reporter's CQL only; stopping after one failed query.
 
 ### Step 3: Swagger / OpenAPI refresh and validation [MANDATORY]
 
@@ -143,89 +129,15 @@ When the resolved environment is **Prod** or **PreProd** (and by default for **T
 
 ### Step 4b: Database Investigation [RECOMMENDED]
 
-**Goal:** Gather database evidence to strengthen or clarify validation conclusions. Use the **same environment** resolved in Step 0.
+Gather DB evidence to strengthen or clarify conclusions. Use the **same environment** as Step 0. Follow **`.cursor/skills/phoenix-database/SKILL.md`** for env mapping, connect-first workflow, SQL patterns, and query best practices. **SELECT-only**.
 
-**4b.1 — Environment-to-MCP mapping (MANDATORY)**
+**What to investigate (prioritized):** entity data state → audit/change logs → error logs → relationships/dependencies → data consistency checks.
 
-| Environment | PostgreSQL MCP Server |
-|-------------|----------------------|
-| dev         | PostgreSQLDev        |
-| dev2        | PostgreSQLDev2       |
-| test        | PostgreSQLTest       |
-| preprod     | PostgreSQLPreProd    |
-| prod        | PostgreSQLProd       |
-| experiments | PostgreSQLexperiments |
+**Classification:** `supports_bug` | `contradicts_bug` | `reveals_root_cause` | `inconclusive` | `query_failed`.
 
-Connect via `mcp_PostgreSQL{Env}_connect_db()` then query with `mcp_PostgreSQL{Env}_query()`. **SELECT-only** — no INSERT/UPDATE/DELETE.
+**Failure:** Retry 2-3 times; if still failing, document `db_investigation=failed` and continue to verdict. DB failure does **not** block verdict (unlike Confluence) — it reduces confidence.
 
-**4b.2 — What to investigate (best effort, prioritized)**
-
-1. **Entity data state**
-   - Find the specific entity (contract, invoice, payment, receivable, liability, customer, POD, etc.) mentioned in the bug ticket.
-   - Query current state: status, dates, amounts, flags, relationships.
-   - Example patterns from **`.cursor/rules/integrations/database_workflow.mdc`** Rule DB.2.
-
-2. **Audit / change logs**
-   - Check `*_audit`, `*_history`, `*_log` tables for the entity's schema.
-   - Look for recent changes, state transitions, who/when modified.
-   - Identify if data changed unexpectedly or at wrong time.
-
-3. **Error logs (if available)**
-   - Query `error_log`, `scheduler_log`, `job_execution_log`, or similar tables.
-   - Filter by entity ID, date range, or error keywords from ticket.
-   - Extract stack traces, error messages, timestamps.
-
-4. **Relationships and dependencies**
-   - Find linked entities that may affect the bug case (e.g., invoice → contract → POD → customer).
-   - Check foreign key consistency, orphaned records, broken links.
-   - Use JOINs to trace the entity graph.
-
-5. **Data consistency checks**
-   - Verify business rule compliance in data (e.g., sum of line items = invoice total).
-   - Look for constraint violations, NULL where unexpected, invalid enum values.
-   - Compare actual data state vs expected state per Confluence/code rules.
-
-**4b.3 — Query construction guidelines**
-
-- Always use `DISTINCT` when JOINing to avoid duplicates.
-- Include relevant timestamps (`create_date`, `update_date`, `effective_date`).
-- Limit result sets (e.g., `LIMIT 50`) to avoid huge outputs.
-- Use schema prefixes (e.g., `product_contract.contracts`, `invoice.invoices`).
-- Never query credentials, passwords, or PII columns directly.
-
-**4b.4 — Classification**
-
-- **`supports_bug`**: DB data confirms the faulty state described in the ticket.
-- **`contradicts_bug`**: DB data shows expected/correct state, contradicting the reporter.
-- **`reveals_root_cause`**: DB data exposes a deeper issue (e.g., missing record, wrong FK, data corruption).
-- **`inconclusive`**: Relevant data not found or query could not be constructed.
-- **`query_failed`**: MCP connection or query failed (document error).
-
-**4b.5 — Failure handling**
-
-- If MCP connection fails: retry 2–3 times with backoff.
-- If still failing: document `db_investigation=failed`, include error, continue to verdict with remaining evidence.
-- DB investigation failure does **not** block the verdict (unlike Confluence) — it reduces confidence.
-
-**4b.6 — Report section**
-
-Include **`### Database Investigation`** in the final report:
-
-```markdown
-### Database Investigation
-**Environment:** <env> (PostgreSQL<Env>)
-**Classification:** supports_bug | contradicts_bug | reveals_root_cause | inconclusive | query_failed
-**Queries executed:**
-1. `SELECT ... FROM ... WHERE ...` — [purpose]
-2. ...
-
-**Findings:**
-- [Key finding 1]
-- [Key finding 2]
-- ...
-
-**Evidence impact:** [How DB findings affect the verdict]
-```
+**Report section:** Include `### Database Investigation` with environment, classification, queries executed, findings, evidence impact.
 
 ### Step 5: Apply 5-Verdict Decision Matrix
 
@@ -277,47 +189,18 @@ Use **Confluence classification + code analysis + database evidence**, with **Sw
 - **Rule 0.6:** No automatic `BugValidation_*.md`; file only on **`/report`** or explicit save request.
 - End with: "Agents involved: BugFinderAgent (workflow), PhoenixExpert" (or as applicable).
 
-## Decision Matrix Details
+## Decision Matrix — quick reference
 
-### When to use each verdict:
+| Verdict | Confluence | Code | Action |
+|---------|-----------|------|--------|
+| **VALID** | Exact match | Confirms faulty behavior | Fix the bug |
+| **NEEDS CLARIFICATION** | Contextual match | Confirms reported behavior | Get product clarification |
+| **NEEDS APPROVAL** | No match | Confirms reported behavior | Get PO approval |
+| **NOT VALID** | Contradicts reporter | Follows Confluence | Close as designed |
+| **INSUFFICIENT EVIDENCE** | Unavailable/weak | Cannot verify | Resolve evidence gaps |
 
-**VALID**
-- Confluence explicitly documents the expected behavior from the bug report
-- Code implementation contradicts that documented expectation
-- DB may confirm faulty data state (e.g., wrong status, missing record, broken relationship)
-- Action: Fix the bug
-
-**NEEDS CLARIFICATION**  
-- Confluence has related/contextual documentation but no exact rule
-- Code behavior matches what the bug describes as faulty
-- DB may reveal edge cases or data patterns not covered by existing rules
-- Action: Get product clarification on expected behavior, then proceed
-
-**NEEDS APPROVAL**
-- No relevant Confluence documentation found for this specific case
-- Code behavior matches what the bug describes as faulty
-- DB evidence strengthens the case (confirms the data anomaly exists)
-- Action: Get product owner approval before treating as valid bug
-
-**NOT VALID**
-- Confluence explicitly contradicts the bug report's expected behavior
-- Code correctly implements what Confluence specifies
-- DB may confirm correct data state (data is as expected)
-- Action: Close bug as "working as designed"
-
-**INSUFFICIENT EVIDENCE**
-- Confluence/code/Swagger/DB evidence is unavailable or too weak for a reliable business verdict
-- Action: resolve evidence gaps, then rerun validation
-
-**PROCESS BLOCKED (operational status, not verdict)**
-- Used when mandatory **environment alignment** or **Confluence read** cannot complete (see Operational gates)
-- Action: user resolves blocker; validator resumes from failed step
-
-### Important Notes:
-- Never use vague verdicts like "INCONCLUSIVE"  
-- Always separate evidence quality from business verdict
-- Make recommendations actionable based on verdict type
-- DB evidence is **supporting**, not overriding — use it to strengthen conclusions from code + Confluence
+**PROCESS BLOCKED** = operational status (env/Confluence unavailable), not a business verdict.
+DB evidence is **supporting** — it strengthens conclusions but does not override code + Confluence.
 
 ## Confidence Score (Rule CONF.1) [MANDATORY]
 

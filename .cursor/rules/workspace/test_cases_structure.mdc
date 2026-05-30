@@ -15,227 +15,76 @@ globs:
 
 # TEST CASES FOLDER STRUCTURE [MANDATORY]
 
-## Rule: Test cases MUST use a two-folder layout under `Cursor-Project/test_cases/`
+## Gate order (Rule 35 — do not reorder)
 
-When creating, moving, or organizing test cases, ALWAYS follow this structure. This is the only accepted layout for test case files.
+| Order | Gate | Skip when |
+|-------|------|-----------|
+| **1** | **TC-ENV-ASK.0** — resolve env (six options) | User named env in current chat |
+| **2** | **TC-FRONTEND-ASK.0** — Backend only vs Backend+Frontend | User explicitly said scope |
+| **3** | Phoenix alignment (`switch-phoenix-branches.ps1`) | Already aligned same env |
+| **4** | cross-dep → test-case-generator → quality validator | Never skip |
 
----
+**Detail:** `.cursor/skills/test-case-generator/SKILL.md` (gates), `.cursor/skills/environment-resolver/SKILL.md` (env).
 
-## Rule TC-ENV-ASK.0: Ask environment BEFORE Frontend and BEFORE Phoenix alignment [MANDATORY]
-
-**Intent:** Prevent agents from asking only the Frontend question (Rule TC-FRONTEND-ASK.0) while silently inferring Dev/Test/Prod. Aligns with **Rule CONF.0**, **Rule DB.0a**, **Rule PHOENIX-SWITCH.0**, and **`environment-resolver`**.
-
-### Gate order (Rule 35 / test-case generation — do not reorder)
-
-| Order | Gate | When skipped |
-|-------|------|----------------|
-| **1** | **TC-ENV-ASK.0** (this rule) — resolve `dev` … `experiments` | User named env in **current chat**, or `your choice` / `defaults` / `same as last time` (state assumption in chat) |
-| **2** | **TC-FRONTEND-ASK.0** — Backend only vs Backend+Frontend | User explicitly said frontend/UI/both or only backend/API only |
-| **3** | **Phoenix alignment** — `switch-phoenix-branches.ps1 -Environment <env>` | Parent already aligned same env in this chat (Rule PHOENIX-SWITCH.0 §7a) |
-| **4** | **cross-dependency-finder** → **test-case-generator** → quality validator | Never skip when user requested test cases |
-
-**Allowed before gate 1:** Jira issue read (MCP or REST) to understand scope — **no** Phoenix `grep`/codebase read, **no** `switch-phoenix-branches`, **no** env-specific Swagger as contract source until gate 1 is satisfied.
-
-**Ask environment** with **AskQuestion** (six options: Dev, Dev2, Test, PreProd, Prod, Experiments) when:
-
-- User did not name an environment in the **current task**, and
-- Jira `environment` is null/empty or ambiguous, and
-- **`environment-resolver`** would not resolve with ≥90% confidence.
-
-**Forbidden inference** (same as **`environment-resolver`**): Jira status "Testing"; fix version / hotfix; **Approved for Prod**; PDT-* prefix; linked ticket env; "usually Test"; EnergoTS defaults.
-
-**Same turn:** You MAY send **one** message with **two** AskQuestion blocks **only after** gate 1 is satisfied (env known) — e.g. Frontend question in the same turn as starting cross-dep. **Do NOT** ask Frontend **instead of** environment when env is still unknown.
-
-**Violation** is a **CRITICAL SYSTEM ERROR** (same class as Rule CONF.0).
+Violation of gate order is a **BLOCK**.
 
 ---
 
-## Rule TC-FRONTEND-ASK.0: Ask user before generating Frontend test cases [MANDATORY]
-
-**After Rule TC-ENV-ASK.0** (environment resolved), and **before writing** test-case `.md` files, the agent MUST ask the user whether they want Frontend (UI) test cases — unless the Frontend exceptions below apply:
-
-```
-Do you want to generate Frontend (UI) test cases?
-- Yes, generate both Backend and Frontend test cases
-- No, generate only Backend (API) test cases
-```
-
-| User choice | Files created |
-|-------------|---------------|
-| **Yes** | `Backend/<Topic>.md` + `Frontend/<Topic>.md` |
-| **No** | `Backend/<Topic>.md` ONLY |
-
-**Exception:** If the user's initial request explicitly mentions "frontend", "UI tests", or "both" → include Frontend without asking. If they say "only backend", "API only" → exclude Frontend without asking.
-
----
-
-## Root layout (Backend/ and Frontend/ sub-folders)
+## Root layout
 
 **Path:** `Cursor-Project/test_cases/`
 
-Test case files are organized in **two sub-folders** by testing layer:
-
 | Folder | Contents | Required? |
 |--------|----------|-----------|
-| **Backend/** | Backend (API) test cases — `TC-BE-N`. One `.md` file per topic. | **ALWAYS** |
-| **Frontend/** | Frontend (UI) test cases — `TC-FE-N`. One `.md` file per topic. | **Only if user confirmed** |
+| **Backend/** | Backend (API) test cases — `TC-BE-N` | **ALWAYS** |
+| **Frontend/** | Frontend (UI) test cases — `TC-FE-N` | **Only if user confirmed** |
 
-**Path patterns:**
-- `test_cases/Backend/<Topic_name>.md` — contains only **Backend Test Cases** (`TC-BE-N`). **ALWAYS created.**
-- `test_cases/Frontend/<Topic_name>.md` — contains only **Frontend Test Cases** (`TC-FE-N`). **Created ONLY if user answered "Yes" to Frontend question.**
-
-- **&lt;Topic_name&gt;** = descriptive name for the task, bug, feature, or flow being tested. Use underscores for multi-word names.
-- The Backend file MUST NOT contain Frontend test cases, and vice versa.
-
-**Examples (when user chose "Yes" for Frontend):**
-- `test_cases/Backend/Invoice_cancellation.md` + `test_cases/Frontend/Invoice_cancellation.md`
-- `test_cases/Backend/Product_contract_create.md` + `test_cases/Frontend/Product_contract_create.md`
-
-**Examples (when user chose "No" — Backend only):**
-- `test_cases/Backend/Invoice_cancellation.md` (NO Frontend file created)
-- `test_cases/Backend/Product_contract_create.md` (NO Frontend file created)
-
-**Do NOT create an empty Frontend file with "N/A" note** when user chose "No" — simply do not create the file.
-
----
-
-## READMEs (index files)
-
-- **test_cases/README.md** — Root index listing topics; link Backend always; link Frontend when that file exists.
-- **test_cases/Backend/README.md** — Index of all backend test case files.
-- **test_cases/Frontend/README.md** — Index of all frontend test case files.
-
-Update all applicable READMEs whenever a new test case file is added.
+- `<Topic_name>.md` with underscores for multi-word names
+- Backend file contains ONLY backend TCs; Frontend file ONLY frontend TCs
+- Do NOT create empty Frontend file when user chose "No"
 
 ---
 
 ## TC numbering
 
-- **Backend:** `TC-BE-1`, `TC-BE-2`, `TC-BE-3`, …
-- **Frontend:** `TC-FE-1`, `TC-FE-2`, `TC-FE-3`, …
-
-Each TC heading includes its type: `TC-BE-1 (Positive): {title}` or `TC-FE-2 (Negative): {title}`.
-
-## Mandatory coverage per file
-
-- Each file (Backend and Frontend) MUST include at least one **(Positive)** and one **(Negative)** test case (when the section is applicable).
-- If a topic has no applicable test cases for that layer, the file still exists with an N/A note (see above).
+- **Backend:** `TC-BE-1`, `TC-BE-2`, … with type: `TC-BE-1 (Positive): {title}`
+- **Frontend:** `TC-FE-1`, `TC-FE-2`, … with type: `TC-FE-2 (Negative): {title}`
+- Each file MUST include at least one **(Positive)** and one **(Negative)** TC
 
 ---
 
-## File skeleton — Backend file (`test_cases/Backend/<Topic_name>.md`)
+## Content rules
+
+- Follow **`Cursor-Project/config/template/Test_case_template.md`** for structure
+- **Rule TC-STANDALONE-PRE.0:** Every TC's `Preconditions:` block MUST list full numbered setup chain for that scenario. FORBIDDEN: `Apply Test data steps 1–N` without repeating; `see TC-BE-X`; multi-scenario per TC. One scenario per TC. Violation is a **MUST**.
+- **Rule TC-NOSKIP-OBS.0:** No TCs whose primary criterion is internal skip/log/audit mechanics. Assert observable business outcomes only. Violation is a **MUST**.
+
+---
+
+## READMEs
+
+Update `test_cases/README.md`, `Backend/README.md` always; `Frontend/README.md` only when Frontend file exists.
+
+---
+
+## File skeletons
+
+**Backend** (`test_cases/Backend/<Topic>.md`):
 
 ```
-# {Document title} – {Short scope} ({JIRA_KEY})
-
-**Jira:** …  **Type:** …  **Summary:** …
-**Scope:** …
-
+# {Title} – {Scope} ({JIRA_KEY})
+**Jira:** … **Type:** … **Summary:** … **Scope:** …
 ---
-
 ## Test data (preconditions)
-{Shared setup — environment, entities, full data creation chain}
-
+{Shared setup reference}
 ---
-
 ## Backend Test Cases
-
 ### TC-BE-1 (Positive): {title}
 **Description:** … **Preconditions:** … **Test steps:** … **Expected test case results:** …
-
 ### TC-BE-2 (Negative): {title}
 …
-
 ---
-
 ## References
 ```
 
-## File skeleton — Frontend file (`test_cases/Frontend/<Topic_name>.md`)
-
-```
-# {Document title} – {Short scope} ({JIRA_KEY})
-
-**Jira:** …  **Type:** …  **Summary:** …
-**Scope:** …
-
----
-
-## Test data (preconditions)
-{Shared setup — environment, entities, full data creation chain}
-
----
-
-## Frontend Test Cases
-
-### TC-FE-1 (Positive): {title}
-**Description:** … **Preconditions:** … **Test steps:** … **Expected test case results:** …
-
-### TC-FE-2 (Negative): {title}
-…
-
----
-
-## References
-```
-
----
-
-## Content of test case files (structure and readability)
-
-The **content** of each test case `.md` file MUST follow the **Test Case Template**: **`Cursor-Project/config/template/Test_case_template.md`**. That template defines: document header (title, Jira, Type, Summary, Scope), Test data (preconditions), then test case scenarios with TC-BE-N or TC-FE-N numbering. Each scenario has: Test title (in the TC heading), Description, Preconditions, Test steps, Expected test case results, Actual result (if bug), References. Test cases must be **maximally detailed** and **human-readable** (plain English, full sentences where helpful, no unexplained jargon). See the template for placeholders, examples, and the **mandatory creation-step precondition rule**.
-
-**Preconditions (canonical):** Follow **Rule TC-STANDALONE-PRE.0** below and **`Cursor-Project/config/template/Test_case_template.md`** § "Self-contained preconditions per TC". Optional `## Test data (preconditions)` at file level is **reference only** — it does **not** replace per-TC preconditions.
-
----
-
-## Rule TC-STANDALONE-PRE.0: Self-contained preconditions per test case [CRITICAL]
-
-**Intent:** A tester (or Playwright author) must execute **one** TC without opening another TC or inferring setup from shared prose.
-
-**MANDATORY for every `TC-BE-N` / `TC-FE-N`:**
-
-1. The TC's **`Preconditions:`** block MUST list the **full numbered setup chain** required for **that scenario only** (environment, auth, entities, amounts, billing run type, baselines).
-2. **FORBIDDEN in `Preconditions:`:**
-   - `Apply Test data steps 1–N` **without** repeating the underlying steps in the same TC block.
-   - `Delta:` / `see TC-BE-X` / `same as TC-BE-Y` / `run A / run B` **multi-scenario** in a single TC.
-   - Preconditions that only say an entity "exists" without endpoint + parameters.
-3. **Allowed:** Optional `## Test data (preconditions)` or `## Amount appendix` at file level as **reference tables only** (formulas, IDs from a prior run). They do **not** replace per-TC preconditions.
-4. **One scenario per TC** — if 4.99 and 0.00 are both needed, use **two** TCs with **two** full precondition blocks.
-
-**Violation** is a **CRITICAL SYSTEM ERROR** for test-case-generator and manual TC edits.
-
----
-
-## Rule TC-NOSKIP-OBS.0: No skip / log / audit observability test cases [CRITICAL]
-
-**Intent:** Do not author TCs whose **primary** pass/fail criterion is internal skip mechanics (logs, row status after silent skip, exploratory "defect if observed").
-
-**FORBIDDEN as dedicated TCs or primary expected results:**
-
-- Verifying application log text (e.g. `"Skipping interim invoice"`, `"below 5"`).
-- Verifying `billing_run.run_interim_data.status` = `SUCCESS` vs `SKIPPED` when no invoice was created (audit-only).
-- Expected results framed as **"defect if observed"** / **"document actual"** without a product rule in Jira/Confluence.
-- Titles/descriptions centered on **skip** rather than **business outcome**.
-
-**REQUIRED for negative threshold / rejection scenarios:**
-
-- Assert **observable business outcomes only:** no `INTERIM_AND_ADVANCE_PAYMENT` invoice in `POST /invoice/listing` (or equivalent API), no new liability for that billing run, billing run reaches expected **API-visible** status — cite HTTP status and response fields.
-
-**Allowed:** Brief code citation in file header (References) for context; **not** a separate TC for log lines.
-
-**Violation** is a **CRITICAL SYSTEM ERROR** for test-case-generator.
-
----
-
-## Summary
-
-1. **Root:** `Cursor-Project/test_cases/`
-2. **Ask first (Rule TC-ENV-ASK.0, then TC-FRONTEND-ASK.0):** Resolve **environment** before Frontend question and before Phoenix alignment. Then ask Frontend if applicable. **Never auto-generate Frontend without asking.**
-3. **Layout:** Two sub-folders — `Backend/` (always) and `Frontend/` (only if user confirmed).
-4. **Naming:** `<Topic_name>.md` with underscores.
-5. **Separation:** Backend file contains ONLY backend test cases; Frontend file contains ONLY frontend test cases. No mixing.
-6. **Coverage:** Each created file must have positive + negative TCs.
-7. **READMEs:** Update `test_cases/README.md` and `test_cases/Backend/README.md` always. Update `test_cases/Frontend/README.md` only if Frontend file was created.
-
-Always use this layout when creating or organizing test cases. Violation: place both backend and frontend TCs in a single file, auto-generate Frontend without asking, or use the old flat / Objects / Flows structure for new test cases.
+**Frontend** (`test_cases/Frontend/<Topic>.md`): same structure with `TC-FE-N` and `## Frontend Test Cases`.

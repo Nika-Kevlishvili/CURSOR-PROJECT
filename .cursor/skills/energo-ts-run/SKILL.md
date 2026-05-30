@@ -5,38 +5,60 @@ description: Runs specific Playwright tests from EnergoTS (local repo synced fro
 
 # EnergoTS Playwright Test Run Skill
 
-Use this skill when the user wants to **run** (execute) Playwright tests from the EnergoTS project based on a natural-language prompt. Tests run from the **local** EnergoTS repo (synced from GitHub), **only from the `cursor` branch** (Rule ENERGOTS.0).
+Use when the user wants to **run** (execute) Playwright tests from the local EnergoTS repo (**`cursor` branch only**, Rule ENERGOTS.0).
 
 ## When to Apply
 
-- User says: "run the newly created test", "run test REG-123", "run this test from GitHub", "run Playwright test", "run customer.spec.ts", "run all billing tests".
-- User asks to execute a specific test or set of tests in EnergoTS/Playwright.
-- User mentions running tests "from GitHub" (interpret as: run from local clone; suggest sync if they want latest code).
+- "Run newly created test", "run test REG-123", "run customer.spec.ts", "run all billing tests", "run Playwright from GitHub" (local clone).
 
 ## Workflow
 
-1. **Ensure `cursor` branch**: In `Cursor-Project/EnergoTS/`, if current branch is not `cursor`, run `git checkout cursor`. Tests must run only from `cursor`.
-2. **Resolve test from prompt**
-   - "Newly created" → find most recent `.spec.ts` in `Cursor-Project/EnergoTS/tests/`.
-   - Jira key (e.g. REG-123) → grep in tests, run matching file(s) or `npx playwright test --grep "REG-123"`.
-   - File path/name → run that path relative to `EnergoTS/`.
-   - Domain (e.g. "billing") → run `tests/billing/` or equivalent.
+1. **cursor branch** — in `Cursor-Project/EnergoTS/`, `git checkout cursor` if not already on cursor.
+2. **Resolve target** (see table below).
 3. **Execute** from `Cursor-Project/EnergoTS/`: `npx playwright test <path|grep|dir>`.
-4. **Report** results; optional save under **Chat reports** per **`Cursor-Project/reports/README.md`**; end with "Agents involved: EnergoTS Playwright Test Runner".
+4. **Report** pass/fail; optional Chat reports file on user request (Rule 0.6).
 
-**Rule DPR.0:** **HandsOff** and **path 3** automatically generate **`playwright-report-detailed.md`** and upload it with the smart report. For **ad-hoc** runs only, if the user explicitly asks for the JSON-derived Markdown or Slack upload, from `Cursor-Project/EnergoTS/` run `node ../config/playwright/generate-detailed-report.mjs` → **`Cursor-Project/EnergoTS/playwright-report-detailed.md`**, then follow user + **`README-detailed-reporting.md`**. Smart report structure: **`Playwright_run_detailed_report_template.md`**.
+## Resolution table
 
-## Agent / Command
+| User prompt | Action |
+|-------------|--------|
+| Newly created / latest | Most recent `.spec.ts` in `EnergoTS/tests/` (mtime or git status); ask if ambiguous |
+| Jira key (REG-123, PDT-456) | Grep tests → `npx playwright test --grep "KEY"` or matching file(s) |
+| File path / name | Normalize path under `tests/` and run |
+| Domain (billing) | `npx playwright test tests/billing/` or equivalent |
+| "From GitHub" | Clarify: run local clone; suggest sync if user wants latest remote |
 
-- **Agent**: `.cursor/agents/energo-ts-run.md` (EnergoTS Playwright Test Runner).
-- **Subagent:** `.cursor/agents/energo-ts-run.md`.
+## Setup (when fixtures missing)
+
+From `EnergoTS/`: `npx playwright test --project=setup` (requires `.env` with PORTAL_USER, PASSWORD, DEVAUTHAPI or TESTAUTHAPI) → creates `fixtures/token.json`, `fixtures/envVariables.json`.
+
+## Rule DPR.0 — detailed markdown
+
+- **HandsOff / path 3:** orchestrator runs `node ../config/playwright/generate-detailed-report.mjs` and Slack-uploads **`playwright-report-detailed.md`** — not this agent's default.
+- **Ad-hoc:** generate + upload only when user **explicitly** asks. Smart report template: **`Playwright_run_detailed_report_template.md`**.
+
+## Error handling
+
+| Condition | Action |
+|-----------|--------|
+| Not on `cursor` / checkout fails | Report error; do not run on other branch |
+| EnergoTS or Playwright missing | Report path / `npm install` hint |
+| No matching test | "No matching test found" + how you searched |
+| Tests fail | Report failures; do not fix code unless user asked |
+
+## Constraints
+
+- **No code modification** (Rule 0.8). Summarize in English (Rule 0.7).
+- **Rule 0.3:** no Python IntegrationService in this workspace.
+
+## Agent
+
+`.cursor/agents/energo-ts-run.md` (I/O contract only).
 
 ## Confidence Score (Rule CONF.1) [MANDATORY]
 
-The final output MUST include a **Confidence Score** (0–100%). Format: `**Confidence: XX%** Reason: <explanation>`. Scoring: 90–100% = tests ran cleanly, results deterministic; 70–89% = tests ran but some flakiness/environment issues; 50–69% = partial execution or unclear failures; <50% = execution incomplete, recommend re-run. Be honest — do not inflate.
+`**Confidence: XX%** Reason: …` — 90–100% = clean run; 70–89% = flakiness/env issues; 50–69% = partial; <50% = incomplete execution.
 
-## Rules
+## Footer
 
-- **Rule 0.3:** no Python IntegrationService in this workspace; follow MCP/Jira when needed.
-- No code modification; only run tests (Rule 0.8).
-- Summarize test run in chat (English). Save a file under `reports/` only if the user requests it (Rule 0.6 default, Rule 0.7 for on-disk text).
+`Agents involved: EnergoTS Playwright Test Runner`

@@ -7,9 +7,9 @@ description: "Workflow obligations (Rules 32–44): summary + exit criteria. Ste
 
 **Canonical map:** **`Cursor-Project/docs/RULES_CANONICAL_INDEX.md`**. **Procedures** live in **`.cursor/skills/**/SKILL.md`** and **`.cursor/agents/*.md`**. This file states **obligations and exit criteria** only — do not duplicate SKILL steps here.
 
-3. [CRITICAL] "Agents involved" footer — Rule 0.1 in **`core_rules.mdc`**. Violation is a CRITICAL ERROR.
+3. "Agents involved" footer for workflow/agent responses — Rule 0.1 in **`core_rules.mdc`**. Violation is a **MUST** when applicable.
 
-4. [CRITICAL] Confidence block — CONF.1 in **`clarification_and_confidence.mdc`**. Format: `**Confidence: XX%**` + Reason; before "Agents involved". Violation is a CRITICAL ERROR.
+4. Confidence block for workflow deliverables — CONF.1 in **`clarification_and_confidence.mdc`**. Format: `**Confidence: XX%**` + Reason. Violation is a **MUST** for applicable workflows.
 
 ---
 
@@ -25,7 +25,7 @@ description: "Workflow obligations (Rules 32–44): summary + exit criteria. Ste
 - **Slack** `bug-validation` when MCP allows; disk report only on **`/report`** or explicit save (**Rule 0.6**)
 - **Rule 41** applies to any EnergoTS `.spec.ts` work — Rule 32 does not author specs
 
-Violation is a CRITICAL SYSTEM ERROR.
+Violation is a **BLOCK**.
 
 ---
 
@@ -35,7 +35,7 @@ Violation is a CRITICAL SYSTEM ERROR.
 - Env gate before any PostgreSQL MCP: **Rule DB.0a**, **`.cursor/skills/phoenix-database/SKILL.md`**
 - Full patterns: **`.cursor/rules/integrations/database_workflow.mdc`**
 
-Violation is a CRITICAL SYSTEM ERROR.
+Violation is a **BLOCK**.
 
 ---
 
@@ -54,7 +54,7 @@ When the user requests test cases, run **in order** (gates fixed — **`test_cas
 
 **Outputs:** `test_cases/Backend/<Topic>.md` always; `test_cases/Frontend/<Topic>.md` only if user chose Backend+Frontend.
 
-**Never skip** Step 1 (cross-dep) or Step 2.5 (quality gate). Violation is a CRITICAL SYSTEM ERROR.
+**Never skip** Step 1 (cross-dep) or Step 2.5 (quality gate). Violation is a **BLOCK**.
 
 ---
 
@@ -63,7 +63,7 @@ When the user requests test cases, run **in order** (gates fixed — **`test_cas
 - **`energo-ts-run`** only; EnergoTS **`cursor`** branch only (**Rule ENERGOTS.0**)
 - **`.cursor/skills/energo-ts-run/SKILL.md`**, **`.cursor/agents/energo-ts-run.md`**
 
-Violation is a CRITICAL SYSTEM ERROR.
+Violation is a **MUST**.
 
 ---
 
@@ -73,7 +73,7 @@ Violation is a CRITICAL SYSTEM ERROR.
 - **`.cursor/commands/hands-off.md`**, **`.cursor/agents/hands-off.md`**
 - Reporting: **`handsoff_playwright_report.mdc`**, **`playwright_detailed_reporting.mdc`** (Rule DPR.0)
 
-Violation is a CRITICAL SYSTEM ERROR.
+Violation is a **BLOCK**.
 
 ---
 
@@ -83,7 +83,7 @@ Violation is a CRITICAL SYSTEM ERROR.
 - **Bug** issue type alone does **not** grant broad wiki search outside **`bug-validator`**
 - Cross-dep: **shallow** Confluence only (**`.cursor/skills/cross-dependency-finder/SKILL.md`**)
 
-Violation is a CRITICAL SYSTEM ERROR.
+Violation is a **MUST**.
 
 ---
 
@@ -94,7 +94,7 @@ Violation is a CRITICAL SYSTEM ERROR.
 | **40** | No `test.beforeAll` / `beforeAll` for preconditions | **`handsoff_playwright_report.mdc`**, playwright instructions |
 | **41** | Run **`update-swagger-specs.ps1`** before any EnergoTS `.spec.ts` create/edit | **`swagger_refresh_mandatory.mdc`** |
 
-Violation is a CRITICAL SYSTEM ERROR.
+Violation is a **MUST**.
 
 ---
 
@@ -104,6 +104,6 @@ Violation is a CRITICAL SYSTEM ERROR.
 |------|------------|--------|
 | **42** | Jira MCP first; REST read fallback after retries — disclose **`Jira source: REST fallback …`** | **`jira_rest_fallback.mdc`** |
 | **43** | Confluence MCP first; REST read fallback after retries — disclose **`Confluence source: REST fallback …`** | **`confluence_rest_fallback.mdc`** |
-| **44** | Jira ticket analysis/triage with linked Confluence → read those pages **same pass** | **`evidence_only_project_answers.mdc`**; Rule 39 scope |
+| **44** | Jira ticket analysis/triage with linked Confluence → read those pages **same pass** | **`.cursor/skills/jira-evidence/SKILL.md`**; Rule 39 scope |
 
-Abandoning mandatory reads when REST could satisfy them **without** user opt-out is a CRITICAL SYSTEM ERROR.
+Abandoning mandatory reads when REST could satisfy them **without** user opt-out is a **MUST**.

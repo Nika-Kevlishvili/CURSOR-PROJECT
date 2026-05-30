@@ -21,7 +21,7 @@ globs:
 
 **READ-ONLY:** no Confluence creates, updates, deletes, or comments via this path. Same absolute prohibition as **Rule 1** / Confluence edit tools in **`safety_rules.mdc`**.
 
-**Violation** is a **CRITICAL SYSTEM ERROR** when an agent abandons Confluence-dependent read work only because MCP failed while REST credentials and base URL exist and the user did not opt out of REST.
+**Violation** is a **MUST** when an agent abandons Confluence-dependent read work only because MCP failed while REST credentials and base URL exist and the user did not opt out of REST.
 
 ---
 

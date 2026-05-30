@@ -53,18 +53,22 @@ Before substantive tool use or file edits, verify you know:
 
 ---
 
-## Rule CONF.1: Confidence score in every response [REQUIRED]
+## Rule CONF.1: Confidence score [REQUIRED for workflows]
 
-**Intent:** The agent MUST include a **Confidence Score** (0–100%) in **every chat response** so the user can gauge reliability continuously.
+**Intent:** Include a **Confidence Score** (0–100%) so the user can gauge reliability.
 
 ### When to show
 
-Show a confidence score in **all responses**:
+Show confidence in responses that deliver **substantive work products**:
 
-- final results
-- progress updates
-- clarifying-question messages
-- error or blocker messages
+- Bug validation verdicts (Rule 32)
+- Test case deliverables (Rule 35)
+- HandsOff results (Rule 37)
+- Database query results
+- PhoenixExpert analysis
+- Subagent results returned to parent
+
+**May omit** for: trivial Q&A, git/status, file organization, chit-chat, progress acknowledgements.
 
 ### Format
 

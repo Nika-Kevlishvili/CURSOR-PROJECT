@@ -8,24 +8,47 @@ description: Production database analysis via PostgreSQLProd MCP (readonly): lia
 ## When to Use
 
 - User asks about **production** DB data, offsets, how an entity was created, relationships, or traceability.
-- User mentions Prod with data questions.
+- User mentions Prod with data questions (liability, receivable, payment, deposit, invoice, contract, customer, etc.).
 
 ## Workflow (Cursor — no Python agent)
 
-1. **Role:** ProductionDataReader / follow `.cursor/rules/integrations/production_data_reader.mdc`.
-2. **Connect:** PostgreSQLProd MCP — **`mcp_PostgreSQLProd_connect_db`** using arguments from the MCP tool schema / server config (**Rule DB.1**); READ-ONLY only.
-3. **Query:** Run SELECTs via MCP `query`; iterate related tables; build chronology and relationships manually (no `analyze_entity()` helper in this workspace).
-4. **Report:** Answer in chat; save markdown under **Chat reports** per **`Cursor-Project/reports/README.md`** only if the user asks for a file (Rule 0.6).
+1. **Role:** ProductionDataReader / **Rule PDR.0** (`.cursor/rules/integrations/production_data_reader.mdc`).
+2. **Connect:** PostgreSQLProd MCP — **`mcp_PostgreSQLProd_connect_db`** per MCP schema (**Rule DB.1**); READ-ONLY only.
+3. **Parse entity** — extract ID and type from user query.
+4. **Query:** SELECT-only via MCP `query`; traverse relationships, offset tables (`customer_liabilitie_paid_by_*`, `customer_payment_*`, etc.); build chronology manually (no Python helpers in this workspace).
+5. **Analyze** — event sequence, reversals, dependencies.
+6. **Report** — chat-first; file under **Chat reports** per **`Cursor-Project/reports/README.md`** only if user asks (Rule 0.6).
+
+## Output format
+
+Provide for the entity type in scope:
+
+- **Entity details:** ID, number, amounts, dates, currency, status
+- **Relationships:** linked entities and connections
+- **Event sequence:** chronological offsets, reversals, modifications (ACTIVE/REVERSED)
+- **Step-by-step explanation:** how entity was created and modified
+- **Reversal history** when applicable
+- **Dependencies / dependents**
+
+## Example queries
+
+- "On Prod liability id 45319 — offset sequence and what it is offset with"
+- "How was Receivable-11925 / Payment-30362 / Invoice-67890 created?"
+- "What relationships does Contract-11111 have?"
 
 ## Security
 
-- READ-ONLY; never write to production.
-
-## Confidence Score (Rule CONF.1) [MANDATORY]
-
-The final output MUST include a **Confidence Score** (0–100%). Format: `**Confidence: XX%** Reason: <explanation>`. Scoring: 90–100% = query results clear and complete; 70–89% = some interpretation needed; 50–69% = partial data or ambiguity; <50% = incomplete, recommend verification. Be honest — do not inflate.
+- READ-ONLY; never write to production. Never log credentials.
 
 ## Integration
 
-- May consult PhoenixExpert for business logic.
-- **Rule 0.3 / 0.6:** no Python IntegrationService or ReportingService — MCP + chat answer; markdown on disk only if the user asks.
+- May consult **PhoenixExpert** for business logic.
+- **Rule 0.3 / 0.6:** no Python IntegrationService or ReportingService — MCP + chat; disk only on request.
+
+## Confidence Score (Rule CONF.1) [MANDATORY]
+
+Final output: `**Confidence: XX%** Reason: …` — 90–100% = clear query results; 70–89% = some interpretation; 50–69% = partial data; <50% = incomplete, verify before acting.
+
+## Footer
+
+`Agents involved: ProductionDataReaderAgent`

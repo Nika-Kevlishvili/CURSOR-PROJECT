@@ -1,11 +1,11 @@
 ---
 name: test-case-generator
-description: Generates test cases from bug or task descriptions. Rule 35: run cross-dependency-finder FIRST, then generate with cross_dependency_data. Save as TWO files — Backend/ and Frontend/ — under Cursor-Project/test_cases/ per test_cases_structure.mdc. Use when the user asks to generate test cases or scenarios.
+description: Generates test cases from bug or task descriptions. Rule 35: run cross-dependency-finder FIRST, then generate with cross_dependency_data. Save Backend/ always; Frontend/ only if TC-FRONTEND-ASK.0 = Yes — under Cursor-Project/test_cases/ per test_cases_structure.mdc. Use when the user asks to generate test cases or scenarios.
 ---
 
 # Test Case Generator Skill
 
-Ensures test case generation follows Rule 35 (cross-dependency-finder first) and saves output as **two separate `.md` files** — one in **`Cursor-Project/test_cases/Backend/<Topic_name>.md`** (TC-BE-N only) and one in **`Cursor-Project/test_cases/Frontend/<Topic_name>.md`** (TC-FE-N only) — per `.cursor/rules/workspace/test_cases_structure.mdc`. Legacy `generated_test_cases/` is optional. READ-ONLY for Phoenix code except test-case markdown writes in allowed paths.
+Ensures test case generation follows Rule 35 (cross-dependency-finder first) and saves **`Cursor-Project/test_cases/Backend/<Topic_name>.md`** (TC-BE-N) **always** when test cases are generated. Save **`Cursor-Project/test_cases/Frontend/<Topic_name>.md`** (TC-FE-N) **only** if **TC-FRONTEND-ASK.0** = Yes (Backend+Frontend). Per `.cursor/rules/workspace/test_cases_structure.mdc`. Legacy `generated_test_cases/` is optional. READ-ONLY for Phoenix code except test-case markdown writes in allowed paths.
 
 ## When to Apply
 
@@ -26,38 +26,7 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 
 **Allowed before 0a:** Jira read (MCP/REST) only. **Forbidden before 0a:** inferring Test/Dev from ticket status, fix version, or "Testing" status.
 
-Canonical: `.cursor/rules/workspace/test_cases_structure.mdc` (Rules **TC-ENV-ASK.0**, **TC-FRONTEND-ASK.0**).
-
-## MANDATORY: Environment first (Rule TC-ENV-ASK.0)
-
-**Before Step 0b (Frontend) and before Phoenix alignment**, resolve target environment. Use **`environment-resolver`** or AskQuestion with: Dev, Dev2, Test, PreProd, Prod, Experiments. State in chat: `Target environment: <env>`.
-
-**Do not** proceed to Frontend question, `switch-phoenix-branches`, or Phoenix codebase reads until environment is confirmed in the **current chat** (or user authorized `your choice` / `defaults`).
-
-## MANDATORY: Ask about Frontend Test Cases (Rule TC-FRONTEND-ASK.0)
-
-**After environment is resolved (Step 0a)**, and **before writing** test-case `.md` files, ask whether the user wants Frontend test cases generated — unless the exceptions below apply.
-
-**Question (use AskQuestion tool or equivalent):**
-
-```
-Do you want to generate Frontend (UI) test cases?
-
-Options:
-- Yes, generate both Backend and Frontend test cases
-- No, generate only Backend (API) test cases
-```
-
-**Behavior based on answer:**
-
-| User answer | Action |
-|-------------|--------|
-| **Yes** | Generate both `test_cases/Backend/<Topic>.md` (TC-BE-N) and `test_cases/Frontend/<Topic>.md` (TC-FE-N) |
-| **No** | Generate ONLY `test_cases/Backend/<Topic>.md` (TC-BE-N). Do NOT create the Frontend file at all. |
-
-**NEVER auto-generate Frontend test cases without asking first.**
-
-**Exception:** If the user explicitly mentions "frontend", "UI tests", or "both backend and frontend" in their initial request, skip the question and include Frontend. If they say "only backend", "API tests only", or similar, skip the question and exclude Frontend.
+**Full gate text (authoritative):** `.cursor/rules/workspace/test_cases_structure.mdc` — § **TC-ENV-ASK.0**, **TC-FRONTEND-ASK.0**, **TC-STANDALONE-PRE.0**. Do not duplicate those rules here.
 
 ## Mandatory: Rule 35 workflow
 
@@ -213,19 +182,10 @@ Before writing the final `.md` files, score each TC against the quality rubric i
 
 **Root folder:** `Cursor-Project/test_cases/`
 
-**Structure (based on user choice from Rule TC-FRONTEND-ASK.0):**
-
-| User choice | Files created |
-|-------------|---------------|
-| **Yes (Backend + Frontend)** | `Backend/<Topic>.md` + `Frontend/<Topic>.md` |
-| **No (Backend only)** | `Backend/<Topic>.md` ONLY — do NOT create Frontend file |
-
-- **Backend file:** `Cursor-Project/test_cases/Backend/<Topic_name>.md` — contains ONLY **Backend Test Cases** (`TC-BE-N`). **ALWAYS created.**
-- **Frontend file:** `Cursor-Project/test_cases/Frontend/<Topic_name>.md` — contains ONLY **Frontend Test Cases** (`TC-FE-N`). **Created ONLY if user confirmed "Yes" to Frontend question.**
-- Each file must have at least one Positive and one Negative TC.
-- Use underscores for multi-word topic names.
-
-Regression/impact cases (from what_could_break) go in the Backend file (or Frontend if user confirmed and the risk is UI-related). Update `test_cases/README.md` and `test_cases/Backend/README.md` when adding new files. Update `test_cases/Frontend/README.md` only if Frontend file was created.
+- **Backend file:** `Backend/<Topic_name>.md` (TC-BE-N) — **always**
+- **Frontend file:** `Frontend/<Topic_name>.md` (TC-FE-N) — **only if TC-FRONTEND-ASK.0 = Yes** (see `test_cases_structure.mdc`)
+- Each file: ≥1 Positive + ≥1 Negative TC; underscores in topic names
+- Update READMEs per `test_cases_structure.mdc`
 
 ### 6. Output content
 

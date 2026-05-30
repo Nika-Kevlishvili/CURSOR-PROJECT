@@ -10,7 +10,7 @@ Topics may exist in Backend only (e.g. API-only bugs). The index table may show 
 ## Preconditions (STANDALONE vs legacy)
 
 - **New topics (mandatory):** Rule **TC-STANDALONE-PRE.0** — each TC's `Preconditions:` lists the **full numbered setup chain** for that scenario. See `Cursor-Project/config/template/Test_case_template.md`.
-- **Legacy topics (read-only):** Older files may use `Apply Test data steps 1–N` when `## Test data (preconditions)` contains the full chain. Do **not** copy that pattern into new files. Migration to STANDALONE is optional per topic when those files are next edited.
+- **Legacy topics (read-only):** Four PDT topics still use `Apply Test data steps 1–N` (DRY). **Do not** copy that pattern into new files. Automated expansion via `expand-test-data-standalone.ps1` is **disabled** until multiline Test data steps are supported — expand manually when editing those files.
 
 ## Template
 

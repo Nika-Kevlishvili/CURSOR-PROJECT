@@ -91,92 +91,14 @@ the assistant MAY answer from general knowledge, but MUST still respect:
 
 ---
 
-## Jira ticket evidence completeness (MANDATORY)
+## Jira and Confluence ticket work (load SKILL — not inlined here)
 
-When the user asks to retrieve information from a Jira ticket, the assistant MUST NOT rely only on the `description` field.
+For **Jira fetch, triage, analysis, HandsOff, cross-dep, or bug validation** that uses a ticket:
 
-**Jira MCP unavailable:** If Jira MCP cannot return the issue after retries, the assistant MUST use the **REST read fallback** in **`.cursor/rules/integrations/jira_rest_fallback.mdc`** (same field/link/attachment discipline below). State **`Jira source: REST fallback …`** in the reply.
+1. **Before substantive Jira reads** → load **`.cursor/skills/jira-evidence/SKILL.md`** (Rule 0.0).
+2. **REST fallback** when MCP fails → **`.cursor/rules/integrations/jira_rest_fallback.mdc`** (Rule 42).
+3. **Linked Confluence on ticket analysis** → Rule 44 procedure in **`jira-evidence` SKILL** § linked Confluence.
 
-The assistant MUST always:
-
-1. Fetch the full issue payload (all available fields) and verify whether `description` is present, empty, or `null`.
-2. Always check whether `linked issues` and `attachments metadata` are present, regardless of whether `description` is filled.
-   - If present: inspect and validate them.
-   - If not present: explicitly mark them as "not present" and continue with the remaining ticket evidence.
-3. If `description` is empty or insufficient, inspect additional evidence locations before answering:
-   - custom fields (including rich-text ADF fields)
-   - comments/history and update context
-   - environment, labels, components, and other key metadata fields
-4. Return a consolidated answer based on the complete ticket context and explicitly note where critical details were found (for example: "found in custom field", "found in comments", "found in linked issue", "found in attachment metadata").
-
-The assistant MUST NOT conclude "no information" only because `description` is empty.
+Delivering Jira-only analysis when readable in-scope Confluence links were present without user opt-out is a **BLOCK violation** (evidence gate).
 
 ---
-
-## Jira ticket analysis — linked Confluence (MANDATORY)
-
-When the user requests **analysis**, **triage**, **summary**, or **retrieval** of a **Jira issue** (by key or equivalent ticket scope), and the issue payload — including `description`, rich-text custom fields (e.g. `customfield_10103` “Description formatted”), **comments**, `environment`, remote issue links, or ADF `link` / `inlineCard` URLs — contains **Confluence page URLs** (e.g. `*.atlassian.net/wiki/...` / `.../spaces/.../pages/<id>/...`):
-
-1. **MUST** read **every linked Confluence page** that is in scope for the ticket’s stated problem or acceptance (same narrow intent as **Rule 39**: linked URLs first; **no** broad Confluence `search`/CQL unless the user asks, the user is running **Rule 32** / **`bug-validator`**, or PhoenixExpert Q&A requires it). **Bug** issue type alone does **not** grant broad wiki search to other agents (cross-dep, test cases, HandsOff, triage).
-2. **MUST** use Confluence MCP read tools first; if unavailable or failing after **2–3 retries** with backoff, use **Rule 43** REST read (**`.cursor/rules/integrations/confluence_rest_fallback.mdc`**, **`Cursor-Project/config/confluence/get-confluence-page-rest.ps1`**). When the linked wiki **host** differs from the site implied by **`JIRA_BASE_URL`** (e.g. ticket links to another `*.atlassian.net` wiki), **MUST** set **`CONFLUENCE_WIKI_BASE`** (or process env equivalent) to that wiki’s origin for those reads — **do not** skip reads solely because default wiki derivation points elsewhere.
-3. **MUST** merge Confluence findings into the **same** response as the Jira analysis: cite **page title + page ID** (and URL). State explicitly if a page could not be read (403/404/network), after retries and REST where applicable.
-4. Delivering **Jira-only** analysis when readable in-scope Confluence links were present **without** user opt-out is a **CRITICAL SYSTEM ERROR** (evidence gate).
-
----
-
-## Jira custom field mapping (MANDATORY)
-
-The Jira instance uses **custom fields** for key content. When fetching issues via MCP `getJiraIssue`, the assistant MUST:
-
-1. **Always include `expand: "names"`** in the call so the response contains a `names` map (fieldId → human label).
-2. **Always request these known content-bearing custom fields** (in the `fields` array or by omitting `fields` to get all):
-
-| Custom Field ID | Human Label | Purpose |
-|---|---|---|
-| `customfield_10103` | Description formatted | **Primary rich-text content** — treat as equivalent to `description` when `description` is null/empty |
-| `customfield_10283` | Clarification Reason | Open questions / clarification notes |
-| `customfield_10048` | Acceptance Criteria | Acceptance criteria for the ticket |
-| `customfield_10745` | Test Case | Test case details |
-| `customfield_10104` | Design | Design notes / references |
-| `customfield_10217` | Bug Description | Bug-specific description (A.R. / E.R.) |
-| `customfield_10095` | Tester | Assigned tester |
-| `customfield_10877` | Approved for Prod | Production approval status |
-| `customfield_10485` | QA points | QA story points |
-| `customfield_10484` | Dev Points | Dev story points |
-| `customfield_10483` | DB Points | DB story points |
-
-3. **When `description` is null/empty:** treat `customfield_10103` ("Description formatted") as the **primary content source**. Parse its full ADF/HTML structure including:
-   - Text content (paragraphs, lists, headings)
-   - Embedded images (`mediaSingle` / `media` nodes with `alt` text)
-   - Inline links (`inlineCard` with `url`, `link` marks with `href`)
-   - Attached file references (`mediaInline` nodes)
-4. **Extract and list all URLs** found in rich-text fields (Figma mockups, diagrams.net, external links) with their context labels.
-5. **Never skip a non-null custom field** just because `description` has content — always scan both.
-
----
-
-## Jira attachment content analysis (MANDATORY)
-
-When a Jira ticket has attachments and the user requests content analysis (or when ticket understanding requires it):
-
-1. **Metadata is always available** via `getJiraIssue` → `fields.attachment[]` (filename, mimeType, size, content URL, thumbnail URL).
-2. **For actual content analysis**, run the download script:
-   ```
-   powershell -ExecutionPolicy Bypass -File "Cursor-Project/config/jira/download-jira-attachments.ps1" -IssueKey "<KEY>"
-   ```
-   This downloads attachments to `Cursor-Project/config/jira/attachments/<KEY>/` and extracts text from DOCX files.
-3. **After download, analyze each file type:**
-   - **Images (PNG/JPEG/GIF/WEBP):** Use the `Read` tool (has native vision/image support) to analyze screenshots, mockups, UI states
-   - **SVG:** Read as text — contains diagram structure, labels, flow descriptions
-   - **DOCX:** Read the extracted `.txt` file (created by the download script alongside the `.docx`)
-   - **PDF:** Use the `Read` tool (has native PDF support)
-4. **Include attachment findings** in the consolidated ticket analysis with citation: "found in attachment: `<filename>`"
-5. **If the download script is not configured** (missing `JIRA_API_TOKEN`), fall back to metadata-only analysis and note: "Attachment content not analyzed — JIRA_API_TOKEN not configured. Only metadata available."
-
-### Required environment variables for attachment download
-
-Set in `Cursor-Project/EnergoTS/.env` or system environment:
-- `JIRA_EMAIL` — Atlassian account email
-- `JIRA_API_TOKEN` — Atlassian API token (from https://id.atlassian.com/manage-profile/security/api-tokens)
-- `JIRA_BASE_URL` — e.g. `https://oppa-support.atlassian.net`
-

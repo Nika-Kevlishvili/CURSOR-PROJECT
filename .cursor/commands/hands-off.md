@@ -18,7 +18,7 @@ Run the **entire flow** without user intervention when the user provides a **Jir
 1. **Rule 0.3** — No Python `IntegrationService` in this workspace; follow MCP/Jira when needed (see `.cursor/rules/main/core_rules.mdc`).
 2. **Parse input** – From the user message extract the Jira **issue key** (e.g. REG-123, BUG-456). If user gave a link, parse the key from the URL. If user gave a screenshot only, use vision/OCR if available to extract the key.
 3. **Get cloudId** – Use Jira MCP (e.g. `getAccessibleAtlassianResources` or equivalent) to obtain cloudId if needed.
-4. **Fetch ticket** – Prefer **Jira MCP** `getJiraIssue(cloudId, issueIdOrKey)` (use `expand: "names"` to resolve field names). If Jira MCP is unavailable or fails after retries, use the **REST read fallback** per **`.cursor/rules/integrations/jira_rest_fallback.mdc`** (same fields: summary, description, environment, links, attachments metadata, content-bearing custom fields per **`evidence_only_project_answers.mdc`**). Disclose **`Jira source: REST fallback …`** in the run log / report notes when REST was used. For **Tester**, read **only** from the Jira custom field **"Tester"**: in this project that is **`customfield_10095`** (single user picker). Use that user’s **displayName** for Slack lookup in Step 7. **Do NOT use** Assignee, **customfield_11151** (BA), or any other field as Tester. If `customfield_10095` is null, there is no Tester – send report only to #ai-report. Store for later: description, Tester display name (from customfield_10095 only), and resolved environment.
+4. **Fetch ticket** – Prefer **Jira MCP** `getJiraIssue(cloudId, issueIdOrKey)` (use `expand: "names"` to resolve field names). If Jira MCP is unavailable or fails after retries, use the **REST read fallback** per **`.cursor/rules/integrations/jira_rest_fallback.mdc`**. Load **`.cursor/skills/jira-evidence/SKILL.md`** for custom fields, attachments, and linked Confluence (Rule 44). Disclose **`Jira source: REST fallback …`** in the run log / report notes when REST was used. For **Tester**, read **only** from the Jira custom field **"Tester"**: in this project that is **`customfield_10095`** (single user picker). Use that user’s **displayName** for Slack lookup in Step 7. **Do NOT use** Assignee, **customfield_11151** (BA), or any other field as Tester. If `customfield_10095` is null, there is no Tester – send report only to #ai-report. Store for later: description, Tester display name (from customfield_10095 only), and resolved environment.
 5. **Resolve environment + align Phoenix branches** – **MANDATORY resolver call:** invoke **`environment-resolver`** (EnvironmentResolverAgent) with Jira ticket context first. Use only the resolved environment (`dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`) for branch alignment. If ambiguity remains, EnvironmentResolverAgent must ask the user via questionnaire (Rule CONF.0) before continuing. **Prod safety gate (Rule PHOENIX-SWITCH.0 §1a):** if the resolved env is `prod`, FIRST tell the user that aligning to `origin/prod` will discard any uncommitted Phoenix edits and force-reset every Phoenix repo, then wait for explicit user acknowledgement. Only then call the script with `-ConfirmProd`. For non-prod envs, run without `-ConfirmProd`:
    - `powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` (add ` -ConfirmProd` for `prod` only, after user ack)
    - Aligns every `Cursor-Project/Phoenix/*` repo to `origin/<branch>` (latest tip). Local Phoenix edits are DISCARDED; Phoenix files remain READ-ONLY (Rule 0.8 Tier A).
@@ -38,60 +38,36 @@ Reference: `.cursor/skills/cross-dependency-finder/SKILL.md`, `.cursor/agents/cr
 
 ### Step 3: Test case generator (comprehensive coverage – mandatory)
 
-0. **TC scope (TC-FRONTEND-ASK.0 — MANDATORY):** If the user did not already state Backend-only vs Backend+Frontend in **this chat**, ask via **AskQuestion** or **environment-resolver** before generating files. **Backend file is always required.** **Frontend file is created only when the user chose Backend+Frontend.** Do **not** auto-create `Frontend/<Topic>.md` during HandsOff when scope is Backend-only.
-0.5. **Playwright instructions (MANDATORY):** The test-case-generator MUST **read** **`Cursor-Project/config/playwright_generation/playwright instructions/`** before authoring `.md` files: `project-description.md` → `general-rules.md` → `test-writing-rules.instructions.md` → `SKILL.md`, then any other `*.md` in that folder alphabetically (**ignore** `__MACOSX` / `._*`). Orchestrators MUST tell the generator to shape steps/expected results for the **EnergoTS Playwright bridge** (per that pack) in addition to the Test Case Template.
-1. Run **test-case-generator** with:
-   - **prompt** = Jira ticket description (and summary if useful).
-   - **prompt_type** = `'bug'` or `'task'` as appropriate.
-   - **context** = `{ 'cross_dependency_data': <output from Step 2> }` (and codebase_findings / confluence_data if collected).
-   - **Coverage requirement (CRITICAL):** Instruct the generator to produce **comprehensive, exhaustive** test cases – **not** a random or minimal set. Test cases MUST cover **every scenario that could possibly occur** for the task or bug: all **positive** (happy path, valid inputs, expected success), all **negative** (invalid inputs, error conditions, rejections), **edge cases**, **boundary conditions**, and **regression/impact** scenarios from cross_dependency_data (what_could_break). Aim for the **maximum number of test cases** needed to **fully cover** the task or bug; do not limit to a small subset.
-2. Test cases MUST be saved per **`.cursor/rules/workspace/test_cases_structure.mdc`**: **`Cursor-Project/test_cases/Backend/<Topic_name>.md`** (TC-BE-N only — **always**). **`Cursor-Project/test_cases/Frontend/<Topic_name>.md`** (TC-FE-N only) **only when TC-FRONTEND scope = Backend+Frontend**. Use thematic names with underscores; both created files share the same `<Topic_name>`.
-3. **Content:** Each test case `.md` file MUST follow the **Test Case Template**: **`Cursor-Project/config/template/Test_case_template.md`** (maximally detailed, human-readable: Summary, Scope, Test data, then the layer-specific test cases). Backend file has **only** TC-BE-N; Frontend file (when created) has **only** TC-FE-N. Each TC has Objective, Preconditions, Steps, Expected result, Actual result if bug, References. **Include both positive and negative** in each file; label each TC as **(Positive)** or **(Negative)**.
-4. **Verify on disk:** After generation, confirm **`Backend/<Topic_name>.md` exists**. Confirm **`Frontend/<Topic_name>.md` exists only if Frontend scope was chosen.** Update **`test_cases/README.md`** and **`test_cases/Backend/README.md`** always. Update **`test_cases/Frontend/README.md`** only when a Frontend file was created.
-5. Note the path(s) of test case file(s) for the bridge to Playwright (Backend path always; Frontend path when applicable).
+**Canonical procedure:** **`.cursor/skills/test-case-generator/SKILL.md`**. **Gates (do not duplicate here):** `.cursor/rules/workspace/test_cases_structure.mdc` — TC-ENV-ASK.0 → TC-FRONTEND-ASK.0 → Phoenix align (Step 1 should have completed env + alignment).
 
-Reference: `.cursor/skills/test-case-generator/SKILL.md`, `.cursor/rules/workflows/handsoff_playwright_report.mdc` §1.
+1. Run **test-case-generator** with Jira description/summary, `prompt_type` (`bug`|`task`), `context['cross_dependency_data']` from Step 2.
+2. **Coverage (CRITICAL):** exhaustive positive/negative/edge/regression per SKILL §5 — not a minimal random set.
+3. **Outputs:** `Cursor-Project/test_cases/Backend/<Topic>.md` always; `Frontend/<Topic>.md` only if TC-FRONTEND scope = Backend+Frontend. Template: **`Test_case_template.md`**. Playwright instructions pack per SKILL.
+4. Verify Backend file on disk; verify Frontend only when scope includes it. Note paths for Step 4.
+
+Reference: `.cursor/agents/test-case-generator.md`, `handsoff_playwright_report.mdc` §1.
+
+### Step 3.5: Test case quality validation [MANDATORY]
+
+**Canonical procedure:** **`.cursor/skills/test-case-quality-validator/SKILL.md`**. Invoke **test-case-quality-validator** with `topic_name`, `backend_path`, optional `frontend_path`. **≥80/100** on 10-axis rubric; max **3** iterations; **BLOCK** before Step 4 if still failing.
+
+Reference: Rule 35 Step 2.5; `handsoff_playwright_report.mdc` §1.5.
 
 ### Step 4: Create Playwright tests from test cases (bridge) [MANDATORY: energo-ts-test agent]
 
-0. **Playwright instructions:** The energo-ts-test agent MUST load **`Cursor-Project/config/playwright_generation/playwright instructions/`** (`project-description.md` → `general-rules.md` → `test-writing-rules.instructions.md` → `SKILL.md`, then other `*.md` alphabetically including **`swagger-api-reference.instructions.md`**; ignore `__MACOSX` / `._*`) before authoring the spec. Orchestrators MUST require compliance (CheckResponse, `test.step`, fixtures, no forbidden patterns from `general-rules.md`).
-0.5. **Refresh & consult Swagger specs (Rule SWAGGER.0 — NEVER SKIP):** The agent MUST execute `powershell -ExecutionPolicy Bypass -File ".cursor/commands/update-swagger-specs.ps1"` to refresh ALL OpenAPI specs before writing any `.spec.ts`. After refresh, for EVERY endpoint from the test cases, the agent MUST Grep the updated `Cursor-Project/config/swagger/{env}/swagger-spec.json` (default: `dev`) to: (a) extract request body schemas (`$ref` → DTO), (b) extract `required` fields, exact field names (camelCase), `enum` values, and types, (c) use ONLY spec-validated data for payload construction and endpoint verification. **The Swagger spec is the single source of truth — NOT the test case .md.** Common pitfalls: `title` vs `titleId`, `birthdate` vs `birthDate`, `Sales_Portal` vs `SALES_PORTAL`. See `.cursor/rules/integrations/swagger_refresh_mandatory.mdc`.
-0.6. **Reference specs for precondition / entity chains (MANDATORY):** The energo-ts-test agent MUST follow **`.cursor/agents/energo-ts-test.md` — Before Any Task → step 0.6**. For specs that create chained entities (terms, prices, customers, PODs, contracts, etc.), grep/read ≥1 established spec under `Cursor-Project/EnergoTS/tests/` before authoring helpers; align order with **`precondition-data-creation.instructions.md`** or document which reference file was matched; avoid ad-hoc creation order invented from scratch. Completion output MUST include **Reference spec(s):** paths (or explicit **none** if inapplicable). Test case `.md` text alone is NOT sufficient to invent entity order.
-1. **MUST use EnergoTSTestAgent (energo-ts-test):** The Playwright spec MUST be created by the **energo-ts-test** agent (EnergoTSTestAgent). Do NOT write the spec manually or with ad-hoc code (e.g. custom `getToken()`, custom `apiRequest()`). The agent reads the test case .md content and produces a spec using the **EnergoTS framework** (fixtures: Request, Endpoints, baseFixture, etc.). Payloads and endpoints MUST be cross-checked against the Swagger spec.
-2. **Input to agent:** Pass to the energo-ts-test agent: (a) **path(s) to test case `.md` file(s)** from Step 3 (Backend always; Frontend when created), (b) **Jira key and ticket title**, (c) cross_dependency_data or entry points if useful. The agent MUST use this content to derive scenarios, endpoints, steps, and assertions.
-3. **Output:** Spec file **`Cursor-Project/EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`** (e.g. `NT-1-invoice-cancellation.spec.ts`). EnergoTS must be on **cursor** branch (Rule ENERGOTS.0). Spec MUST follow project patterns (fixtures, test naming with Jira key). **CRITICAL – full coverage:** The spec MUST contain **one `test()` (or equivalent) for every test case** in scope (all TC-BE-N from Backend file + TC-FE-N from Frontend file when it exists). Playwright tests must cover **all** TCs in the generated file(s); the number of tests in the spec MUST equal the total TC count. If a TC cannot be automated (e.g. no API, complex setup), include it as `test.skip(..., 'reason')` so the count matches. **CRITICAL – precondition authoring:** never use `test.beforeAll()` / `beforeAll()`; shared preconditions must be helper functions called inside each test with `test.step('Precondition: ...')`.
-4. **Verify on disk:** After the agent runs, verify the spec file exists and that it has one test per TC in the generated `.md` file(s) (count must match). If the agent did not create it or coverage is incomplete, invoke the agent again with the explicit test case paths and the requirement to cover all TCs; do not fall back to writing an ad-hoc spec.
+**Canonical procedure:** **`.cursor/skills/energo-ts-test/SKILL.md`** (Swagger refresh Rule 41, instructions pack, reference specs, no `beforeAll` Rule 40).
 
-Reference: `.cursor/rules/workflows/handsoff_playwright_report.mdc` §2, `.cursor/agents/energo-ts-test.md`.
+1. Invoke **energo-ts-test** with Backend TC path (+ Frontend when exists), Jira key/title, cross_dependency_data if useful.
+2. **Output:** `Cursor-Project/EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts` on **cursor** branch. **1:1** TC coverage (`test()` or `test.skip()` per TC).
+3. Verify spec exists and TC count matches.
 
-### Step 4.5: Validate Playwright tests (quality gate) [MANDATORY – repeat until pass or max iterations]
+Reference: `.cursor/agents/energo-ts-test.md`, `handsoff_playwright_report.mdc` §2.
 
-**Purpose:** Before running tests, ensure the Playwright spec is **correctly written**, **fully covers** the test cases, is **syntactically correct**, and **satisfies** the test case requirements. This is a **quality control** step. If validation fails, the orchestrator **must** trigger re-generation of test cases and/or Playwright tests and re-validate until the validator passes or a max iteration count is reached.
+### Step 4.5: Validate Playwright tests (quality gate) [MANDATORY]
 
-1. **Invoke Playwright Test Validator:** Call the **playwright-test-validator** agent (see `.cursor/agents/playwright-test-validator.md`) with:
-   - **Test case paths:** Backend `.md` from Step 3 (and Frontend `.md` when it exists).
-   - **Playwright spec path:** The spec file path from Step 4 (e.g. `Cursor-Project/EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`).
-   - **Jira key:** For context and naming checks.
-2. **Validator checks (READ-ONLY):** The validator analyzes (does not modify):
-   - **Syntactic correctness:** Valid TypeScript/Playwright syntax, no obvious errors, imports resolve.
-   - **Full coverage (1:1):** Number of `test()` / `test.skip()` in spec equals total number of TCs in the .md files; each TC has a corresponding test.
-   - **Alignment with test cases:** Each test implements the intent of the corresponding TC (Objective, Steps, Expected result); assertions match Expected result.
-   - **Framework usage:** Spec uses EnergoTS framework (fixtures); no ad-hoc `getToken()`, custom `apiRequest()`, etc.
-   - **Playwright instructions:** Compliance with **`Cursor-Project/config/playwright_generation/playwright instructions/`** (per `.cursor/agents/playwright-test-validator.md` §5).
-   - **Strict hook ban:** if spec contains `test.beforeAll(` or `beforeAll(` for preconditions, validator MUST fail and require helper-function pattern.
-3. **Validator result:** The validator returns **passed** (true/false) and a list of **issues** (criterion, description, location, suggestion).
-4. **Iteration logic (CRITICAL):**
-   - **If validation passed:** Proceed to **Step 5** (Run Playwright tests).
-   - **If validation failed:**
-     - Pass the validator’s **issues** and **suggestions** to:
-       - **test-case-generator** (if issues relate to missing/unclear test cases or coverage).
-       - **energo-ts-test** (to fix/regenerate the spec: coverage, alignment, framework, syntax).
-     - **Re-run Step 3** (test case generator with validator feedback) and/or **Step 4** (energo-ts-test with validator feedback) as appropriate.
-     - **Re-run Step 4.5** (validator) again on the updated spec and test cases.
-     - **Repeat** until **validation passes** or **max iterations** (e.g. **3**) is reached. If max iterations reached with validation still failing, the orchestrator may still proceed to Step 5 and **include the validation issues in the report** so the tester sees what was not satisfied.
-5. **Max iterations:** Use a fixed limit (e.g. 3) to avoid infinite loops. After the limit, proceed to Step 5 and document validation failures in the report.
+**Canonical procedure:** **`.cursor/skills/playwright-test-validator/SKILL.md`**. Invoke **playwright-test-validator** with TC paths + spec path + Jira key. **≥80/100**; max **3** iterations; **BLOCK** before Step 5 unless user explicitly opts out.
 
-Reference: `.cursor/agents/playwright-test-validator.md`; `.cursor/rules/workflows/handsoff_playwright_report.mdc` §2 (validator).
+Reference: `handsoff_playwright_report.mdc` §2.
 
 ### Step 5: Run Playwright tests
 
@@ -151,7 +127,7 @@ Reference: `.cursor/rules/workflows/handsoff_playwright_report.mdc` §7.
 
 - While the flow runs, you may briefly confirm each step (e.g. "Step 1: Fetched REG-123…", "Step 2: Cross-deps done…").
 - At the end, summarize: Jira key, tests run, pass/fail counts, report path, and that the report was sent to Slack only to Tester (DM) and #ai-report (never to Assignee or anyone else; or only to #ai-report if no Tester).
-- End with: **"Agents involved: HandsOff (orchestrator), CrossDependencyFinderAgent, TestCaseGeneratorAgent, EnergoTSTestAgent, PlaywrightTestValidatorAgent, EnergoTS Playwright Test Runner"** (and PhoenixExpert if consulted).
+- End with: **"Agents involved: HandsOff (orchestrator), CrossDependencyFinderAgent, TestCaseGeneratorAgent, TestCaseQualityValidatorAgent, EnergoTSTestAgent, PlaywrightTestValidatorAgent, EnergoTS Playwright Test Runner"** (and PhoenixExpert if consulted).
 
 ## Report file (Rule 37 / Rule 0.6 exception)
 

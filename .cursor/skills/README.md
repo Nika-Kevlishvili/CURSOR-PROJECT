@@ -16,10 +16,11 @@ Skills guide the Cursor agent for this repo’s workflows. **Location:** workspa
 | **environment-resolver** | Resolve dev/dev2/test/preprod/prod/experiments; ask when ambiguous |
 | **cross-dependency-finder** | Rule 35 / 35a; output for test-case-generator |
 | **test-case-generator** | Rule 35; save to `test_cases/Backend/` (+ `Frontend/` when scope includes UI) |
-| **test-case-quality-validator** | 10-axis rubric; ≥80/100; HandsOff Step 1.5 / Rule 35 Step 2.5 |
+| **test-case-quality-validator** | 10-axis rubric; ≥80/100; HandsOff **Step 3.5** / Rule 35 Step 2.5 |
 | **energo-ts-test** | Rule 0.8.1; Playwright authoring under `EnergoTS/tests/` only |
 | **playwright-test-validator** | HandsOff Step 4.5; spec vs TC quality gate |
 | **phoenix-safety-readonly** | GitLab/Confluence read-only; path tiers |
+| **jira-evidence** | Jira ticket completeness, custom fields, attachments, linked Confluence (Rule 42/44) |
 | **jira-bug-template** | Experiments board bugs only (Rule JIRA.0) |
 | **energo-ts-run** | Rule 36; Playwright from EnergoTS `cursor` branch |
 

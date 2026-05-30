@@ -1,6 +1,6 @@
 ---
 alwaysApply: false
-description: "PostgreSQL MCP environment mapping, connect-first workflow, POD/contract SQL patterns. Loads for DB MCP, bug validation DB steps, and production-data reads."
+description: "PostgreSQL MCP environment mapping, connect-first workflow. Loads for DB MCP, bug validation DB steps, and production-data reads."
 globs:
   - ".cursor/agents/database-query.md"
   - ".cursor/skills/phoenix-database/**"
@@ -14,11 +14,11 @@ globs:
   - ".cursor/skills/cross-dependency-finder/**"
 ---
 
-# DATABASE WORKFLOW RULES [CRITICAL - MANDATORY]
+# DATABASE WORKFLOW RULES
 
-## Rule DB.0: Environment Selection [CRITICAL - ABSOLUTE PRIORITY]
+**Full procedure + SQL patterns:** `.cursor/skills/phoenix-database/SKILL.md`
 
-**ALWAYS use the EXACT environment that the user requests. NEVER switch to a different environment.**
+## Rule DB.0: Environment Selection
 
 | User says | MCP server |
 |-----------|------------|
@@ -26,119 +26,36 @@ globs:
 | Dev2 | PostgreSQLDev2 |
 | Test | PostgreSQLTest |
 | PreProd | PostgreSQLPreProd |
-| Prod | PostgreSQLProd (read-only; see MCP tool / policy) |
+| Prod | PostgreSQLProd (read-only) |
 | Experiments | PostgreSQLexperiments |
 
-## Rule DB.0a: No silent environment for PostgreSQL MCP [CRITICAL]
+**ALWAYS** use the exact environment the user requests. Never switch.
 
-**Control (agents MUST follow in chat):** **Rule CONF.0** + **`.cursor/skills/phoenix-database/SKILL.md` Step 0** + **`.cursor/agents/database-query.md`**. Ask the environment **before** any PostgreSQL MCP.
+## Rule DB.0a: No silent environment for PostgreSQL MCP
 
-**Before ANY PostgreSQL MCP call** (`connect_db`, `query`, `execute`, `describe_table`, `list_tables`, `list_schemas` on `PostgreSQLDev` / `PostgreSQLDev2` / `PostgreSQLTest` / `PostgreSQLPreProd` / `PostgreSQLProd` / `PostgreSQLexperiments`):
+Before ANY PostgreSQL MCP call: user MUST name environment in current task, or explicitly authorize defaults. Forbidden inference: ticket prefix, Playwright branch, habit, prior session. If missing → ask (AskQuestion, six options). Do not call MCP until answered.
 
-1. The user MUST name the environment in the **current task** (`Dev`, `Dev2`, `Test`, `PreProd`, `Prod`, `Experiments`), **or** explicitly authorize `your choice` / `defaults` / `same as last time` (then state the assumption in chat).
-2. **NEVER** infer environment from ticket prefix (e.g. PDT), Playwright branch, prior chat, EnergoTS test defaults, or habit (e.g. defaulting to Test). **Example forbidden inference:** `PDT-2529-rfd-from-existing-reminder.spec.ts` default `RFD_EXISTING_REMINDER_ID` **2163** on **Dev** — that is test fixture data, **not** the user naming Dev.
-3. If environment is missing → **ask in chat** (prefer **AskQuestion** with the six options) and **do not** call PostgreSQL MCP until answered.
+Violation is a **BLOCK**.
 
-**Violation** is a **CRITICAL SYSTEM ERROR** (same class as Rule CONF.0 guessing a DB environment).
+## Rule DB.1: Connect first
 
-## Rule DB.1: MCP Connection [CRITICAL]
+Read MCP tool descriptor for chosen server. Connect with `connect_db(...)`, then query with `query(sql="SELECT ...")`. Never embed Host/Password in rules, chat, or commits.
 
-- **Before `connect_db`:** Read the MCP tool descriptor for the chosen server under your Cursor MCP config (e.g. `mcps/user-PostgreSQL*/tools/*.json`) and pass only the parameters the tool defines. **Do not** embed Host/Password (or any secret) in rules, chat exports, or commits.
-- **ALWAYS connect first** with `mcp_PostgreSQL{Env}_connect_db(...)`, then:
-  - `mcp_PostgreSQL{Env}_query(sql="SELECT ...")` for SELECT
-  - `mcp_PostgreSQL{Env}_execute(...)` only when writes are explicitly allowed for that task
-- Connection persists for the session; reconnect after errors.
+## Rule DB.2: Query patterns
 
-### Available MCP Servers
+**Key schemas:** Product contracts: `product_contract.contracts` → `contract_details` → `contract_pods` → `pod_details` → `pod.pod`. Service contracts: `service_contract.contracts` → `contract_details` → `contract_pods` → `pod.pod`. POD identifier in `pod.pod.identifier`.
 
-PostgreSQLDev, PostgreSQLDev2, PostgreSQLTest, PostgreSQLPreProd, PostgreSQLProd — each maps to one named environment above.
+**Best practices:** DISTINCT on joins; include contract_type; order by contract_number; include status + date fields; LIMIT result sets; use schema prefixes.
 
-## Rule DB.2: Standard Query Patterns [IMPORTANT]
+## Rule DB.5: Security
 
-### Finding Contracts by POD Identifier:
+Never commit or log database credentials. Credentials stay in Cursor MCP server config only. Violation is a **BLOCK** (security).
 
-**Product Contracts:**
-```sql
-SELECT DISTINCT
- 'PRODUCT_CONTRACT' as contract_type,
- c.id as contract_id,
- c.contract_number,
- c.status,
- c.contract_status,
- c.create_date,
- c.entry_into_force_date,
- c.termination_date,
- p.identifier as pod_identifier,
- cp.id as contract_pod_id,
- cp.activation_date,
- cp.deactivation_date,
- cp.status as contract_pod_status
-FROM product_contract.contracts c
-JOIN product_contract.contract_details cd ON cd.contract_id = c.id
-JOIN product_contract.contract_pods cp ON cp.contract_detail_id = cd.id
-JOIN pod.pod_details pd ON cp.pod_detail_id = pd.id
-JOIN pod.pod p ON pd.pod_id = p.id
-WHERE p.identifier = 'POD_IDENTIFIER_HERE'
-ORDER BY c.contract_number, c.id
-```
+## Rule DB.6: Workflow integration
 
-**Service Contracts:**
-```sql
-SELECT DISTINCT
- 'SERVICE_CONTRACT' as contract_type,
- c.id as contract_id,
- c.contract_number,
- c.status,
- c.contract_status,
- c.create_date,
- c.entry_into_force_date,
- c.termination_date,
- p.identifier as pod_identifier,
- cp.id as contract_pod_id,
- cp.status as contract_pod_status
-FROM service_contract.contracts c
-JOIN service_contract.contract_details cd ON cd.contract_id = c.id
-JOIN service_contract.contract_pods cp ON cp.contract_detail_id = cd.id
-JOIN pod.pod p ON cp.pod_id = p.id
-WHERE p.identifier = 'POD_IDENTIFIER_HERE'
-ORDER BY c.contract_number, c.id
-```
+1. Connect using MCP from DB.0
+2. Execute queries using DB.2 patterns
+3. Format results for user
+4. Save markdown under `reports/` only if user asks or runs `/report` (Rule 0.6)
 
-### Key Schema Relationships:
-
-- **Product Contracts:** `contracts` → `contract_details` → `contract_pods` → `pod_details` → `pod`
-- **Service Contracts:** `contracts` → `contract_details` → `contract_pods` → `pod` (direct pod_id)
-- **POD Identifier:** Stored in `pod.pod.identifier` (varchar(33))
-
-## Rule DB.3: Query Best Practices [IMPORTANT]
-
-1. **Always use DISTINCT** when joining multiple tables to avoid duplicate rows
-2. **Include contract_type** in results to distinguish Product vs Service contracts
-3. **Order results** by contract_number and contract_id for consistency
-4. **Include relevant dates** (create_date, entry_into_force_date, termination_date, activation_date, deactivation_date)
-5. **Include status fields** (contract status, contract_pod status) for context
-
-## Rule DB.4: Error Handling [IMPORTANT]
-
-- If connection fails, verify MCP config, VPN/network, and tool schema parameters (without logging secrets).
-- If query fails, check SQL syntax and table/schema names
-- Always handle empty result sets gracefully
-- Log errors with full context for debugging **excluding passwords**
-
-## Rule DB.5: Security [CRITICAL]
-
-- **NEVER commit database credentials** to version control
-- **NEVER log passwords** in responses or reports
-- Credentials stay in **Cursor MCP server configuration**, not in workspace markdown
-
-## Rule DB.6: Workflow Integration [IMPORTANT]
-
-When database queries are needed:
-
-1. Connect using the MCP server from Rule DB.0 (Rule 33: Test → PostgreSQLTest only)
-2. Execute queries using standard patterns (Rule DB.2)
-3. Format results clearly for user
-4. Include all relevant contract and POD information
-5. Save markdown under `reports/` only if the user asks or runs **`/report`** — not automatically (Rule 0.6; HandsOff reports are separate)
-
-**Violation of database workflow rules is a CRITICAL SYSTEM ERROR.**
+Violation of database workflow rules is a **MUST**.

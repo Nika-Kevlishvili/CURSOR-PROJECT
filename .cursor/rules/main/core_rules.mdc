@@ -12,36 +12,39 @@ alwaysApply: true
    - **Full recursive read** of **every** `.cursor/rules/**/*.mdc` file is REQUIRED when: the user explicitly requests a **rules / compliance audit**; automation runs **`Cursor-Project/scripts/validate-cursor-rules.ps1`** (humans/CI interpret results); or the task is to **edit or reorganize rules** across the tree. It is **not** required before every trivial read-only lookup when `alwaysApply` rules plus the workflow canon above already cover the task.
    - **Freshness:** Do not silently assume outdated rule text; when in doubt for a gated workflow, re-read the canonical SKILL/agent block for that workflow.
    - **Canonical map:** **`Cursor-Project/docs/RULES_CANONICAL_INDEX.md`** — keep in sync when adding mandatory workflows.
-   - Violation is a CRITICAL SYSTEM ERROR when skipping applicable `alwaysApply` constraints or skipping the workflow canon before substantive work that the rule governs
+   - **Cursor runtime limits (honest):** Skills do **not** auto-load — the model must **Read** the SKILL before substantive gated work. **Task** subagent delegation is **recommended**, not guaranteed; parent agents may implement workflow steps directly only if they follow the same canonical SKILL. Hooks enforce **Tier A/B file edits**; most workflow gates are **MUST** (discipline), not hook-detectable.
+   - Violation is a **BLOCK** when skipping applicable `alwaysApply` constraints; a **MUST** when skipping workflow canon before substantive work
    
-   ### Rule 0.1: MANDATORY "Agents involved" Disclosure and Reporting
-   - EVERY response MUST end with: "Agents involved: [agent names]" or "Agents involved: None (direct tool usage)"
-   - When providing answers: (1) State expert at BEGINNING when applicable, (2) End with disclosure
-   - Example: "**Expert:** PhoenixExpert\n\n[Answer]\n\nAgents involved: PhoenixExpert"
+   ### Rule 0.1: "Agents involved" Disclosure
+   - Include `Agents involved: [names]` at end of responses that use **agents or PhoenixExpert framing** (Rule 32, 35, 37, Phoenix Q&A, subagent results)
+   - When providing PhoenixExpert answers: (1) State expert at BEGINNING, (2) End with disclosure
+   - **May omit** for: trivial Q&A, git/status, file organization, chit-chat, direct tool usage with no agent role
    - Logging: no Python `ai_response_logger` in this workspace; optional markdown reports only when Rule 0.6 **exceptions** apply or the user asks
-   - Violation is a CRITICAL SYSTEM ERROR
+   - Violation is a **MUST** when applicable workflows skip it
    
    ### Rule 0.2: PhoenixExpert for Phoenix Questions [ABSOLUTE PRIORITY]
    - ALL Phoenix questions MUST be answered **in the PhoenixExpert role** with PhoenixExpert as final authority — NO EXCEPTIONS
    - Do **not** answer from general knowledge alone: gather evidence with **read-only** tools (Phoenix codebase under `Cursor-Project/Phoenix/**`, Confluence MCP per Rule 0.5), then synthesize as PhoenixExpert
    - **Forbidden:** stating Phoenix behavior without checking code and/or Confluence when those sources apply; **not** forbidden: using `read_file`, `grep`, codebase search, or MCP to **read** Phoenix-related material
    - Route to PhoenixExpert framing IMMEDIATELY when Phoenix content is detected
-   - Violation is a CRITICAL SYSTEM ERROR
+   - Violation is a **MUST**
    
    ### Rule 0.3: IntegrationService Before Tasks
    - **Python stack (if present elsewhere):** call `IntegrationService.update_before_task()` before automated Python tasks that still define it
    - **This workspace (Cursor chat):** there is **no** `Cursor-Project/agents/` package; follow Jira/GitLab/MCP integration steps from rules when external context is required — do not import `agents.*`
-   - Violation is a CRITICAL SYSTEM ERROR only when executing code that still defines IntegrationService and skipping that call
+   - Violation is a **MUST** only when executing code that still defines IntegrationService and skipping that call
    
-   ### Rule 0.4: PhoenixExpert Consultation Before Tasks
-   - BEFORE any task, agents MUST consult with PhoenixExpert
-   - Consultation is MANDATORY for ALL tasks
-   - Violation is a CRITICAL ERROR
+   ### Rule 0.4: PhoenixExpert consultation (scoped — not every chat turn)
+   - **MUST** use PhoenixExpert framing + read-only evidence (Rules 0.2, 0.5) when the task touches: **Phoenix/EnergoTS behavior**, API contracts, env-specific code or DB reads, **Rule 32** bug validation, **Rule 35** test cases, **Rule 37** HandsOff, or production data traceability.
+   - **Do NOT** require PhoenixExpert ritual for: git/status, typo fixes, general programming with no Phoenix scope, pure `.cursor/` doc edits, or chit-chat.
+   - **Consultation means** code/Confluence/Swagger evidence gathered — not a ceremonial line without reads. Do not fake consultation.
+   - Violation is a **BLOCK** when Phoenix-scoped work proceeds without evidence; not a BLOCK for out-of-scope trivia.
    
    ### Rule 0.5: PhoenixExpert MUST Always Check Confluence via MCP
-   - Workflow: (1) FIRST: MCP Confluence tools (search, getSpaces, getPages, getPage), (2) SECOND: Phoenix codebase, (3) THEN: Call PhoenixExpert with Confluence data
+   - **Workflow order for Phoenix Q&A:** (1) MCP Confluence read tools when wiki evidence applies, (2) Phoenix codebase, (3) synthesize as PhoenixExpert
+   - **Conflict resolution:** When code and Confluence disagree on behavior, **code wins** (see evidence gate) — order above is discovery sequence, not authority ranking
    - Confluence checked FRESH every time - never use cache
-   - Violation is a CRITICAL SYSTEM ERROR
+   - Violation is a **MUST**
    
    ### Rule 0.6: Report Files (Disk Only When Explicit or HandsOff)
    - **Default:** Do **NOT** create markdown report files under **`Cursor-Project/reports/`** after routine tasks, Q&A, bug validation, test runs, or general chat. Put the full answer in the chat reply.
@@ -57,19 +60,19 @@ alwaysApply: true
    ### Rule 0.7: MANDATORY English for Project Artifacts (Not Chat)
    - **In scope (English REQUIRED):** Anything **created or modified on disk** in this workspace — file/folder names, paths, code comments, repo docs, reports under `Cursor-Project/reports/`, test cases, user stories in `User story/`, config/templates, **`.cursor/`** content, and other **persisted** project text
    - **Out of scope:** **Cursor chat replies** to the user may be in the **user’s language** (or English if they prefer). Rule 0.7 does **not** force English-only conversation in chat
-   - Violation is a CRITICAL SYSTEM ERROR when **persisted** project artifacts are not in English without an explicit project exception
+   - Violation is a **MUST** when **persisted** project artifacts are not in English without an explicit project exception
    
    ### Rule 0.8: Path-Based Code Modification (Phoenix, EnergoTS, everything else)
-   - **Intent:** (1) **Phoenix** — no AI/agent edits, ever. (2) **EnergoTS** — only **EnergoTSTestAgent** (the agent that writes Playwright tests) may add/change code, and **only** under `EnergoTS/tests/`. (3) **All other paths** — Cursor AI may modify when the user requests (**provisional / for now** — `ჯერჯერობით`).
+   - **Intent:** (1) **Phoenix** — no AI/agent edits, ever. (2) **EnergoTS** — only **EnergoTSTestAgent** (the agent that writes Playwright tests) may add/change code, and **only** under `EnergoTS/tests/`. (3) **All other paths** — Cursor AI may modify when the user requests (**provisional — Tier C**).
    - **TIER A — ABSOLUTELY FORBIDDEN (no exceptions, no agent, no user override via AI):**
      - `Cursor-Project/Phoenix/**` — Cursor AI MUST NEVER create, modify, or delete any file here. Hooks enforce protection. ONLY read, analyze, search, recommend.
    - **TIER B — EnergoTS (restricted):**
      - `Cursor-Project/EnergoTS/**` **outside** `Cursor-Project/EnergoTS/tests/**` — Cursor AI MUST NOT modify (fixtures, config, app code, etc.). **No agent** may write here except as forbidden for all.
      - `Cursor-Project/EnergoTS/tests/**` — ONLY **EnergoTSTestAgent** (and **EnergoTSTestAgentAdapter**) may create/modify/delete files here (see Rule 0.8.1). **Generic Cursor AI, other agents, and direct tool usage** MUST NOT edit this tree even if the user asks.
-   - **TIER C — ALLOWED (default for now):** Any path under the workspace **not** in Tier A or Tier B **non-test EnergoTS** restrictions — including but not limited to: `Cursor-Project/docs/**`, `Cursor-Project/examples/**`, `Cursor-Project/config/**`, `Cursor-Project/postman/**`, `Cursor-Project/reports/**`, `Cursor-Project/test_cases/**`, `User story/**`, root `.cursor/**`, workspace root files, etc. User-requested edits are permitted there. (**`Cursor-Project/agents/`** Python package is **not** in this workspace; Cursor behavior is defined by **`.cursor/agents/*.md`**, rules, skills, MCP.)
+   - **TIER C — ALLOWED (provisional):** Any path under the workspace **not** in Tier A or Tier B **non-test EnergoTS** restrictions — including but not limited to: `Cursor-Project/docs/**`, `Cursor-Project/examples/**`, `Cursor-Project/config/**`, `Cursor-Project/postman/**`, `Cursor-Project/reports/**`, `Cursor-Project/test_cases/**`, `User story/**`, root `.cursor/**`, workspace root files, etc. User-requested edits are permitted there. (**`Cursor-Project/agents/`** Python package is **not** in this workspace; Cursor behavior is defined by **`.cursor/agents/*.md`**, rules, skills, MCP.)
    - **If the user asks to change Tier A or Tier B (non-agent):** Refuse implementation; analysis and recommendations only.
    - **ENFORCEMENT:** Do not weaken Phoenix or EnergoTS protections in hooks or rules without an explicit project-owner decision.
-   - Violation of Tier A or Tier B restrictions is a CRITICAL SYSTEM ERROR.
+   - Violation of Tier A or Tier B restrictions is a **BLOCK** (hooks enforce).
    
    ### Rule 0.8.1: ONLY EnergoTSTestAgent — `EnergoTS/tests/` Writes
    - **SOLE WRITER for Playwright test code under EnergoTS:** Only **EnergoTSTestAgent** and **EnergoTSTestAgentAdapter** may modify files under `Cursor-Project/EnergoTS/tests/` (e.g. `.spec.ts`).
@@ -79,4 +82,12 @@ alwaysApply: true
      - Modify any path under `Cursor-Project/EnergoTS/` outside `tests/`
      - Modify any path under `Cursor-Project/Phoenix/**`
    - **All other agents, subagents, and default Cursor AI tool usage:** MUST NOT write under `Cursor-Project/EnergoTS/**` (including `tests/`). Route Playwright test authoring to **energo-ts-test** / EnergoTSTestAgent workflow.
-   - Violation of this exception scope is a CRITICAL SYSTEM ERROR
+   - **Hook vs rule:** `protect-energots-writes.ps1` allows any `*.spec.ts` / `*.fixtures.ts` under `tests/` (extension gate). **Rule 0.8.1** additionally requires **energo-ts-test** workflow — hook cannot detect agent role; violation is workflow **MUST**, not automatic deny.
+
+   ### Rule 0.9: Compliance tiers (reduce alert fatigue)
+   Use these terms in rules, skills, and agents:
+   - **BLOCK** — Must not proceed; hooks may deny; workflow stops (Tier A/B edits, env gate bypass, skipped mandatory SKILL, security invariant).
+   - **MUST** — Required for correct completion; violation breaks deliverable quality (evidence gate, Rule 0.1 footer, canonical SKILL load).
+   - **SHOULD** — Strong recommendation; document deviation if skipped.
+   
+   All `.mdc` rules migrated to this tiering (P3 complete). No new rules should use legacy `CRITICAL SYSTEM ERROR` — use `BLOCK`, `MUST`, or `SHOULD` instead.

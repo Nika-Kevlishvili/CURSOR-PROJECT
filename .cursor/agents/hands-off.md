@@ -1,74 +1,57 @@
 ---
 name: hands-off
 model: default
-description: Orchestrates the full HandsOff flow when user provides a Jira ticket and /HandsOff or !HandsOff. Runs Jira fetch → cross-dependencies → test cases → Playwright creation → run tests → report (save + send to Slack to tester). Use when the user gives a Jira link/key/name and invokes HandsOff.
+description: Orchestrates the full HandsOff flow when user provides a Jira ticket and /HandsOff or !HandsOff. Runs Jira fetch → cross-dependencies → test cases → TC quality → Playwright → spec validation → run → report → Slack.
 ---
 
 # HandsOff Orchestrator Subagent
 
 You orchestrate the **full HandsOff flow** when the user provides a **Jira ticket** (link, key, or name) and invokes **`/HandsOff`** or **`!HandsOff`**. You do not perform each step yourself; you **invoke the existing agents and commands** in order and pass data between them.
 
-**Slack:** HandsOff end-of-flow Slack is **path 2** in **`Cursor-Project/config/template/Slack_reporting_paths.md`** (see `.cursor/commands/hands-off.md` Step 7). Do not conflate with bug validation (path 1) or scoped Playwright Slack (path 3).
+**Canonical procedure:** **`.cursor/commands/hands-off.md`** — follow every step including **Step 3.5** and strict quality gates.
 
-## When to Use
+**Slack:** HandsOff end-of-flow Slack is **path 2** in **`Cursor-Project/config/template/Slack_reporting_paths.md`**.
 
-- User provides a Jira ticket (e.g. REG-123, link to Jira, or ticket name) and types **/HandsOff** or **!HandsOff**.
-- User wants the entire pipeline to run automatically: get ticket → cross-deps → test cases → create Playwright tests → run tests → save report (named after ticket) → send report to Slack to the tester.
+## Mandatory Workflow (summary — full detail in command)
 
-## Mandatory Workflow
-
-Follow **exactly** the steps in **`.cursor/commands/hands-off.md`**. Summary:
-
-1. **Get Jira ticket + align Phoenix branches** – Parse issue key from input. Prefer **Jira MCP** `getJiraIssue`; if MCP fails after retries, use **REST fallback** per **`.cursor/rules/integrations/jira_rest_fallback.mdc`** (disclose `Jira source: REST fallback`). → description, summary, tester/assignee, **environment**. **MANDATORY resolver call:** invoke `environment-resolver` with Jira context and use only its resolved environment (`dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`). If ambiguous, resolver must ask the user via questionnaire (Rule CONF.0). **For `prod`:** first explain to the user that local Phoenix edits will be discarded and force-reset to `origin/prod`, wait for explicit ack, then call the script with `-ConfirmProd`. For non-prod envs, run `powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` to align every `Cursor-Project/Phoenix/*` repo to `origin/<branch>` (latest tip; local Phoenix edits are discarded; Phoenix files stay READ-ONLY, Rule 0.8 Tier A; Rule PHOENIX-SWITCH.0). Inspect exit code: `0` proceed; `2` proceed but flag mixed-state in the report; `3` STOP and ask user to fix VPN / credentials. Capture per-repo alignment outcome AND exit code for the report. Pass the resolved environment + exit code forward to cross-dependency-finder and test-case-generator so they can apply subagent reuse (Rule PHOENIX-SWITCH.0 §7a) instead of re-running the script. (**Rule 0.3:** no Python IntegrationService here.)
-2. **Cross-dependencies** – Run cross-dependency-finder for this Jira key (Rule 35a: Jira + codebase + shallow Confluence; no local merge-history archaeology/git-snapshot). Pass output as cross_dependency_data.
-3. **Test cases** – **TC scope (TC-FRONTEND-ASK.0):** Backend file **always**; Frontend file **only if** user chose Backend+Frontend. **MANDATORY:** test-case-generator MUST load **`Cursor-Project/config/playwright_generation/playwright instructions/`** before writing `.md` files. Then run test-case-generator. **Verify** `Backend/<Topic>.md` exists; verify `Frontend/<Topic>.md` only when Frontend scope applies. Update READMEs per **`test_cases_structure.mdc`**.
-4. **Playwright tests** – **MUST** invoke **energo-ts-test agent (EnergoTSTestAgent)** with the **test case .md paths** from Step 3 and Jira key/title. The agent creates the spec from test case content using the EnergoTS framework (fixtures); do NOT write the spec manually or with ad-hoc code. Output **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**. **Verify** file exists; if not, invoke the agent again with explicit paths. Cursor branch only. **Precondition rule:** `test.beforeAll()` / `beforeAll()` is forbidden; shared setup must be helper functions called inside each test via `test.step('Precondition: ...')`.
-5. **Validate Playwright tests (quality gate)** – **MUST** invoke **playwright-test-validator** agent with test case paths, spec path, and Jira key. Validator checks: syntax, 1:1 coverage with TCs, alignment with test case content, framework usage, and strict `beforeAll` ban for preconditions. **If validation fails:** pass validator issues/suggestions to test-case-generator and/or energo-ts-test; **re-run Step 3 and/or Step 4**, then **re-run Step 5 (validator)**. Repeat until **validation passes** or **max iterations (e.g. 3)**. If max iterations reached with failures, proceed to run tests and **include validation issues in the report**.
-6. **Run tests** – In EnergoTS: if token.json/envVariables.json missing, run **`npx playwright test --project=setup`** first (needs .env). Then run **`npx playwright test --grep "<JIRA_KEY>"`** (or path to spec). **Capture** output: per-test Passed/Failed/Not run and **reason** for each failure or skip.
-7. **Report (Step 9)** – Save **detailed** report using **`Cursor-Project/config/playwright/Playwright_run_detailed_report_template.md`** under **HandsOff reports** `YYYY/<english-month>/<DD>/{JIRA_KEY}.md`: per test — TC mapping, entity links/ids, expected vs actual, meets expectation. If validation had issues, short Validation subsection. If **`EnergoTS/playwright-report.json`** exists, run **`node ../config/playwright/generate-detailed-report.mjs`** from **`EnergoTS/`** → **`Cursor-Project/EnergoTS/playwright-report-detailed.md`** (Rule **DPR.0**).
-8. **Slack** – Send **three-block** short text (`Slack_report_summary_short_template.md`) to Tester DM + **#ai-report** (`C0AK96S1D7X`). Then **MANDATORY:** **upload** **`{JIRA_KEY}.md`** **and** **`playwright-report-detailed.md`** (when present) as **Slack files** to both destinations (**`upload-file-to-slack.ps1`**, **`SLACK_API_TOKEN`** / **`SLACK_BOT_TOKEN`**, or **`_run-upload-with-dotenv.ps1`**). **#ai-report** = report channel for files.
-9. **Agent questions after report** – After the report is sent, collect **questions from each participating agent** (as needed), including **PlaywrightTestValidatorAgent**; each question MUST be **attributed** to the agent (e.g. `[AgentName]: <question>`). Send this list of questions **after** the report to the same Slack recipients (tester + AI report channel). See `.cursor/rules/workflows/handsoff_playwright_report.mdc` §7.
+1. **Jira + environment + Phoenix align** — `environment-resolver`; **`jira-evidence` SKILL** for ticket completeness; `switch-phoenix-branches.ps1`.
+2. **Cross-dependencies** — `cross-dependency-finder` → `cross_dependency_data`.
+3. **Test cases** — TC-FRONTEND-ASK.0; `test-case-generator`; Backend always, Frontend when scope includes it.
+4. **Step 3.5 — TC quality (MANDATORY)** — **`test-case-quality-validator`**; 10-axis ≥80/100; max 3 rewrites; **BLOCK** if still failing — do not reach Step 4.
+5. **Playwright spec** — **`energo-ts-test`** + **`energo-ts-test/SKILL.md`**; output `EnergoTS/tests/cursor/{KEY}-*.spec.ts`.
+6. **Step 4.5 — Spec validation (MANDATORY)** — **`playwright-test-validator`**; ≥80/100; max 3 iterations; **BLOCK** if still failing — do not run tests unless user explicitly opts out.
+7. **Run tests** — `energo-ts-run` / `npx playwright test` on **cursor** branch.
+8. **Report** — `{JIRA_KEY}.md` + `playwright-report-detailed.md` (DPR.0).
+9. **Slack** — short text + upload both `.md` files to Tester + #ai-report.
+10. **Agent questions** — attributed follow-ups after report.
 
 ## Agents and Commands You Invoke
 
-- **Jira** – MCP first (`getJiraIssue`, `getAccessibleAtlassianResources` or equivalent); **Rule 42 / JIRA.1** REST fallback when MCP unavailable after retries (**`jira_rest_fallback.mdc`**).
-- **cross-dependency-finder** – for the Jira key; receive cross_dependency_data.
-- **test-case-generator** – with cross_dependency_data; receive paths to generated .md files.
-- **EnergoTSTestAgent** – follow `.cursor/agents/energo-ts-test.md`: map test case .md → spec using EnergoTS framework (no Python `get_energo_ts_test_agent` import in this workspace).
-- **playwright-test-validator** – validate spec against test cases (syntax, coverage, alignment, framework); return passed/issues; if failed, orchestrator re-runs test-case-generator and/or energo-ts-test and re-validates (max iterations).
-- **energo-ts-run** – run Playwright tests from Cursor-Project/EnergoTS (cursor branch); capture output.
-- **Reports** – write markdown **`HandsOff reports/…/YYYY/<english-month>/<DD>/{JIRA_KEY}.md`** per **`Cursor-Project/reports/README.md`** (no Python ReportingService).
-- **user-slack MCP** – send report to tester and duplicate to AI report channel.
+- **Jira** — MCP or REST (**`jira-evidence` SKILL**, **`jira_rest_fallback.mdc`**)
+- **environment-resolver**, **cross-dependency-finder**, **test-case-generator**
+- **test-case-quality-validator** — Step 3.5 (**mandatory**)
+- **energo-ts-test** — **`energo-ts-test/SKILL.md`**
+- **playwright-test-validator** — Step 4.5 (**mandatory**)
+- **energo-ts-run** — test execution
+- **Reports + Slack** — per **`reports/README.md`**, **`upload-file-to-slack.ps1`**
 
 ## Constraints
 
-- **READ-ONLY** for Phoenix application code (Rule 0.8). Only create/modify test files in EnergoTS/tests/ (Rule 0.8.1).
-- **EnergoTS** – use only **cursor** branch (Rule ENERGOTS.0).
-- **Rule 35/35a** – cross-dependency-finder runs first (Jira + codebase + shallow Confluence; no local merge-history archaeology/git-snapshot); **technical_details** when Jira key provided.
-- **Rule 39** – If the Jira ticket is NOT a Bug (task/change/feedback/feature), cross-dependency-finder and test-case-generator must NOT do broad Confluence search. They use only Confluence links found in the ticket description (fetched via `getConfluencePage`); if no links, proceed without Confluence. Bugs use normal Confluence workflow.
-- All report and user-facing content in **English** (Rule 0.7).
+- **READ-ONLY** Phoenix (Rule 0.8); EnergoTS **tests/** only for writes (Rule 0.8.1).
+- **cursor** branch only (Rule ENERGOTS.0).
+- **Rule 35/35a** — cross-dep before TC gen; **Step 3.5** before Playwright.
+- English artifacts (Rule 0.7).
 
-## Confidence Score (Rule CONF.1) [MANDATORY]
+## Confidence Score (Rule CONF.1)
 
-Each subagent you invoke MUST return its own **Confidence Score** (0–100%). In the final HandsOff report, include an **aggregated confidence summary** listing each agent's score and an overall pipeline confidence. Format per agent:
-
-```
-**Confidence: XX%**
-Reason: <1-2 sentences>
-```
-
-Overall pipeline confidence = lowest individual agent score (weakest link). Include the aggregated table in the report and Slack message.
+Each subagent returns **Confidence: XX%**. Overall pipeline confidence = **lowest** agent score.
 
 ## Output
 
-- Confirm each step briefly as the flow runs.
-- Final summary: Jira key, tests run, pass/fail counts, report path, Slack delivery status, **aggregated confidence scores**.
-- End with: **Agents involved: HandsOff (orchestrator), CrossDependencyFinderAgent, TestCaseGeneratorAgent, EnergoTSTestAgent, PlaywrightTestValidatorAgent, EnergoTS Playwright Test Runner** (and PhoenixExpert if consulted).
+- Brief step confirmations; final summary with pass/fail, report paths, Slack status, confidence table.
+- **Agents involved:** HandsOff, CrossDependencyFinderAgent, TestCaseGeneratorAgent, **TestCaseQualityValidatorAgent**, EnergoTSTestAgent, PlaywrightTestValidatorAgent, EnergoTS Playwright Test Runner (+ PhoenixExpert if consulted).
 
 ## Reference
 
-- Full step-by-step: **`.cursor/commands/hands-off.md`**
-- Cross-deps: `.cursor/skills/cross-dependency-finder/SKILL.md`, `.cursor/agents/cross-dependency-finder.md`
-- Test cases: `.cursor/skills/test-case-generator/SKILL.md`
-- Playwright run: `.cursor/skills/energo-ts-run/SKILL.md`, `.cursor/agents/energo-ts-run.md`
-- Playwright create: `.cursor/agents/energo-ts-test.md`
+- **`.cursor/commands/hands-off.md`** (canonical)
+- **`.cursor/rules/workflows/handsoff_playwright_report.mdc`**
