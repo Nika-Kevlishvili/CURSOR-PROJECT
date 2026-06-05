@@ -28,7 +28,7 @@ description: STRICT Playwright spec validator (0–100, pass ≥80). Compares sp
 | 2. Coverage completeness | 15 | 15 = 1:1 TC:test(); −5 per missing |
 | 3. TC-to-test alignment | 15 | Steps + expected match TC |
 | 4. Assertion specificity | 15 | Status + body fields; 0 = expect(true) only |
-| 5. Framework compliance | 10 | EnergoTS fixtures; 0 = ad-hoc getToken |
+| 5. Framework compliance | 10 | EnergoTS fixtures; manual verification attach per test; 0 = ad-hoc getToken |
 | 6. Hook ban (beforeAll) | 10 | 0 if any beforeAll for preconditions |
 | 7. Precondition data creation | 10 | 0 = hardcoded IDs / assume exists |
 | 8. Entity creation order | 5 | Matches precondition-data-creation.instructions.md |
@@ -46,6 +46,17 @@ description: STRICT Playwright spec validator (0–100, pass ≥80). Compares sp
 | `toBeOK()` only | Criterion 4 −10 |
 | Ad-hoc getToken/apiRequest | Criterion 5 → 0 |
 | Wrong Swagger field/enum | Criterion 9 −3 each |
+| Missing `attachManualVerificationLinks` per test | Criterion 5 −3 each (cap at 0 for criterion 5) |
+
+## Manual verification links check
+
+For **new** `tests/cursor/` specs (authored after shared helper exists):
+
+1. Grep spec for `attachManualVerificationLinks` import and call.
+2. Each `test()` must include a final step `Attach portal links for manual verification` (or equivalent call).
+3. Deduct **−3** from criterion 5 per test missing attach (minimum 0 for that criterion).
+
+Legacy specs without the helper are not retrofitted unless the user requests it.
 
 ## Process
 

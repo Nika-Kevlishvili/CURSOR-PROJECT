@@ -214,7 +214,7 @@ if (Test-Path -LiteralPath $evidencePath) {
     $ev = Get-Content -LiteralPath $evidencePath -Raw
     $evLines = ($ev -split '\r?\n').Count
     if ($evLines -gt 110) {
-        Add-Warning "evidence_only_project_answers.mdc has $evLines lines (target <=110 after Jira slim)"
+        Add-Warning "evidence_only_project_answers.mdc has $evLines lines (target at most 110 after Jira slim)"
     }
     if ($ev -match 'customfield_10103') {
         Add-Failure 'evidence_only still contains Jira custom field table — move to jira-evidence SKILL'
@@ -268,11 +268,11 @@ Get-ChildItem -Path $RulesRoot -Recurse -Filter '*.mdc' -File | ForEach-Object {
     $hits = ([regex]::Matches($raw, 'Violation is a CRITICAL|CRITICAL SYSTEM ERROR')).Count
     if ($hits -gt 0) {
         $legacyCritical += $hits
-        Add-Warning "Legacy CRITICAL in $($_.FullName.Replace($RepoRoot, '').TrimStart('\')): $hits occurrence(s) — migrate to BLOCK/MUST/SHOULD per Rule 0.9"
+        Add-Warning ('Legacy CRITICAL in {0}: {1} occurrence(s) - migrate to BLOCK/MUST/SHOULD per Rule 0.9' -f $_.FullName.Replace($RepoRoot, '').TrimStart('\'), $hits)
     }
 }
 if ($legacyCritical -gt 5) {
-    Add-Failure "Too many legacy CRITICAL occurrences in .mdc rules: $legacyCritical (target <=5 for Rule 0.9 definitions only)"
+    Add-Failure "Too many legacy CRITICAL occurrences in .mdc rules: $legacyCritical (target at most 5 for Rule 0.9 definitions only)"
 }
 
 # --- phoenix_branch_switching.mdc should be slim (detail in SKILL)
@@ -280,7 +280,7 @@ $phoenixSwitch = Join-Path $RulesRoot 'integrations\phoenix_branch_switching.mdc
 if (Test-Path -LiteralPath $phoenixSwitch) {
     $psLines = ((Get-Content -LiteralPath $phoenixSwitch -Raw) -split '\r?\n').Count
     if ($psLines -gt 55) {
-        Add-Warning "phoenix_branch_switching.mdc has $psLines lines (target <=55; detail in phoenix-branch-switching SKILL)"
+        Add-Warning ('phoenix_branch_switching.mdc has {0} lines (target at most 55, detail in phoenix-branch-switching SKILL)' -f $psLines)
     }
     $ps = Get-Content -LiteralPath $phoenixSwitch -Raw
     if ($ps -notmatch 'phoenix-branch-switching/SKILL') {
@@ -302,7 +302,7 @@ $handsoffReport = Join-Path $RulesRoot 'workflows\handsoff_playwright_report.mdc
 if (Test-Path -LiteralPath $handsoffReport) {
     $hrLines = ((Get-Content -LiteralPath $handsoffReport -Raw) -split '\r?\n').Count
     if ($hrLines -gt 55) {
-        Add-Warning "handsoff_playwright_report.mdc has $hrLines lines (target <=55; detail in hands-off-playwright-report SKILL)"
+        Add-Warning ('handsoff_playwright_report.mdc has {0} lines (target at most 55, detail in hands-off-playwright-report SKILL)' -f $hrLines)
     }
     $hr = Get-Content -LiteralPath $handsoffReport -Raw
     if ($hr -notmatch 'hands-off-playwright-report/SKILL') {
@@ -319,7 +319,7 @@ foreach ($agentName in $thinAgents) {
     $agentRaw = Get-Content -LiteralPath $agentPath -Raw
     $lineCount = ($agentRaw -split '\r?\n').Count
     if ($lineCount -gt $thinAgentMaxLines) {
-        Add-Warning "Agent $agentName.md has $lineCount lines (P1b target <= $thinAgentMaxLines — procedure belongs in SKILL)"
+        Add-Warning ('Agent {0}.md has {1} lines (P1b target at most {2}, procedure belongs in SKILL)' -f $agentName, $lineCount, $thinAgentMaxLines)
     }
     if ($agentRaw -notmatch 'Procedure \(HOW\):') {
         Add-Warning "Agent $agentName.md missing 'Procedure (HOW):' pointer to SKILL"
@@ -327,6 +327,17 @@ foreach ($agentName in $thinAgents) {
 }
 
 Write-Host "Repo root: $RepoRoot"
+# --- Manual verification portal links (static, no Playwright run)
+$mvScript = Join-Path $RepoRoot 'Cursor-Project\scripts\validate-manual-verification-links.ps1'
+if (Test-Path -LiteralPath $mvScript) {
+    & $mvScript
+    if ($LASTEXITCODE -ne 0) {
+        Add-Failure 'validate-manual-verification-links.ps1 failed (portal links static checks)'
+    }
+} else {
+    Add-Warning 'Missing Cursor-Project/scripts/validate-manual-verification-links.ps1'
+}
+
 Write-Host ""
 
 if ($warnings.Count -gt 0) {
@@ -341,5 +352,5 @@ if ($failures.Count -gt 0) {
     exit 1
 }
 
-Write-Host "validate-cursor-consistency: OK ($($actualNorm.Count) alwaysApply core; cross-file invariants pass)." -ForegroundColor Green
+Write-Host ('validate-cursor-consistency: OK ({0} alwaysApply core, cross-file invariants pass).' -f $actualNorm.Count) -ForegroundColor Green
 exit 0

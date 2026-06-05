@@ -89,7 +89,7 @@ flowchart TB
 
 ## 5. Maintenance and validation
 
-- **Static checks:** `powershell -ExecutionPolicy Bypass -File "Cursor-Project/scripts/validate-cursor-rules.ps1"` from repo root (resolves `../..` from `scripts/`). The script **fails** on missing **`.cursor/`** path references inside `.cursor/rules/**/*.mdc`. Missing **`Cursor-Project/...`** paths are **warnings** only (rules often cite illustrative examples that are not committed).  
+- **Static checks:** `validate-cursor-rules.ps1` + `validate-cursor-consistency.ps1` from repo root (consistency also runs `validate-manual-verification-links.ps1` for new Playwright portal-link standard). Rules script **fails** on missing **`.cursor/`** path references inside `.cursor/rules/**/*.mdc`. Missing **`Cursor-Project/...`** paths are **warnings** only.  
 - **Optional Jira batch helper:** `Cursor-Project/scripts/jira_bug_validator.py` — configure via environment variables documented in **`Cursor-Project/config/jira/README.md`** (no secrets in repo docs).
 
 ## Appendix A — Parity review (doc vs repo)

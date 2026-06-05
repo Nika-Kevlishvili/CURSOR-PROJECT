@@ -66,6 +66,38 @@ Format: `test('[JIRA-KEY]: {Exact Jira Task Title}', async ({...}) => {`
 - Assertions: prefer `await expect(response).CheckResponse()` for POST/create chains
 - Branch: **`cursor`** only (Rule ENERGOTS.0)
 
+## Manual verification links [CRITICAL — new specs]
+
+Every **new** `test()` in `tests/cursor/` must end with:
+
+```typescript
+import {
+  attachManualVerificationLinks,
+  buildProcessPreviewLink,
+  buildProductContractTabLinks,
+} from './shared/manual-verification-links.fixtures';
+
+await test.step('Attach portal links for manual verification', async () => {
+  const extra: Record<string, string[]> = {};
+  if (processId) {
+    const u = buildProcessPreviewLink(processId);
+    if (u) extra.process = [u];
+  }
+  Object.assign(extra, buildProductContractTabLinks(contractId));
+
+  attachManualVerificationLinks(Responses, {
+    jiraKey: '{JIRA_KEY}',
+    snapshot: { processId, contractId, /* labels from TC */ },
+    extraLinks: Object.keys(extra).length ? extra : undefined,
+  });
+});
+```
+
+- **Helper:** `EnergoTS/tests/cursor/shared/manual-verification-links.fixtures.ts`
+- **`snapshot`:** processId, contract numbers, notes — what the tester verifies in UI
+- **`buildProcessPreviewLink` / `buildProductContractTabLinks`:** mass import + contract multi-tab previews
+- Do **not** retrofit existing specs unless the user explicitly asks; mandatory for **new** authoring only
+
 ## Permissions
 
 - ✅ `EnergoTS/tests/**/*.spec.ts`, `*.fixtures.ts`
@@ -73,4 +105,5 @@ Format: `test('[JIRA-KEY]: {Exact Jira Task Title}', async ({...}) => {`
 
 ## Completion
 
+- Every new `test()` ends with `attachManualVerificationLinks` step
 - Summary + **Confidence** (CONF.1) + `Agents involved: EnergoTSTestAgent`

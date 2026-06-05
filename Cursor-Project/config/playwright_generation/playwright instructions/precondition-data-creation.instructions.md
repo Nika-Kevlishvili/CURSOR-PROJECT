@@ -33,7 +33,7 @@ When many tests (e.g., 50 out of 70) share the same precondition data, create **
 
 ```typescript
 import { test, expect } from '../../fixtures/baseFixture';
-import reportGenerator from '../../utils/generateReport';
+import { attachManualVerificationLinks } from './shared/manual-verification-links.fixtures';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SHARED PRECONDITION HELPER FUNCTIONS
@@ -92,9 +92,8 @@ test('[JIRA-KEY]: TC-BE-1 – Happy path – Valid product appears in list', asy
         expect(found).toBeTruthy();
     });
 
-    test.info().attach('[JIRA-KEY] TC-BE-1 response', {
-        body: JSON.stringify(reportGenerator.setLinksToResponses(Responses), null, 2),
-        contentType: 'application/json',
+    await test.step('Attach portal links for manual verification', async () => {
+        attachManualVerificationLinks(Responses, { jiraKey: 'JIRA-KEY' });
     });
 });
 ```
@@ -134,9 +133,11 @@ test('[JIRA-KEY]: TC-BE-3 – Inactive product is excluded', async ({
         expect(found).toBeFalsy();
     });
 
-    test.info().attach('[JIRA-KEY] TC-BE-3 response', {
-        body: JSON.stringify(reportGenerator.setLinksToResponses(Responses), null, 2),
-        contentType: 'application/json',
+    await test.step('Attach portal links for manual verification', async () => {
+        attachManualVerificationLinks(Responses, {
+            jiraKey: 'JIRA-KEY',
+            snapshot: { inactiveProductId },
+        });
     });
 });
 ```
@@ -190,7 +191,7 @@ test('[JIRA-KEY]: TC-BE-3 – Inactive product is excluded', async ({
 
 ```typescript
 import { test, expect } from '../../fixtures/baseFixture';
-import reportGenerator from '../../utils/generateReport';
+import { attachManualVerificationLinks } from './shared/manual-verification-links.fixtures';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SHARED PRECONDITION HELPER FUNCTIONS
@@ -240,9 +241,8 @@ test.describe('[JIRA-KEY]: Feature Name', { tag: '@domain' }, () => {
             // Use Responses.product[0], Responses.terms[0], etc.
         });
 
-        test.info().attach('[JIRA-KEY] TC-BE-1 response', {
-            body: JSON.stringify(reportGenerator.setLinksToResponses(Responses), null, 2),
-            contentType: 'application/json',
+        await test.step('Attach portal links for manual verification', async () => {
+            attachManualVerificationLinks(Responses, { jiraKey: 'JIRA-KEY' });
         });
     });
 
@@ -269,9 +269,11 @@ test.describe('[JIRA-KEY]: Feature Name', { tag: '@domain' }, () => {
             // Assertions using specificEntityId
         });
 
-        test.info().attach('[JIRA-KEY] TC-BE-3 response', {
-            body: JSON.stringify(reportGenerator.setLinksToResponses(Responses), null, 2),
-            contentType: 'application/json',
+        await test.step('Attach portal links for manual verification', async () => {
+            attachManualVerificationLinks(Responses, {
+                jiraKey: 'JIRA-KEY',
+                snapshot: { specificEntityId },
+            });
         });
     });
 });
@@ -290,6 +292,7 @@ test.describe('[JIRA-KEY]: Feature Name', { tag: '@domain' }, () => {
 - [ ] Test-specific entities use `let variableName: type;` declared at test scope
 - [ ] Verify entity creation order follows dependencies
 - [ ] Use `await expect(response).toBeOK()` or `await expect(response).CheckResponse()`
+- [ ] End each test with `attachManualVerificationLinks` (portal links for manual verification)
 
 ---
 

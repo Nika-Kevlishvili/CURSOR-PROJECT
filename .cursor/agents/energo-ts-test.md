@@ -27,7 +27,8 @@ description: Manages EnergoTS Playwright test automation. Sole writer for Energo
 
 1. Load SKILL mandatory steps (instructions pack + Swagger refresh).
 2. Map 1:1 TC → `test()` where feasible.
-3. Run **playwright-test-validator** before parent runs tests (Step 4.5).
+3. Every new `test()` ends with `attachManualVerificationLinks` (see SKILL § Manual verification links).
+4. Run **playwright-test-validator** before parent runs tests (Step 4.5).
 
 ## Constraints
 

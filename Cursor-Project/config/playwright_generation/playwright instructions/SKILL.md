@@ -19,7 +19,11 @@ Always import from `baseFixture.ts` and destructure only the fixtures you need:
 
 ```typescript
 import { test, expect } from '../../fixtures/baseFixture';
-import reportGenerator from '../../utils/generateReport';
+import {
+  attachManualVerificationLinks,
+  buildProcessPreviewLink,
+  buildProductContractTabLinks,
+} from './shared/manual-verification-links.fixtures';
 
 test.describe('[REG-XX]: Domain Name', { tag: '@domainTag' }, () => {
   test('[REG-XXX]: Test description | scenario', async ({ Request, GeneratePayload, Responses, Endpoints }) => {
@@ -34,9 +38,8 @@ test.describe('[REG-XX]: Domain Name', { tag: '@domainTag' }, () => {
       // Responses.customer[0] now has the created entity
     });
 
-    test.info().attach('[REG-XXX] response', {
-      body: JSON.stringify(reportGenerator.setLinksToResponses(Responses), null, 2),
-      contentType: 'application/json'
+    await test.step('Attach portal links for manual verification', async () => {
+      attachManualVerificationLinks(Responses, { jiraKey: 'REG-XXX' });
     });
   });
 });
@@ -153,18 +156,35 @@ test('[REG-XXX]: Sales Portal test', async ({ SPRequest, Endpoints }) => {
 });
 ```
 
-## Report Attachment
+## Report Attachment (mandatory)
 
-Always attach response data at the end of a test for debugging and link generation:
+Every `tests/cursor/` test must end with portal links for manual tester verification:
 
 ```typescript
-test.info().attach('[REG-XXX] response', {
-  body: JSON.stringify(reportGenerator.setLinksToResponses(Responses), null, 2),
-  contentType: 'application/json'
+import {
+  attachManualVerificationLinks,
+  buildProcessPreviewLink,
+  buildProductContractTabLinks,
+} from './shared/manual-verification-links.fixtures';
+
+await test.step('Attach portal links for manual verification', async () => {
+  const extraLinks: Record<string, string[]> = {};
+  const processUrl = buildProcessPreviewLink(processId);
+  if (processUrl) {
+    extraLinks.process = [processUrl];
+  }
+  Object.assign(extraLinks, buildProductContractTabLinks(contractId));
+
+  attachManualVerificationLinks(Responses, {
+    jiraKey: 'PDT-XXXX',
+    snapshot: { processId, contractId, note: 'what the tester should verify' },
+    extraLinks: Object.keys(extraLinks).length ? extraLinks : undefined,
+  });
 });
 ```
 
-Requires `SAVE_OBJECT_LINKS=true` in env to generate clickable links.
+- **Helper path:** `tests/cursor/shared/manual-verification-links.fixtures.ts`
+- Attachments work without `SAVE_OBJECT_LINKS` (optional extra logging in `ResponseLinker` only).
 
 ## Common Mistakes
 

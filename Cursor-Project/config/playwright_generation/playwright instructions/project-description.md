@@ -37,7 +37,7 @@ npx playwright test --project=setup --workers=1  # Setup only
 
 **CI/CD**: 9 GitHub Actions workflows — `main.yml` (GitLab pipeline), `jiraSingle.yml`, `jiraRegression.yml`, `jiraRegression2.yml`, `extension.yml`, `dev-regression.yml`, `dev-fix-regression.yml`, `dev2-regression.yml`, `test-regression.yml`.
 
-**Reporting**: `reportGenerator` facade delegates to `ReportParser`, `SlackReporter`, `JiraReporter`, `ResponseLinker` in `utils/reporters/`.
+**Reporting**: `reportGenerator` facade delegates to `ReportParser`, `SlackReporter`, `JiraReporter`, `ResponseLinker` in `utils/reporters/`. **New `tests/cursor/` specs** must end each test with `attachManualVerificationLinks` from `tests/cursor/shared/manual-verification-links.fixtures.ts` (plain + JSON portal links for manual tester verification and HandsOff machine reports).
 
 **Environment Variables**: `BASE_URL`, `DEVAUTHAPI`, `TESTAUTHAPI`, `PORTAL_USER`, `PASSWORD`, `GRANT_TYPE`, `CLIENT_ID`, `CLIENT_SECRET`, `SAVE_OBJECT_LINKS`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `SLACK_API_TOKEN`.
 

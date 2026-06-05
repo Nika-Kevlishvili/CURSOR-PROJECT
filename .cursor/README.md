@@ -10,7 +10,7 @@ This folder is at the **Git workspace root** (next to `Cursor-Project/`).
 | **Skills** | [skills/README.md](skills/README.md) |
 | **Commands** | `commands/*.md` |
 | **Hooks** | `hooks.json` + `hooks/*.ps1` — Phoenix protect, EnergoTS branch/ writes, Confluence read-only, DB write confirm, git push control |
-| **Validation** | `Cursor-Project/scripts/validate-cursor-rules.ps1` + `validate-cursor-consistency.ps1` |
+| **Validation** | `validate-cursor-rules.ps1` + `validate-cursor-consistency.ps1` (+ `validate-manual-verification-links.ps1` via consistency) |
 | **Operating model** | [../Cursor-Project/docs/CURSOR_OPERATING_MODEL.md](../Cursor-Project/docs/CURSOR_OPERATING_MODEL.md) — layers, workflows, reconciliation (Phases 1–3 complete) |
 
 From `Cursor-Project/`, link here with e.g. `../.cursor/rules/README.md`.
