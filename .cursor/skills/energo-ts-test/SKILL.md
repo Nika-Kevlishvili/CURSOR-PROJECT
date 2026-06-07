@@ -63,6 +63,7 @@ Format: `test('[JIRA-KEY]: {Exact Jira Task Title}', async ({...}) => {`
 ## Framework quick reference
 
 - Playwright API, TypeScript, `baseFixture` (Request, Endpoints, GeneratePayload, Responses)
+- **New specs** under `tests/cursor/`: import from `./cursor-test.fixtures` (re-exports `baseFixture` + registers global `afterEach` that logs API entity links to console and attaches `[API responses]` JSON to the Playwright report automatically — no local `attachReport` helper or manual `test.afterEach` for API responses needed). Existing specs stay on `../../fixtures/baseFixture` — do not migrate them.
 - Assertions: prefer `await expect(response).CheckResponse()` for POST/create chains
 - Branch: **`cursor`** only (Rule ENERGOTS.0)
 
