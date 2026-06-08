@@ -1,0 +1,856 @@
+﻿{
+    "expand":  "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
+    "id":  "73780",
+    "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/73780",
+    "key":  "PDT-2941",
+    "names":  {
+                  "issuetype":  "Issue Type",
+                  "components":  "Components",
+                  "customfield_10095":  "Tester",
+                  "description":  "Description",
+                  "customfield_10104":  "Design",
+                  "customfield_10745":  "Test Case",
+                  "attachment":  "Attachment",
+                  "summary":  "Summary",
+                  "created":  "Created",
+                  "customfield_10283":  "Clarification Reason",
+                  "reporter":  "Reporter",
+                  "customfield_10483":  "DB Points",
+                  "customfield_10484":  "Dev Points",
+                  "priority":  "Priority",
+                  "customfield_10485":  "QA points",
+                  "customfield_10048":  "Acceptance Criteria",
+                  "labels":  "Labels",
+                  "customfield_10103":  "Description formatted",
+                  "environment":  "Environment",
+                  "customfield_10877":  "Approved for Prod",
+                  "customfield_10217":  "Bug Description",
+                  "issuelinks":  "Linked Issues",
+                  "comment":  "Comment",
+                  "assignee":  "Assignee",
+                  "updated":  "Updated",
+                  "status":  "Status"
+              },
+    "changelog":  {
+                      "startAt":  0,
+                      "maxResults":  2,
+                      "total":  2,
+                      "histories":  [
+                                        {
+                                            "id":  "661375",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=63b7cf5c2c70aae1e6fc1cf5",
+                                                           "accountId":  "63b7cf5c2c70aae1e6fc1cf5",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png"
+                                                                          },
+                                                           "displayName":  "Kalina.Koleva",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-06-08T12:12:55.467+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Link",
+                                                              "fieldtype":  "jira",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "PDT-2942",
+                                                              "toString":  "This work item relates to PDT-2942"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "661370",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=63b7cf5c2c70aae1e6fc1cf5",
+                                                           "accountId":  "63b7cf5c2c70aae1e6fc1cf5",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png"
+                                                                          },
+                                                           "displayName":  "Kalina.Koleva",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-06-08T12:08:58.722+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Description formatted",
+                                                              "fieldtype":  "custom",
+                                                              "fieldId":  "customfield_10103",
+                                                              "from":  "",
+                                                              "fromString":  "*Reproduce Steps:*\n\nWe have 2 problems : \n\n# We have a proforma invoice which is created on 24.04.2026 (04/2026 accounting period) and issued the same day. On 19.05.2026 we have a payment with date 18.05.2026. \n# Missing contract/order type - examples : ЕКИ-1100138881, ЕКИ-1100138887 и ЕКИ-1100138890\n\n*Actual Result:*\n\n# The system incorrectly updates the invoice date, accounting period, and payment due date to the payment registration date. As a result, invoice ЕФУ-1100138843 was included in the VAT dairy  for 04/2026 period and included again in the VAT dairy for 05/2026 period.\n!{54D22846-A81A-46A7-910C-9BE59213D62E}-20260608-074200.png|width=647,alt=\"{54D22846-A81A-46A7-910C-9BE59213D62E}-20260608-074200.png\"!\n# Missing values in contract/order type column:\n!image-20260608-073505.png|width=647,alt=\"image-20260608-073505.png\"!\n\n*Expected Result:*\n\nThe system should change the invoice date, accounting period, and payment due date only when the pro forma invoice is converted into a real invoice.\n\n\n\n_________________\n\nEndpoint:\nMethod:\nStatus:\nPayload:\nResponse:",
+                                                              "to":  "",
+                                                              "toString":  "*Reproduce Steps:*\n\nWe have 2 problems : \n\n# We have a proforma invoice which is created on 24.04.2026 (04/2026 accounting period) and issued the same day. On 19.05.2026 we have a payment with date 18.05.2026. \n# Missing contract/order type - examples : ЕКИ-1100138881, ЕКИ-1100138887 и ЕКИ-1100138890\n\n*Actual Result:*\n\n# The system incorrectly updates the invoice date, accounting period, and payment due date to the payment registration date. As a result, invoice ЕФУ-1100138843 was included in the VAT dairy  for 04/2026 period and included again in the VAT dairy for 05/2026 period.\n!{54D22846-A81A-46A7-910C-9BE59213D62E}-20260608-074200.png|width=647,alt=\"{54D22846-A81A-46A7-910C-9BE59213D62E}-20260608-074200.png\"!\n# Missing values in contract/order type column:\n!image-20260608-073505.png|width=647,alt=\"image-20260608-073505.png\"!\n\n*Expected Result:*\n\nThe system should change the invoice date, accounting period,  payment due date and current_status_change_date only when the pro forma invoice is converted into a real invoice.\n\n\n\n_________________\n\nEndpoint:\nMethod:\nStatus:\nPayload:\nResponse:"
+                                                          }
+                                                      ]
+                                        }
+                                    ]
+                  },
+    "fields":  {
+                   "issuetype":  {
+                                     "self":  "https://oppa-support.atlassian.net/rest/api/3/issuetype/10004",
+                                     "id":  "10004",
+                                     "description":  "A problem which impairs or prevents the functions of the product.",
+                                     "iconUrl":  "https://oppa-support.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10303?size=medium",
+                                     "name":  "Bug",
+                                     "subtask":  false,
+                                     "avatarId":  10303,
+                                     "hierarchyLevel":  0
+                                 },
+                   "components":  [
+
+                                  ],
+                   "customfield_10095":  null,
+                   "description":  null,
+                   "customfield_10104":  null,
+                   "customfield_10745":  {
+                                             "type":  "doc",
+                                             "version":  1,
+                                             "content":  [
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "PASSED:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\tyes/no"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Title:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Description:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Test Type:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Test Steps:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Expected Result:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Notes:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 }
+                                                                             ]
+                                                             }
+                                                         ]
+                                         },
+                   "attachment":  [
+                                      {
+                                          "self":  "https://oppa-support.atlassian.net/rest/api/3/attachment/61799",
+                                          "id":  "61799",
+                                          "filename":  "{54D22846-A81A-46A7-910C-9BE59213D62E}-20260608-074200.png",
+                                          "author":  {
+                                                         "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=63b7cf5c2c70aae1e6fc1cf5",
+                                                         "accountId":  "63b7cf5c2c70aae1e6fc1cf5",
+                                                         "avatarUrls":  {
+                                                                            "48x48":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                            "24x24":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                            "16x16":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                            "32x32":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png"
+                                                                        },
+                                                         "displayName":  "Kalina.Koleva",
+                                                         "active":  true,
+                                                         "timeZone":  "Asia/Dubai",
+                                                         "accountType":  "atlassian"
+                                                     },
+                                          "created":  "2026-06-08T12:01:23.756+0400",
+                                          "size":  59153,
+                                          "mimeType":  "image/png",
+                                          "content":  "https://oppa-support.atlassian.net/rest/api/3/attachment/content/61799",
+                                          "thumbnail":  "https://oppa-support.atlassian.net/rest/api/3/attachment/thumbnail/61799"
+                                      },
+                                      {
+                                          "self":  "https://oppa-support.atlassian.net/rest/api/3/attachment/61800",
+                                          "id":  "61800",
+                                          "filename":  "image-20260608-073505.png",
+                                          "author":  {
+                                                         "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=63b7cf5c2c70aae1e6fc1cf5",
+                                                         "accountId":  "63b7cf5c2c70aae1e6fc1cf5",
+                                                         "avatarUrls":  {
+                                                                            "48x48":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                            "24x24":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                            "16x16":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                            "32x32":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png"
+                                                                        },
+                                                         "displayName":  "Kalina.Koleva",
+                                                         "active":  true,
+                                                         "timeZone":  "Asia/Dubai",
+                                                         "accountType":  "atlassian"
+                                                     },
+                                          "created":  "2026-06-08T12:01:24.277+0400",
+                                          "size":  162293,
+                                          "mimeType":  "image/png",
+                                          "content":  "https://oppa-support.atlassian.net/rest/api/3/attachment/content/61800",
+                                          "thumbnail":  "https://oppa-support.atlassian.net/rest/api/3/attachment/thumbnail/61800"
+                                      }
+                                  ],
+                   "summary":  "VAT Diary report - Incorrectly included issued pro forma invoice and missing contract/order type",
+                   "created":  "2026-06-08T12:01:23.505+0400",
+                   "customfield_10283":  null,
+                   "reporter":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=63b7cf5c2c70aae1e6fc1cf5",
+                                    "accountId":  "63b7cf5c2c70aae1e6fc1cf5",
+                                    "avatarUrls":  {
+                                                       "48x48":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                       "24x24":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                       "16x16":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                       "32x32":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png"
+                                                   },
+                                    "displayName":  "Kalina.Koleva",
+                                    "active":  true,
+                                    "timeZone":  "Asia/Dubai",
+                                    "accountType":  "atlassian"
+                                },
+                   "customfield_10483":  null,
+                   "customfield_10484":  null,
+                   "priority":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/priority/1",
+                                    "iconUrl":  "https://oppa-support.atlassian.net/images/icons/priorities/highest_new.svg",
+                                    "name":  "Highest",
+                                    "id":  "1"
+                                },
+                   "customfield_10485":  null,
+                   "customfield_10048":  null,
+                   "labels":  [
+
+                              ],
+                   "customfield_10103":  {
+                                             "type":  "doc",
+                                             "version":  1,
+                                             "content":  [
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Reproduce Steps:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "1318b945f0b7"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "We have 2 problems : "
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "b229d9b9f7c7"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "orderedList",
+                                                                 "attrs":  {
+                                                                               "order":  1,
+                                                                               "localId":  "ea0832f487da"
+                                                                           },
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "listItem",
+                                                                                     "attrs":  {
+                                                                                                   "localId":  "c5d92737462a"
+                                                                                               },
+                                                                                     "content":  [
+                                                                                                     {
+                                                                                                         "type":  "paragraph",
+                                                                                                         "content":  [
+                                                                                                                         {
+                                                                                                                             "type":  "text",
+                                                                                                                             "text":  "We have a proforma invoice which is created on 24.04.2026 (04/2026 accounting period) and issued the same day. On 19.05.2026 we have a payment with date 18.05.2026. "
+                                                                                                                         }
+                                                                                                                     ],
+                                                                                                         "attrs":  {
+                                                                                                                       "localId":  "948c7c2d58c0"
+                                                                                                                   }
+                                                                                                     }
+                                                                                                 ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "listItem",
+                                                                                     "attrs":  {
+                                                                                                   "localId":  "94ecde105a9f"
+                                                                                               },
+                                                                                     "content":  [
+                                                                                                     {
+                                                                                                         "type":  "paragraph",
+                                                                                                         "content":  [
+                                                                                                                         {
+                                                                                                                             "type":  "text",
+                                                                                                                             "text":  "Missing contract/order type - examples : ЕКИ-1100138881, ЕКИ-1100138887 и ЕКИ-1100138890"
+                                                                                                                         }
+                                                                                                                     ],
+                                                                                                         "attrs":  {
+                                                                                                                       "localId":  "6019556fc02e"
+                                                                                                                   }
+                                                                                                     }
+                                                                                                 ]
+                                                                                 }
+                                                                             ]
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Actual Result:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "5c0496db78a0"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "orderedList",
+                                                                 "attrs":  {
+                                                                               "order":  1,
+                                                                               "localId":  "7d9888437da3"
+                                                                           },
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "listItem",
+                                                                                     "attrs":  {
+                                                                                                   "localId":  "762b04205866"
+                                                                                               },
+                                                                                     "content":  [
+                                                                                                     {
+                                                                                                         "type":  "paragraph",
+                                                                                                         "content":  [
+                                                                                                                         {
+                                                                                                                             "type":  "text",
+                                                                                                                             "text":  "The system incorrectly updates the invoice date, accounting period, and payment due date to the payment registration date. As a result, invoice ЕФУ-1100138843 was included in the VAT dairy  for 04/2026 period and included again in the VAT dairy for 05/2026 period."
+                                                                                                                         }
+                                                                                                                     ],
+                                                                                                         "attrs":  {
+                                                                                                                       "localId":  "d3cb3f1b1f6d"
+                                                                                                                   }
+                                                                                                     },
+                                                                                                     {
+                                                                                                         "type":  "mediaSingle",
+                                                                                                         "attrs":  {
+                                                                                                                       "width":  647,
+                                                                                                                       "widthType":  "pixel",
+                                                                                                                       "localId":  "6eb00921957a",
+                                                                                                                       "layout":  "align-start"
+                                                                                                                   },
+                                                                                                         "content":  [
+                                                                                                                         {
+                                                                                                                             "type":  "media",
+                                                                                                                             "attrs":  {
+                                                                                                                                           "type":  "file",
+                                                                                                                                           "id":  "485fb0d3-9d0d-484a-a163-9ac837513a13",
+                                                                                                                                           "alt":  "{54D22846-A81A-46A7-910C-9BE59213D62E}-20260608-074200.png",
+                                                                                                                                           "collection":  "",
+                                                                                                                                           "localId":  "af4cab120d92",
+                                                                                                                                           "height":  385,
+                                                                                                                                           "width":  1667
+                                                                                                                                       }
+                                                                                                                         }
+                                                                                                                     ]
+                                                                                                     }
+                                                                                                 ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "listItem",
+                                                                                     "attrs":  {
+                                                                                                   "localId":  "762b04205866"
+                                                                                               },
+                                                                                     "content":  [
+                                                                                                     {
+                                                                                                         "type":  "paragraph",
+                                                                                                         "content":  [
+                                                                                                                         {
+                                                                                                                             "type":  "text",
+                                                                                                                             "text":  "Missing values in contract/order type column:"
+                                                                                                                         }
+                                                                                                                     ],
+                                                                                                         "attrs":  {
+                                                                                                                       "localId":  "6513af2d6f3d"
+                                                                                                                   }
+                                                                                                     },
+                                                                                                     {
+                                                                                                         "type":  "mediaSingle",
+                                                                                                         "attrs":  {
+                                                                                                                       "width":  647,
+                                                                                                                       "widthType":  "pixel",
+                                                                                                                       "localId":  "9a09062fda26",
+                                                                                                                       "layout":  "align-start"
+                                                                                                                   },
+                                                                                                         "content":  [
+                                                                                                                         {
+                                                                                                                             "type":  "media",
+                                                                                                                             "attrs":  {
+                                                                                                                                           "type":  "file",
+                                                                                                                                           "id":  "e00f0f11-4fd5-4240-9695-32410d7bf6e5",
+                                                                                                                                           "alt":  "image-20260608-073505.png",
+                                                                                                                                           "collection":  "",
+                                                                                                                                           "localId":  "98d5033ac52a",
+                                                                                                                                           "height":  687,
+                                                                                                                                           "width":  1514
+                                                                                                                                       }
+                                                                                                                         }
+                                                                                                                     ]
+                                                                                                     }
+                                                                                                 ]
+                                                                                 }
+                                                                             ]
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Expected Result:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "9ad6abf703f0"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "The system should change the invoice date, accounting period,  payment due date and current_status_change_date only when the pro forma invoice is converted into a real invoice."
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "28f0f75b0199"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "attrs":  {
+                                                                               "localId":  "4f06b8640b1d"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "_________________"
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "f86169f70df8"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Endpoint:"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Method:"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Status:"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Payload:"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Response:"
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "9604501059f6"
+                                                                           }
+                                                             }
+                                                         ]
+                                         },
+                   "environment":  {
+                                       "type":  "doc",
+                                       "version":  1,
+                                       "content":  [
+                                                       {
+                                                           "type":  "paragraph",
+                                                           "content":  [
+                                                                           {
+                                                                               "type":  "text",
+                                                                               "text":  "PROD"
+                                                                           }
+                                                                       ]
+                                                       }
+                                                   ]
+                                   },
+                   "customfield_10877":  {
+                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/customFieldOption/10249",
+                                             "value":  "Yes",
+                                             "id":  "10249"
+                                         },
+                   "customfield_10217":  {
+                                             "type":  "doc",
+                                             "version":  1,
+                                             "content":  [
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Link:"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "A.R.(არსებული სიტუაცია):"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "E.R.( სასურველი შედეგი):"
+                                                                                 }
+                                                                             ]
+                                                             }
+                                                         ]
+                                         },
+                   "issuelinks":  [
+                                      {
+                                          "id":  "44358",
+                                          "self":  "https://oppa-support.atlassian.net/rest/api/3/issueLink/44358",
+                                          "type":  {
+                                                       "id":  "10003",
+                                                       "name":  "Relates",
+                                                       "inward":  "relates to",
+                                                       "outward":  "relates to",
+                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/issueLinkType/10003"
+                                                   },
+                                          "inwardIssue":  {
+                                                              "id":  "73781",
+                                                              "key":  "PDT-2942",
+                                                              "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/73781",
+                                                              "fields":  {
+                                                                             "summary":  "DB - Change the invoice dates",
+                                                                             "status":  {
+                                                                                            "self":  "https://oppa-support.atlassian.net/rest/api/3/status/10191",
+                                                                                            "description":  "This status is managed internally by Jira Software",
+                                                                                            "iconUrl":  "https://oppa-support.atlassian.net/",
+                                                                                            "name":  "Ready for testing",
+                                                                                            "id":  "10191",
+                                                                                            "statusCategory":  {
+                                                                                                                   "self":  "https://oppa-support.atlassian.net/rest/api/3/statuscategory/4",
+                                                                                                                   "id":  4,
+                                                                                                                   "key":  "indeterminate",
+                                                                                                                   "colorName":  "yellow",
+                                                                                                                   "name":  "In Progress"
+                                                                                                               }
+                                                                                        },
+                                                                             "priority":  {
+                                                                                              "self":  "https://oppa-support.atlassian.net/rest/api/3/priority/1",
+                                                                                              "iconUrl":  "https://oppa-support.atlassian.net/images/icons/priorities/highest_new.svg",
+                                                                                              "name":  "Highest",
+                                                                                              "id":  "1"
+                                                                                          },
+                                                                             "issuetype":  {
+                                                                                               "self":  "https://oppa-support.atlassian.net/rest/api/3/issuetype/10002",
+                                                                                               "id":  "10002",
+                                                                                               "description":  "A task that needs to be done.",
+                                                                                               "iconUrl":  "https://oppa-support.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+                                                                                               "name":  "Task",
+                                                                                               "subtask":  false,
+                                                                                               "avatarId":  10318,
+                                                                                               "hierarchyLevel":  0
+                                                                                           }
+                                                                         }
+                                                          }
+                                      }
+                                  ],
+                   "comment":  {
+                                   "comments":  [
+                                                    {
+                                                        "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/73780/comment/68241",
+                                                        "id":  "68241",
+                                                        "author":  {
+                                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=63b7cf5c2c70aae1e6fc1cf5",
+                                                                       "accountId":  "63b7cf5c2c70aae1e6fc1cf5",
+                                                                       "avatarUrls":  {
+                                                                                          "48x48":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                          "24x24":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                          "16x16":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                          "32x32":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png"
+                                                                                      },
+                                                                       "displayName":  "Kalina.Koleva",
+                                                                       "active":  true,
+                                                                       "timeZone":  "Asia/Dubai",
+                                                                       "accountType":  "atlassian"
+                                                                   },
+                                                        "body":  {
+                                                                     "type":  "doc",
+                                                                     "version":  1,
+                                                                     "content":  [
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "inlineCard",
+                                                                                                             "attrs":  {
+                                                                                                                           "url":  "https://oppa-support.atlassian.net/browse/PDT-2941"
+                                                                                                                       }
+                                                                                                         }
+                                                                                                     ]
+                                                                                     }
+                                                                                 ]
+                                                                 },
+                                                        "updateAuthor":  {
+                                                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=63b7cf5c2c70aae1e6fc1cf5",
+                                                                             "accountId":  "63b7cf5c2c70aae1e6fc1cf5",
+                                                                             "avatarUrls":  {
+                                                                                                "48x48":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                                "24x24":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                                "16x16":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                                "32x32":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png"
+                                                                                            },
+                                                                             "displayName":  "Kalina.Koleva",
+                                                                             "active":  true,
+                                                                             "timeZone":  "Asia/Dubai",
+                                                                             "accountType":  "atlassian"
+                                                                         },
+                                                        "created":  "2026-06-08T12:05:15.873+0400",
+                                                        "updated":  "2026-06-08T12:05:15.873+0400",
+                                                        "jsdPublic":  true
+                                                    },
+                                                    {
+                                                        "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/73780/comment/68242",
+                                                        "id":  "68242",
+                                                        "author":  {
+                                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=557058%3A0867a421-a9ee-4659-801a-bc0ee4a4487e",
+                                                                       "accountId":  "557058:0867a421-a9ee-4659-801a-bc0ee4a4487e",
+                                                                       "avatarUrls":  {
+                                                                                          "48x48":  "https://secure.gravatar.com/avatar/ab3787cd0c16633ae050dff9d5ab15fc?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FS-0.png",
+                                                                                          "24x24":  "https://secure.gravatar.com/avatar/ab3787cd0c16633ae050dff9d5ab15fc?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FS-0.png",
+                                                                                          "16x16":  "https://secure.gravatar.com/avatar/ab3787cd0c16633ae050dff9d5ab15fc?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FS-0.png",
+                                                                                          "32x32":  "https://secure.gravatar.com/avatar/ab3787cd0c16633ae050dff9d5ab15fc?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FS-0.png"
+                                                                                      },
+                                                                       "displayName":  "Slack",
+                                                                       "active":  true,
+                                                                       "timeZone":  "Asia/Dubai",
+                                                                       "accountType":  "app"
+                                                                   },
+                                                        "body":  {
+                                                                     "type":  "doc",
+                                                                     "version":  1,
+                                                                     "content":  [
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "Kalina.Koleva",
+                                                                                                             "marks":  [
+                                                                                                                           {
+                                                                                                                               "type":  "link",
+                                                                                                                               "attrs":  {
+                                                                                                                                             "href":  "https://oppa-support.atlassian.net/jira/people/63b7cf5c2c70aae1e6fc1cf5"
+                                                                                                                                         }
+                                                                                                                           }
+                                                                                                                       ]
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  " synced this conversation thread with the Slack thread "
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "inlineCard",
+                                                                                                             "attrs":  {
+                                                                                                                           "url":  "https://asterbit.slack.com/archives/C0A2YDXTJKU/p1780905709976559"
+                                                                                                                       }
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  ". Replies in synced threads will automatically update across both Slack and Jira."
+                                                                                                         }
+                                                                                                     ]
+                                                                                     }
+                                                                                 ]
+                                                                 },
+                                                        "updateAuthor":  {
+                                                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=557058%3A0867a421-a9ee-4659-801a-bc0ee4a4487e",
+                                                                             "accountId":  "557058:0867a421-a9ee-4659-801a-bc0ee4a4487e",
+                                                                             "avatarUrls":  {
+                                                                                                "48x48":  "https://secure.gravatar.com/avatar/ab3787cd0c16633ae050dff9d5ab15fc?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FS-0.png",
+                                                                                                "24x24":  "https://secure.gravatar.com/avatar/ab3787cd0c16633ae050dff9d5ab15fc?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FS-0.png",
+                                                                                                "16x16":  "https://secure.gravatar.com/avatar/ab3787cd0c16633ae050dff9d5ab15fc?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FS-0.png",
+                                                                                                "32x32":  "https://secure.gravatar.com/avatar/ab3787cd0c16633ae050dff9d5ab15fc?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FS-0.png"
+                                                                                            },
+                                                                             "displayName":  "Slack",
+                                                                             "active":  true,
+                                                                             "timeZone":  "Asia/Dubai",
+                                                                             "accountType":  "app"
+                                                                         },
+                                                        "created":  "2026-06-08T12:05:16.996+0400",
+                                                        "updated":  "2026-06-08T12:05:16.996+0400",
+                                                        "jsdPublic":  true
+                                                    }
+                                                ],
+                                   "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/73780/comment",
+                                   "maxResults":  2,
+                                   "total":  2,
+                                   "startAt":  0
+                               },
+                   "assignee":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A7c05a673-6f87-448f-8721-f720854a6ba2",
+                                    "accountId":  "712020:7c05a673-6f87-448f-8721-f720854a6ba2",
+                                    "avatarUrls":  {
+                                                       "48x48":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                       "24x24":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                       "16x16":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                       "32x32":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png"
+                                                   },
+                                    "displayName":  "Mariam Kvitsiani",
+                                    "active":  true,
+                                    "timeZone":  "Asia/Tbilisi",
+                                    "accountType":  "atlassian"
+                                },
+                   "updated":  "2026-06-08T12:12:55.467+0400",
+                   "status":  {
+                                  "self":  "https://oppa-support.atlassian.net/rest/api/3/status/10020",
+                                  "description":  "",
+                                  "iconUrl":  "https://oppa-support.atlassian.net/",
+                                  "name":  "Backlog",
+                                  "id":  "10020",
+                                  "statusCategory":  {
+                                                         "self":  "https://oppa-support.atlassian.net/rest/api/3/statuscategory/2",
+                                                         "id":  2,
+                                                         "key":  "new",
+                                                         "colorName":  "blue-gray",
+                                                         "name":  "To Do"
+                                                     }
+                              }
+               }
+}
