@@ -1,0 +1,33 @@
+{
+  "issue_key": "PDT-2915",
+  "summary": "Invoice correction - PODs without correction are included in the credit and debit note",
+  "domain": "Billing / invoice correction / billing-by-profile",
+  "root_cause_type": "DELETED billing_by_profile used in correction staging with zero volume delta",
+  "evidence_strength": "confirmed_prod_db_and_code",
+  "pattern_reliability": "high",
+  "verified_source": {
+    "type": "prod_db_rule32_validation",
+    "billing_run_id": 3400,
+    "base_invoice_id": 121765,
+    "sql_checklist": "config/bug-validation/queries/PDT-2915-invoice-correction-deleted-bbp.sql",
+    "limitations": "Stored procedure run_standard_billing_main_data_preparation_correction not in Phoenix repo"
+  },
+  "trigger_signature": [
+    "INVOICE_CORRECTION with volumeChange=true and priceChange=false",
+    "pod.billing_by_profile status DELETED and invoiced=true still linked in correction_billing_data_ids as original=false",
+    "ACTIVE and DELETED profile SUM(billing_data_by_profile.value) identical per POD (zero_delta)",
+    "correction_pods full_reversal_needed=true for affected PODs"
+  ],
+  "evidence_keywords": [
+    "billing_by_profile",
+    "DELETED",
+    "invoiced",
+    "INVOICE_CORRECTION",
+    "volume_change",
+    "correction_billing_data_ids",
+    "full_reversal_needed",
+    "zero delta"
+  ],
+  "repro_heuristic": "Prod: run SQL checklist on correction billing_run_id; Dev TO-BE: EnergoTS PDT-2915-invoice-correction-deleted-bbp.spec.ts",
+  "validator_action": "Run queries/PDT-2915-invoice-correction-deleted-bbp.sql; expect deleted BBP on correction side + zero_delta; verdict VALID until fix excludes DELETED or sets ignore when delta=0"
+}
