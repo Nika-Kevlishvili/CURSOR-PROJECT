@@ -216,6 +216,38 @@
       ],
       "repro_heuristic": "Generate SLP profiles in a flow where invoice creation can fail or be skipped, then verify whether profiles with missing invoice linkage are marked or cleaned correctly.",
       "validator_action": "Use only as a medium-confidence hypothesis; aligned Phoenix code and OpenAPI evidence must confirm the exact invoice-generation failure path."
+    },
+    {
+      "issue_key": "PDT-2915",
+      "summary": "Invoice correction - PODs without correction are included in the credit and debit note",
+      "jira_status": "open",
+      "jira_resolution": null,
+      "domain": "Billing / invoice correction / billing-by-profile",
+      "root_cause_type": "DELETED billing_by_profile in correction staging with zero volume delta",
+      "evidence_strength": "confirmed_prod_db_rule32",
+      "pattern_reliability": "high",
+      "verified_source": {
+        "type": "prod_db_and_phoenix_code",
+        "comment_summary": "Prod run 3400: DELETED BBP mapped original=false in correction_billing_data_ids; ACTIVE vs DELETED SUM(value) identical; volume_change only; full_reversal_needed on correction_pods.",
+        "limitations": "SQL checklist: config/bug-validation/queries/PDT-2915-invoice-correction-deleted-bbp.sql; TO-BE Playwright: PDT-2915-invoice-correction-deleted-bbp.spec.ts"
+      },
+      "trigger_signature": [
+        "INVOICE_CORRECTION volumeChange=true priceChange=false",
+        "billing_by_profile DELETED and invoiced=true on correction side",
+        "Zero volume delta between ACTIVE and DELETED profile per POD",
+        "correction_pods full_reversal_needed=true"
+      ],
+      "evidence_keywords": [
+        "billing_by_profile",
+        "DELETED",
+        "invoiced",
+        "INVOICE_CORRECTION",
+        "correction_billing_data_ids",
+        "full_reversal_needed",
+        "zero delta"
+      ],
+      "repro_heuristic": "Run PDT-2915 SQL checklist on correction billing_run_id; or Dev Playwright TO-BE spec after backend fix.",
+      "validator_action": "High-confidence VALID pattern when queries 4+5 return DELETED original=false rows and zero_delta=true; use with Confluence correction-flow page 256114692."
     }
   ],
   "validator_usage_notes": {

@@ -22,3 +22,4 @@ TC numbering: `TC-BE-1`, `TC-BE-2`, ...
 | `PDT_2872_minimal_interim_payment.md` | Minimal interim payment — 5 EUR incl. VAT gate; self-contained preconditions per TC; no skip/log observability TCs | PDT-2872 | TC-BE-1 through TC-BE-14 |
 | `Product_contract_creation.md` | Product Contract creation — happy path, POD linkage, validation errors (missing customer, grid operator mismatch, inactive product) | N/A (General) | TC-BE-1 through TC-BE-5 |
 | `Single_email_multiple_recipients_PDT_2881.md` | Email Communication — one physical outbound email for multiple recipients (shared `task_id`, semicolon addresses, invoice aggregation, resend) | PDT-2881 | TC-BE-1 through TC-BE-10 |
+| `Skip_Risklist_Product_Contract_Mass_Import_PDT_2931.md` | Skip RiskList permission on product contract mass import — create, edit same version (`E`), edit new version (`C`); all rows succeed with skip; negative control without permission | PDT-2931 | TC-BE-1 through TC-BE-7 |

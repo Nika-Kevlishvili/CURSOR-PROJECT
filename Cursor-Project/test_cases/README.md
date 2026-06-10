@@ -36,6 +36,8 @@ Every `.md` file MUST follow **`Cursor-Project/config/template/Test_case_templat
 | Minimal interim payment — create interim invoice only when total incl. VAT ≥ 5 EUR (standard + manual paths; backend only) | `Backend/PDT_2872_minimal_interim_payment.md` | — | PDT-2872 |
 | Product Contract creation — happy path, POD linkage, validation scenarios | `Backend/Product_contract_creation.md` | — | N/A (General) |
 | Single email to multiple recipients — Email Communication (one mass-comm send, shared `task_id`) | `Backend/Single_email_multiple_recipients_PDT_2881.md` | — | PDT-2881 |
+| Payment Partner export TXT — external documents, LPF logical date, rescheduling layout (423-char fixed width) | `Backend/Payment_Partner_Export_PDT_2187.md` | — | PDT-2187 |
+| Skip RiskList permission — product contract mass import (create, edit same version, edit new version; all succeed with permission) | `Backend/Skip_Risklist_Product_Contract_Mass_Import_PDT_2931.md` | — | PDT-2931 |
 
 ## Layout reference
 

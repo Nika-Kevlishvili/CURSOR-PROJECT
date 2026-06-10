@@ -1,5 +1,21 @@
 # Slack helpers (`config/slack`)
 
+## `send-bug-validation-to-slack.ps1` (Rule 32 Path 1)
+
+Posts a bug-validation markdown report to **`#bug-validation`** (`C0AUEEDVCEL`). Uses token from **`EnergoTS/.env`**.
+
+**Preferred in Cursor:** Slack MCP `slack_send_message` (user OAuth — works on private `#bug-validation` without bot invite).
+
+**Bot REST fallback:** requires bot membership on private `#bug-validation`; otherwise falls back to **`#ai-report`** (`C0AK96S1D7X`).
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "Cursor-Project/config/slack/send-bug-validation-to-slack.ps1" `
+  -ReportMarkdownPath "Cursor-Project/reports/Chat reports/2026/june/01/BugValidation_PDT-2915.md" `
+  -IssueKey "PDT-2915"
+```
+
+See also: `Cursor-Project/config/bug-validation/README.md`
+
 ## `upload-file-to-slack.ps1`
 
 Uploads a **local file** (e.g. the detailed HandsOff `{JIRA_KEY}.md`) to a Slack **channel** or **DM** using Slack Web API external upload (`files.getUploadURLExternal` → binary POST → `files.completeUploadExternal`).
