@@ -83,9 +83,9 @@ Optionally save to `Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope_slug>.js
 - Optional: save markdown under `reports/` if the user asks; not required after every run (Rule 0.6; no Python ReportingService).
 - End with: "Agents involved: CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
 
-## Confidence Score (Rule CONF.1) [MANDATORY]
+## Confidence Score (Rule CONF.1 — Three-Zone) [MANDATORY]
 
-The final output MUST include a **Confidence Score** (0–100%). Format: `**Confidence: XX%** Reason: <explanation>`. Scoring: 90–100% = verified data + clear scope; 70–89% = reasonable inference with assumptions (list them); 50–69% = significant info gaps; <50% = best-effort analysis, flag prominently. Be honest — do not inflate.
+The final output MUST include an **evidence-based Confidence Score**: `**Confidence: XX% (ZONE)**` with evidence factors. Compute from evidence: base 40, add/subtract per source gathered or missing. Zones: **GO** (≥ 85%), **CAUTION** (55–84% + assumptions + verify list), **STOP** (< 55% — do not deliver final analysis, ask user). See `.cursor/rules/scoring/confidence_scoring_matrix.mdc`. Be honest — do not inflate.
 
 ## Command reference
 

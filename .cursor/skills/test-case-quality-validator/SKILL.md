@@ -62,4 +62,6 @@ Do not modify TC files.
 
 ## Footer
 
-**Confidence** (CONF.1) + `Agents involved: test-case-quality-validator`
+**Confidence** (CONF.1 — Three-Zone): Include `**Confidence: XX% (ZONE)**` with evidence factors. Use **GO** (≥ 85%), **CAUTION** (55–84% + assumptions list), or **STOP** (< 55% — escalate to user). See `.cursor/rules/scoring/confidence_scoring_matrix.mdc`.
+
+`Agents involved: test-case-quality-validator`

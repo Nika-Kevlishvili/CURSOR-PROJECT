@@ -202,9 +202,27 @@ Use **Confluence classification + code analysis + database evidence**, with **Sw
 **PROCESS BLOCKED** = operational status (env/Confluence unavailable), not a business verdict.
 DB evidence is **supporting** — it strengthens conclusions but does not override code + Confluence.
 
-## Confidence Score (Rule CONF.1) [MANDATORY]
+## Confidence Score (Rule CONF.1 — Three-Zone) [MANDATORY]
 
-The final output MUST include a **Confidence Score** (0–100%). Format: `**Confidence: XX%** Reason: <explanation>`. Scoring: 90–100% = Confluence exact match + code confirms + DB supports (+ Swagger aligned when API-scoped); 70–89% = contextual match or partial code/Swagger/DB evidence; 50–69% = significant evidence gaps; <50% = validation incomplete, flag prominently. DB evidence that reveals root cause or confirms data state can raise confidence by 5–15%. Be honest — do not inflate.
+The final output MUST include an **evidence-based Confidence Score** computed from the **Bug Validation** factor table in **`.cursor/rules/scoring/confidence_scoring_matrix.mdc`** (base 40, add/subtract per evidence factor).
+
+**Three-Zone routing:**
+
+| Zone | Range | Behavior |
+|------|-------|----------|
+| **GO** | ≥ 85% | Deliver verdict. |
+| **CAUTION** | 55–84% | Deliver verdict + `Assumptions:` list + `Recommend user verify:` items. |
+| **STOP** | < 55% | Do NOT deliver a business verdict. State missing evidence. AskQuestion to resolve gaps. |
+
+**Format:**
+
+```
+**Confidence: XX% (ZONE)**
+Evidence: [+factor1, +factor2, -factor3]
+Reason: <1-2 sentence summary>
+```
+
+Be honest — do not inflate. STOP zone means pause and gather evidence, not failure.
 
 ## Routing reference
 

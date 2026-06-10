@@ -58,7 +58,8 @@ If Jira Environment is empty and user did not name env in chat → **AskQuestion
 ```markdown
 **Resolved environment:** <env>
 **Evidence:** <short list in priority order>
-**Confidence: XX%**
+**Confidence: XX% (ZONE)**
+Evidence: [+factors that contributed]
 Reason: <1-2 sentences>
 ```
 
@@ -67,9 +68,12 @@ Reason: <1-2 sentences>
 ```markdown
 **Resolved environment:** <selected-env>
 **Evidence:** user-selected via environment questionnaire
-**Confidence: 100%**
+**Confidence: 100% (GO)**
+Evidence: [+user explicit selection]
 Reason: Environment was explicitly selected by the user.
 ```
+
+**Three-Zone applies:** If resolution confidence < 90% or conflicting evidence → AskQuestion (same as before). If resolved < 55% (STOP zone) → do NOT emit `Resolved environment` — ask user.
 
 End with: `Agents involved: EnvironmentResolverAgent`
 

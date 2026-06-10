@@ -107,4 +107,8 @@ await test.step('Attach portal links for manual verification', async () => {
 ## Completion
 
 - Every new `test()` ends with `attachManualVerificationLinks` step
-- Summary + **Confidence** (CONF.1) + `Agents involved: EnergoTSTestAgent`
+- Summary + `Agents involved: EnergoTSTestAgent`
+
+## Confidence Score (Rule CONF.1 — Three-Zone) [MANDATORY]
+
+Include `**Confidence: XX% (ZONE)**` with evidence factors. Zones: **GO** (≥ 85%), **CAUTION** (55–84% + assumptions list + verify items with method), **STOP** (< 55% — do not deliver spec, ask user). See `.cursor/rules/scoring/confidence_scoring_matrix.mdc`.

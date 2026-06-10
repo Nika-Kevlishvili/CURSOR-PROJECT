@@ -6,6 +6,7 @@ Single map from **rule / topic** to the **primary procedural** file(s). When `wo
 |--------------|-------------------------|----------------------------|
 | 0.x core | Disclosure, PhoenixExpert, reports, tiers | `.cursor/rules/main/core_rules.mdc` |
 | CONF.0 | Clarify before substantive work | `.cursor/rules/main/clarification_and_confidence.mdc` |
+| CONF.1 | Evidence-based confidence scoring (Three-Zone: GO/CAUTION/STOP) | `.cursor/rules/main/clarification_and_confidence.mdc`, **`.cursor/rules/scoring/confidence_scoring_matrix.mdc`** |
 | 1 / safety | GitLab & Confluence read-only; tiers | `.cursor/rules/safety/safety_rules.mdc` |
 | 8 / agents | Consultation patterns | `.cursor/rules/agents/agent_rules.mdc` |
 | 32 Bug validation | BugFinder: env alignment, diagrams, Confluence, mandatory Swagger refresh + OpenAPI, code, 5 verdicts, Slack — no TC/Playwright pipeline | `.cursor/skills/phoenix-bug-validation/SKILL.md`, `.cursor/agents/bug-validator.md` |

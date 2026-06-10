@@ -9,7 +9,7 @@ description: "Workflow obligations (Rules 32–44): summary + exit criteria. Ste
 
 3. "Agents involved" footer for workflow/agent responses — Rule 0.1 in **`core_rules.mdc`**. Violation is a **MUST** when applicable.
 
-4. Confidence block for workflow deliverables — CONF.1 in **`clarification_and_confidence.mdc`**. Format: `**Confidence: XX%**` + Reason. Violation is a **MUST** for applicable workflows.
+4. Confidence block for workflow deliverables — CONF.1 (Three-Zone) in **`clarification_and_confidence.mdc`**. Format: `**Confidence: XX% (ZONE)**` + Evidence factors + Reason. Zones: **GO** (≥ 85%), **CAUTION** (55–84% + assumptions + verify list), **STOP** (< 55% — do not deliver verdict, ask user). Scoring matrix: **`.cursor/rules/scoring/confidence_scoring_matrix.mdc`**. Violation is a **MUST** for applicable workflows.
 
 ---
 

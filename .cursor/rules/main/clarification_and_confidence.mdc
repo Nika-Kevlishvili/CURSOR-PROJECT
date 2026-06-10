@@ -7,7 +7,7 @@ alwaysApply: true
 
 ## Rule CONF.0: Confidence gate before substantive work
 
-**Intent:** If the model is **not confident** it understood the user or has every **parameter needed to act safely and correctly**, it MUST ask **targeted clarifying questions** before running tools that change state, run environment-specific commands, or connect to external systems. **Do not pick a silent default** (e.g. wrong DB environment) to “keep moving.”
+**Intent:** If the model is **not confident** it understood the user or has every **parameter needed to act safely and correctly**, it MUST ask **targeted clarifying questions** before running tools that change state, run environment-specific commands, or connect to external systems. **Do not pick a silent default** (e.g. wrong DB environment) to "keep moving."
 
 **Violation:** Proceeding with substantive tools or edits while **scope, environment, target, or success criteria** are missing or contradictory without asking first — treated as a **CRITICAL** reliability/safety failure for this workspace.
 
@@ -20,14 +20,14 @@ Before substantive tool use or file edits, verify you know:
 1. **What** — exact deliverable (fix, doc, test, query, refactor scope).
 2. **Where** — repo, path, subsystem, or workflow (when the prompt could mean more than one).
 3. **Which environment / branch / target** — when the answer changes commands or MCP servers (see `database_workflow.mdc` for Dev / Dev2 / Test / PreProd / Prod; `energots_branch_lock.mdc` for EnergoTS branch expectations).
-4. **How success is judged** — when “done” is unclear (e.g. “fix the bug” with no repro, ticket, or log).
+4. **How success is judged** — when "done" is unclear (e.g. "fix the bug" with no repro, ticket, or log).
 
 **Ask if any of the above is missing, vague, or conflicting** — including:
 
 - **Test case generation (Rule 35):** environment (**TC-ENV-ASK.0**) **before** Frontend scope (**TC-FRONTEND-ASK.0**) and **before** Phoenix alignment or Phoenix code reads. Asking Frontend alone does **not** satisfy the environment gate.
 - Database or production data work **without** the user naming the environment (never infer Prod vs Test from habit, ticket prefix, or prior session). **Rule DB.0a** — agents must ask before PostgreSQL MCP; do not bypass by calling MCP first.
-- “Run tests” / “run the query” **without** which test, which DB, or which app URL/environment.
-- “Fix it” / “update tests” **without** ticket key, file path, failure output, or acceptance hint.
+- "Run tests" / "run the query" **without** which test, which DB, or which app URL/environment.
+- "Fix it" / "update tests" **without** ticket key, file path, failure output, or acceptance hint.
 - **Conflicting** instructions — ask which takes priority.
 
 ---
@@ -53,9 +53,11 @@ Before substantive tool use or file edits, verify you know:
 
 ---
 
-## Rule CONF.1: Confidence score [REQUIRED for workflows]
+## Rule CONF.1: Evidence-based confidence scoring [REQUIRED for workflows]
 
-**Intent:** Include a **Confidence Score** (0–100%) so the user can gauge reliability.
+**Intent:** Include an **evidence-based Confidence Score** (0–100%) with **Three-Zone routing** so the user can gauge reliability **and** the agent takes concrete action based on the score.
+
+**Canonical scoring matrix:** **`.cursor/rules/scoring/confidence_scoring_matrix.mdc`** — workflow-specific evidence factors, output format, multi-agent aggregation, Prod safety gate, calibration logging, and recalibration instructions. Auto-loaded when SKILL/agent/workflow files are active.
 
 ### When to show
 
@@ -70,36 +72,73 @@ Show confidence in responses that deliver **substantive work products**:
 
 **May omit** for: trivial Q&A, git/status, file organization, chit-chat, progress acknowledgements.
 
+### Three-Zone routing (MANDATORY)
+
+| Zone | Range | Behavior |
+|------|-------|----------|
+| **GO** | **≥ 85%** | Deliver result. Confidence block in footer. |
+| **CAUTION** | **55–84%** | Deliver result **+ explicit assumptions list** + `Recommend user verify: [items]`. |
+| **STOP** | **< 55%** | Do **NOT** deliver a business verdict or final deliverable. State missing evidence. Use **AskQuestion** to resolve gaps — same pause as CONF.0. |
+
+**STOP is not failure** — it means the agent must gather more evidence or ask the user before the result is trustworthy enough to act on. Violation of STOP zone (delivering a verdict at < 55%) is a **MUST**.
+
+### Evidence-based scoring (how to compute)
+
+Scores are computed from **evidence factors**, not subjective self-assessment. Each workflow starts at a **base of 40** (neutral). Evidence gathered during the workflow **adds** points; missing or failed evidence **subtracts** points. See **`.cursor/rules/scoring/confidence_scoring_matrix.mdc`** for per-workflow factor tables.
+
+**Quick reference (factor ranges):**
+
+| Evidence type | Typical bonus | Typical penalty (if missing/failed) |
+|---------------|---------------|-------------------------------------|
+| Phoenix code read + cited | +15 to +25 | -15 if not found |
+| Confluence evidence found | +10 to +15 | -10 if not found |
+| Swagger/OpenAPI aligned | +10 | -10 if refresh failed |
+| DB evidence (same env) | +10 | -5 if query failed |
+| Environment aligned | +5 | -5 if partial |
+| User requirements clear | +5 to +10 | — |
+| Per assumption made | — | -5 each |
+| Single evidence source only | — | -15 |
+| Conflicting evidence | — | -10 |
+
 ### Format
 
-At the end of the result, include a clearly visible block:
+```
+**Confidence: XX% (ZONE)**
+Evidence: [+factor1, +factor2, -factor3]
+Reason: <1-2 sentence summary>
+```
+
+**CAUTION zone** additionally requires:
 
 ```
-**Confidence: XX%**
-Reason: <1-2 sentence explanation of why this score>
+Assumptions: [numbered list]
+Recommend user verify: [specific items]
 ```
 
-Place this block near the end of each response, before the mandatory `Agents involved: ...` line.
+**STOP zone** additionally requires:
 
-### Scoring guidelines
+```
+BLOCKED: Cannot deliver reliable result. Missing: [evidence list]
+Action needed: [AskQuestion or specific retry steps]
+```
 
-| Range | Meaning |
-|-------|---------|
-| **90–100%** | High confidence — based on verified data, clear requirements, strong evidence (e.g. Confluence docs, DB results, explicit user specs) |
-| **70–89%** | Moderate confidence — reasonable inference but some assumptions were made (list them) |
-| **50–69%** | Low confidence — significant gaps in information; result is a best-effort draft that needs user review |
-| **Below 50%** | Very low — flag prominently; recommend the user verify before acting on the result |
+Place the confidence block near the end of each response, before the mandatory `Agents involved: ...` line.
 
 ### Rules
 
-1. **Be honest** — do not inflate the score to look competent. A lower honest score is more valuable than a high fake one.
-2. **Explain the score** — always state what factors raised or lowered confidence (e.g. "requirements were clear" vs "no Confluence page found, inferred from ticket title only").
-3. **Per-item scores** — when producing a list of items (e.g. multiple test cases), you MAY give an overall score plus per-item scores if confidence varies significantly across items.
-4. **Subagents** — subagents MUST also include confidence scores in their results returned to the parent agent.
+1. **Evidence-driven** — compute the score from the factor table in the scoring matrix. Do not assign a number from intuition alone. If a factor applies, count it.
+2. **Be honest** — do not inflate the score to look competent. A lower honest score is more valuable than a high fake one.
+3. **Explain with factors** — always list which evidence factors raised or lowered the score (e.g. `[+code cited, +Confluence exact, -Swagger cached, -1 assumption]`).
+4. **Per-item scores (SHOULD for ≥ 5 items)** — when producing ≥ 5 items (e.g. test cases), include per-item scores alongside the overall score. See scoring matrix for table format.
+5. **Subagents** — subagents MUST include confidence scores in their results returned to the parent agent. Parent MUST show sub-scores + aggregation method + final score for pipeline workflows.
+6. **STOP zone enforcement** — if the computed score falls below 55%, the agent MUST NOT deliver a business verdict, final test cases, or actionable recommendation. It MUST pause and gather evidence or ask the user. Violation is a **MUST**.
+7. **Multi-agent aggregation** — pipeline workflows (HandsOff) use **minimum-of-critical**; parallel results use **weighted average**. See scoring matrix for details.
 
 ---
 
 ## Relation to other rules
 
-- **Autonomous operation** (`agent_rules.mdc` Rule 12): applies when the task is **already unambiguous**. Ambiguity → **clarify first**; that is not optional “confirmation spam,” it is **scope resolution**.
+- **Autonomous operation** (`agent_rules.mdc` Rule 12): applies when the task is **already unambiguous**. Ambiguity → **clarify first**; that is not optional "confirmation spam," it is **scope resolution**.
 - Environment selection for DB → **always** follow `database_workflow.mdc` (exact environment the user names; if none named → **ask**).
+- **STOP zone** aligns with **CONF.0** pause behavior — both require the agent to stop and ask when confidence/clarity is insufficient.
+- **Three-Zone routing** applies to all workflows listed in "When to show" above. The scoring matrix (`.cursor/rules/scoring/confidence_scoring_matrix.mdc`) is the canonical factor reference.

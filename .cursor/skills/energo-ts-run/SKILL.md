@@ -55,9 +55,9 @@ From `EnergoTS/`: `npx playwright test --project=setup` (requires `.env` with PO
 
 `.cursor/agents/energo-ts-run.md` (I/O contract only).
 
-## Confidence Score (Rule CONF.1) [MANDATORY]
+## Confidence Score (Rule CONF.1 — Three-Zone) [MANDATORY]
 
-`**Confidence: XX%** Reason: …` — 90–100% = clean run; 70–89% = flakiness/env issues; 50–69% = partial; <50% = incomplete execution.
+`**Confidence: XX% (ZONE)**` with evidence factors. Zones: **GO** (≥ 85% — clean run), **CAUTION** (55–84% — flakiness/env issues + assumptions list), **STOP** (< 55% — incomplete execution, ask user). See `.cursor/rules/scoring/confidence_scoring_matrix.mdc`.
 
 ## Footer
 

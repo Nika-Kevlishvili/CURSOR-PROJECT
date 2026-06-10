@@ -63,9 +63,9 @@ Example:
 - **Sub-agent:** `.cursor/agents/jira-bug.md`
 - **Rule:** `.cursor/rules/integrations/jira_bug_agent.mdc` (JIRA.0)
 
-## Confidence Score (Rule CONF.1) [MANDATORY]
+## Confidence Score (Rule CONF.1 — Three-Zone) [MANDATORY]
 
-The final output MUST include a **Confidence Score** (0–100%). Format: `**Confidence: XX%** Reason: <explanation>`. Scoring: 90–100% = all fields filled from verified data; 70–89% = most fields filled with some assumptions; 50–69% = significant gaps in bug details; <50% = template incomplete, recommend user fills missing parts. Be honest — do not inflate.
+The final output MUST include an **evidence-based Confidence Score**: `**Confidence: XX% (ZONE)**` with evidence factors. Zones: **GO** (≥ 85% — all fields filled from verified data), **CAUTION** (55–84% — most fields filled with assumptions listed + verify list), **STOP** (< 55% — template incomplete, ask user for missing parts before delivering). See `.cursor/rules/scoring/confidence_scoring_matrix.mdc`. Be honest — do not inflate.
 
 ## Phoenix delivery prohibition
 

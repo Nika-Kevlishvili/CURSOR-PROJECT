@@ -22,6 +22,7 @@ This file is the **main index** for workspace rules under **`.cursor/rules/`**. 
 | **workflows** | `.cursor/rules/workflows/` | `workflow_rules.mdc`, `handsoff_playwright_report.mdc`, `playwright_detailed_reporting.mdc` |
 | **workspace** | `.cursor/rules/workspace/` | `file_organization_rules.mdc`, `test_cases_structure.mdc` |
 | **integrations** | `.cursor/rules/integrations/` | `database_workflow.mdc`, `energots_branch_lock.mdc`, `production_data_reader.mdc`, `jira_bug_agent.mdc`, `jira_rest_fallback.mdc`, `confluence_rest_fallback.mdc`, `phoenix_branch_switching.mdc` |
+| **scoring** | `.cursor/rules/scoring/` | `confidence_scoring_matrix.mdc` (CONF.1 Three-Zone evidence factors, Prod safety gate, calibration) |
 
 **Additional (optional):** `Cursor-Project/config/cursorrules/autonomous_rules.md` — autonomous-operation notes if present.
 

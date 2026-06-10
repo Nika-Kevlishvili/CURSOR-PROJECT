@@ -32,7 +32,7 @@ Every Playwright test MUST create ALL entities it needs. Tests that query existi
 When many tests (e.g., 50 out of 70) share the same precondition data, create **helper functions** at the top of the spec file:
 
 ```typescript
-import { test, expect } from '../../fixtures/baseFixture';
+import { test, expect } from './cursor-test.fixtures';
 import { attachManualVerificationLinks } from './shared/manual-verification-links.fixtures';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -190,7 +190,7 @@ test('[JIRA-KEY]: TC-BE-3 – Inactive product is excluded', async ({
 ## Complete Example Structure
 
 ```typescript
-import { test, expect } from '../../fixtures/baseFixture';
+import { test, expect } from './cursor-test.fixtures';
 import { attachManualVerificationLinks } from './shared/manual-verification-links.fixtures';
 
 // ═══════════════════════════════════════════════════════════════════════════

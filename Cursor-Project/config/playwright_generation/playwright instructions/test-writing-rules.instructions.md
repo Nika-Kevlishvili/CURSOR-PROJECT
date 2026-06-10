@@ -33,11 +33,11 @@ test.describe('[REG-55]: Billing', { tag: '@billing' }, () => {
 ## Imports
 
 ```typescript
-import { test, expect } from '../../fixtures/baseFixture';
+import { test, expect } from './cursor-test.fixtures';
 import { attachManualVerificationLinks } from './shared/manual-verification-links.fixtures';
 ```
 
-Do not import from `@playwright/test` directly — always use the project's `baseFixture`.
+Do not import from `@playwright/test` directly. For new specs under `tests/cursor/`, always import from `./cursor-test.fixtures` (provides automatic API response logging after each test — console output + `[API responses]` Playwright attachment). This replaces the need for a local `attachReport` helper or manual `test.afterEach` for API response logging. Existing specs that already use `../../fixtures/baseFixture` should not be migrated.
 
 ## Data Handling
 
@@ -63,7 +63,7 @@ Do not import from `@playwright/test` directly — always use the project's `bas
 #### Step 1: Define Helper Functions for Shared Preconditions
 
 ```typescript
-import { test, expect } from '../../fixtures/baseFixture';
+import { test, expect } from './cursor-test.fixtures';
 import { attachManualVerificationLinks } from './shared/manual-verification-links.fixtures';
 
 // ═══════════════════════════════════════════════════════════════════════════

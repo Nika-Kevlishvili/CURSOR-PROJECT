@@ -44,6 +44,7 @@ npx playwright test --project=setup --workers=1  # Setup only
 ## File Structure Reference
 
 - `fixtures/baseFixture.ts` — Core fixture definitions, custom matchers, `baseFixture` type
+- `tests/cursor/cursor-test.fixtures.ts` — Re-exports `baseFixture` + global `afterEach` for API response logging. **New specs under `tests/cursor/` should import from this file.**
 - `fixtures/constants/endpoints.ts` — All API endpoint constants (`Endpoints` object)
 - `fixtures/types/responses.ts` — `ResponsesContainer` interface and factory
 - `fixtures/matchers/checkResponse.ts` — Custom `CheckResponse` expect matcher

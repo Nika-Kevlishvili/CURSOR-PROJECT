@@ -15,10 +15,10 @@ description: "Write, modify, or debug Playwright API test cases for Energo-Pro. 
 
 ## Fixture Usage Pattern
 
-Always import from `baseFixture.ts` and destructure only the fixtures you need:
+For new specs under `tests/cursor/`, import from `cursor-test.fixtures` (re-exports `baseFixture` + automatic API response logging via global `afterEach` — no local `attachReport` or `test.afterEach` for API responses needed). Destructure only the fixtures you need:
 
 ```typescript
-import { test, expect } from '../../fixtures/baseFixture';
+import { test, expect } from './cursor-test.fixtures';
 import {
   attachManualVerificationLinks,
   buildProcessPreviewLink,

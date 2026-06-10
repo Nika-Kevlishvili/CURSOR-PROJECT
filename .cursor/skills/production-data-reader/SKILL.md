@@ -45,9 +45,9 @@ Provide for the entity type in scope:
 - May consult **PhoenixExpert** for business logic.
 - **Rule 0.3 / 0.6:** no Python IntegrationService or ReportingService — MCP + chat; disk only on request.
 
-## Confidence Score (Rule CONF.1) [MANDATORY]
+## Confidence Score (Rule CONF.1 — Three-Zone) [MANDATORY]
 
-Final output: `**Confidence: XX%** Reason: …` — 90–100% = clear query results; 70–89% = some interpretation; 50–69% = partial data; <50% = incomplete, verify before acting.
+Final output: `**Confidence: XX% (ZONE)**` with evidence factors. Compute from evidence: base 40, +points for each evidence source gathered, -points for gaps. Zones: **GO** (≥ 85%), **CAUTION** (55–84% + assumptions + verify list), **STOP** (< 55% — do not deliver conclusions, ask user). See `.cursor/rules/scoring/confidence_scoring_matrix.mdc`.
 
 ## Footer
 

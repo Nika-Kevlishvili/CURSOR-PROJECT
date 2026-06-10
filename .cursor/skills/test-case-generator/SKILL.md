@@ -203,9 +203,29 @@ Before writing the final `.md` files, score each TC against the quality rubric i
 - Optional markdown under `reports/` only if the user requests a saved run log (Rule 0.6 default; no Python ReportingService).
 - End with: "Agents involved: TestCaseGeneratorAgent, CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
 
-## Confidence Score (Rule CONF.1) [MANDATORY]
+## Confidence Score (Rule CONF.1 — Three-Zone) [MANDATORY]
 
-The final output MUST include a **Confidence Score** (0–100%). Format: `**Confidence: XX%** Reason: <explanation>`. Scoring: 90–100% = verified data + clear requirements; 70–89% = reasonable inference with assumptions (list them); 50–69% = significant info gaps; <50% = best-effort draft, flag prominently. When multiple test cases have varying confidence, include per-item scores alongside the overall score. Be honest — do not inflate.
+The final output MUST include an **evidence-based Confidence Score** computed from the **Test Case Generation** factor table in **`.cursor/rules/scoring/confidence_scoring_matrix.mdc`** (base 40, add/subtract per evidence factor).
+
+**Three-Zone routing:**
+
+| Zone | Range | Behavior |
+|------|-------|----------|
+| **GO** | ≥ 85% | Deliver test cases. |
+| **CAUTION** | 55–84% | Deliver test cases + `Assumptions:` list + `Recommend user verify:` items. |
+| **STOP** | < 55% | Do NOT deliver final test cases. State missing evidence. AskQuestion to resolve gaps. |
+
+**Format:**
+
+```
+**Confidence: XX% (ZONE)**
+Evidence: [+factor1, +factor2, -factor3]
+Reason: <1-2 sentence summary>
+```
+
+**Per-item scores (SHOULD for ≥ 5 TCs):** Include a per-TC score table when producing ≥ 5 test cases (see scoring matrix for format).
+
+Be honest — do not inflate. STOP zone means pause and gather evidence, not failure.
 
 ## References
 
