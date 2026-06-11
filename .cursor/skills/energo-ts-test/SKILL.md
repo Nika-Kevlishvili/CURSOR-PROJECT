@@ -62,42 +62,44 @@ Format: `test('[JIRA-KEY]: {Exact Jira Task Title}', async ({...}) => {`
 
 ## Framework quick reference
 
-- Playwright API, TypeScript, `baseFixture` (Request, Endpoints, GeneratePayload, Responses)
-- **New specs** under `tests/cursor/`: import from `./cursor-test.fixtures` (re-exports `baseFixture` + registers global `afterEach` that logs API entity links to console and attaches `[API responses]` JSON to the Playwright report automatically — no local `attachReport` helper or manual `test.afterEach` for API responses needed). Existing specs stay on `../../fixtures/baseFixture` — do not migrate them.
+- Playwright API, TypeScript; fixtures: Request, Endpoints, GeneratePayload, Responses
+- **New** `tests/cursor/*.spec.ts`: `./cursor-test.fixtures` — see test-writing-rules § Imports
+- **Legacy** specs: `../../fixtures/baseFixture`; do not migrate unless user asks
 - Assertions: prefer `await expect(response).CheckResponse()` for POST/create chains
 - Branch: **`cursor`** only (Rule ENERGOTS.0)
 
 ## Manual verification links [CRITICAL — new specs]
 
-Every **new** `test()` in `tests/cursor/` must end with:
+Every **new** `test()` ends with `finalizeTestRunSummary` (or `attachManualVerificationLinks` with `testRunSummary`):
+
+- **`TestRunSummary` fixture** (from `./cursor-test.fixtures`) — register only **relevant** payloads + record expected/actual outcomes during the test.
+- **`relevantEntityKeys`** — portal links section lists only buckets that matter for this test (not every `Responses` entry).
+- Unified console + Playwright attach: test title, payloads, expected vs actual, filtered portal links.
 
 ```typescript
-import {
-  attachManualVerificationLinks,
-  buildProcessPreviewLink,
-  buildProductContractTabLinks,
-} from './shared/manual-verification-links.fixtures';
+import { test, expect } from './cursor-test.fixtures';
+import { finalizeTestRunSummary, buildProductContractTabLinks } from './shared/manual-verification-links.fixtures';
 
-await test.step('Attach portal links for manual verification', async () => {
-  const extra: Record<string, string[]> = {};
-  if (processId) {
-    const u = buildProcessPreviewLink(processId);
-    if (u) extra.process = [u];
-  }
-  Object.assign(extra, buildProductContractTabLinks(contractId));
-
-  attachManualVerificationLinks(Responses, {
-    jiraKey: '{JIRA_KEY}',
-    snapshot: { processId, contractId, /* labels from TC */ },
-    extraLinks: Object.keys(extra).length ? extra : undefined,
+test('...', async ({ Responses, TestRunSummary, Request, ... }) => {
+  TestRunSummary.registerPayload('product', productPayload);
+  TestRunSummary.recordCheck({
+    check: 'Short scenario title',
+    expectedResult: 'What should happen in this verification step.',
+    actualResult: 'As expected — what was observed. (Or: Not as expected — …)',
+    passed: true,
+  });
+  await test.step('Attach test run summary', async () => {
+    finalizeTestRunSummary(TestRunSummary, Responses, {
+      jiraKey: '{JIRA_KEY}',
+      relevantEntityKeys: ['customer', 'product', 'productContract'],
+      extraLinks: buildProductContractTabLinks(contractId),
+      snapshot: { contractId },
+    });
   });
 });
 ```
 
-- **Helper:** `EnergoTS/tests/cursor/shared/manual-verification-links.fixtures.ts`
-- **`snapshot`:** processId, contract numbers, notes — what the tester verifies in UI
-- **`buildProcessPreviewLink` / `buildProductContractTabLinks`:** mass import + contract multi-tab previews
-- Do **not** retrofit existing specs unless the user explicitly asks; mandatory for **new** authoring only
+Legacy snippet (`attachManualVerificationLinks` without `testRunSummary`) — do not use for new specs.
 
 ## Permissions
 
@@ -106,7 +108,8 @@ await test.step('Attach portal links for manual verification', async () => {
 
 ## Completion
 
-- Every new `test()` ends with `attachManualVerificationLinks` step
+- New cursor spec imports `./cursor-test.fixtures` (includes `TestRunSummary` fixture)
+- Every new `test()` ends with `finalizeTestRunSummary` (payloads + expected/actual + relevant portal links)
 - Summary + `Agents involved: EnergoTSTestAgent`
 
 ## Confidence Score (Rule CONF.1 — Three-Zone) [MANDATORY]

@@ -28,7 +28,7 @@ description: STRICT Playwright spec validator (0–100, pass ≥80). Compares sp
 | 2. Coverage completeness | 15 | 15 = 1:1 TC:test(); −5 per missing |
 | 3. TC-to-test alignment | 15 | Steps + expected match TC |
 | 4. Assertion specificity | 15 | Status + body fields; 0 = expect(true) only |
-| 5. Framework compliance | 10 | EnergoTS fixtures; manual verification attach per test; 0 = ad-hoc getToken |
+| 5. Framework compliance | 10 | cursor-test.fixtures + TestRunSummary + finalize; 0 = ad-hoc getToken |
 | 6. Hook ban (beforeAll) | 10 | 0 if any beforeAll for preconditions |
 | 7. Precondition data creation | 10 | 0 = hardcoded IDs / assume exists |
 | 8. Entity creation order | 5 | Matches precondition-data-creation.instructions.md |
@@ -46,17 +46,33 @@ description: STRICT Playwright spec validator (0–100, pass ≥80). Compares sp
 | `toBeOK()` only | Criterion 4 −10 |
 | Ad-hoc getToken/apiRequest | Criterion 5 → 0 |
 | Wrong Swagger field/enum | Criterion 9 −3 each |
-| Missing `attachManualVerificationLinks` per test | Criterion 5 −3 each (cap at 0 for criterion 5) |
+| New cursor spec uses `baseFixture` instead of `./cursor-test.fixtures` | Criterion 5 −3 |
+| Manual `reportGenerator` attach / extra API `afterEach` in new cursor spec | Criterion 5 −3 |
 
-## Manual verification links check
+## Test run summary check (new tests/cursor/ specs)
 
-For **new** `tests/cursor/` specs (authored after shared helper exists):
+Per **energo-ts-test SKILL § Manual verification links**. Specs on `baseFixture` only — legacy; not retrofitted unless user requests.
 
-1. Grep spec for `attachManualVerificationLinks` import and call.
-2. Each `test()` must include a final step `Attach portal links for manual verification` (or equivalent call).
-3. Deduct **−3** from criterion 5 per test missing attach (minimum 0 for that criterion).
+1. Import `./cursor-test.fixtures`; destructure `TestRunSummary` in each `test()`.
+2. End each `test()` with `finalizeTestRunSummary` (or `attachManualVerificationLinks` + `testRunSummary`).
+3. `TestRunSummary.registerPayload` for entities that drive pass/fail.
+4. `TestRunSummary.recordCheck` with `expectedResult`, `actualResult`, `passed` for main verifications.
+5. `relevantEntityKeys` in finalize options — portal links filtered to test-relevant buckets.
+6. Final step title: `Attach test run summary` or equivalent.
 
-Legacy specs without the helper are not retrofitted unless the user requests it.
+| Gap | Deduction (criterion 5, min 0) |
+|-----|----------------------------------|
+| Missing finalize step per test | −3 each |
+| No `TestRunSummary` fixture usage | −3 |
+| No `registerPayload` for driving entities | −2 |
+| No `recordCheck` with narrative expected/actual | −2 |
+| Missing `relevantEntityKeys` | −1 |
+
+## cursor-test fixtures check (new tests/cursor/ specs)
+
+1. Import from `./cursor-test.fixtures`, not `../../fixtures/baseFixture`.
+2. No duplicate manual API-response `afterEach` or `reportGenerator.setLinksToResponses` attach.
+3. Deduct **−3** from criterion 5 per violation (minimum 0 for that criterion).
 
 ## Process
 

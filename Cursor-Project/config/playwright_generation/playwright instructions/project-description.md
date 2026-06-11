@@ -37,7 +37,7 @@ npx playwright test --project=setup --workers=1  # Setup only
 
 **CI/CD**: 9 GitHub Actions workflows — `main.yml` (GitLab pipeline), `jiraSingle.yml`, `jiraRegression.yml`, `jiraRegression2.yml`, `extension.yml`, `dev-regression.yml`, `dev-fix-regression.yml`, `dev2-regression.yml`, `test-regression.yml`.
 
-**Reporting**: `reportGenerator` facade delegates to `ReportParser`, `SlackReporter`, `JiraReporter`, `ResponseLinker` in `utils/reporters/`. **New `tests/cursor/` specs** must end each test with `attachManualVerificationLinks` from `tests/cursor/shared/manual-verification-links.fixtures.ts` (plain + JSON portal links for manual tester verification and HandsOff machine reports).
+**Reporting**: `reportGenerator` → `utils/reporters/` (`ResponseLinker`, etc.). **New `tests/cursor/` specs**: import `./cursor-test.fixtures` (`TestRunSummary` + auto `[API responses]` log) and end each test with `finalizeTestRunSummary` from `tests/cursor/shared/manual-verification-links.fixtures.ts`.
 
 **Environment Variables**: `BASE_URL`, `DEVAUTHAPI`, `TESTAUTHAPI`, `PORTAL_USER`, `PASSWORD`, `GRANT_TYPE`, `CLIENT_ID`, `CLIENT_SECRET`, `SAVE_OBJECT_LINKS`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `SLACK_API_TOKEN`.
 
@@ -65,6 +65,9 @@ npx playwright test --project=setup --workers=1  # Setup only
 - `jsons/payloads/create/nomenclatures/` — `nomenclatures.ts`, `baseNomenclature.ts`, `templates.ts`
 - `mass-imports/generators/` — `massImportGenerator.ts` + `domains/` (customer, product contract, price parameter)
 - `tests/setup/` — `global-setup.ts`, `global-teardown.ts`
+- `tests/cursor/cursor-test.fixtures.ts` — entry point for new cursor specs (`TestRunSummary` + API log `afterEach`)
+- `tests/cursor/shared/test-run-summary.fixtures.ts` — payloads, expected/actual, filtered portal links
+- `tests/cursor/shared/manual-verification-links.fixtures.ts` — link builders + `finalizeTestRunSummary` export
 - `tests/` — Domains: `billing/`, `contractsAndOrders/`, `customers/`, `customerComm/`, `receivableManagement/`, `productAndServices/`, `operationsManagement/`, `massImports/`, `salesPortal/`, `bigData/`, `miscellaneous/`
 - `validations/` — Response validation helpers (e.g., `billingValidator.ts`)
 - `.github/workflows/` — 9 CI/CD pipelines

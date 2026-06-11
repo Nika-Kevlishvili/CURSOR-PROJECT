@@ -31,9 +31,11 @@ Every Playwright test MUST create ALL entities it needs. Tests that query existi
 
 When many tests (e.g., 50 out of 70) share the same precondition data, create **helper functions** at the top of the spec file:
 
+New `tests/cursor/` specs: import `./cursor-test.fixtures` (see test-writing-rules § Imports).
+
 ```typescript
 import { test, expect } from './cursor-test.fixtures';
-import { attachManualVerificationLinks } from './shared/manual-verification-links.fixtures';
+import { finalizeTestRunSummary } from './shared/manual-verification-links.fixtures';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SHARED PRECONDITION HELPER FUNCTIONS
@@ -73,7 +75,7 @@ Tests that use the shared preconditions call the helper functions within a `test
 
 ```typescript
 test('[JIRA-KEY]: TC-BE-1 – Happy path – Valid product appears in list', async ({
-    Request, GeneratePayload, Endpoints, Responses,
+    Request, GeneratePayload, Endpoints, Responses, TestRunSummary,
 }) => {
     // Call shared precondition helpers
     await test.step('Precondition: Create shared entities', async () => {
@@ -92,8 +94,11 @@ test('[JIRA-KEY]: TC-BE-1 – Happy path – Valid product appears in list', asy
         expect(found).toBeTruthy();
     });
 
-    await test.step('Attach portal links for manual verification', async () => {
-        attachManualVerificationLinks(Responses, { jiraKey: 'JIRA-KEY' });
+    await test.step('Attach test run summary', async () => {
+        finalizeTestRunSummary(TestRunSummary, Responses, {
+            jiraKey: 'JIRA-KEY',
+            relevantEntityKeys: ['product'],
+        });
     });
 });
 ```
@@ -104,7 +109,7 @@ When a test needs **different data** (e.g., INACTIVE status, missing fields), us
 
 ```typescript
 test('[JIRA-KEY]: TC-BE-3 – Inactive product is excluded', async ({
-    Request, GeneratePayload, Responses, Endpoints,
+    Request, GeneratePayload, Responses, Endpoints, TestRunSummary,
 }) => {
     let inactiveProductId: number;
 
@@ -133,9 +138,10 @@ test('[JIRA-KEY]: TC-BE-3 – Inactive product is excluded', async ({
         expect(found).toBeFalsy();
     });
 
-    await test.step('Attach portal links for manual verification', async () => {
-        attachManualVerificationLinks(Responses, {
+    await test.step('Attach test run summary', async () => {
+        finalizeTestRunSummary(TestRunSummary, Responses, {
             jiraKey: 'JIRA-KEY',
+            relevantEntityKeys: ['product'],
             snapshot: { inactiveProductId },
         });
     });
@@ -191,7 +197,7 @@ test('[JIRA-KEY]: TC-BE-3 – Inactive product is excluded', async ({
 
 ```typescript
 import { test, expect } from './cursor-test.fixtures';
-import { attachManualVerificationLinks } from './shared/manual-verification-links.fixtures';
+import { finalizeTestRunSummary } from './shared/manual-verification-links.fixtures';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SHARED PRECONDITION HELPER FUNCTIONS
@@ -229,7 +235,7 @@ test.describe('[JIRA-KEY]: Feature Name', { tag: '@domain' }, () => {
 
     // Test using shared preconditions
     test('[JIRA-KEY]: TC-BE-1 – Happy path', async ({
-        Request, GeneratePayload, Endpoints, Responses,
+        Request, GeneratePayload, Endpoints, Responses, TestRunSummary,
     }) => {
         await test.step('Precondition: Create shared entities', async () => {
             await sharedTerm(Request, GeneratePayload, Responses, Endpoints);
@@ -241,14 +247,17 @@ test.describe('[JIRA-KEY]: Feature Name', { tag: '@domain' }, () => {
             // Use Responses.product[0], Responses.terms[0], etc.
         });
 
-        await test.step('Attach portal links for manual verification', async () => {
-            attachManualVerificationLinks(Responses, { jiraKey: 'JIRA-KEY' });
+        await test.step('Attach test run summary', async () => {
+            finalizeTestRunSummary(TestRunSummary, Responses, {
+                jiraKey: 'JIRA-KEY',
+                relevantEntityKeys: ['product'],
+            });
         });
     });
 
     // Test needing specific data
     test('[JIRA-KEY]: TC-BE-3 – Negative case', async ({
-        Request, GeneratePayload, Endpoints, Responses,
+        Request, GeneratePayload, Endpoints, Responses, TestRunSummary,
     }) => {
         let specificEntityId: number;
 
@@ -269,9 +278,10 @@ test.describe('[JIRA-KEY]: Feature Name', { tag: '@domain' }, () => {
             // Assertions using specificEntityId
         });
 
-        await test.step('Attach portal links for manual verification', async () => {
-            attachManualVerificationLinks(Responses, {
+        await test.step('Attach test run summary', async () => {
+            finalizeTestRunSummary(TestRunSummary, Responses, {
                 jiraKey: 'JIRA-KEY',
+                relevantEntityKeys: ['product'],
                 snapshot: { specificEntityId },
             });
         });
@@ -292,7 +302,8 @@ test.describe('[JIRA-KEY]: Feature Name', { tag: '@domain' }, () => {
 - [ ] Test-specific entities use `let variableName: type;` declared at test scope
 - [ ] Verify entity creation order follows dependencies
 - [ ] Use `await expect(response).toBeOK()` or `await expect(response).CheckResponse()`
-- [ ] End each test with `attachManualVerificationLinks` (portal links for manual verification)
+- [ ] End each test with `finalizeTestRunSummary` (see test-writing-rules § Report Attachment)
+- [ ] Register relevant payloads + `recordCheck` expected/actual during the test
 
 ---
 

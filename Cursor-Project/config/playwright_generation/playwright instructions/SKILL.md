@@ -15,31 +15,38 @@ description: "Write, modify, or debug Playwright API test cases for Energo-Pro. 
 
 ## Fixture Usage Pattern
 
-For new specs under `tests/cursor/`, import from `cursor-test.fixtures` (re-exports `baseFixture` + automatic API response logging via global `afterEach` — no local `attachReport` or `test.afterEach` for API responses needed). Destructure only the fixtures you need:
+**New** `tests/cursor/*.spec.ts`: import `./cursor-test.fixtures` (re-exports `baseFixture` + automatic API response logging via global `afterEach` — no local `attachReport` or `test.afterEach` for API responses needed; see test-writing-rules § Imports).
+**Legacy** specs: import `../../fixtures/baseFixture`. Destructure only the fixtures you need:
 
 ```typescript
 import { test, expect } from './cursor-test.fixtures';
 import {
-  attachManualVerificationLinks,
+  finalizeTestRunSummary,
   buildProcessPreviewLink,
   buildProductContractTabLinks,
 } from './shared/manual-verification-links.fixtures';
 
 test.describe('[REG-XX]: Domain Name', { tag: '@domainTag' }, () => {
-  test('[REG-XXX]: Test description | scenario', async ({ Request, GeneratePayload, Responses, Endpoints }) => {
+  test('[REG-XXX]: Test description | scenario', async ({
+    Request, GeneratePayload, Responses, Endpoints, TestRunSummary,
+  }) => {
     await test.step('Step 1: Create entity', async () => {
       const payload = GeneratePayload.customers.customer_private_business();
       const response = await Request.post(Endpoints.customer, { data: payload });
       await expect(response).CheckResponse();
       Responses.customer.push(await response.json());
+      TestRunSummary.registerPayload('customer', payload);
     });
 
     await test.step('Step 2: Use created entity', async () => {
       // Responses.customer[0] now has the created entity
     });
 
-    await test.step('Attach portal links for manual verification', async () => {
-      attachManualVerificationLinks(Responses, { jiraKey: 'REG-XXX' });
+    await test.step('Attach test run summary', async () => {
+      finalizeTestRunSummary(TestRunSummary, Responses, {
+        jiraKey: 'REG-XXX',
+        relevantEntityKeys: ['customer'],
+      });
     });
   });
 });
@@ -158,32 +165,39 @@ test('[REG-XXX]: Sales Portal test', async ({ SPRequest, Endpoints }) => {
 
 ## Report Attachment (mandatory)
 
-Every `tests/cursor/` test must end with portal links for manual tester verification:
+New cursor specs use `./cursor-test.fixtures` (`TestRunSummary` + API response `afterEach`).
+Every `tests/cursor/` test ends with `finalizeTestRunSummary`:
 
 ```typescript
 import {
-  attachManualVerificationLinks,
+  finalizeTestRunSummary,
   buildProcessPreviewLink,
   buildProductContractTabLinks,
 } from './shared/manual-verification-links.fixtures';
 
-await test.step('Attach portal links for manual verification', async () => {
+await test.step('Attach test run summary', async () => {
+  TestRunSummary.recordCheck({
+    check: 'Scenario title',
+    expectedResult: 'What should happen.',
+    actualResult: 'As expected — observed outcome.',
+    passed: true,
+  });
+
   const extraLinks: Record<string, string[]> = {};
   const processUrl = buildProcessPreviewLink(processId);
-  if (processUrl) {
-    extraLinks.process = [processUrl];
-  }
+  if (processUrl) extraLinks.process = [processUrl];
   Object.assign(extraLinks, buildProductContractTabLinks(contractId));
 
-  attachManualVerificationLinks(Responses, {
+  finalizeTestRunSummary(TestRunSummary, Responses, {
     jiraKey: 'PDT-XXXX',
-    snapshot: { processId, contractId, note: 'what the tester should verify' },
+    relevantEntityKeys: ['customer', 'productContract'],
+    snapshot: { processId, contractId },
     extraLinks: Object.keys(extraLinks).length ? extraLinks : undefined,
   });
 });
 ```
 
-- **Helper path:** `tests/cursor/shared/manual-verification-links.fixtures.ts`
+- **Helpers:** `tests/cursor/shared/manual-verification-links.fixtures.ts`, `test-run-summary.fixtures.ts`
 - Attachments work without `SAVE_OBJECT_LINKS` (optional extra logging in `ResponseLinker` only).
 
 ## Common Mistakes

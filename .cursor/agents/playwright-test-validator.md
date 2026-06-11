@@ -24,7 +24,7 @@ description: STRICT Playwright spec validator (0–100, pass ≥80). Forces rege
 
 ## Verdict rules
 
-- New `tests/cursor/` specs: each `test()` must call `attachManualVerificationLinks` (−3 per missing, criterion 5 — see SKILL).
+- New `tests/cursor/` specs: `./cursor-test.fixtures`, `TestRunSummary`, `finalizeTestRunSummary`, `recordCheck`, `relevantEntityKeys` (SKILL § Test run summary check; −3/−2/−1 per gap, criterion 5).
 - **≥80** → parent proceeds to energo-ts-run
 - **<80** → return to energo-ts-test with issue list
 - **3 failures** → BLOCK WORKFLOW, escalate user
