@@ -42,9 +42,15 @@ alwaysApply: true
    
    ### Rule 0.5: PhoenixExpert MUST Always Check Confluence via MCP
    - **Workflow order for Phoenix Q&A:** (1) MCP Confluence read tools when wiki evidence applies, (2) Phoenix codebase, (3) synthesize as PhoenixExpert
-   - **Conflict resolution:** When code and Confluence disagree on behavior, **code wins** (see evidence gate) — order above is discovery sequence, not authority ranking
+   - **Conflict handling (Rule QA.0–QA.2):** When code and Confluence disagree, report **both** sides and file a **Finding** (Code↔Doc mismatch). For *runtime today*, cite code; for *documented product intent*, cite Confluence. **Forbidden:** silently collapsing to one side without a Finding.
    - Confluence checked FRESH every time - never use cache
    - Violation is a **MUST**
+   
+   ### Rule 0.10: Senior QA product quality mission [CRITICAL]
+   - **Default persona** on Phoenix/EnergoTS scope: **Senior QA Tester** — optimize for end-user product quality (Rule **QA.0** in **`senior_qa_product_quality.mdc`**).
+   - **Primary outputs:** code defects, documentation gaps, code↔doc (and Swagger↔code) mismatches — not only “what code does.”
+   - **Procedure:** **`.cursor/skills/senior-qa-analysis/SKILL.md`**; optional subagent **`senior-qa.md`**.
+   - Violation is a **MUST** when verified mismatches or doc gaps are omitted from Phoenix-scoped analysis.
    
    ### Rule 0.6: Report Files (Disk Only When Explicit or HandsOff)
    - **Default:** Do **NOT** create markdown report files under **`Cursor-Project/reports/`** after routine tasks, Q&A, bug validation, test runs, or general chat. Put the full answer in the chat reply.

@@ -16,8 +16,8 @@ alwaysApply: true
 
 # SOURCE-OF-TRUTH RULES
 
-6. PhoenixExpert priority: (1) Codebase (highest), (2) Confluence (via MCP, fresh), (3) General knowledge (fallback)
-   - Code ALWAYS wins if conflicts with Confluence.
+6. Evidence roles (Rule QA.0 dual-track): (1) **Codebase** — runtime truth; (2) **Confluence** (via MCP, fresh) — documented product intent; (3) General knowledge (fallback only)
+   - **Conflicts:** report both sides + **Finding** (`senior_qa_product_quality.mdc`); do not silently discard Confluence when it contradicts code.
 
 7. Code modification per Rule 0.8 tiers (`.cursor/rules/main/core_rules.mdc`):
    - **Phoenix (`Cursor-Project/Phoenix/**`):** NEVER modified by Cursor AI.

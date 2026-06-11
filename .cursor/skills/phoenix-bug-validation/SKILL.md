@@ -67,8 +67,9 @@ Use diagrams **when they sharpen expected flow or scope**, not as a substitute f
    - When `getConfluencePage` or linked URLs expose **direct downloadable assets** (e.g. PNG/SVG/PDF): save **read-only** copies under **`Cursor-Project/config/confluence/diagrams/<pageId-or-issueKey>/`** (create folders as needed) and cite that path.  
    - Macro-only embeds without a direct file URL: state limitation in chat; do not invent flows.
 
-3. **Authority order**  
-   - **Phoenix code > Confluence > diagram.** If a diagram contradicts code or Confluence, record the conflict explicitly — diagrams alone never overturn verified code/spec.
+3. **Authority order (Senior QA — Rule QA.0)**  
+   - Compare **Confluence (spec)** vs **code (runtime)** vs **diagram (illustration)**.  
+   - **Agreement:** note briefly. **Mismatch:** mandatory **Finding** (Code↔Doc mismatch) — cite both sides; diagrams alone never overturn verified code or Confluence, but code↔Confluence conflict is never “resolved” silently.
 
 4. **Tracking for the final report**  
    - Maintain a list of **every diagram** that informed this validation (whether **local** `Cursor-Project/config/Diagrams/...`, **downloaded** under `Cursor-Project/config/confluence/diagrams/...`, or **Jira attachment** path after download). Each entry must be repeatable: **full workspace path** and, when applicable, **source wiki URL** or **Jira attachment filename + issue key**.
@@ -94,7 +95,7 @@ When the resolved environment is **Prod** or **PreProd** (and by default for **T
    - Under **`Phoenix documentation- Phase 1`** (page **164356**) or descendants whose title **does not** start with `Phase 2 -`.
    - Standalone Phoenix pages **without** a `Phase 2 -` title prefix (e.g. `Bundle 6 - Receivables`, `Invoice details`, `Manual credit or debit note change`).
 2. **PROHIBITED as decision basis:** Any page whose **title** starts with **`Phase 2 -`**, or lives under wiki trees **`Phase 2 - Phoenix documentation`**, **`Phase 2 - Only Changes`**, **`Phase 2 - postponed`**, **`Phase 2 - Experimental Documentation`**, or **`Experimental Documentation`** (non–Phase-1 experimental specs).
-3. **Allowed but non-decisive:** Phase 2 pages may be **read** for context or to note “planned / delta only”; they **must not** drive **VALID**, **NOT VALID**, or **exact match** alone. If Phase 1 has no rule, classify Confluence as **contextual match** or **no match** and lean on **code + DB** (code still wins over any Confluence).
+3. **Allowed but non-decisive:** Phase 2 pages may be **read** for context or to note “planned / delta only”; they **must not** drive **VALID**, **NOT VALID**, or **exact match** alone. If Phase 1 has no rule, classify Confluence as **contextual match** or **no match**, lean on **code + DB** for runtime, and add a **Doc gap** or **Code↔Doc mismatch** **Finding** (Rule QA.2) when spec is missing or diverges — **do not** silently treat code as the only answer without a Finding.
 4. **Report:** In **`### Confluence evidence (decision basis)`**, add **`Phase 2 excluded: yes`** and list any Phase 2 pages **read but excluded** (title + ID + URL). CQL/Rovo queries should prefer `ancestor = 164356` and/or `title !~ "Phase 2"` where supported.
 5. **User override:** If the user explicitly asks to include Phase 2 for this ticket, document **`Phase 2 excluded: no (user override)`**.
 
@@ -117,7 +118,7 @@ When the resolved environment is **Prod** or **PreProd** (and by default for **T
 - **Read OpenAPI evidence:** After refresh (or cache), use the spec for the **same environment** as Step 0. Paths follow **`Cursor-Project/config/swagger/environments.json`** `id` values (e.g. `dev`, `test`, `dev2`, `experiment`, `prod`). Map workspace environment `experiments` → swagger folder **`experiment`** when applicable. Prefer **`Cursor-Project/config/swagger/<id>/swagger-spec.json`** (see **`Cursor-Project/config/swagger/README.md`** if PreProd or extra ids exist).
 - Cross-check bug claims that depend on HTTP contracts: paths, methods, request/response schemas, required fields, enums, status codes. Cite **swagger file path + operationId or path + schema name** per **`evidence_only_project_answers.mdc`**.
 - Report: "Swagger validation: [supports reporter / contradicts reporter / not applicable / could not verify] - [explanation]".
-- Swagger does **not** replace code: if Swagger and implementation disagree, **code wins** (same as Confluence vs code — code primary for runtime behavior; Swagger documents the published contract).
+- Swagger does **not** replace code or Confluence alone: cross-check all three. If Swagger and implementation disagree → **Finding: Swagger↔Code mismatch**. If Confluence and code disagree → **Finding: Code↔Doc mismatch** (Rule QA.2).
 
 ### Step 4: Code validation (behavior analysis)
 
@@ -155,7 +156,7 @@ Use **Confluence classification + code analysis + database evidence**, with **Sw
 - DB findings are **supporting evidence**, not overriding — code + Confluence remain primary for behavior rules.
 
 **Report section order (chat + Slack + optional disk):**  
-`### Reproduce steps` → `### Diagrams used in this validation` → `### Expected behavior` → **`### Confluence evidence (decision basis)`** (must include **full wiki URL per page** used; see Step 2) → Swagger → Code → **Database Investigation** → Verdict → Next steps → Evidence checklist → Confidence.
+`### Reproduce steps` → `### Diagrams used in this validation` → `### Expected behavior` → **`### Confluence evidence (decision basis)`** → Swagger → Code → **Database Investigation** → **`### Quality Findings (Senior QA)`** (Rule QA.2 — mismatches, doc gaps, Swagger drift even when verdict is clear) → Verdict → Next steps → Evidence checklist → Confidence.
 
 ### Step 6: Results (chat + Slack; optional file)
 

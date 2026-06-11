@@ -28,7 +28,7 @@ globs:
 ## 1. Primary path (unchanged)
 
 - Use Confluence MCP read tools per descriptors.
-- **Code remains primary** when code and Confluence disagree (**`evidence_only_project_answers.mdc`**).
+- **Code remains authoritative for runtime**; **Confluence for documented intent**. When they disagree → **Finding**, not silent override (**`senior_qa_product_quality.mdc`** Rule QA.0).
 
 ---
 
@@ -92,7 +92,7 @@ After REST fetch:
 
 - Cite **page title**, **page ID**, and **URL** when present in the JSON (`title`, `id`, `_links` / `webui` / space key as applicable).
 - If body is HTML/storage, summarize or quote conservatively; do not dump huge payloads into Slack.
-- Continue to prefer **code** over Confluence when they conflict.
+- Continue dual-track reporting: cite both sides on conflict; file **Finding** per Rule QA.2.
 
 ---
 

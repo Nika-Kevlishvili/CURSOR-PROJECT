@@ -12,7 +12,8 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 
 | Subagent file | Role | When to use |
 |---------------|------|-------------|
-| **phoenix-qa.md** | PhoenixExpert (Rule 0.2) | Phoenix Q&A; Confluence MCP + codebase. READ-ONLY. |
+| **phoenix-qa.md** | PhoenixExpert (Rule 0.2) + Senior QA lens | Phoenix Q&A; Confluence MCP + codebase; **Findings** on mismatch. READ-ONLY. |
+| **senior-qa.md** | Senior QA Tester (Rule QA.0) | QA audit, doc gaps, code↔doc mismatches, spec vs implementation. READ-ONLY. |
 | **bug-validator.md** | Bug validation (Rule 32) | Confluence → codebase → full analysis in chat; **Chat reports** file only if **`/report`** or explicit save. READ-ONLY. |
 | **test-runner.md** | TestAgent | Tests; consult PhoenixExpert first; report results. |
 | **report-generator.md** | Reports (Rule 0.6) | **`/report`**, **`/feedback`**, explicit save request, or **Rule 37 (HandsOff)** file only — per **`Cursor-Project/reports/README.md`**. |

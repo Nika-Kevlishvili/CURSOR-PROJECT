@@ -7,6 +7,8 @@ Single map from **rule / topic** to the **primary procedural** file(s). When `wo
 | 0.x core | Disclosure, PhoenixExpert, reports, tiers | `.cursor/rules/main/core_rules.mdc` |
 | CONF.0 | Clarify before substantive work | `.cursor/rules/main/clarification_and_confidence.mdc` |
 | CONF.1 | Evidence-based confidence scoring (Three-Zone: GO/CAUTION/STOP) | `.cursor/rules/main/clarification_and_confidence.mdc`, **`.cursor/rules/scoring/confidence_scoring_matrix.mdc`** |
+| QA.0 Senior QA mission | Default Senior QA persona; code defects, doc gaps, code↔doc mismatches; dual-track answers | **`.cursor/rules/main/senior_qa_product_quality.mdc`**, **`.cursor/skills/senior-qa-analysis/SKILL.md`**, **`.cursor/agents/senior-qa.md`** |
+| 0.10 | Senior QA on all Phoenix scope (points to QA.0) | `.cursor/rules/main/core_rules.mdc` |
 | 1 / safety | GitLab & Confluence read-only; tiers | `.cursor/rules/safety/safety_rules.mdc` |
 | 8 / agents | Consultation patterns | `.cursor/rules/agents/agent_rules.mdc` |
 | 32 Bug validation | BugFinder: env alignment, diagrams, Confluence, mandatory Swagger refresh + OpenAPI, code, 5 verdicts, Slack — no TC/Playwright pipeline | `.cursor/skills/phoenix-bug-validation/SKILL.md`, `.cursor/agents/bug-validator.md` |

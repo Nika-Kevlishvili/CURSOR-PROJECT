@@ -54,8 +54,8 @@ Base: **40**
 
 | Factor | Points | Condition | Weight rationale |
 |--------|--------|-----------|-----------------|
-| Phoenix code read + cited (file:line) | **+20** | Step 4 completed with ≥1 code citation | Code is primary source of truth (Rule 0.2/0.5); highest weight |
-| Confluence evidence found (exact or contextual match) | **+15** | Step 2 returned ≥1 relevant page with title+ID+URL | Secondary source; essential for business rule verification |
+| Phoenix code read + cited (file:line) | **+20** | Step 4 completed with ≥1 code citation | Runtime verification (Rule QA.0 dual-track) |
+| Confluence evidence found (exact or contextual match) | **+15** | Step 2 returned ≥1 relevant page with title+ID+URL | Documented product intent; essential for mismatch detection |
 | Swagger/OpenAPI aligned (after refresh) | **+10** | Step 3 completed; spec confirms or contradicts reporter claim | Contract-level; less authoritative than code for runtime behavior |
 | DB evidence gathered (same env) | **+10** | Step 4b completed with ≥1 query result | Supporting evidence; confirms data state but not behavior rules |
 | Environment aligned (PHOENIX-SWITCH.0) | **+5** | Step 0.1 exit code 0 | Prerequisite; low weight because it's binary pass/fail |
@@ -68,7 +68,8 @@ Base: **40**
 | Assumption made (per assumption) | **-5** | Each inferred behavior not backed by evidence | Each assumption is a potential error |
 | Phase 2 exclusion applied (Prod/PreProd) | **-5** | Some wiki pages excluded from decision basis | Narrower evidence base |
 | Single evidence source only | **-15** | Only code OR only Confluence — not both | Cross-validation impossible; high risk |
-| Conflicting evidence found | **-10** | Code vs Confluence or Swagger disagreement | Unresolved conflict reduces certainty |
+| Mismatch documented as Finding (Rule QA.2; both sides cited) | **+10** | Code↔Doc or Swagger↔Code conflict surfaced | Product-quality deliverable |
+| Conflict present but not reported as Finding | **-15** | Violates Rule QA.0 |
 | Environment alignment partial (exit code 2) | **-5** | Mixed-state repos | Some repos may be on wrong branch |
 
 **Max achievable:** 40 + 73 = 113 → capped at **100**
@@ -95,6 +96,8 @@ Base: **40**
 | Quality validator required rewrite | **-5** | Per rewrite iteration needed | Each iteration signals initial quality gap |
 | Assumption made (per assumption) | **-5** | Inferred behavior | Each assumption is a potential error |
 | Single evidence source only | **-15** | Code-only or ticket-only | Insufficient cross-validation |
+| Spec↔code mismatch documented in References (Rule QA.2 Finding) | **+5** | Generator flagged divergence | Senior QA alignment |
+| Spec↔code mismatch known but no Finding in References | **-10** | Violates Rule QA.0 / TC generator authority |
 
 **Max achievable:** 40 + 75 = 115 → capped at **100**
 
@@ -124,14 +127,15 @@ Base: **40**
 
 | Factor | Points | Condition | Weight rationale |
 |--------|--------|-----------|-----------------|
-| Phoenix code read + cited (file:line) | **+25** | Primary source — code evidence | Code is absolute authority for Phoenix (Rule 0.2) |
-| Confluence checked (MCP or REST) | **+15** | Rule 0.5 satisfied | Secondary source; mandatory check |
+| Phoenix code read + cited (file:line) | **+25** | Primary source — runtime behavior | Rule QA.0 dual-track |
+| Confluence checked (MCP or REST) | **+15** | Rule 0.5 satisfied | Documented product intent |
 | Swagger/OpenAPI referenced | **+10** | API contract evidence when applicable | Contract-level verification |
 | Code and Confluence agree | **+5** | No conflict | Cross-validation bonus |
 | Environment-specific analysis | **+5** | Branch aligned to target env | Correct branch = correct behavior |
 | No code found for topic | **-15** | Could not locate relevant implementation | Primary source missing |
 | No Confluence checked | **-10** | Rule 0.5 violated (or failed) | Mandatory check skipped |
-| Code and Confluence conflict | **-5** | Disagreement (code wins but uncertainty exists) | Unresolved tension |
+| Code and Confluence conflict documented as Finding (both cited) | **+10** | Mismatch surfaced per Rule QA.2 | Product-quality signal — reduces hidden risk |
+| Code and Confluence conflict ignored (only one side reported) | **-15** | Disagreement hidden | Violates Rule QA.0 |
 | Assumption made (per assumption) | **-5** | Inferred behavior | Each assumption is a potential error |
 
 ---
@@ -297,10 +301,10 @@ Parent MUST show: individual sub-scores + aggregation method + final score.
 
 ### Current weights rationale
 
-All factor weights were set based on the workspace's evidence hierarchy (Rule 0.2/0.5: code > Confluence > Swagger > DB as supporting) and common-sense proportionality:
+All factor weights were set based on the workspace's evidence model (Rule QA.0 / 0.5: **dual-track** — code = runtime, Confluence = spec; mismatches = Findings) and common-sense proportionality:
 
-- **Code (+20/+25)** — highest because code is the absolute source of truth for runtime behavior
-- **Confluence (+10/+15)** — secondary; required by workflow but can be wrong
+- **Code (+20/+25)** — highest weight for **runtime** verification
+- **Confluence (+10/+15)** — required for **documented product intent**; disagreement with code → Finding, not discard
 - **Swagger (+10)** — contract-level; may diverge from implementation
 - **DB (+10)** — supporting data state evidence; doesn't determine behavior rules
 - **Penalties (-5 to -20)** — proportional to the risk introduced by the gap
@@ -319,6 +323,7 @@ All factor weights were set based on the workspace's evidence hierarchy (Rule 0.
 | Date | Change | Reason |
 |------|--------|--------|
 | 2026-06-10 | Initial weights set | Based on evidence hierarchy + research literature |
+| 2026-06-11 | QA.0 alignment | Dual-track; Finding documented +10 / hidden conflict -15; TC References Finding factors |
 
 ---
 

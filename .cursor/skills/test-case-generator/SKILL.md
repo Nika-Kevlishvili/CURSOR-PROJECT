@@ -78,13 +78,13 @@ Use **`prompt_type`** (`'bug'` vs `'task'`) from inputs — behavior differs.
 
 - When the ticket has **no** diagram attachment and no diagram URL in scope yet, consult **`Cursor-Project/config/Diagrams/`** (`Bundle 4`–`6`): pick matching `.svg` files, align steps/expected results, cite paths under **`## References`** (same as prior bug-validation alignment).
 - When Jira/Confluence provides downloadable diagram assets, save read-only under **`Cursor-Project/config/confluence/diagrams/<pageId-or-issueKey>/`** and cite in **References**.
-- **Authority:** **code + Confluence** override contradictory diagrams; note conflicts in **References**.
+- **Authority:** Compare Confluence (expected results) vs code (runtime). **Expected results in TCs follow documented spec.** If code differs → add **Finding** under **References** (Rule QA.2); note if TC validates spec vs current code behavior.
 
 **Tasks / non-bugs (`prompt_type: 'task'`) — user-supplied scope wins:**
 
 1. **Diagram already in scope** (task/Jira description, linked Confluence page text/media from that ticket, diagram URLs or attachments in **chat**, explicit diagram URLs the user or ticket provided): treat **written description + that diagram** as **primary**. Do **not** prioritize or substitute **`Cursor-Project/config/Diagrams/`** over what the task already contains. Local library is **out of scope** unless the user asks to compare or the description is silent and you are in case (2).
 2. **No diagram in task description or linked pages:** search **`Cursor-Project/config/Diagrams/`** for plausible `.svg` matches. **Mandatory gate:** if any candidate fits, **do not** write TC files based on that diagram until the user confirms — ask explicitly whether to use it, naming **each candidate by full workspace path** (and one-line why it might match). If the user declines or multiple candidates remain ambiguous, omit local diagram from TC scope until clarified.
-3. **Authority:** same as bugs — **code + Confluence** override contradictory diagrams; document discrepancies in **References**.
+3. **Authority:** Compare Confluence vs code; document code↔doc mismatches as **Finding** in **References** (Rule QA.2); diagrams alone never override verified code or Confluence.
 
 ### 3. Self-contained preconditions (Rule TC-STANDALONE-PRE.0 — MANDATORY)
 

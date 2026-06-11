@@ -43,7 +43,7 @@ Typical ordered chain:
 
 ### 2.4 Evidence and diagrams
 
-- **Project answers:** code > Confluence — **`evidence_only_project_answers.mdc`**.  
+- **Project answers:** dual-track — code = runtime, Confluence = spec; conflicts → **Finding** (Rule QA.0) — **`senior_qa_product_quality.mdc`**, **`evidence_only_project_answers.mdc`**.  
 - **Diagrams:** Local library **`Cursor-Project/config/Diagrams/`**; linked assets under **`Cursor-Project/config/confluence/diagrams/<pageId-or-issueKey>/`** when downloadable. Bug vs task diagram policy: **`phoenix-bug-validation/SKILL.md`**, **`test-case-generator/SKILL.md`**.
 
 ### 2.5 Reporting and Slack

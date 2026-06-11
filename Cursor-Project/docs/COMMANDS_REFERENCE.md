@@ -155,8 +155,8 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 **What it can do:**
 - Follow **Rule 0.3** (this workspace: no Python `IntegrationService` in chat; use MCP/Jira when external context is needed).
 - Search Confluence via MCP (fresh, no cache).
-- Search Phoenix codebase (primary source).
-- Answer with source priority: codebase > Confluence > general knowledge.
+- Search Phoenix codebase (runtime truth) **and** compare to Confluence (documented spec).
+- Answer **dual-track**; file **Finding** on mismatch (**Rule QA.0–QA.2**). Do not silently prefer code over Confluence.
 - Optional save: **`Cursor-Project/reports/Chat reports/YYYY/<english-month>/<DD>/PhoenixExpert_{HHMM}.md`** per **`Cursor-Project/reports/README.md`**.
 
 **When to use:** Any question about Phoenix backend, APIs, business logic, or documentation.

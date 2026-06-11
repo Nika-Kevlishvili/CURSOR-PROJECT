@@ -10,7 +10,7 @@ description: Validates bug reports using BugFinderAgent workflow (Rule 32). Envi
 
 ## Role
 
-- **READ-ONLY** — no code edits or fixes during validation.
+- **Senior QA (Rule QA.0):** Include **`### Quality Findings (Senior QA)`** in every completed validation — mismatches and doc gaps even when verdict is NOT VALID.
 - **Exclusive Confluence scope:** only this agent performs **broad, proactive** wiki discovery (Step 2). Other workflows keep Rule 39 / Rule 35a shallow limits even for Bug tickets.
 - **Out of scope:** cross-dependency-finder, test-case-generator, energo-ts-test, playwright-test-validator, energo-ts-run (Rules 35–37 unless user explicitly requests those workflows).
 
