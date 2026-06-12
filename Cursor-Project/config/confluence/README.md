@@ -6,7 +6,7 @@ When **Confluence MCP** is unavailable, use **read-only** Confluence Cloud REST 
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `CONFLUENCE_WIKI_BASE` | Recommended | Wiki API origin, e.g. `https://your-site.atlassian.net/wiki` |
+| `CONFLUENCE_WIKI_BASE` | Recommended | Wiki API origin — **`https://asterbit.atlassian.net/wiki`** for Phoenix Confluence (user links: Rule LINK.1 in `atlassian_link_format.mdc`) |
 | `CONFLUENCE_URL` | Optional fallback | e.g. `https://your-site.atlassian.net/wiki/home` — script normalizes to wiki base |
 | `JIRA_BASE_URL` | Optional fallback | e.g. `https://your-site.atlassian.net` — script may derive `https://your-site.atlassian.net/wiki` when wiki vars are unset |
 | `JIRA_EMAIL` | Yes* | Atlassian account email (shared with Jira on same cloud) |

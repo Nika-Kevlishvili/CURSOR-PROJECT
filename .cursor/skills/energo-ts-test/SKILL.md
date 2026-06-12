@@ -106,11 +106,28 @@ Legacy snippet (`attachManualVerificationLinks` without `testRunSummary`) — do
 - ✅ `EnergoTS/tests/**/*.spec.ts`, `*.fixtures.ts`
 - ❌ EnergoTS outside `tests/`; ❌ Phoenix (Tier A)
 
+## Post-authoring validation [MANDATORY — all paths]
+
+After **any** new or materially changed `.spec.ts` / `.fixtures.ts` write — **HandsOff Step 4**, standalone bug automation, or direct user request — the authoring agent **MUST** invoke **playwright-test-validator** before declaring completion or before **energo-ts-run**.
+
+| Input | When |
+|-------|------|
+| `backend_path` (+ optional `frontend_path`) | TC `.md` exists on disk (HandsOff, Rule 35) |
+| `jira_key` only (no TC file) | Bug-only automation — align coverage to Jira reproduce steps + expected/actual |
+
+1. Invoke **playwright-test-validator** (`.cursor/agents/playwright-test-validator.md`) with spec path + inputs above.
+2. **≥80/100** required to proceed to run or hand off to user.
+3. **<80** → fix via energo-ts-test (max **3** iterations); then **BLOCK** and escalate.
+4. Do **not** skip with “validator later” or manual self-assessment unless user **explicitly** opts out in the current chat.
+
+User may re-validate anytime: `/playwright-validate <JIRA_KEY>` (`.cursor/commands/playwright-validate.md`).
+
 ## Completion
 
 - New cursor spec imports `./cursor-test.fixtures` (includes `TestRunSummary` fixture)
 - Every new `test()` ends with `finalizeTestRunSummary` (payloads + expected/actual + relevant portal links)
-- Summary + `Agents involved: EnergoTSTestAgent`
+- **playwright-test-validator** PASS reported (score + iteration)
+- Summary + `Agents involved: EnergoTSTestAgent` (+ PlaywrightTestValidatorAgent when validator ran)
 
 ## Confidence Score (Rule CONF.1 — Three-Zone) [MANDATORY]
 

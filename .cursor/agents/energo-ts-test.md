@@ -31,6 +31,14 @@ description: Manages EnergoTS Playwright test automation. Sole writer for Energo
 4. Every new `test()` uses `TestRunSummary` + `finalizeTestRunSummary` (SKILL § Manual verification links).
 5. Run **playwright-test-validator** before parent runs tests (Step 4.5).
 
+## Standalone / bug-only automation
+
+Same validator gate as HandsOff — **not** optional when user requests Playwright authoring outside `/HandsOff`:
+
+1. After spec write → invoke **playwright-test-validator** immediately.
+2. If no TC `.md` on disk → pass `jira_key`; validator aligns to Jira reproduce steps (see playwright-test-validator SKILL § Bug-only inputs).
+3. **≥80/100** before suggesting **energo-ts-run**; max 3 fix loops.
+
 ## Constraints
 
 - **Only** `EnergoTS/tests/` and **only** `.spec.ts` / `.fixtures.ts` (hooks enforce).

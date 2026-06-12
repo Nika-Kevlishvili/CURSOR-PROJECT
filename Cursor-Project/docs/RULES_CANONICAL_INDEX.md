@@ -22,6 +22,7 @@ Single map from **rule / topic** to the **primary procedural** file(s). When `wo
 | 41 Swagger refresh | Before `.spec.ts` edits | `.cursor/rules/integrations/swagger_refresh_mandatory.mdc` |
 | 42 / JIRA.1 Jira read | MCP first, REST fallback; ticket completeness | `.cursor/skills/jira-evidence/SKILL.md`, `.cursor/rules/integrations/jira_rest_fallback.mdc` |
 | 43 / CONFLUENCE.1 Confluence read | MCP first, REST fallback | `.cursor/rules/integrations/confluence_rest_fallback.mdc`, `Cursor-Project/config/confluence/README.md` |
+| LINK.0–LINK.1 Atlassian user links | Confluence = asterbit wiki slug; Jira = oppa-support browse | `.cursor/rules/integrations/atlassian_link_format.mdc`, `Cursor-Project/reports/README.md` |
 | 44 Jira analysis + Confluence | Ticket analysis must include linked Confluence reads | `.cursor/skills/jira-evidence/SKILL.md` § linked Confluence; `workflow_rules.mdc` Rule 44 |
 | PHOENIX-SWITCH.0 | Align Phoenix repos | **`.cursor/skills/phoenix-branch-switching/SKILL.md`**, `.cursor/rules/integrations/phoenix_branch_switching.mdc` (summary), `.cursor/commands/switch-phoenix-branches.ps1` |
 | JIRA.0 | Experiments board bugs only | `.cursor/rules/integrations/jira_bug_agent.mdc`, `.cursor/skills/jira-bug-template/SKILL.md` |
