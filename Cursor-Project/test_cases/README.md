@@ -38,6 +38,7 @@ Every `.md` file MUST follow **`Cursor-Project/config/template/Test_case_templat
 | Single email to multiple recipients — Email Communication (one mass-comm send, shared `task_id`) | `Backend/Single_email_multiple_recipients_PDT_2881.md` | — | PDT-2881 |
 | Payment Partner export TXT — external documents, LPF logical date, rescheduling layout (423-char fixed width) | `Backend/Payment_Partner_Export_PDT_2187.md` | — | PDT-2187 |
 | Skip RiskList permission — product contract mass import (create, edit same version, edit new version; all succeed with permission) | `Backend/Skip_Risklist_Product_Contract_Mass_Import_PDT_2931.md` | — | PDT-2931 |
+| Sales Portal PUT update existing contract — private / private-with-business customers (legal entity TC-BE-22 only); field omission semantics, direct debit, proxy/manager, customer swap; different product on contract allowed; product swap version mismatch; third-tab productParameters; price-component restriction; fixed IAP accepted; add second POD; customer local/foreign address; contract status transitions (ENTERED_INTO_FORCE, ACTIVE_IN_TERM, TERMINATED); KYC; validation errors | `Backend/Put_Update_Existing_Contract_PHN2130.md` | — | PHN-2130 |
 
 ## Layout reference
 
