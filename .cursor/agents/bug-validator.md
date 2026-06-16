@@ -27,8 +27,8 @@ description: Validates bug reports using BugFinderAgent workflow (Rule 32). Envi
 | Deliverable | When |
 |-------------|------|
 | Full structured report in **chat** | Always when `COMPLETED` |
-| Slack **`bug-validation`** (`C0AUEEDVCEL`) | Same content as chat when MCP allows |
-| `BugValidation_*.md` under Chat reports | Only on **`/report`** or explicit save (Rule 0.6) |
+| Slack **`bug-validation`** (`C0AUEEDVCEL`) | Same content as chat — **only when user explicitly asks** |
+| `BugValidation_*.md` under Chat reports | Only when user explicitly asks to save (Rule 0.6) |
 
 **Status:** `COMPLETED` (one of five verdicts) | `PROCESS BLOCKED` (operational — no verdict until blocker cleared).
 

@@ -22,7 +22,7 @@ description: "Workflow obligations (Rules 32–44): summary + exit criteria. Ste
 - **Phoenix align:** **Rule PHOENIX-SWITCH.0**; prod requires `-ConfirmProd` + user ack
 - **Evidence:** Confluence (broad discovery **bug-validator only**) + mandatory Swagger refresh + aligned Phoenix code + DB (supporting, same env)
 - **SKILL must cover (do not skip read):** diagram bundles under **`Cursor-Project/config/Diagrams/`** when ticket has no diagram; Confluence **Phase 2 exclusion** on Prod/PreProd (prefer Phase 1 wiki); attachment recovery — see **`.cursor/skills/phoenix-bug-validation/SKILL.md`**
-- **Slack** `bug-validation` when MCP allows; disk report only on **`/report`** or explicit save (**Rule 0.6**)
+- **Slack** `bug-validation` **only when user explicitly asks**; disk report only when user explicitly asks to save (**Rule 0.6**)
 - **Rule 41** applies to any EnergoTS `.spec.ts` work — Rule 32 does not author specs
 
 Violation is a **BLOCK**.

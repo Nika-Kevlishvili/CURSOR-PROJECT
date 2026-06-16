@@ -69,7 +69,7 @@ alwaysApply: true
     **Pattern 5: Multi-Agent Routing** - Parent agent → subagents / explicit handoffs → combined response (no Python AgentRouter)
     **Pattern 6: Phoenix + Test** - PhoenixExpert → consults TestAgent (if test-related) → provides answer
     **Pattern 7: Integration Service** - When Python IntegrationService exists in automation → `update_before_task()` → task; in Cursor chat follow Rule 0.3
-    **Pattern 8: Bug Validation** - BugFinder workflow (Rule 32) → Confluence + mandatory Swagger/OpenAPI + aligned Phoenix codebase → full analysis in chat (+ Slack `bug-validation`); optional `BugValidation_*.md` only on **`/report`** or explicit save (no `get_bug_finder_agent` import; no automatic TC/Playwright pipeline in Rule 32)
+    **Pattern 8: Bug Validation** - BugFinder workflow (Rule 32) → Confluence + mandatory Swagger/OpenAPI + aligned Phoenix codebase → full analysis in chat; Slack `bug-validation` **only when user explicitly asks**; optional `BugValidation_*.md` only when user explicitly asks to save (no `get_bug_finder_agent` import; no automatic TC/Playwright pipeline in Rule 32)
     
     All participating agents MUST appear in "Agents involved" footer.
 

@@ -5,7 +5,7 @@ description: Validates bug reports using Rule 32 workflow — Confluence, refres
 
 # Phoenix Bug Validation
 
-Ensures **Rule 32** bug validation (mandated by `.cursor/rules/workflows/workflow_rules.mdc`; **this SKILL is the canonical procedure**): **primary evidence** from **Confluence**, **OpenAPI/Swagger** (after mandatory refresh), **Phoenix code** (aligned to the target environment), and **database** (entity data, audit logs, relationships) — plus ticket/diagram recovery patterns → **full reply in chat**. **READ-ONLY** — no code changes during validation; database queries are SELECT-only. Persisted `BugValidation_*.md` only if the user runs **`/report`** or explicitly asks to save.
+Ensures **Rule 32** bug validation (mandated by `.cursor/rules/workflows/workflow_rules.mdc`; **this SKILL is the canonical procedure**): **primary evidence** from **Confluence**, **OpenAPI/Swagger** (after mandatory refresh), **Phoenix code** (aligned to the target environment), and **database** (entity data, audit logs, relationships) — plus ticket/diagram recovery patterns → **full reply in chat**. **READ-ONLY** — no code changes during validation; database queries are SELECT-only. Persisted `BugValidation_*.md` only if the user explicitly asks to save.
 
 **Out of scope for Rule 32:** automatic **test case** generation, **Playwright** spec authoring, **playwright-test-validator**, and **energo-ts-run**. Those belong to **Rule 35** (test cases), **Rule 36/37** (runs / HandsOff), or explicit user requests — not the bug-validator workflow.
 
@@ -160,13 +160,12 @@ Use **Confluence classification + code analysis + database evidence**, with **Sw
 
 ### Step 6: Results (chat + Slack; optional file)
 
-- **Required (every run):** Post the full structured analysis in **chat** after each completed validation. The body MUST include, at minimum, the sections in the **Report section order** above. **Slack** payload MUST be the **same** full structured body (not summary-only) so **Confluence decision URLs**, **Reproduce steps**, and **diagrams used** appear in **`bug-validation`**. Rule 32 does **not** require a Jira browse link unless the user asks for it.
-- **Required (every run):** Send the same full structured analysis to the Slack channel **`bug-validation`** (channel ID: `C0AUEEDVCEL`) after each completed validation. Use `slack_send_message(channel_id: "C0AUEEDVCEL", message: <full report>)` via plugin-slack-slack MCP.
-- Slack delivery is built into the Cursor bug-validator workflow; it is not a manual one-off send from the parent chat.
-- If Slack MCP/auth is unavailable, include `Slack delivery: failed` and the failure reason in the validation output.
+- **Required (every run):** Post the full structured analysis in **chat** after each completed validation. The body MUST include, at minimum, the sections in the **Report section order** above. Rule 32 does **not** require a Jira browse link unless the user asks for it.
+- **Slack (user-triggered only):** Send the full structured analysis to the Slack channel **`bug-validation`** (channel ID: `C0AUEEDVCEL`) **only when the user explicitly asks** (e.g. "send to Slack", "post on Slack", or equivalent intent). Use `slack_send_message(channel_id: "C0AUEEDVCEL", message: <full report>)` via plugin-slack-slack MCP. The **Slack** payload MUST be the **same** full structured body as chat (not summary-only) so **Confluence decision URLs**, **Reproduce steps**, and **diagrams used** appear in **`bug-validation`**.
+- Do **not** send to Slack automatically after validation. If the user requests Slack delivery and MCP/auth is unavailable, include `Slack delivery: failed` and the failure reason in the validation output.
 - Chat posting is mandatory even if Slack delivery succeeds or a markdown file is written.
 - Never send only "report sent" or summary-only text without the full chat analysis.
-- **Optional:** If the user runs **`/report`** or explicitly asks to save → write `…/YYYY/<english-month>/<DD>/BugValidation_[DescriptiveName].md` under **Chat reports** per **`Cursor-Project/reports/README.md`**.
+- **Optional:** If the user explicitly asks to save a report → write `…/YYYY/<english-month>/<DD>/BugValidation_[DescriptiveName].md` under **Chat reports** per **`Cursor-Project/reports/README.md`**.
 
 ## Operational gates (no Playwright / test-case pipeline)
 
@@ -187,7 +186,7 @@ Use **Confluence classification + code analysis + database evidence**, with **Sw
 
 - **Rule 0.3:** follow MCP/Jira when needed — no Python IntegrationService here.
 - Consult PhoenixExpert for context when needed.
-- **Rule 0.6:** No automatic `BugValidation_*.md`; file only on **`/report`** or explicit save request.
+- **Rule 0.6:** No automatic `BugValidation_*.md`; file only when user explicitly asks to save.
 - End with: "Agents involved: BugFinderAgent (workflow), PhoenixExpert" (or as applicable).
 
 ## Decision Matrix — quick reference
