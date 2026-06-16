@@ -9,7 +9,7 @@ Ensures **Rule 32** bug validation (mandated by `.cursor/rules/workflows/workflo
 
 **Out of scope for Rule 32:** automatic **test case** generation, **Playwright** spec authoring, **playwright-test-validator**, and **energo-ts-run**. Those belong to **Rule 35** (test cases), **Rule 36/37** (runs / HandsOff), or explicit user requests — not the bug-validator workflow.
 
-**Confluence (exclusive to Rule 32):** **Broad, proactive** Confluence information gathering (Step 2 below) applies **only** when running **this** skill / **`bug-validator`** agent. **Do not** copy Step 2 into cross-dependency-finder, test-case-generator, HandsOff, or general Jira/Phoenix Q&A — those workflows keep **Rule 39** (linked-only for non-bugs), **Rule 35a** shallow Confluence for cross-dep, or user-requested search only.
+**Confluence (exclusive to Rule 32):** **Broad, proactive** Confluence information gathering (Step 2 below) applies **only** when running **this** skill / **`bug-validator`** agent. **Do not** copy Step 2 into cross-dependency-finder, test-case-generator, HandsOff, or general Jira/Phoenix Q&A — those workflows keep **Rule 39** (linked-only for non-bugs), **Rule 35a** deep Confluence exploration for cross-dep, or user-requested search only.
 
 ## When to Apply
 

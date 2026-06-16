@@ -17,7 +17,7 @@ globs:
 
 ## Rule CONFLUENCE.1: When Confluence MCP fails, use REST for read-equivalent data [CRITICAL]
 
-**Intent.** Workflows that must **read** Confluence (bug validation Rule 32 **`bug-validator` only** for *broad* proactive discovery; PhoenixExpert Rule 0.5; cross-dependency **shallow** Confluence; linked pages from Jira; evidence-only answers) MUST prefer **Confluence MCP** first (`getConfluencePage`, `search`, `getConfluenceSpaces`, CQL helpers per tool descriptors). If Confluence MCP is **unavailable** (server disabled, tool errors, auth failure) or **still fails after 2–3 retries** with backoff (see **`.cursor/rules/safety/safety_rules.mdc`** Rule 15), agents MUST **not** stop solely at “Confluence MCP broken” when the user has not blocked REST — they MUST obtain **read-equivalent** page or search data via the **Confluence Cloud REST** read path below.
+**Intent.** Workflows that must **read** Confluence (bug validation Rule 32 **`bug-validator` only** for *broad* proactive discovery; PhoenixExpert Rule 0.5; cross-dependency **deep** Confluence; linked pages from Jira; evidence-only answers) MUST prefer **Confluence MCP** first (`getConfluencePage`, `search`, `getConfluenceSpaces`, CQL helpers per tool descriptors). If Confluence MCP is **unavailable** (server disabled, tool errors, auth failure) or **still fails after 2–3 retries** with backoff (see **`.cursor/rules/safety/safety_rules.mdc`** Rule 15), agents MUST **not** stop solely at “Confluence MCP broken” when the user has not blocked REST — they MUST obtain **read-equivalent** page or search data via the **Confluence Cloud REST** read path below.
 
 **READ-ONLY:** no Confluence creates, updates, deletes, or comments via this path. Same absolute prohibition as **Rule 1** / Confluence edit tools in **`safety_rules.mdc`**.
 
@@ -73,10 +73,10 @@ Use **Confluence Cloud** REST under the wiki base `{CONFLUENCE_WIKI_BASE}` (norm
   `GET {CONFLUENCE_WIKI_BASE}/api/v2/pages/{pageId}?body-format=storage`  
   Use when v1 responses are truncated or your tooling prefers v2; adjust query flags per current Atlassian docs.
 
-**Search / shallow CQL** (when workflow allows one search, e.g. cross-dependency Rule 35a):
+**Search / CQL** (e.g. cross-dependency Rule 35a, or other workflows that need Confluence search):
 
 - `GET {CONFLUENCE_WIKI_BASE}/rest/api/content/search?cql={encodedCql}&limit=25`  
-  Keep CQL narrow; do not crawl large result sets — respect the same **shallow** intent as MCP search.
+  Keep each CQL query focused; for cross-dependency deep exploration, run **multiple targeted queries** rather than one broad crawl. Increase `limit` if needed (e.g. `limit=50`) when the workflow expects deep results.
 
 **Implementation in Cursor:** use **terminal** `Invoke-RestMethod` / `curl` with **Basic auth** (email + API token) and `Accept: application/json`, and/or run:
 
@@ -106,6 +106,6 @@ This rule governs **read** fallback only. **Creating/updating** Confluence pages
 
 - **Rule 32 / bug-validator:** After MCP retries fail, use this REST path before declaring Confluence validation unavailable; update **`phoenix-bug-validation`** SKILL Step 2 accordingly.
 - **Rule 42 / JIRA.1:** Jira REST read does **not** satisfy Confluence read — use **this** rule for Confluence.
-- **Rule 35a / cross-dependency:** If the single allowed Confluence lookup hits MCP failure, one REST **search** or **one** `content/{id}` read is acceptable if it preserves the shallow limit.
+- **Rule 35a / cross-dependency:** Deep Confluence exploration is allowed. If MCP fails, use REST for **multiple** searches and page reads as needed to find detailed descriptions and dependencies for the topic.
 
 Canonical cross-reference: **`.cursor/rules/workflows/workflow_rules.mdc`** Rule **43**.

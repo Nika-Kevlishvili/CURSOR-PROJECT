@@ -103,6 +103,34 @@ Base: **40**
 
 ---
 
+## Evidence factors — Cross-Dependency Discovery (Rule 35a)
+
+Base: **40**
+
+| Factor | Points | Condition | Weight rationale |
+|--------|--------|-----------|-----------------|
+| Phoenix code searched + cited (file:line) | **+20** | Entry points, callers, consumers found in codebase | Runtime dependency map — primary source |
+| Confluence deep exploration completed (≥2 pages read in full) | **+15** | Deep search returned ≥2 relevant pages with full content read | Documented business rules, validation logic, entity relationships |
+| Confluence pages walked (descendants/related) | **+5** | Followed ≥1 descendant or related page link to find deeper context | Richer dependency map from wiki structure |
+| Jira ticket loaded + parsed | **+10** | Issue key, summary, description, links, custom fields extracted | Scope anchor; cross-references to other tickets/features |
+| Environment aligned (PHOENIX-SWITCH.0) | **+5** | Exit code 0 — correct branch for code reads | Prerequisite; binary pass/fail |
+| what_could_break populated (≥3 items) | **+5** | At least 3 items with item + location + reason | Core deliverable of cross-dep |
+| Upstream + downstream both populated | **+5** | Both arrays non-empty in output | Bidirectional dependency coverage |
+| No Confluence pages found | **-10** | Deep search returned 0 relevant pages | Major evidence gap — business rules unknown |
+| Confluence searched but only snippets used (no full page read) | **-5** | Search done but no `getPage` for any result | Shallow evidence despite deep exploration mandate |
+| No Phoenix code found for scope | **-15** | Could not locate relevant entry points or callers | Primary source missing |
+| Jira fetch failed (both MCP + REST) | **-10** | `PROCESS BLOCKED` for Jira | Scope anchor missing |
+| what_could_break empty | **-10** | Zero items in output | Core deliverable missing |
+| Single evidence source only (code-only or Confluence-only) | **-15** | Only one of code/Confluence populated | Cross-validation impossible |
+| Assumption made (per assumption) | **-5** | Inferred dependency not backed by code or Confluence | Each assumption = potential missed or wrong dependency |
+| Code↔Confluence mismatch documented as Finding | **+10** | Surfaced per Rule QA.2 | Product-quality signal |
+| Code↔Confluence mismatch present but not reported | **-15** | Violates Rule QA.0 | Hidden risk |
+| Environment alignment partial (exit code 2) | **-5** | Mixed-state repos | Some repos on wrong branch |
+
+**Max achievable:** 40 + 75 = 115 → capped at **100**
+
+---
+
 ## Evidence factors — Database Query Results
 
 Base: **40**
@@ -197,7 +225,7 @@ HandsOff computes sub-step scores then aggregates:
 **Sub-steps (each scored independently using their factor table above):**
 
 1. **Jira read** — Jira Read Completeness factors
-2. **Cross-dependency** — standard cross-dep factors (see cross-dep SKILL)
+2. **Cross-dependency** — Cross-Dependency Discovery (Rule 35a) factors above
 3. **Test case generation** — TC Generation factors
 4. **Playwright spec quality** — validator score mapped: `validator_score / 100 × 100` (direct mapping — 82/100 rubric = 82% confidence)
 5. **Test run results** — Playwright Test Run Results factors

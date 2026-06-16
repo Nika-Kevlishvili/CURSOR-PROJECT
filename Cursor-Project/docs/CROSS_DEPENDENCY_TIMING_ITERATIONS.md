@@ -4,7 +4,7 @@
 
 If you instrument runs with UTC marker files (`t0`…`t4`), phases measure wall-clock for:
 
-1. Cross-dependency (Jira + codebase + shallow Confluence)
+1. Cross-dependency (Jira + codebase + deep Confluence exploration)
 2. Test-case `.md` authoring
 3. README / index updates
 4. Reporting (Rule 0.6)

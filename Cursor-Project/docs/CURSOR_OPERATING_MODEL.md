@@ -203,7 +203,7 @@ flowchart TD
         |
 [3] PHOENIX-SWITCH   switch-phoenix-branches.ps1 (if Phoenix reads needed)
         |
-[4] cross-dep        Jira + code + shallow Confluence (35a)
+[4] cross-dep        Jira + code + deep Confluence exploration (35a)
         |
 [5] test-case-gen    Backend/Topic.md (+ Frontend/Topic.md if step 2 = Yes)
                      STANDALONE preconditions each TC

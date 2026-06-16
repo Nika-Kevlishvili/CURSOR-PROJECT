@@ -20,7 +20,7 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 | **Senior QA** | `senior-qa.md` | `senior-qa-analysis` | Rule QA.0: defects, doc gaps, code↔doc mismatches. READ-ONLY. |
 | **Bug Validator** | `bug-validator.md` | `phoenix-bug-validation` | Rule 32 + **`### Quality Findings (Senior QA)`** section; Slack **`bug-validation`**. |
 | **Environment Resolver** | `environment-resolver.md` | `environment-resolver` | Resolve Dev/Dev2/Test/PreProd/Prod/Experiments before env-sensitive work (TC-ENV, DB.0a). |
-| **Cross-Dependency Finder** | `cross-dependency-finder.md` | `cross-dependency-finder` | Rule 35a: Jira + codebase + shallow Confluence; **no** local merge/git. |
+| **Cross-Dependency Finder** | `cross-dependency-finder.md` | `cross-dependency-finder` | Rule 35a: Jira + codebase + deep Confluence exploration; **no** local merge/git. |
 | **Test Case Generator** | `test-case-generator.md` | `test-case-generator` | Rule 35: after cross-dep; **`test_cases/Backend/`** always; **`Frontend/`** if TC-FRONTEND-ASK.0 = Yes. |
 | **Test Case Quality Validator** | `test-case-quality-validator.md` | `test-case-quality-validator` | 10-axis rubric, ≥80/100, max 3 rewrites (Rule 35 Step 2.5). |
 | **HandsOff** | `hands-off.md` | `commands/hands-off.md` | Rule 37 full pipeline: TC → Playwright → reports → Slack. |

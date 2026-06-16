@@ -13,7 +13,7 @@ Use this file as the **single map** from “agent role” to **where it lives to
 | **senior-qa.md** | Senior QA Tester (Rule QA.0) | `senior-qa-analysis` | QA audit, doc gaps, code↔doc mismatches, spec vs implementation |
 | **bug-validator.md** | Bug validation + Quality Findings | `phoenix-bug-validation` | Rule 32; **`bug-validator`** subagent |
 | **environment-resolver.md** | Environment gate (6 envs) | `environment-resolver` | TC-ENV-ASK.0, DB.0a, HandsOff Step 1 |
-| **cross-dependency-finder.md** | Cross-dependencies (35, 35a) | `cross-dependency-finder` | Before test cases; Jira + code + shallow Confluence |
+| **cross-dependency-finder.md** | Cross-dependencies (35, 35a) | `cross-dependency-finder` | Before test cases; Jira + code + deep Confluence exploration |
 | **test-case-generator.md** | Test cases (Rule 35) | `test-case-generator` | After **`cross-dependency-finder`** |
 | **test-case-quality-validator.md** | TC quality (10-axis ≥80) | `test-case-quality-validator` | Rule 35 Step 2.5; HandsOff Step 3.5 |
 | **hands-off.md** | HandsOff orchestrator | `commands/hands-off.md` | Rule 37; `/HandsOff`, `!HandsOff` |

@@ -33,7 +33,7 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 **Do not skip:** When the user requests test case creation, complete **Gate order** (0a → 0b → 0c) then run **cross-dependency-finder**, then **test-case-generator** with the finder's output.
 
 0. **Steps 0a–0c** — See **Gate order** table above (TC-ENV-ASK.0 → TC-FRONTEND-ASK.0 → Phoenix alignment per Rule PHOENIX-SWITCH.0). Align every `Cursor-Project/Phoenix/*` repo using `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` (`-ConfirmProd` for `prod` only after explicit user acknowledgement). Pass resolved env + alignment exit code to cross-dependency-finder / generator prompts (Rule PHOENIX-SWITCH.0 §7a). Details: `.cursor/rules/integrations/phoenix_branch_switching.mdc`.
-1. **Step 1 – Cross-dependency-finder:** Same scope (bug/task/feature). Finder MUST follow Rule 35a when user gives Jira/bug/task: **Jira MCP + codebase + shallow Confluence** — **no** local merge/git. **Pattern:** `Cursor-Project/docs/CROSS_DEPENDENCY_WORK_PATTERN.md`. Finder may consult PhoenixExpert. Obtain structured output (including what_could_break and technical_details).
+1. **Step 1 – Cross-dependency-finder:** Same scope (bug/task/feature). Finder MUST follow Rule 35a when user gives Jira/bug/task: **Jira MCP + codebase + deep Confluence exploration** — **no** local merge/git. **Pattern:** `Cursor-Project/docs/CROSS_DEPENDENCY_WORK_PATTERN.md`. Finder may consult PhoenixExpert. Obtain structured output (including what_could_break and technical_details).
 2. **Step 2 – Test-case-generator:** Call with `context['cross_dependency_data'] = <finder output>` (includes technical_details from merges when applicable), plus Confluence data and codebase_findings.
 
 ## Mandatory: Playwright instructions (`playwright_generation`)
@@ -64,10 +64,12 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 - prompt_type: 'bug' | 'task'.
 - confluence_data (from MCP Confluence search).
 - context: { codebase_findings, **cross_dependency_data** } (cross_dependency_data is mandatory when user requested test cases; technical_details from Jira + codebase per Rule 35a, not mandatory merge/MR lists).
+- **`cross_dependency_data.confluence_evidence`**: list of Confluence pages the cross-dep finder read in full, with title + page ID + key findings from each. The generator MUST use this to enrich **expected results** (business rules, validation logic, status transitions) and **preconditions** (entity relationships, documented dependencies) — not just rely on its own Confluence search.
 
 ### 2. Confluence + codebase
 
-- Confluence: cloudId → search → collect title, content, pageId, spaceId.
+- **Cross-dep Confluence evidence (primary):** If `cross_dependency_data.confluence_evidence` is present, use it as the **primary Confluence source** — it contains full-page reads with extracted business rules, validation logic, and entity relationships from deep exploration. Do not discard or re-search what the finder already gathered.
+- **Additional Confluence search:** If the cross-dep evidence is insufficient for specific TC scenarios, perform supplementary Confluence searches (cloudId → search → collect title, content, pageId, spaceId).
 - Codebase: codebase_search (and grep) for terms from prompt; collect findings.
 
 ### 2b. Process diagrams (expected flow alignment)
