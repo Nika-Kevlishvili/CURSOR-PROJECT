@@ -7,9 +7,11 @@
 **Scope:** Backend on **Dev**. Frontend not in scope.  
 **Primary source:** `Cursor-Project/config/jira/attachments/PDT-2187/User Story V 0.2.extracted.txt`
 
-**Execution model:** Run **Shared test data** once → run **Single export** once → run **TC-BE-1 … TC-BE-10** as row-level checks on the **same** export file (no per-TC channel creation, no per-TC export job).
+**Execution model (updated):** **Isolated precondition per liability type** — each scenario gets its **own** customer (where needed), **own** `PAYMENT_PARTNER` collection channel, and **own** export folder. Run `POST /collection-channel/test-export-liabilities-job` per scenario (or once after several channels exist — job exports all eligible channels). Automation helpers: `Cursor-Project/config/playwright/pdt-2187-preconditions.ts`.
 
-**Note on TC-STANDALONE-PRE.0:** This file uses an explicit **shared data pack** + per-TC **row locator** (user-requested). Each TC still lists what that scenario needs from the pack so a tester can re-run one AC in isolation by repeating only the relevant shared steps.
+**Legacy shared pack:** `EnergoTS/tests/cursor/pdt-2187-payment-partner-export.fixtures.ts` (`buildPdt2187SharedPack`) — one channel, one export file for all TCs. Prefer isolated preconditions for re-testing after User Story V 0.2 updates.
+
+**Note on TC-STANDALONE-PRE.0:** Each TC below lists a **standalone** precondition chain (full numbered steps) for that liability type + channel.
 
 **Bank partner (TC-BE-6 / TC-BE-6b):** Requires **`typeOfFile=BANK_PARTNER`** — a **second** channel and **second** output file (CSV). Reuses liabilities from the shared pack where noted; not mixed into the Payment Partner `.txt`.
 

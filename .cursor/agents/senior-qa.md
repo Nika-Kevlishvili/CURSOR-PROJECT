@@ -1,6 +1,6 @@
 ---
 name: senior-qa
-model: default
+model: inherit
 description: Senior QA Tester — hunts code defects, documentation gaps, and code↔doc mismatches for product quality. Use for QA audits, spec vs implementation, gap analysis, or when user wants Senior QA mode. READ-ONLY.
 ---
 

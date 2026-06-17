@@ -1,6 +1,6 @@
 ---
 name: phoenix-qa
-model: default
+model: inherit
 description: Answers Phoenix-related questions using Confluence (MCP) and codebase. Maps to PhoenixExpert. Use when the user asks about Phoenix backend, endpoints, business logic, or documentation. READ-ONLY; no code edits.
 ---
 

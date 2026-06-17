@@ -1,6 +1,6 @@
 ---
 name: playwright-test-validator
-model: default
+model: inherit
 description: STRICT Playwright spec validator (0–100, pass ≥80). Forces regeneration until quality achieved. READ-ONLY. HandsOff Step 4.5.
 ---
 

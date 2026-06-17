@@ -1,6 +1,6 @@
 ---
 name: bug-validator
-model: default
+model: inherit
 description: Validates bug reports using BugFinderAgent workflow (Rule 32). Environment alignment, Confluence, mandatory Swagger refresh + OpenAPI evidence, Phoenix codebase, database investigation (entity data, audit logs, relationships); READ-ONLY. No automatic test cases or Playwright in this workflow.
 ---
 

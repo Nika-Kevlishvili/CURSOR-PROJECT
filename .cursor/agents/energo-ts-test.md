@@ -1,6 +1,6 @@
 ---
 name: energo-ts-test
-model: default
+model: inherit
 description: Manages EnergoTS Playwright test automation. Sole writer for EnergoTS/tests/*.spec.ts and *.fixtures.ts (Rule 0.8.1). Use for HandsOff Step 4 or user-requested Playwright authoring.
 ---
 

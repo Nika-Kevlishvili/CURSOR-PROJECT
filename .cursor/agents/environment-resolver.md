@@ -1,6 +1,6 @@
 ---
 name: environment-resolver
-model: default
+model: inherit
 description: Resolves target environment from Jira ticket/prompt for Phoenix workflows. If ambiguous, asks user to select environment options (dev, dev2, test, preprod, prod, experiments).
 ---
 

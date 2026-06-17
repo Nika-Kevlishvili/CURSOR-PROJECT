@@ -1,6 +1,6 @@
 ---
 name: test-case-generator
-model: default
+model: inherit
 description: Generates test cases from bug or task descriptions using Confluence (MCP) and codebase. Maps to TestCaseGeneratorAgent. Use when the user asks to generate test cases, create test scenarios from a bug, or derive tests from a task description.
 ---
 
