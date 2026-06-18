@@ -7,6 +7,8 @@ Single map from **rule / topic** to the **primary procedural** file(s). When `wo
 | 0.x core | Disclosure, PhoenixExpert, reports, tiers | `.cursor/rules/main/core_rules.mdc` |
 | CONF.0 | Clarify before substantive work | `.cursor/rules/main/clarification_and_confidence.mdc` |
 | CONF.1 | Evidence-based confidence scoring (Three-Zone: GO/CAUTION/STOP) | `.cursor/rules/main/clarification_and_confidence.mdc`, **`.cursor/rules/scoring/confidence_scoring_matrix.mdc`** |
+| QA.0 Senior QA mission | Default Senior QA persona; code defects, doc gaps, code↔doc mismatches; dual-track answers | **`.cursor/rules/main/senior_qa_product_quality.mdc`**, **`.cursor/skills/senior-qa-analysis/SKILL.md`**, **`.cursor/agents/senior-qa.md`** |
+| 0.10 | Senior QA on all Phoenix scope (points to QA.0) | `.cursor/rules/main/core_rules.mdc` |
 | 1 / safety | GitLab & Confluence read-only; tiers | `.cursor/rules/safety/safety_rules.mdc` |
 | 8 / agents | Consultation patterns | `.cursor/rules/agents/agent_rules.mdc` |
 | 32 Bug validation | BugFinder: env alignment, diagrams, Confluence, mandatory Swagger refresh + OpenAPI, code, 5 verdicts, Slack — no TC/Playwright pipeline | `.cursor/skills/phoenix-bug-validation/SKILL.md`, `.cursor/agents/bug-validator.md` |
@@ -20,6 +22,7 @@ Single map from **rule / topic** to the **primary procedural** file(s). When `wo
 | 41 Swagger refresh | Before `.spec.ts` edits | `.cursor/rules/integrations/swagger_refresh_mandatory.mdc` |
 | 42 / JIRA.1 Jira read | MCP first, REST fallback; ticket completeness | `.cursor/skills/jira-evidence/SKILL.md`, `.cursor/rules/integrations/jira_rest_fallback.mdc` |
 | 43 / CONFLUENCE.1 Confluence read | MCP first, REST fallback | `.cursor/rules/integrations/confluence_rest_fallback.mdc`, `Cursor-Project/config/confluence/README.md` |
+| LINK.0–LINK.1 Atlassian user links | Confluence = asterbit wiki slug; Jira = oppa-support browse | `.cursor/rules/integrations/atlassian_link_format.mdc`, `Cursor-Project/reports/README.md` |
 | 44 Jira analysis + Confluence | Ticket analysis must include linked Confluence reads | `.cursor/skills/jira-evidence/SKILL.md` § linked Confluence; `workflow_rules.mdc` Rule 44 |
 | PHOENIX-SWITCH.0 | Align Phoenix repos | **`.cursor/skills/phoenix-branch-switching/SKILL.md`**, `.cursor/rules/integrations/phoenix_branch_switching.mdc` (summary), `.cursor/commands/switch-phoenix-branches.ps1` |
 | JIRA.0 | Experiments board bugs only | `.cursor/rules/integrations/jira_bug_agent.mdc`, `.cursor/skills/jira-bug-template/SKILL.md` |

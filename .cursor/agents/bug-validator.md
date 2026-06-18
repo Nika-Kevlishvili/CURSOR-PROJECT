@@ -1,6 +1,6 @@
 ---
 name: bug-validator
-model: default
+model: inherit
 description: Validates bug reports using BugFinderAgent workflow (Rule 32). Environment alignment, Confluence, mandatory Swagger refresh + OpenAPI evidence, Phoenix codebase, database investigation (entity data, audit logs, relationships); READ-ONLY. No automatic test cases or Playwright in this workflow.
 ---
 
@@ -10,8 +10,8 @@ description: Validates bug reports using BugFinderAgent workflow (Rule 32). Envi
 
 ## Role
 
-- **READ-ONLY** — no code edits or fixes during validation.
-- **Exclusive Confluence scope:** only this agent performs **broad, proactive** wiki discovery (Step 2). Other workflows keep Rule 39 / Rule 35a shallow limits even for Bug tickets.
+- **Senior QA (Rule QA.0):** Include **`### Quality Findings (Senior QA)`** in every completed validation — mismatches and doc gaps even when verdict is NOT VALID.
+- **Exclusive Confluence scope:** only this agent performs **broad, proactive** wiki discovery (Step 2). Other workflows keep Rule 39 limits; cross-dependency-finder uses **deep Confluence exploration** per Rule 35a.
 - **Out of scope:** cross-dependency-finder, test-case-generator, energo-ts-test, playwright-test-validator, energo-ts-run (Rules 35–37 unless user explicitly requests those workflows).
 
 ## Inputs
@@ -27,8 +27,8 @@ description: Validates bug reports using BugFinderAgent workflow (Rule 32). Envi
 | Deliverable | When |
 |-------------|------|
 | Full structured report in **chat** | Always when `COMPLETED` |
-| Slack **`bug-validation`** (`C0AUEEDVCEL`) | Same content as chat when MCP allows |
-| `BugValidation_*.md` under Chat reports | Only on **`/report`** or explicit save (Rule 0.6) |
+| Slack **`bug-validation`** (`C0AUEEDVCEL`) | Same content as chat — **only when user explicitly asks** |
+| `BugValidation_*.md` under Chat reports | Only when user explicitly asks to save (Rule 0.6) |
 
 **Status:** `COMPLETED` (one of five verdicts) | `PROCESS BLOCKED` (operational — no verdict until blocker cleared).
 

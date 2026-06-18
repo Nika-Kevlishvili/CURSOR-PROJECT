@@ -1,6 +1,6 @@
 # Cross-Dependency Finder Agent – Design and Integration
 
-> **Saved work pattern (Jira + codebase + shallow Confluence; no local merge/git):** **`CROSS_DEPENDENCY_WORK_PATTERN.md`** in this folder. **Rule 35a** in `workflow_rules.mdc` forbids mandatory local merge/git for cross-dep.
+> **Saved work pattern (Jira + codebase + deep Confluence exploration; no local merge/git):** **`CROSS_DEPENDENCY_WORK_PATTERN.md`** in this folder. **Rule 35a** in `workflow_rules.mdc` forbids mandatory local merge/git for cross-dep.
 
 ## Overview
 
@@ -41,9 +41,32 @@ The **Cross-Dependency Finder** agent discovers cross-dependencies (modules, ser
 | Source        | What to find                                                                 |
 |---------------|-------------------------------------------------------------------------------|
 | **Codebase**  | Imports, API clients, DB access, event producers/consumers, shared libs.    |
-| **Confluence**| **Shallow only (default):** one search/CQL; **snippets/titles**; optional **single** page if clearly the owning doc. **Do not** deep-walk the wiki. Primary anchor: **Jira + codebase**. |
+| **Confluence**| **Deep exploration:** multiple CQL queries allowed; read **full pages**; walk descendants and related pages to find detailed descriptions, business rules, validation logic, and documented dependencies. Stop when pages become unrelated or sufficient evidence is gathered. |
 
-Collect:
+#### 3a. Confluence deep exploration procedure
+
+Confluence is a **primary evidence source** alongside codebase and Jira. The finder MUST actively search and read Confluence to find documented business rules, validation logic, and dependencies that code alone cannot reveal.
+
+**Search strategy:**
+
+1. **Broad CQL queries:** Run multiple searches using different angles — Jira key, service/module name, feature phrase, related entity names (e.g. "contract creation", "billing run", "POD linking"). Do not stop at a single query.
+2. **Full page reads:** For every relevant search hit, call `getPage` to read the **full content** — not just snippets or titles. Extract: business rules, validation rules, expected behavior, status transitions, entity relationships, integration contracts.
+3. **Walk related pages:** Follow descendant pages, "see also" links, and related pages referenced in the content when they are likely to contain upstream/downstream service descriptions, validation rules, or integration specs.
+4. **Stop condition:** Stop expanding when pages become clearly unrelated to the scope or when sufficient evidence has been gathered for `what_could_break` and the dependency map.
+
+**What to extract from Confluence:**
+
+- Business rules and validation logic (e.g. "contract must be ACTIVE before billing", "POD must be linked")
+- Entity lifecycle and status transitions (e.g. contract statuses, invoice states)
+- Integration contracts between services (e.g. "billing calls receivable service after invoice creation")
+- Documented dependencies and data flows (e.g. "disconnection request requires liability check")
+- Expected behavior that code alone does not document (product owner intent, edge case rules)
+
+**Output:** Populate `confluence_evidence` in the output payload with: page title, page ID, and key findings extracted from each page.
+
+#### 3b. Codebase discovery
+
+Collect from codebase:
 
 - **Upstream:** What the scope depends on (other services, DB tables, external APIs, config).
 - **Downstream:** What depends on the scope (callers, subscribers, UI).
@@ -71,7 +94,10 @@ Structured payload that the test-case-generator can use:
   "what_could_break": [
     { "item": "caller/consumer/contract/user", "location": "file or service", "reason": "why change could affect it" }
   ],
-  "technical_details": "Jira key + codebase-derived notes (paths, services); merge/MR lists only if user explicitly requested GitLab review"
+  "technical_details": "Jira key + codebase-derived notes (paths, services); merge/MR lists only if user explicitly requested GitLab review",
+  "confluence_evidence": [
+    { "page_title": "...", "page_id": "...", "key_findings": ["business rule X", "validation Y", "dependency Z"] }
+  ]
 }
 ```
 

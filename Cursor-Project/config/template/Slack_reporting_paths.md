@@ -4,7 +4,7 @@ There are **three** distinct Slack delivery paths. **Do not merge or confuse the
 
 | # | Path | When | Channel / recipients | Template / format |
 |---|------|------|----------------------|-------------------|
-| **1** | **Bug validation (BugFinder)** | After completed bug validation (Rule 32) | **`bug-validation`** (`C0AUEEDVCEL`) — chat analysis only; optional disk file only on `/report` | Structured verdict report per Rule 32 — **not** `Slack_report_template.md` |
+| **1** | **Bug validation (BugFinder)** | **Only when user explicitly asks** (e.g. "send to Slack") — not automatic after validation | **`bug-validation`** (`C0AUEEDVCEL`) — chat analysis always; Slack + optional disk file only on user request | Structured verdict report per Rule 32 (same full body as chat) — **not** `Slack_report_template.md` |
 | **2** | **HandsOff** | **`/HandsOff`** / **`!HandsOff`** | Tester DM + **`#ai-report`** (`C0AK96S1D7X`) | **Text:** 3 blocks (`Slack_report_summary_short_template.md`). **MANDATORY:** attach **`{JIRA_KEY}.md`** + **`playwright-report-detailed.md`** (when JSON exists) via **`upload-file-to-slack.ps1`**. **Disk:** **`HandsOff reports/…/{JIRA_KEY}.md`** + **`EnergoTS/playwright-report-detailed.md`**. Optional long chat: **`Slack_report_template.md`**. |
 | **3** | **Scoped Playwright Slack** | User asks Slack for **specific** tests | Same recipients when Jira Tester exists | Same **text + mandatory uploads**: **ScopedPlaywright_*.md** + **`playwright-report-detailed.md`** (when JSON exists). **`send-playwright-results-slack.md`**. |
 

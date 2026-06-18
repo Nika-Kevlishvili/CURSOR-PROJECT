@@ -16,7 +16,7 @@ This file is the **main index** for workspace rules under **`.cursor/rules/`**. 
 
 | Folder | Path | Contents |
 |--------|------|----------|
-| **main** | `.cursor/rules/main/` | `core_rules.mdc` (Rule 0.x), `clarification_and_confidence.mdc` (Rule CONF.0), `phoenix.mdc` (this index) |
+| **main** | `.cursor/rules/main/` | `core_rules.mdc` (Rule 0.x), `senior_qa_product_quality.mdc` (Rule QA.0), `clarification_and_confidence.mdc` (Rule CONF.0), `phoenix.mdc` (this index) |
 | **safety** | `.cursor/rules/safety/` | `safety_rules.mdc` |
 | **agents** | `.cursor/rules/agents/` | `agent_rules.mdc` |
 | **workflows** | `.cursor/rules/workflows/` | `workflow_rules.mdc`, `handsoff_playwright_report.mdc`, `playwright_detailed_reporting.mdc` |
@@ -34,6 +34,7 @@ Cursor loads **all** `.mdc` files under `.cursor/rules/` **recursively** (subjec
 
 - **Rule 0.x:** `.cursor/rules/main/core_rules.mdc`
 - **Clarification / confidence gate:** `.cursor/rules/main/clarification_and_confidence.mdc` (Rule CONF.0)
+- **Senior QA mission:** `.cursor/rules/main/senior_qa_product_quality.mdc` (Rule QA.0–QA.4; default persona)
 - **Agents:** `.cursor/rules/agents/agent_rules.mdc`
 - **Safety:** `.cursor/rules/safety/safety_rules.mdc`
 - **Workflows:** `.cursor/rules/workflows/workflow_rules.mdc`, `.cursor/rules/workflows/handsoff_playwright_report.mdc`, `.cursor/rules/workflows/playwright_detailed_reporting.mdc`
@@ -46,24 +47,25 @@ Cursor loads **all** `.mdc` files under `.cursor/rules/` **recursively** (subjec
 
 1. **Rule 0.0:** Tiered rules loading — see **`core_rules.mdc`**; canonical map: **`Cursor-Project/docs/RULES_CANONICAL_INDEX.md`**. **Rule CONF.0:** If scope/environment/target/success criteria are ambiguous → ask before substantive action; do not guess (`clarification_and_confidence.mdc`).
 2. **Rule 0.1:** "Agents involved" footer mandatory
-3. **Rule 0.2:** ALL Phoenix questions → PhoenixExpert ONLY
-4. **Rule 0.6:** Disk reports **only** when mandated (e.g. HandsOff), **`/report`**, **`/feedback`**, or explicit user save — default **chat-first**; full text: **`core_rules.mdc`** Rule 0.6
-5. **Rule 0.8:** Phoenix never edited by AI; EnergoTS only EnergoTSTestAgent in `tests/`; all other workspace paths editable when user requests (provisional) — see `.cursor/rules/safety/safety_rules.mdc` Rule 7
-6. **Rule 1:** GitLab and Confluence are READ-ONLY
-7. **Rule 0.4 / Rule 8:** PhoenixExpert consultation mandatory before tasks
-8. **Rule 11 / 0.3:** External automation may use IntegrationService; in Cursor chat follow MCP/Jira/GitLab steps — no `agents.*` imports here
-9. **Rule 32:** ALL bug validation → ALWAYS use BugFinderAgent
-10. **Rule 35/35a:** Test cases → **TC-ENV-ASK.0** (environment) → **TC-FRONTEND-ASK.0** → Phoenix align → cross-dependency-finder → generator; Rule 35a: **Jira + codebase + shallow Confluence** — **no** local merge/git (see `test_cases_structure.mdc`, `workflow_rules.mdc`)
-10a. **Rule 42 / JIRA.1:** Jira issue reads — **MCP first**; if Jira MCP fails after retries, use **REST read fallback** — **`.cursor/rules/integrations/jira_rest_fallback.mdc`**
-10b. **Rule 43 / CONFLUENCE.1:** Confluence reads — **MCP first**; if Confluence MCP fails after retries, use **REST read fallback** — **`.cursor/rules/integrations/confluence_rest_fallback.mdc`** (script: **`Cursor-Project/config/confluence/get-confluence-page-rest.ps1`**)
-10c. **Rule 44:** Jira ticket **analysis/triage/summary** with linked Confluence URLs → **must** read those pages same pass — **`.cursor/rules/main/evidence_only_project_answers.mdc`** (*Jira ticket analysis — linked Confluence*); **`workflow_rules.mdc`** Rule 44
-11. **Rule 36:** Run Playwright tests from EnergoTS → energo-ts-run workflow ONLY; run only from `cursor` branch (Rule ENERGOTS.0)
-11a. **Rule PHOENIX-SWITCH.0:** Before environment-sensitive Phoenix code reading (Q&A, bug validation, cross-dep, test-case generation, HandsOff), align every `Cursor-Project/Phoenix/*` repo to the matching `origin/<branch>` via `.cursor/commands/switch-phoenix-branches.ps1`; local Phoenix edits are discarded; Phoenix files stay READ-ONLY (Rule 0.8 Tier A) — see `.cursor/rules/integrations/phoenix_branch_switching.mdc`
-12. **Rule 37:** Jira ticket + /HandsOff or !HandsOff → ALWAYS run full HandsOff flow (hands-off command/orchestrator); report named after Jira key + send to Slack to tester
-12a. **Slack paths:** Bug validation (Rule 32) vs HandsOff vs scoped Playwright Slack — **`Cursor-Project/config/template/Slack_reporting_paths.md`** (do not merge; bug-validator workflow untouched)
-13. **Rule JIRA.0:** Jira bug agent → Experiments board ONLY; NEVER create bugs in Phoenix delivery
-14. **Rule PDR.0:** Production data questions → ALWAYS use ProductionDataReaderAgent
-15. **Rule 34:** Cursor subagent specs live in **`.cursor/agents/*.md`** (flat registry). Historical Python **`Cursor-Project/agents/`** package removed — do not recreate without explicit project decision.
+3. **Rule 0.2:** ALL Phoenix questions → PhoenixExpert ONLY (+ Senior QA lens, Rule QA.0)
+4. **Rule 0.10 / QA.0:** Default Senior QA — defects, doc gaps, code↔doc mismatches; dual-track answers; **Finding** on conflict
+5. **Rule 0.6:** Disk reports **only** when mandated (e.g. HandsOff), **`/report`**, **`/feedback`**, or explicit user save — default **chat-first**; full text: **`core_rules.mdc`** Rule 0.6
+6. **Rule 0.8:** Phoenix never edited by AI; EnergoTS only EnergoTSTestAgent in `tests/`; all other workspace paths editable when user requests (provisional) — see `.cursor/rules/safety/safety_rules.mdc` Rule 7
+7. **Rule 1:** GitLab and Confluence are READ-ONLY
+8. **Rule 0.4 / Rule 8:** PhoenixExpert consultation mandatory before tasks
+9. **Rule 11 / 0.3:** External automation may use IntegrationService; in Cursor chat follow MCP/Jira/GitLab steps — no `agents.*` imports here
+10. **Rule 32:** ALL bug validation → ALWAYS use BugFinderAgent
+11. **Rule 35/35a:** Test cases → **TC-ENV-ASK.0** (environment) → **TC-FRONTEND-ASK.0** → Phoenix align → cross-dependency-finder → generator; Rule 35a: **Jira + codebase + deep Confluence exploration** — **no** local merge/git (see `test_cases_structure.mdc`, `workflow_rules.mdc`)
+12. **Rule 42 / JIRA.1:** Jira issue reads — **MCP first**; if Jira MCP fails after retries, use **REST read fallback** — **`.cursor/rules/integrations/jira_rest_fallback.mdc`**
+13. **Rule 43 / CONFLUENCE.1:** Confluence reads — **MCP first**; if Confluence MCP fails after retries, use **REST read fallback** — **`.cursor/rules/integrations/confluence_rest_fallback.mdc`** (script: **`Cursor-Project/config/confluence/get-confluence-page-rest.ps1`**)
+14. **Rule 44:** Jira ticket **analysis/triage/summary** with linked Confluence URLs → **must** read those pages same pass — **`.cursor/rules/main/evidence_only_project_answers.mdc`** (*Jira ticket analysis — linked Confluence*); **`workflow_rules.mdc`** Rule 44
+15. **Rule 36:** Run Playwright tests from EnergoTS → energo-ts-run workflow ONLY; run only from `cursor` branch (Rule ENERGOTS.0)
+16. **Rule PHOENIX-SWITCH.0:** Before environment-sensitive Phoenix code reading (Q&A, bug validation, cross-dep, test-case generation, HandsOff), align every `Cursor-Project/Phoenix/*` repo to the matching `origin/<branch>` via `.cursor/commands/switch-phoenix-branches.ps1`; local Phoenix edits are discarded; Phoenix files stay READ-ONLY (Rule 0.8 Tier A) — see `.cursor/rules/integrations/phoenix_branch_switching.mdc`
+17. **Rule 37:** Jira ticket + /HandsOff or !HandsOff → ALWAYS run full HandsOff flow (hands-off command/orchestrator); report named after Jira key + send to Slack to tester
+18. **Slack paths:** Bug validation (Rule 32) vs HandsOff vs scoped Playwright Slack — **`Cursor-Project/config/template/Slack_reporting_paths.md`** (do not merge; bug-validator workflow untouched)
+19. **Rule JIRA.0:** Jira bug agent → Experiments board ONLY; NEVER create bugs in Phoenix delivery
+20. **Rule PDR.0:** Production data questions → ALWAYS use ProductionDataReaderAgent
+21. **Rule 34:** Cursor subagent specs live in **`.cursor/agents/*.md`** (flat registry). Historical Python **`Cursor-Project/agents/`** package removed — do not recreate without explicit project decision.
 
 ---
 

@@ -21,6 +21,8 @@ Cursor-Project/reports/<Chat reports|HandsOff reports|Feedback>/YYYY/<english-mo
 
 No Python `ReportingService`. English on disk (Rule 0.7).
 
+**Atlassian links:** Confluence → `https://asterbit.atlassian.net/wiki/spaces/Phoenix/pages/{id}/{slug}`; Jira PDT → `https://oppa-support.atlassian.net/browse/{KEY}`. Never `oppa-support` for wiki. See **`.cursor/rules/integrations/atlassian_link_format.mdc`**.
+
 **Do not:** create `Summary_*.md`, `BugValidation_*.md`, `Feedback_*.md`, or other report files after routine tasks, bug validation, or tests without **`/report`**, **`/feedback`**, or an explicit save request — except **HandsOff** → **HandsOff reports** per Rule 37. **Do not** use `Cursor-Project/reports/YYYY-MM-DD/` as a report root.
 
 ## Chat reports naming (optional)

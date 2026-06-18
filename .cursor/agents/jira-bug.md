@@ -1,6 +1,6 @@
 ---
 name: jira-bug
-model: default
+model: inherit
 description: Creates or rewrites Jira bug tickets using the Experiments board template only. Use when the user wants to create a Jira bug or rewrite an existing one for the Experiments board. Must NOT create bugs in Phoenix delivery (Rule JIRA.0).
 ---
 

@@ -1,6 +1,6 @@
 # Cross-dependency work pattern (saved reference)
 
-**Purpose:** Stable record of how **cross-dependency discovery** and **test-case handoff (Rule 35)** run in this workspace: **Jira + codebase + shallow Confluence** — **no** local merge/git archaeology on disk (e.g. `D:` clones are not a mandatory source of truth).
+**Purpose:** Stable record of how **cross-dependency discovery** and **test-case handoff (Rule 35)** run in this workspace: **Jira + codebase + deep Confluence exploration** — **no** local merge/git archaeology on disk (e.g. `D:` clones are not a mandatory source of truth).
 
 **Rules:** `.cursor/rules/workflows/workflow_rules.mdc` — **Rule 35** and **Rule 35a** (rewritten: no local merge/git for cross-dep).
 
@@ -9,7 +9,7 @@
 ## 1. When this applies
 
 - **Cross-dependencies**, “what could break”, or **test cases** (Rule 35: cross-dependency-finder **before** test-case-generator).
-- User gives a **Jira/bug/task key** → **Rule 35a**: anchor on **Jira MCP + codebase** (+ shallow Confluence); **not** `git log` / merge lists by default.
+- User gives a **Jira/bug/task key** → **Rule 35a**: anchor on **Jira MCP + codebase + deep Confluence exploration**; **not** `git log` / merge lists by default.
 
 ---
 
@@ -22,10 +22,11 @@ Optional **GitLab MR (read-only)** only if the **user explicitly** asks.
 
 ---
 
-## 3. Confluence — shallow only (cross-dependency)
+## 3. Confluence — deep exploration (cross-dependency)
 
-- **Primary evidence:** **Jira + codebase**; Confluence is **light** (one search/CQL, snippets/titles; optional single page if clearly the owning spec).
-- **Do not:** deep wiki walks, descendant trees, many pages.
+- **Primary evidence:** **Jira + codebase + Confluence** — all three are primary sources.
+- Confluence agent MUST actively search broadly (multiple CQL queries), read full pages, and walk descendants/related pages to find detailed descriptions, business rules, validation logic, and documented dependencies.
+- **Stop condition:** Stop expanding reads when pages become clearly unrelated or sufficient evidence is gathered.
 
 ---
 

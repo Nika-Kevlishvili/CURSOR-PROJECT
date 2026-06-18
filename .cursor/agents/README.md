@@ -12,7 +12,8 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 
 | Subagent file | Role | When to use |
 |---------------|------|-------------|
-| **phoenix-qa.md** | PhoenixExpert (Rule 0.2) | Phoenix Q&A; Confluence MCP + codebase. READ-ONLY. |
+| **phoenix-qa.md** | PhoenixExpert (Rule 0.2) + Senior QA lens | Phoenix Q&A; Confluence MCP + codebase; **Findings** on mismatch. READ-ONLY. |
+| **senior-qa.md** | Senior QA Tester (Rule QA.0) | QA audit, doc gaps, code↔doc mismatches, spec vs implementation. READ-ONLY. |
 | **bug-validator.md** | Bug validation (Rule 32) | Confluence → codebase → full analysis in chat; **Chat reports** file only if **`/report`** or explicit save. READ-ONLY. |
 | **test-runner.md** | TestAgent | Tests; consult PhoenixExpert first; report results. |
 | **report-generator.md** | Reports (Rule 0.6) | **`/report`**, **`/feedback`**, explicit save request, or **Rule 37 (HandsOff)** file only — per **`Cursor-Project/reports/README.md`**. |
@@ -23,7 +24,7 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 | **postman-collection.md** | Postman collections | PhoenixExpert first; save under `postman/`. |
 | **test-case-generator.md** | Test cases (Rule 35) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.md`; Confluence + codebase + `cross_dependency_data`; save Backend always; Frontend only if TC-FRONTEND scope includes UI. |
 | **test-case-quality-validator.md** | TC quality gate (Rule 35 Step 2.5) | **10-axis, ≥80/100** STRICT scoring; READ-ONLY; max 3 rewrites. |
-| **cross-dependency-finder.md** | Cross-dependencies (Rule 35, 35a) | Jira + code + shallow Confluence; **no** local merge/git; hand off to test-case-generator. |
+| **cross-dependency-finder.md** | Cross-dependencies (Rule 35, 35a) | Jira + code + deep Confluence exploration; **no** local merge/git; hand off to test-case-generator. |
 | **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8.1) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.spec.ts`; Playwright under `EnergoTS/tests/` only. |
 | **energo-ts-run.md** | Playwright runner (Rule 36) | `npx playwright test` from EnergoTS; `cursor` branch only. JSON→MD + Slack uploads are owned by **HandsOff / path 3**; ad-hoc runs: generator only if user explicitly asks (**Rule DPR.0**). |
 | **jira-bug.md** | Jira bug (Rule JIRA.0) | Experiments board only. |

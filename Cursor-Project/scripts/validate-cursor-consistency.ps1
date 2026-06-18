@@ -19,12 +19,13 @@ $warnings = @()
 function Add-Failure([string]$Msg) { $script:failures += $Msg }
 function Add-Warning([string]$Msg) { $script:warnings += $Msg }
 
-# --- Six core alwaysApply rules (Phase 3 target)
+# --- Six core alwaysApply rules (Phase 3 target) + Senior QA mission (Rule QA.0)
 $expectedAlwaysApply = @(
     'main\core_rules.mdc',
     'safety\safety_rules.mdc',
     'main\clarification_and_confidence.mdc',
     'main\evidence_only_project_answers.mdc',
+    'main\senior_qa_product_quality.mdc',
     'workflows\workflow_rules.mdc',
     'agents\agent_rules.mdc'
 )
@@ -42,7 +43,7 @@ $expectedNorm = $expectedAlwaysApply | Sort-Object
 $actualNorm = $actualAlwaysApply | Sort-Object
 
 foreach ($extra in ($actualNorm | Where-Object { $_ -notin $expectedNorm })) {
-    Add-Failure "Unexpected alwaysApply:true rule (target: 6 core only): rules\$extra"
+    Add-Failure "Unexpected alwaysApply:true rule (target: 7 core only): rules\$extra"
 }
 foreach ($missing in ($expectedNorm | Where-Object { $_ -notin $actualNorm })) {
     Add-Failure "Missing expected alwaysApply:true rule: rules\$missing"
@@ -83,6 +84,68 @@ Get-ChildItem -Path $CursorRoot -Recurse -Include '*.md', '*.mdc' -File | ForEac
     $t = Get-Content -LiteralPath $_.FullName -Raw
     if ([regex]::IsMatch($t, $dryOrchestrationPattern)) {
         Add-Failure "DRY precondition text in orchestration (use STANDALONE): $($_.FullName.Replace($RepoRoot, '').TrimStart('\'))"
+    }
+}
+
+# --- Rule QA.0: forbid legacy "code wins" authority in orchestration (.cursor only)
+$qaForbiddenPatterns = @(
+    'code wins',
+    'code still wins',
+    'Code ALWAYS wins',
+    'code > Confluence',
+    'codebase > Confluence',
+    'Prefer codebase over Confluence when they conflict'
+)
+Get-ChildItem -Path $CursorRoot -Recurse -Include '*.md', '*.mdc' -File | ForEach-Object {
+    $t = Get-Content -LiteralPath $_.FullName -Raw
+    foreach ($pat in $qaForbiddenPatterns) {
+        if ($t -like "*$pat*") {
+            Add-Failure "Legacy code-wins authority in orchestration (use dual-track + Finding): $($_.FullName.Replace($RepoRoot, '').TrimStart('\')) — pattern: $pat"
+        }
+    }
+}
+
+# --- Rule QA.0: required Senior QA artifacts
+$qaRequiredFiles = @(
+    '.cursor\rules\main\senior_qa_product_quality.mdc',
+    '.cursor\skills\senior-qa-analysis\SKILL.md',
+    '.cursor\agents\senior-qa.md'
+)
+foreach ($rel in $qaRequiredFiles) {
+    $full = Join-Path $RepoRoot $rel
+    if (-not (Test-Path -LiteralPath $full)) {
+        Add-Failure "Missing Senior QA artifact: $rel"
+    }
+}
+
+$qaCrossRefs = @(
+    @{ Path = '.cursor\rules\main\core_rules.mdc'; Required = @('Rule 0.10', 'senior_qa_product_quality', 'Finding') }
+    @{ Path = '.cursor\skills\phoenix-commands\SKILL.md'; Required = @('senior-qa', 'senior-qa-analysis') }
+    @{ Path = 'Cursor-Project\docs\AGENT_SUBAGENT_MAP.md'; Required = @('senior-qa.md') }
+    @{ Path = '.cursor\rules\main\clarification_and_confidence.mdc'; Required = @('Finding (Rule QA.2') }
+)
+foreach ($ref in $qaCrossRefs) {
+    $full = Join-Path $RepoRoot $ref.Path
+    if (-not (Test-Path -LiteralPath $full)) {
+        Add-Failure "QA cross-ref target missing: $($ref.Path)"
+        continue
+    }
+    $content = Get-Content -LiteralPath $full -Raw
+    $hit = $false
+    foreach ($req in $ref.Required) {
+        if ($content -like "*$req*") { $hit = $true; break }
+    }
+    if (-not $hit) {
+        Add-Failure "QA cross-ref missing in $($ref.Path) (expected one of: $($ref.Required -join ', '))"
+    }
+}
+
+# --- clarification quick ref must not use legacy Conflicting evidence -10 alone
+$confPath = Join-Path $RulesRoot 'main\clarification_and_confidence.mdc'
+if (Test-Path -LiteralPath $confPath) {
+    $conf = Get-Content -LiteralPath $confPath -Raw
+    if ($conf -match 'Conflicting evidence \| — \| -10' -and $conf -notmatch 'Finding \(Rule QA\.2') {
+        Add-Failure 'clarification_and_confidence.mdc still has legacy Conflicting evidence -10 without QA Finding factors'
     }
 }
 
@@ -249,6 +312,7 @@ $skillAliases = @{
     'bug-validator' = 'phoenix-bug-validation'
     'database-query' = 'phoenix-database'
     'jira-bug' = 'jira-bug-template'
+    'senior-qa' = 'senior-qa-analysis'
 }
 $noSkillOk = @('hands-off', 'phoenix-qa', 'report-generator', 'shell', 'test-runner', 'environment-access', 'postman-collection', 'jira-bug')
 

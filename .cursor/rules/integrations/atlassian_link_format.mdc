@@ -1,0 +1,72 @@
+---
+description: Canonical Atlassian URL format for Confluence and Jira in reports, test cases, and chat deliverables
+alwaysApply: true
+---
+
+# ATLASSIAN LINK FORMAT [MUST]
+
+## Rule LINK.0: User-facing URLs — host split
+
+Phoenix wiki and PDT Jira live on **different** Atlassian hosts. Never mix them.
+
+| System | Host | User-facing pattern |
+|--------|------|---------------------|
+| **Confluence (Phoenix wiki)** | `asterbit.atlassian.net` | `https://asterbit.atlassian.net/wiki/spaces/Phoenix/pages/{pageId}/{Title+slug}` |
+| **Jira (PDT / oppa-support)** | `oppa-support.atlassian.net` | `https://oppa-support.atlassian.net/browse/{ISSUE_KEY}` |
+
+**Forbidden for Confluence:** `oppa-support.atlassian.net/wiki/...` — returns *null* / broken page in browser.
+
+**Forbidden in deliverables:** REST API URLs (`/rest/api/...`, `/rest/api/3/...`) as the primary link users should click.
+
+---
+
+## Rule LINK.1: Confluence page links (full slug required)
+
+**Preferred format** (markdown):
+
+```markdown
+[Page title](https://asterbit.atlassian.net/wiki/spaces/Phoenix/pages/{pageId}/{Title+With+Plus+Encoding})
+```
+
+**Examples:**
+
+- `https://asterbit.atlassian.net/wiki/spaces/Phoenix/pages/72155868/Request+for+disconnection+of+the+power+supply+-+Create`
+- `https://asterbit.atlassian.net/wiki/spaces/Phoenix/pages/429031426/Request+for+disconnection+liabilities+selecting+logic`
+
+**How to build the slug:**
+
+1. Prefer `webui` from cached Confluence JSON under `Cursor-Project/config/confluence/pages/` — prepend `https://asterbit.atlassian.net/wiki`.
+2. Else encode page title: spaces → `+`, `/` → `%2F`, keep `-` and alphanumerics.
+
+**Do not** use page-ID-only URLs (`.../pages/72155868` without slug) in new reports when the slug is known — full slug is the project standard.
+
+---
+
+## Rule LINK.2: Jira ticket links
+
+```markdown
+[PDT-2971](https://oppa-support.atlassian.net/browse/PDT-2971)
+```
+
+Use `oppa-support.atlassian.net/browse/{KEY}` for PDT and other tickets fetched from that Jira instance.
+
+---
+
+## Rule LINK.3: Where this applies
+
+**MUST** use canonical format in:
+
+- Chat reports (`Cursor-Project/reports/**`)
+- Test cases (`Cursor-Project/test_cases/**`)
+- Bug validation, HandsOff, and PhoenixExpert deliverables that cite wiki or Jira
+- Slack messages that include Confluence/Jira links
+
+Violation is a **MUST** when user-facing Confluence links use `oppa-support` wiki or omit the known full slug.
+
+---
+
+## Rule LINK.4: MCP / REST vs user links
+
+- MCP and REST may use cloud-specific API bases internally.
+- When **citing** Confluence in answers, always translate to **LINK.1** asterbit wiki URLs.
+- When **citing** Jira, always translate to **LINK.2** browse URLs.

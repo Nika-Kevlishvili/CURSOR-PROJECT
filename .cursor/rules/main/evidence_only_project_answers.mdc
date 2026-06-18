@@ -10,10 +10,12 @@ alwaysApply: true
 Prevent the assistant from answering **project-related questions** using personal interpretation or improvisation.
 For project scope, answers MUST be grounded in **verifiable sources**:
 
-1. **Codebase** (highest priority)
-2. **Confluence via MCP (read-only), or Confluence Cloud REST read fallback** (secondary; **`.cursor/rules/integrations/confluence_rest_fallback.mdc`**) when MCP is unavailable after retries — disclose **`Confluence source: REST fallback …`** in chat
-3. **Swagger/OpenAPI** (especially for API contracts: fields, enums, required properties)
+1. **Codebase** — authoritative for **runtime behavior today** (what the system actually does)
+2. **Confluence via MCP (read-only), or Confluence Cloud REST read fallback** — authoritative for **documented product intent / expected behavior** (**`.cursor/rules/integrations/confluence_rest_fallback.mdc`**); disclose **`Confluence source: REST fallback …`** when used
+3. **Swagger/OpenAPI** — published HTTP contract (fields, enums, required properties); compare to code (Rule QA.0)
 4. **Database evidence** (schema objects + read-only queries): tables/views, constraints, and stored routines (functions/procedures)
+
+**Senior QA (Rule QA.0):** When (1) and (2) both apply and **disagree**, cite **both** and add a **Finding** per **`senior_qa_product_quality.mdc`** — do not answer from code alone without noting the spec conflict.
 
 If evidence is insufficient, the assistant MUST ask **1–2 targeted clarifying questions** and STOP instead of guessing.
 
@@ -37,8 +39,8 @@ If unclear whether it is project-related, treat it as project-related and reques
 
 Before asserting behavior for project scope, the assistant MUST do ALL of the following:
 
-- **Locate evidence** in at least one approved source (code / Confluence / Swagger).
-- **Prefer code** when code and Confluence disagree (code wins).
+- **Locate evidence** in at least one approved source (code / Confluence / Swagger); for behavior analysis, prefer **both** code and Confluence when accessible.
+- **On conflict:** state runtime (code) and spec (Confluence) separately; file a **Code↔Doc mismatch** Finding (Rule QA.2) — **forbidden** to silently pick one side.
 - **Do not generalize** beyond what the evidence supports.
 
 ### Required citations in the answer

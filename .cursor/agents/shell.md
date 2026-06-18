@@ -1,6 +1,6 @@
 ---
 name: shell
-model: default
+model: inherit
 description: Command-line and git execution in isolation. Use for bash/PowerShell tasks, repo inspection, and safe read-only git operations when delegating from the parent agent.
 ---
 

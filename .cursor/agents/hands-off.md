@@ -1,6 +1,6 @@
 ---
 name: hands-off
-model: default
+model: inherit
 description: Orchestrates the full HandsOff flow when user provides a Jira ticket and /HandsOff or !HandsOff. Runs Jira fetch → cross-dependencies → test cases → TC quality → Playwright → spec validation → run → report → Slack.
 ---
 

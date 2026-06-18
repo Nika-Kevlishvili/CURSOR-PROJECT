@@ -22,7 +22,7 @@ description: "Workflow obligations (Rules 32–44): summary + exit criteria. Ste
 - **Phoenix align:** **Rule PHOENIX-SWITCH.0**; prod requires `-ConfirmProd` + user ack
 - **Evidence:** Confluence (broad discovery **bug-validator only**) + mandatory Swagger refresh + aligned Phoenix code + DB (supporting, same env)
 - **SKILL must cover (do not skip read):** diagram bundles under **`Cursor-Project/config/Diagrams/`** when ticket has no diagram; Confluence **Phase 2 exclusion** on Prod/PreProd (prefer Phase 1 wiki); attachment recovery — see **`.cursor/skills/phoenix-bug-validation/SKILL.md`**
-- **Slack** `bug-validation` when MCP allows; disk report only on **`/report`** or explicit save (**Rule 0.6**)
+- **Slack** `bug-validation` **only when user explicitly asks**; disk report only when user explicitly asks to save (**Rule 0.6**)
 - **Rule 41** applies to any EnergoTS `.spec.ts` work — Rule 32 does not author specs
 
 Violation is a **BLOCK**.
@@ -48,7 +48,7 @@ When the user requests test cases, run **in order** (gates fixed — **`test_cas
 | **0a** | Ask environment (six envs) if not named | **`environment-resolver`**, TC-ENV-ASK.0 |
 | **0b** | Ask Backend vs Backend+Frontend | TC-FRONTEND-ASK.0 |
 | **0c** | Align Phoenix (`switch-phoenix-branches.ps1`) | PHOENIX-SWITCH.0 |
-| **1** | **cross-dependency-finder** (35a: Jira + code + shallow Confluence; **no** merge/git archaeology) | **`.cursor/skills/cross-dependency-finder/SKILL.md`** |
+| **1** | **cross-dependency-finder** (35a: Jira + code + deep Confluence exploration; **no** merge/git archaeology) | **`.cursor/skills/cross-dependency-finder/SKILL.md`** |
 | **2** | **test-case-generator** with `cross_dependency_data`; read playwright instructions pack + Test Case Template; **TC-STANDALONE-PRE.0** | **`.cursor/skills/test-case-generator/SKILL.md`** |
 | **2.5** | **test-case-quality-validator** — 10-axis, **≥80/100**, max **3** rewrites; block if still failing | **`.cursor/skills/test-case-quality-validator/SKILL.md`** |
 
@@ -81,7 +81,7 @@ Violation is a **BLOCK**.
 
 - Default: ticket text + **linked Confluence URLs only**; no broad CQL/search unless user asks or PhoenixExpert Q&A requires it
 - **Bug** issue type alone does **not** grant broad wiki search outside **`bug-validator`**
-- Cross-dep: **shallow** Confluence only (**`.cursor/skills/cross-dependency-finder/SKILL.md`**)
+- Cross-dep: **deep Confluence exploration** — search broadly, read full pages, walk related pages to find detailed descriptions and dependencies (**`.cursor/skills/cross-dependency-finder/SKILL.md`**)
 
 Violation is a **MUST**.
 

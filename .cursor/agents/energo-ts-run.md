@@ -1,6 +1,6 @@
 ---
 name: energo-ts-run
-model: default
+model: inherit
 description: Runs specific Playwright tests from EnergoTS (local repo synced from GitHub) based on user prompt. Resolves which test to run (by name, Jira key, file path, or "newly created") and executes npx playwright test. Use when the user asks to run a Playwright test, run a newly created test, or run a specific test from GitHub/EnergoTS.
 ---
 

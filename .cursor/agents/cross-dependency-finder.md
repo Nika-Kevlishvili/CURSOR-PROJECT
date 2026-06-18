@@ -1,6 +1,6 @@
 ---
 name: cross-dependency-finder
-model: default
+model: inherit
 description: Finds cross-dependencies (modules, services, APIs, DB) for a scope. Shares output with TestCaseGeneratorAgent so test cases are better covered. Use when the user asks for dependency analysis, cross-dependencies, or more robust test coverage.
 ---
 
@@ -28,9 +28,9 @@ Optional save: `Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope_slug>.json`
 
 ## Rule 35a / Confluence scope
 
-- **Jira + codebase + shallow Confluence** — GitLab MR only if user explicitly asks.
-- **Bug:** one shallow Confluence search allowed.
-- **Non-bug:** linked Confluence URLs only (Rule 39).
+- **Jira + codebase + deep Confluence exploration** — GitLab MR only if user explicitly asks.
+- Confluence is a **primary evidence source**: search broadly (multiple CQL queries), read full pages, walk descendants and related pages to find detailed descriptions, business rules, validation logic, and documented dependencies.
+- Stop expanding reads only when pages become clearly unrelated or sufficient evidence is gathered.
 
 ## Constraints
 

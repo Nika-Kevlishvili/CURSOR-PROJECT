@@ -1,6 +1,6 @@
 ---
 name: energo-ts-test
-model: default
+model: inherit
 description: Manages EnergoTS Playwright test automation. Sole writer for EnergoTS/tests/*.spec.ts and *.fixtures.ts (Rule 0.8.1). Use for HandsOff Step 4 or user-requested Playwright authoring.
 ---
 
@@ -30,6 +30,14 @@ description: Manages EnergoTS Playwright test automation. Sole writer for Energo
 3. New cursor spec: `./cursor-test.fixtures` import (SKILL § Framework).
 4. Every new `test()` uses `TestRunSummary` + `finalizeTestRunSummary` (SKILL § Manual verification links).
 5. Run **playwright-test-validator** before parent runs tests (Step 4.5).
+
+## Standalone / bug-only automation
+
+Same validator gate as HandsOff — **not** optional when user requests Playwright authoring outside `/HandsOff`:
+
+1. After spec write → invoke **playwright-test-validator** immediately.
+2. If no TC `.md` on disk → pass `jira_key`; validator aligns to Jira reproduce steps (see playwright-test-validator SKILL § Bug-only inputs).
+3. **≥80/100** before suggesting **energo-ts-run**; max 3 fix loops.
 
 ## Constraints
 

@@ -48,11 +48,13 @@ Route to cross-dependency-finder subagent / CrossDependencyFinderAgent. Do not d
 ### 3. Find cross-dependencies
 
 - **Codebase:** Imports, references, API clients, DB access, event producers/consumers, shared libs. In code links/references, identify **what could break** (callers, consumers, contract users).
-- **Confluence (MCP) — shallow only (default):** Do **not** dig deeply. **Primary evidence** remains **Jira + codebase**; Confluence is **light context** only. If Confluence MCP fails after retries, use **read-only REST** for **at most one** page fetch or **one** CQL search per **`.cursor/rules/integrations/confluence_rest_fallback.mdc`** (disclose **`Confluence source: REST fallback …`** to the parent).
-  - **At most one** search or **one** CQL query for the topic (Jira key, service name, or feature phrase).
-  - Use **search snippets and titles** from the first page of results; treat them as sufficient unless **exactly one** hit is obviously the owning spec — then **at most one** `getPage` for that page.
-  - **Forbidden for this workflow:** walking descendants, footers, many related pages, multi-hop “see also”, or full long-page reads. Extract only what is **surface-visible** (title, snippet, top headings if one page is opened).
-  - If top results are weak or redundant with git/Jira, **stop** — note `confluence_shallow: skipped_or_snippets_only` in `technical_details` or a short note in the narrative output.
+- **Confluence (MCP) — deep exploration:** Confluence is a **primary evidence source** alongside Jira and codebase. The agent MUST actively search for and read relevant wiki pages to find **detailed descriptions, business rules, validation logic, and documented behavior** for the topic. If Confluence MCP fails after retries, use **read-only REST** per **`.cursor/rules/integrations/confluence_rest_fallback.mdc`** (disclose **`Confluence source: REST fallback …`** to the parent).
+  - **Search broadly:** Use multiple CQL queries if needed (Jira key, service/module name, feature phrase, related entity names) to find all relevant pages.
+  - **Read full pages:** When search results return relevant hits, use `getPage` to read the **full content** of each relevant page — not just snippets and titles.
+  - **Walk related pages:** Follow descendants, "see also" links, and related pages when they are likely to contain dependency or integration details (e.g. upstream/downstream service descriptions, validation rules, status transitions, integration specs).
+  - **Extract business context:** From Confluence pages, extract: business rules, validation logic, expected behavior, entity relationships, integration contracts, status flows, and any documented dependencies that the codebase alone cannot reveal.
+  - **Stop condition:** Stop expanding Confluence reads when pages become clearly unrelated to the topic or when sufficient evidence has been gathered for `what_could_break` and dependency mapping.
+  - If no relevant Confluence pages are found after broad search, note `confluence_deep: no_relevant_pages_found` in `technical_details`.
 - **Collect:** upstream, downstream, shared, data_entities, integration_points, **what_could_break** (item, location, reason).
 
 ### 4. Output format
@@ -65,6 +67,7 @@ Produce structured payload for Test Case Generator:
 - **shared**, **data_entities**, **integration_points**
 - **what_could_break**: `[{ "item", "location", "reason" }]`
 - **technical_details**: Jira key + codebase-derived pointers/notes when user provided a Jira/bug/task (Rule 35a); merge/MR lists only if user explicitly requested GitLab review.
+- **confluence_evidence**: list of Confluence pages read with title + page ID + key findings extracted from each.
 
 Optionally save to `Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope_slug>.json`.
 
@@ -85,7 +88,7 @@ Optionally save to `Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope_slug>.js
 
 ## Confidence Score (Rule CONF.1 — Three-Zone) [MANDATORY]
 
-The final output MUST include an **evidence-based Confidence Score**: `**Confidence: XX% (ZONE)**` with evidence factors. Compute from evidence: base 40, add/subtract per source gathered or missing. Zones: **GO** (≥ 85%), **CAUTION** (55–84% + assumptions + verify list), **STOP** (< 55% — do not deliver final analysis, ask user). See `.cursor/rules/scoring/confidence_scoring_matrix.mdc`. Be honest — do not inflate.
+The final output MUST include an **evidence-based Confidence Score**: `**Confidence: XX% (ZONE)**` with evidence factors. Compute from the **Cross-Dependency Discovery (Rule 35a)** factor table in **`.cursor/rules/scoring/confidence_scoring_matrix.mdc`**: base 40, add/subtract per evidence factor. Key factors: Phoenix code cited (+20), Confluence deep exploration completed (+15), Jira loaded (+10), what_could_break populated (+5), no Confluence found (-10), single source only (-15). Zones: **GO** (≥ 85%), **CAUTION** (55–84% + assumptions + verify list), **STOP** (< 55% — do not deliver final analysis, ask user). Be honest — do not inflate.
 
 ## Command reference
 

@@ -10,15 +10,28 @@ description: STRICT Playwright spec validator (0–100, pass ≥80). Compares sp
 ## When to apply
 
 - **HandsOff Step 4.5** — after energo-ts-test creates spec, before Step 5 run.
-- User asks to validate a Playwright spec against test cases.
+- **Standalone / bug-only automation** — **mandatory** immediately after energo-ts-test writes or changes a spec (energo-ts-test SKILL § Post-authoring validation).
+- User asks to validate a Playwright spec (`/playwright-validate <JIRA_KEY>` or natural language).
 
 ## Inputs
 
-- Backend TC path (required); Frontend path when it exists on disk.
-- Spec path: `EnergoTS/tests/cursor/{KEY}-*.spec.ts`
-- Jira key for naming checks.
+| Field | Required | Notes |
+|-------|----------|-------|
+| `spec_path` | Yes | `EnergoTS/tests/cursor/{KEY}-*.spec.ts` |
+| `jira_key` | Yes | Naming + bug-only alignment |
+| `backend_path` | When TC exists | `Cursor-Project/test_cases/Backend/<Topic>.md` |
+| `frontend_path` | No | Only when file exists on disk |
 
-**Coverage:** Expected `test()` count = TC count in **provided** `.md` files only. Do not require Frontend when no Frontend file.
+### Bug-only inputs (no TC `.md`)
+
+When `backend_path` is absent (common for direct bug automation after Rule 32):
+
+1. Read Jira issue (MCP or REST per Rule 42): summary, `customfield_10103` / description, reproduce steps, expected vs actual.
+2. **Coverage (criterion 2):** expect ≥1 `test()` covering the Jira reproduce path; deduct −5 per missing major Jira verification step (reminder tab, load PODs, view POD tab, etc.).
+3. **TC alignment (criterion 3):** score against Jira steps + expected/actual instead of TC `.md`.
+4. Framework, hook ban, preconditions, Swagger, naming criteria unchanged.
+
+**Coverage with TC files:** Expected `test()` count = TC count in **provided** `.md` files only. Do not require Frontend when no Frontend file.
 
 ## Scoring model (0–100, pass ≥80)
 

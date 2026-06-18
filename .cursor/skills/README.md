@@ -6,6 +6,7 @@ Skills guide the Cursor agent for this repo’s workflows. **Location:** workspa
 
 | Skill | Purpose |
 |-------|---------|
+| **senior-qa-analysis** | Rule QA.0; code defects, doc gaps, mismatches; dual-track runtime vs spec |
 | **phoenix-agent-workflow** | Rules + subagents + PhoenixExpert; Rule 0.3 (no `agents.*`); reports |
 | **phoenix-bug-validation** | Rule 32 in chat (Confluence → codebase → analysis in reply; file only if `/report` or explicit save) |
 | **phoenix-file-organization** | Where to put files (`Cursor-Project/`, `.cursor/`, `User story/`) |

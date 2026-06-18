@@ -11,6 +11,7 @@
 
 This repository is **not** the Phoenix application. It is the **QA automation and validation control plane** for Phoenix delivery:
 
+0. **Product quality first (Rule QA.0):** Default **Senior QA Tester** lens — hunt code defects, documentation gaps, and code↔doc mismatches; never silently collapse spec vs runtime conflicts.
 1. **Jira → test cases → Playwright API tests → reports** (HandsOff and related flows).
 2. **Bug triage** with evidence (Confluence, Swagger, Phoenix code read-only, optional DB).
 3. **Safe AI operation** — hooks and rules block Phoenix edits, Confluence writes, wrong EnergoTS branches, and silent environment guesses.
@@ -98,7 +99,7 @@ flowchart TD
 | Core tiers & reports | `main/core_rules.mdc` | 0.6 chat-first; 0.8 Phoenix/EnergoTS tiers; 0.1 footer |
 | Safety | `safety/safety_rules.mdc` | GitLab/Confluence read-only |
 | Clarification | `main/clarification_and_confidence.mdc` | CONF.0 ask; CONF.1 score |
-| Evidence | `main/evidence_only_project_answers.mdc` | Code > Confluence; Jira completeness |
+| Evidence | `main/evidence_only_project_answers.mdc`, `main/senior_qa_product_quality.mdc` | Dual-track runtime vs spec; Findings on conflict; Jira completeness |
 | Workflow obligations | `workflows/workflow_rules.mdc` | Rules 32–44 **summary only** → link SKILL |
 | Agents | `agents/agent_rules.mdc` | Routing; PhoenixExpert consultation |
 
@@ -202,7 +203,7 @@ flowchart TD
         |
 [3] PHOENIX-SWITCH   switch-phoenix-branches.ps1 (if Phoenix reads needed)
         |
-[4] cross-dep        Jira + code + shallow Confluence (35a)
+[4] cross-dep        Jira + code + deep Confluence exploration (35a)
         |
 [5] test-case-gen    Backend/Topic.md (+ Frontend/Topic.md if step 2 = Yes)
                      STANDALONE preconditions each TC

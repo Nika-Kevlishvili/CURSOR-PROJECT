@@ -155,8 +155,8 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 **What it can do:**
 - Follow **Rule 0.3** (this workspace: no Python `IntegrationService` in chat; use MCP/Jira when external context is needed).
 - Search Confluence via MCP (fresh, no cache).
-- Search Phoenix codebase (primary source).
-- Answer with source priority: codebase > Confluence > general knowledge.
+- Search Phoenix codebase (runtime truth) **and** compare to Confluence (documented spec).
+- Answer **dual-track**; file **Finding** on mismatch (**Rule QA.0–QA.2**). Do not silently prefer code over Confluence.
 - Optional save: **`Cursor-Project/reports/Chat reports/YYYY/<english-month>/<DD>/PhoenixExpert_{HHMM}.md`** per **`Cursor-Project/reports/README.md`**.
 
 **When to use:** Any question about Phoenix backend, APIs, business logic, or documentation.
@@ -227,10 +227,10 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 **Trigger:** Dependency analysis, “what could break”, or before test case generation (Rule 35). **Rule 35a** applies when user gives a Jira/bug/task key.
 
 **What it can do:**
-- **Rule 35a:** **Jira MCP + codebase + shallow Confluence** — **no** local merge/`git log`/git sync solely for cross-dep; **technical_details** from Jira + code. **GitLab MR** only if the user explicitly asks.
+- **Rule 35a:** **Jira MCP + codebase + deep Confluence exploration** — **no** local merge/`git log`/git sync solely for cross-dep; **technical_details** from Jira + code. **GitLab MR** only if the user explicitly asks.
 - Follow Rule 0.3; consult PhoenixExpert if needed (Rule 8).
 - Define scope (bug/task/feature): entry points, modules, services.
-- Find cross-dependencies: code (imports, APIs, DB, callers, consumers) and Confluence (shallow).
+- Find cross-dependencies: code (imports, APIs, DB, callers, consumers) and Confluence (deep exploration — full pages, related pages, business rules).
 - Produce structured report: scope, entry_points, upstream, downstream, shared, data_entities, integration_points, **what_could_break**, **technical_details**.
 - Optionally save to `Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope>.json`.
 - Output is passed to test-case-generator as `context['cross_dependency_data']`.
@@ -242,7 +242,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 
 ## 15. Test case generate
 
-**Trigger:** “Generate test cases for this bug/task/feature” (Rule 35). Cross-dependency-finder follows Rule 35a (Jira + codebase + shallow Confluence; no local merge/git).
+**Trigger:** “Generate test cases for this bug/task/feature” (Rule 35). Cross-dependency-finder follows Rule 35a (Jira + codebase + deep Confluence exploration; no local merge/git).
 
 **What it can do:**
 - **Step 1 (mandatory):** Run cross-dependency-finder for the same scope (Rule 35a); get report including what_could_break and technical_details; pass as `context['cross_dependency_data']`.
@@ -282,7 +282,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 
 **What it can do:**
 1. **Get Jira ticket** – Parse issue key; call Jira MCP getJiraIssue → description, summary, tester/assignee.
-2. **Cross-dependencies** – Run cross-dependency-finder for this Jira key (Rule 35a: Jira + codebase + shallow Confluence; no local merge/git); get cross_dependency_data.
+2. **Cross-dependencies** – Run cross-dependency-finder for this Jira key (Rule 35a: Jira + codebase + deep Confluence exploration; no local merge/git); get cross_dependency_data.
 3. **Test cases** – Run test-case-generator; save **`test_cases/Backend/<Topic>.md`** always; **`Frontend/<Topic>.md`** only if TC-FRONTEND-ASK.0 = Yes.
 4. **TC quality (Step 3.5)** – **test-case-quality-validator**; 10-axis ≥80/100; max 3 rewrites; **BLOCK** if still failing.
 5. **Playwright tests** – **`energo-ts-test`** + **`energo-ts-test/SKILL.md`** → **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**; **`cursor`** branch (Rule ENERGOTS.0).

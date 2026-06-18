@@ -4,18 +4,19 @@ alwaysApply: true
 
 # AGENT RULES [CRITICAL]
 
-2. [CRITICAL] All Phoenix questions MUST be answered by PhoenixExpert agent.
+2. [CRITICAL] All Phoenix questions MUST be answered by PhoenixExpert agent with **Senior QA Tester** lens (Rule QA.0 / Rule 0.10).
    - AUTO-APPLY from FIRST message in ANY new chat session.
-   - PhoenixExpert has final authority on Phoenix-related matters.
-   - Confluence MCP Integration Workflow: (1) Get cloudId, (2) Get spaces, (3) Search Confluence, (4) Get pages, (5) Check codebase, (6) Call PhoenixExpert with both sources.
-   - Code is primary source, Confluence is secondary.
+   - PhoenixExpert has final authority on Phoenix-related matters; **product quality** means surfacing defects, doc gaps, and code↔doc mismatches — not hiding conflicts.
+   - Confluence MCP Integration Workflow: (1) Get cloudId, (2) Get spaces, (3) Search Confluence, (4) Get pages, (5) Check codebase, (6) Synthesize with **dual-track** (runtime vs spec) and **Findings** when sources disagree.
+   - **Runtime:** code (+ Swagger for API). **Spec:** Confluence (+ ticket). **Mismatch:** mandatory Finding per `senior_qa_product_quality.mdc`.
    - Violation is a **BLOCK**.
 
 4. [IMPORTANT] Multi-agent collaboration is encouraged for complex tasks.
    - In Cursor chat: coordinate via **`.cursor/agents/`** subagent specs, skills, and explicit handoffs (no Python AgentRouter in this workspace).
 
 5. [IMPORTANT] Tasks must be performed by domain-specialized agents (see `.cursor/agents/*.md` and skills):
-   - PhoenixExpert → Phoenix backend, endpoints, schedulers (Rule 0.2)
+   - **Senior QA Tester** → code defects, doc gaps, spec↔implementation (`senior-qa.md`, `senior-qa-analysis` SKILL; Rule QA.0)
+   - PhoenixExpert → Phoenix backend, endpoints, schedulers (Rule 0.2) — **includes** Senior QA Findings when mismatches exist
    - test-case-generator / test-case-quality-validator → Rule 35 test cases
    - energo-ts-test / playwright-test-validator / energo-ts-run → Playwright (Rules 36–37)
    - bug-validator → Rule 32
@@ -68,7 +69,7 @@ alwaysApply: true
     **Pattern 5: Multi-Agent Routing** - Parent agent → subagents / explicit handoffs → combined response (no Python AgentRouter)
     **Pattern 6: Phoenix + Test** - PhoenixExpert → consults TestAgent (if test-related) → provides answer
     **Pattern 7: Integration Service** - When Python IntegrationService exists in automation → `update_before_task()` → task; in Cursor chat follow Rule 0.3
-    **Pattern 8: Bug Validation** - BugFinder workflow (Rule 32) → Confluence + mandatory Swagger/OpenAPI + aligned Phoenix codebase → full analysis in chat (+ Slack `bug-validation`); optional `BugValidation_*.md` only on **`/report`** or explicit save (no `get_bug_finder_agent` import; no automatic TC/Playwright pipeline in Rule 32)
+    **Pattern 8: Bug Validation** - BugFinder workflow (Rule 32) → Confluence + mandatory Swagger/OpenAPI + aligned Phoenix codebase → full analysis in chat; Slack `bug-validation` **only when user explicitly asks**; optional `BugValidation_*.md` only when user explicitly asks to save (no `get_bug_finder_agent` import; no automatic TC/Playwright pipeline in Rule 32)
     
     All participating agents MUST appear in "Agents involved" footer.
 

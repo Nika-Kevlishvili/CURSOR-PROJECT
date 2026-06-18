@@ -33,7 +33,7 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 **Do not skip:** When the user requests test case creation, complete **Gate order** (0a → 0b → 0c) then run **cross-dependency-finder**, then **test-case-generator** with the finder's output.
 
 0. **Steps 0a–0c** — See **Gate order** table above (TC-ENV-ASK.0 → TC-FRONTEND-ASK.0 → Phoenix alignment per Rule PHOENIX-SWITCH.0). Align every `Cursor-Project/Phoenix/*` repo using `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` (`-ConfirmProd` for `prod` only after explicit user acknowledgement). Pass resolved env + alignment exit code to cross-dependency-finder / generator prompts (Rule PHOENIX-SWITCH.0 §7a). Details: `.cursor/rules/integrations/phoenix_branch_switching.mdc`.
-1. **Step 1 – Cross-dependency-finder:** Same scope (bug/task/feature). Finder MUST follow Rule 35a when user gives Jira/bug/task: **Jira MCP + codebase + shallow Confluence** — **no** local merge/git. **Pattern:** `Cursor-Project/docs/CROSS_DEPENDENCY_WORK_PATTERN.md`. Finder may consult PhoenixExpert. Obtain structured output (including what_could_break and technical_details).
+1. **Step 1 – Cross-dependency-finder:** Same scope (bug/task/feature). Finder MUST follow Rule 35a when user gives Jira/bug/task: **Jira MCP + codebase + deep Confluence exploration** — **no** local merge/git. **Pattern:** `Cursor-Project/docs/CROSS_DEPENDENCY_WORK_PATTERN.md`. Finder may consult PhoenixExpert. Obtain structured output (including what_could_break and technical_details).
 2. **Step 2 – Test-case-generator:** Call with `context['cross_dependency_data'] = <finder output>` (includes technical_details from merges when applicable), plus Confluence data and codebase_findings.
 
 ## Mandatory: Playwright instructions (`playwright_generation`)
@@ -64,10 +64,12 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 - prompt_type: 'bug' | 'task'.
 - confluence_data (from MCP Confluence search).
 - context: { codebase_findings, **cross_dependency_data** } (cross_dependency_data is mandatory when user requested test cases; technical_details from Jira + codebase per Rule 35a, not mandatory merge/MR lists).
+- **`cross_dependency_data.confluence_evidence`**: list of Confluence pages the cross-dep finder read in full, with title + page ID + key findings from each. The generator MUST use this to enrich **expected results** (business rules, validation logic, status transitions) and **preconditions** (entity relationships, documented dependencies) — not just rely on its own Confluence search.
 
 ### 2. Confluence + codebase
 
-- Confluence: cloudId → search → collect title, content, pageId, spaceId.
+- **Cross-dep Confluence evidence (primary):** If `cross_dependency_data.confluence_evidence` is present, use it as the **primary Confluence source** — it contains full-page reads with extracted business rules, validation logic, and entity relationships from deep exploration. Do not discard or re-search what the finder already gathered.
+- **Additional Confluence search:** If the cross-dep evidence is insufficient for specific TC scenarios, perform supplementary Confluence searches (cloudId → search → collect title, content, pageId, spaceId).
 - Codebase: codebase_search (and grep) for terms from prompt; collect findings.
 
 ### 2b. Process diagrams (expected flow alignment)
@@ -78,13 +80,13 @@ Use **`prompt_type`** (`'bug'` vs `'task'`) from inputs — behavior differs.
 
 - When the ticket has **no** diagram attachment and no diagram URL in scope yet, consult **`Cursor-Project/config/Diagrams/`** (`Bundle 4`–`6`): pick matching `.svg` files, align steps/expected results, cite paths under **`## References`** (same as prior bug-validation alignment).
 - When Jira/Confluence provides downloadable diagram assets, save read-only under **`Cursor-Project/config/confluence/diagrams/<pageId-or-issueKey>/`** and cite in **References**.
-- **Authority:** **code + Confluence** override contradictory diagrams; note conflicts in **References**.
+- **Authority:** Compare Confluence (expected results) vs code (runtime). **Expected results in TCs follow documented spec.** If code differs → add **Finding** under **References** (Rule QA.2); note if TC validates spec vs current code behavior.
 
 **Tasks / non-bugs (`prompt_type: 'task'`) — user-supplied scope wins:**
 
 1. **Diagram already in scope** (task/Jira description, linked Confluence page text/media from that ticket, diagram URLs or attachments in **chat**, explicit diagram URLs the user or ticket provided): treat **written description + that diagram** as **primary**. Do **not** prioritize or substitute **`Cursor-Project/config/Diagrams/`** over what the task already contains. Local library is **out of scope** unless the user asks to compare or the description is silent and you are in case (2).
 2. **No diagram in task description or linked pages:** search **`Cursor-Project/config/Diagrams/`** for plausible `.svg` matches. **Mandatory gate:** if any candidate fits, **do not** write TC files based on that diagram until the user confirms — ask explicitly whether to use it, naming **each candidate by full workspace path** (and one-line why it might match). If the user declines or multiple candidates remain ambiguous, omit local diagram from TC scope until clarified.
-3. **Authority:** same as bugs — **code + Confluence** override contradictory diagrams; document discrepancies in **References**.
+3. **Authority:** Compare Confluence vs code; document code↔doc mismatches as **Finding** in **References** (Rule QA.2); diagrams alone never override verified code or Confluence.
 
 ### 3. Self-contained preconditions (Rule TC-STANDALONE-PRE.0 — MANDATORY)
 

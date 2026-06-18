@@ -46,6 +46,8 @@ Per-TC block: all 10 axis scores + TOTAL + PASS/FAIL + mandatory fixes if FAIL.
 
 Re-scan rubric catalog; rescore if missed deductions.
 
+**Rule QA.0 (Senior QA):** If **`## References`** lacks a **Finding** when generator noted spec↔code divergence (or expected results follow Confluence while code differs), deduct **Axis 5 (Risk coverage)** to **≤3/10** and list mandatory fix: add Finding per **`senior_qa_product_quality.mdc`** Rule QA.2.
+
 ### Step 5 — Summary verdict
 
 Backend table + optional Frontend table + OVERALL VERDICT + failed TC list + iteration (1–3).

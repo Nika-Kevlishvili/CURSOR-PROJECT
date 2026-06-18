@@ -23,9 +23,10 @@ Rules load first (**Rule 0.0**) from **`.cursor/rules/`**.
 
 | User intent | Route to |
 |-------------|-----------|
-| Phoenix question (endpoints, logic, docs) | `.cursor/agents/phoenix-qa.md` — PhoenixExpert (**Rule 0.2**) |
+| Phoenix question (endpoints, logic, docs) | `.cursor/agents/phoenix-qa.md` — PhoenixExpert + Senior QA lens (**Rule 0.2**, **QA.0**) |
+| QA audit, doc gaps, code↔doc mismatch, spec vs implementation | `.cursor/agents/senior-qa.md`, **`senior-qa-analysis`** skill (**Rule QA.0**) |
 | Consult before a Phoenix-related task | **Rule 8** + `.cursor/skills/phoenix-agent-workflow/SKILL.md`; PhoenixExpert patterns like **`phoenix-qa`** |
-| Saved Chat report | `.cursor/skills/phoenix-reporting/SKILL.md`, `.cursor/agents/report-generator.md` — user **`/report`** or explicit save (**Rule 0.6**) |
+| Saved Chat report | `.cursor/skills/phoenix-reporting/SKILL.md`, `.cursor/agents/report-generator.md` — user explicitly asks to save (**Rule 0.6**) |
 | Session feedback file | **`phoenix-reporting`** skill — **Feedback saves**; **`report-generator`** |
 | Bug validation | `.cursor/agents/bug-validator.md`, **`phoenix-bug-validation`** skill (**Rule 32**) |
 | Jira bug text (Experiments only) | **`jira-bug`** subagent, **`jira-bug-template`** skill (**Rule JIRA.0**) |
@@ -41,11 +42,15 @@ Rules load first (**Rule 0.0**) from **`.cursor/rules/`**.
 
 ### Phoenix Q&A
 
-Confluence (MCP, fresh) → codebase → answer as PhoenixExpert. Optional disk reports only per **Rule 0.6** / **`report-generator`**.
+Confluence (MCP, fresh) → codebase → **dual-track** answer (runtime vs spec) as PhoenixExpert + Senior QA lens. **Finding** when sources diverge (**Rule QA.2**). Optional disk reports only per **Rule 0.6** / **`report-generator`**.
+
+### Senior QA audit
+
+**Rule QA.0:** defects, doc gaps, mismatches — **`senior-qa`** subagent or **`senior-qa-analysis`** skill. READ-ONLY; cite both code and Confluence.
 
 ### Bug validation
 
-Rule **32**: **`bug-validator`** subagent; evidence from **Confluence (mandatory full wiki URL per decision page in chat + Slack)**, mandatory **`update-swagger-specs.ps1`**, aligned Phoenix code, reproduce steps + diagrams per skill; **no** automatic test-case or Playwright pipeline inside Rule 32. **Env gate:** if Jira Environment is empty, parent must **not** delegate with a pre-filled env — subagent asks user (six options) before alignment/DB. Chat + Slack **`bug-validation`**; no disk unless **`/report`** or explicit save.
+Rule **32**: **`bug-validator`** subagent; evidence from **Confluence (mandatory full wiki URL per decision page in chat + Slack)**, mandatory **`update-swagger-specs.ps1`**, aligned Phoenix code, reproduce steps + diagrams per skill; **no** automatic test-case or Playwright pipeline inside Rule 32. **Env gate:** if Jira Environment is empty, parent must **not** delegate with a pre-filled env — subagent asks user (six options) before alignment/DB. Chat always; Slack **`bug-validation`** **only when user asks**; no disk unless user explicitly asks to save.
 
 ### HandsOff
 
