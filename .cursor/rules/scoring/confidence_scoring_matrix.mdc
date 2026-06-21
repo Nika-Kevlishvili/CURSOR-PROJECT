@@ -218,6 +218,72 @@ Base: **40**
 
 ---
 
+## Evidence factors — Regression Validation (Dev-to-Dev2)
+
+Base: **40** (applied to **each** sub-score: Dev sub-score and Dev2 sub-score independently).
+
+**Aggregation:** `Final = MIN(Dev sub-score, Dev2 sub-score)` — same minimum-of-critical as HandsOff.
+
+**Mutually exclusive groups:** factors marked `[GROUP X]` — apply **only one** from each group per sub-score. Applying multiple from the same group is a scoring error.
+
+### Dev sub-score factors (Steps 0-3)
+
+| Factor | Points | Condition | Group |
+|--------|--------|-----------|-------|
+| Jira ticket fetched + rich data (desc + AC) | **+20** | Step 1a: description + acceptance criteria present | `[A]` |
+| Jira ticket fetched + sparse (summary only) | **+10** | Step 1a: minimal detail | `[A]` |
+| Both MCP and REST Jira failed | **-20** | Step 1: PROCESS BLOCKED | `[A]` |
+| Git commit found referencing ticket | **+10** | Step 1b: `git log --grep` returned results | — |
+| Dev environment aligned (exit 0) | **+5** | Step 2a: full success | `[B]` |
+| Dev alignment partial (exit 2) | **-5** | Step 2a: some repos misaligned | `[B]` |
+| Dev code found + cited (file:line) | **+15** | Step 2c: relevant implementation located | `[C]` |
+| No code found for ticket scope | **-15** | Steps 1-2: CODE_MAPPING = UNKNOWN | `[C]` |
+| Dev code matches Jira description | **+10** | Step 3: code clearly addresses ticket | `[D]` |
+| Dev code partially matches | **+5** | Step 3: some aspects unclear | `[D]` |
+| Dev code does not match ticket description | **-10** | Step 3: unclear alignment | `[D]` |
+| Assumption made (per assumption) | **-5** | Any inferred behavior | — |
+| Step Validator critical failure | **-10** | Wrong branch, PROCESS BLOCKED recovered | — |
+| Step Validator minor failure | **-3** | HEAD not fresh, non-critical warning | — |
+
+### Dev2 sub-score factors (Steps 4-5)
+
+| Factor | Points | Condition | Group |
+|--------|--------|-----------|-------|
+| Jira ticket quality (inherited from Dev) | **+20 or +10** | Same as Dev `[A]` result | `[A]` |
+| Dev2 environment aligned (exit 0) | **+5** | Step 4a: full success | `[E]` |
+| Dev2 alignment partial (exit 2) | **-5** | Step 4a: some repos misaligned | `[E]` |
+| Ticket commit found on Dev2 | **+15** | Step 4c: `git log origin/dev2 --grep` found it | `[F]` |
+| Ticket commit NOT on Dev2 | **-15** | Step 4c: not deployed | `[F]` |
+| Dev2 code matches Dev for ticket scope | **+15** | Step 5: `git diff` shows no relevant differences | `[G]` |
+| Dev2 code partially matches | **+5** | Step 5: some changes present, some missing | `[G]` |
+| Significant Dev vs Dev2 differences | **-10** | Step 5: unexpected code divergence | `[G]` |
+| Code missing entirely on Dev2 | **-20** | Step 5: file or method absent | `[G]` |
+| Mismatch documented as Finding | **+5** | Senior QA Finding filed per Rule QA.2 | — |
+| Mismatch present but no Finding | **-10** | Mismatch detected but not documented | — |
+| Assumption made (per assumption) | **-5** | Any inferred behavior | — |
+| Step Validator critical failure | **-10** | Wrong branch, PROCESS BLOCKED recovered | — |
+| Step Validator minor failure | **-3** | HEAD not fresh, non-critical warning | — |
+
+**Max achievable per sub-score:** 40 + 60 = **100** (with perfect evidence on all groups).
+
+**Three-Zone meaning for regression:**
+
+| Zone | Range | Interpretation |
+|------|-------|---------------|
+| **GO** | ≥ 85% | Code deployed and verified on Dev2 — high confidence |
+| **CAUTION** | 55–84% | Likely deployed but gaps exist — recommend manual spot-check |
+| **STOP** | < 55% | Cannot confirm deployment — manual verification required |
+
+**Output format:**
+```
+**Confidence: XX% (ZONE)** [aggregation: minimum-of-subscores]
+- Dev: XX% (ZONE)
+- Dev2: XX% (ZONE) ← limiting factor
+Reason: <which sub-score limited and why>
+```
+
+---
+
 ## HandsOff Pipeline aggregation (Rule 37)
 
 HandsOff computes sub-step scores then aggregates:
@@ -352,6 +418,7 @@ All factor weights were set based on the workspace's evidence model (Rule QA.0 /
 |------|--------|--------|
 | 2026-06-10 | Initial weights set | Based on evidence hierarchy + research literature |
 | 2026-06-11 | QA.0 alignment | Dual-track; Finding documented +10 / hidden conflict -15; TC References Finding factors |
+| 2026-06-22 | Regression Validation factors added | Dev-to-Dev2 regression workflow; git-based deployment check; Step Validator gates |
 
 ---
 
@@ -376,7 +443,7 @@ Log outcomes to **`Cursor-Project/config/confidence/conf_log.jsonl`** when the u
 | Field | Required | Description |
 |-------|----------|-------------|
 | `ts` | yes | ISO 8601 timestamp |
-| `workflow` | yes | bug-validation, test-cases, handsoff, db-query, phoenix-expert |
+| `workflow` | yes | bug-validation, test-cases, handsoff, db-query, phoenix-expert, regression-validation |
 | `ticket` | if applicable | Jira key |
 | `conf` | yes | Computed confidence score (0–100) |
 | `zone` | yes | GO, CAUTION, STOP |
