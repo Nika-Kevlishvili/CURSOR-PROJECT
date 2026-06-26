@@ -1,0 +1,28 @@
+---
+description: Regression validator must start from the ticket example scenario
+globs:
+  - ".cursor/skills/regression-validator/SKILL.md"
+  - ".cursor/agents/regression-validator.md"
+alwaysApply: false
+---
+
+# Regression Validator Example-First Rule
+
+For the `/regression-validator` workflow, treat the concrete example described in the Jira ticket as mandatory evidence, not optional context.
+
+Required order:
+
+1. Start from the ticket's explicit example or reproduction scenario.
+2. Map that example to the exact Phoenix code path first.
+3. Check that path on `dev`.
+4. Compare the same path on `dev2`.
+5. Only then use later comments, corrections, or scope-narrowing notes to refine the verdict.
+
+Rules:
+
+- Do not skip the original ticket example just because later comments suggest a narrower scope.
+- If a later comment excludes the example, explicitly verify and state that exclusion before dropping the example from scope.
+- The final **`## Verdict`** block must include the ticket example in **Evaluation criteria** (`Ticket example scenario checked` row) and in **Reason** when it affected the deployment label.
+- The verdict must make clear whether the ticket example code path was checked or not checked.
+- This rule refines evidence collection only; it does not change the main regression-validator logic, scoring model, or Dev-to-Dev2 comparison flow.
+- When the primary ticket has **linked FE/BE clones or relates-to tickets** (SKILL Step 1c), apply the same example-first check on **each ticket in the bundle** that shares the feature scope; the consolidated matrix must show per-ticket example coverage.

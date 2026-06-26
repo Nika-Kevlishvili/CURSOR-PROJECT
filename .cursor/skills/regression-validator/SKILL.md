@@ -8,7 +8,7 @@
 
 ## Overview
 
-Single-ticket Dev-to-Dev2 regression validation. Reads a Jira ticket, locates related code on the Dev branch, then verifies the same code exists on the Dev2 branch. Produces a scored assessment with Senior QA Findings for mismatches.
+Dev-to-Dev2 regression validation for a **primary Jira ticket** and its **related ticket bundle** (typical FE/BE split: e.g. `PDT-2040` backend + `PDT-2064` frontend clone + `PDT-2080` relates-to follow-up). Locates code on Dev, verifies deployment on Dev2, and produces a **per-ticket result matrix** plus scored assessments with Senior QA Findings.
 
 **Explicitly out of scope:** Confluence reads, DB queries (unless user requests), test case generation, Playwright.
 
@@ -82,7 +82,50 @@ From Jira description/summary, extract:
 Use Grep and SemanticSearch on `Cursor-Project/Phoenix/` to find relevant files.
 
 **Strategy 3 — Linked issues trail:**
-If ticket has issuelinks (blocks, is-blocked-by, relates-to), note them. The linked tickets may reference the same code area. Do not fetch linked tickets in full — just note them for context.
+Use linked issues to find the **related ticket bundle** (Step 1c). Linked keys also hint at shared code areas when git log on the primary key is empty.
+
+### 1c. Related ticket discovery (MANDATORY when issuelinks exist)
+
+**Purpose:** FE tickets often have a linked BE ticket (and vice versa). Regression is incomplete if only the user-supplied key is checked.
+
+**When to run:** Always after Step 1a on the **primary** ticket. Also run on any newly discovered clone in the same pass (one hop only — do not recurse the whole Jira graph).
+
+**Include in bundle (from `fields.issuelinks`):**
+
+| Link type | Include? | Typical pattern |
+|-----------|----------|-----------------|
+| **Cloners** (`clones` / `is cloned by`) | **Yes** | Original BE ticket ↔ FE clone (e.g. `PDT-2040` ↔ `PDT-2064`) |
+| **Relates** | **Yes** | Follow-up bug in same feature (e.g. `PDT-2080` version-switch regression) |
+| **Blocks** / **is blocked by** | Note only | Same feature area — fetch full ticket only if summary clearly matches primary scope |
+| Duplicate / parent epic | No full validation | Mention in matrix as context only |
+
+**For each ticket in the bundle:**
+
+1. Fetch full issue payload (same fields as Step 1a; **jira-evidence** SKILL).
+2. Assign **layer** using first match:
+   - Summary tag: `[Frontend]` / `[Backend]`
+   - Labels: `Frontend` / `Backend`
+   - Issue split in clone pair (original vs clone summary)
+   - Git mapping: `phoenix-ui` → FE; `phoenix-core` / `phoenix-core-lib` → BE
+   - If still unknown → `UNKNOWN` layer (still validate deployment; note in matrix)
+3. Run Steps 1b–5 **per ticket** (reuse branch alignment from Steps 2a/4a — switch once per env).
+4. Record per ticket: deployment label + Jira-vs-Dev2 alignment (`YES` / `NO` / `PARTIAL` / `UNKNOWN`).
+
+**Output:** `$relatedTicketBundle` — ordered list: primary first, then clones, then relates. Example:
+
+```
+PDT-2064 (FE, primary) → PDT-2040 (BE, clones) → PDT-2080 (FE, relates)
+```
+
+**Consolidated matrix (MANDATORY in chat when bundle size > 1):**
+
+| Ticket | Layer | Relation | Jira status | Deployment (Dev→Dev2) | Dev2 satisfies ticket? |
+|--------|-------|----------|-------------|------------------------|-------------------------|
+| PDT-XXXX | FE/BE | primary / clones / relates | Done/… | DEPLOYED / … | YES / PARTIAL / … |
+
+Place the matrix **after** the one-line summary and **before** the primary ticket's `## Verdict`.
+
+**Bundle confidence (Step 7):** `Final = MIN(per-ticket final scores)` — weakest ticket limits the bundle.
 
 **Fallback — UNKNOWN:**
 If none of the above yields results, set `CODE_MAPPING: UNKNOWN`. This is not a failure — it means manual verification is needed. Confidence takes a -15 penalty.
@@ -94,6 +137,7 @@ If none of the above yields results, set `CODE_MAPPING: UNKNOWN`. This is not a 
 | Ticket data non-empty | summary is not null/empty | Continue | PROCESS BLOCKED |
 | Has description content | at least one of: description, bug description, acceptance criteria | Rich data (+20) | Sparse data (+10) |
 | Code mapping determined | At least one strategy returned results, OR explicitly UNKNOWN | Continue | Set UNKNOWN, -15 |
+| Related bundle built | If `issuelinks` non-empty: Step 1c ran; matrix keys listed | Continue | -10 (related tickets skipped) |
 
 **Confidence factors from this step:**
 - `+20` ticket fetched with rich data (description + acceptance criteria)
@@ -281,7 +325,63 @@ If git diff shows differences, read the file on Dev2 and compare the specific fu
 
 **Template:** Use `Cursor-Project/config/templates/regression-report-template.md`
 
-**4 mandatory sections:**
+### Section 0 — Verdict (MANDATORY — always first in chat output)
+
+Place **`## Verdict`** immediately after a one-line ticket summary (or at the top if PROCESS BLOCKED). This block is a **separate component** — never fold the verdict into Section 2 prose only.
+
+**Deployment label (pick one):** `DEPLOYED` | `NOT DEPLOYED` | `PARTIALLY DEPLOYED` | `UNKNOWN`
+
+**Reason (MANDATORY):** 2–4 sentences explaining:
+- what evidence supports the label;
+- what matched between Dev and Dev2 (or what did not);
+- any assumption, ops-only step, or missing evidence that prevents a stronger label.
+
+**Evaluation criteria (MANDATORY table):**
+
+| Criterion | Result | Notes |
+|-----------|--------|-------|
+| Jira / ticket scope understood | ✅ / ⚠️ / ❌ | Summary + key fields extracted |
+| Ticket example scenario checked | ✅ / ⚠️ / ❌ | Per `regression_validator_example_first.mdc` |
+| Code mapping (git log / search) | ✅ / ⚠️ / ❌ | Commits found or CODE_MAPPING status |
+| Dev branch aligned | ✅ / ⚠️ / ❌ | Switch exit code; repos on `dev` |
+| Dev code matches ticket | ✅ / ⚠️ / ❌ | Step 3 assessment |
+| Dev2 branch aligned | ✅ / ⚠️ / ❌ | Switch exit code; repos on `dev2` |
+| Ticket commit on Dev2 | ✅ / ⚠️ / ❌ | `git log --grep` on `origin/dev2` |
+| Dev2 code matches Dev (ticket scope) | ✅ / ⚠️ / ❌ | File diff / content compare |
+| Ops / env-only step (if ticket implies) | ✅ / ⚠️ / ❌ / N/A | e.g. certificate copy — not provable from Git alone |
+
+Use **⚠️** when partially met or inferred; **❌** when failed or not checked; **N/A** when criterion does not apply.
+
+**Evidence basis (MANDATORY):** List only sources used, e.g. `Jira MCP, Phoenix code (file:line), git log, git diff origin/dev origin/dev2`.
+
+**Example:**
+
+```markdown
+## Verdict
+`PARTIALLY DEPLOYED`
+
+**Reason:** The production certificate alias fix in `phoenix-scheduler` is present on both `dev` and `dev2`, but the ticket also requires copying the keystore from Test to Prod — an operational step that cannot be confirmed from branch comparison alone. No commit references the ticket key directly; deployment was inferred from commit ancestry and identical certificate config lines.
+
+**Evaluation criteria:**
+
+| Criterion | Result | Notes |
+|-----------|--------|-------|
+| Jira / ticket scope understood | ✅ | Bug: prod system-certificate signing |
+| Ticket example scenario checked | ⚠️ | No concrete repro steps in ticket |
+| Code mapping (git log / search) | ⚠️ | No `PDT-XXXX` commit; mapped via `cert password fix` |
+| Dev branch aligned | ⚠️ | Partial alignment (exit 2) |
+| Dev code matches ticket | ✅ | `key-alias=phoenix` on prod properties |
+| Dev2 branch aligned | ⚠️ | Partial alignment (exit 2) |
+| Ticket commit on Dev2 | ⚠️ | Ticket key absent; fix commits contained in `dev2` |
+| Dev2 code matches Dev (ticket scope) | ✅ | Certificate block identical |
+| Ops / env-only step (if ticket implies) | ❌ | Certificate copy not verified |
+
+**Evidence basis:** Jira MCP, Phoenix code, git log, git diff, commit ancestry.
+```
+
+**When related tickets exist:** Repeat `## Verdict` + Sections 1–4 **per ticket** in bundle order (primary first), OR provide full detail for primary and abbreviated verdict+commits rows for related tickets — **matrix is never optional**.
+
+**4 mandatory detail sections (after each Verdict):**
 
 ### Section 1 — Ticket Content
 - Key, type, summary, status, resolution
@@ -308,7 +408,9 @@ All Findings from Steps 2-5 collected here.
 
 | Check | Method | Pass | Fail |
 |-------|--------|------|------|
-| All 4 sections populated | Each section has non-placeholder content | Continue | -5 per empty section |
+| `## Verdict` block present | Standalone section with label + Reason + Evaluation criteria + Evidence basis | Continue | -10 (verdict buried or missing) |
+| Related tickets matrix present | When `issuelinks` non-empty: matrix with all bundle keys before primary Verdict | Continue | -10 (related tickets skipped) |
+| All 4 detail sections populated | Each section has non-placeholder content (primary ticket minimum) | Continue | -5 per empty section |
 | Findings included | If mismatches detected in Steps 4-5, Findings present | Continue | -10 (hidden mismatch) |
 
 ---
@@ -360,9 +462,11 @@ Start at base **40**, inherit ticket quality from Step 1 (same +20/+10), then:
 
 ### 7b. Compute final (overall) score
 
-**Formula:** `Final = MIN(Dev sub-score, Dev2 sub-score)`
+**Per ticket:** `TicketFinal = MIN(Dev sub-score, Dev2 sub-score)`
 
-Rationale: same as HandsOff aggregation — the pipeline is only as strong as its weakest link. A perfect Dev score is meaningless if Dev2 is missing the code.
+**Bundle (when Step 1c found related tickets):** `Final = MIN(TicketFinal)` across all tickets in `$relatedTicketBundle`.
+
+Rationale: same as HandsOff aggregation — the pipeline is only as strong as its weakest link. A perfect Dev score on the FE ticket is meaningless if the linked BE ticket is missing on Dev2.
 
 ### 7c. Three-Zone routing
 
@@ -405,6 +509,8 @@ Action needed: [specific steps or questions]
 | 1 | Ticket not found | PROCESS BLOCKED | -20 |
 | 1 | Empty description | Continue with sparse data | +10 instead of +20 |
 | 1 | All code mapping fails | Set CODE_MAPPING: UNKNOWN | -15 |
+| 1c | `issuelinks` present but related tickets not fetched/validated | Fetch each clone + relates ticket; build matrix | -10 |
+| 1c | FE ticket without checking linked BE clone (or vice versa) | Run full Steps 1b–5 on both | -15 |
 | 2 | Branch switch exit 3 | PROCESS BLOCKED | N/A |
 | 2 | Branch switch exit 2 | Continue with warning | -5 |
 | 2 | File read fails | Skip file, note in report | -5 per file |

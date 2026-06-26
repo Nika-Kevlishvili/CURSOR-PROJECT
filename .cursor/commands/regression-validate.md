@@ -31,4 +31,4 @@ Route to **`regression-validator`** subagent with:
 /regression-validate PDT-2971
 ```
 
-Produces: deployment status (DEPLOYED / NOT DEPLOYED / PARTIALLY DEPLOYED), Dev vs Dev2 score comparison, and actionable Findings.
+Produces: standalone **`## Verdict`** block (label + Reason + Evaluation criteria table + Evidence basis), deployment status (DEPLOYED / NOT DEPLOYED / PARTIALLY DEPLOYED / UNKNOWN), Dev vs Dev2 score comparison, and actionable Findings.
