@@ -2,7 +2,7 @@
 
 **Agent:** `.cursor/agents/regression-validator.md`
 **Scoring:** `.cursor/rules/scoring/confidence_scoring_matrix.mdc` — section "Regression Validation"
-**Report template:** `Cursor-Project/config/templates/regression-report-template.md`
+**Report template:** `Cursor-Project/config/template/regression-report-template.md`
 
 ---
 
@@ -323,7 +323,7 @@ If git diff shows differences, read the file on Dev2 and compare the specific fu
 
 **Purpose:** Produce the final structured report.
 
-**Template:** Use `Cursor-Project/config/templates/regression-report-template.md`
+**Template:** Use `Cursor-Project/config/template/regression-report-template.md`
 
 ### Section 0 — Verdict (MANDATORY — always first in chat output)
 

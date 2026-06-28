@@ -28,7 +28,7 @@ Product-quality-first analysis: code defects, documentation gaps, and code↔doc
 
 1. **Jira** (if ticket): load `jira-evidence` SKILL — full issue, links, attachments.
 2. **Confluence**: MCP first; REST fallback per `confluence_rest_fallback.mdc`. For bug validation, follow `phoenix-bug-validation` Step 2 breadth.
-3. **User story / diagrams** under `User story/` or `config/Diagrams/` when in scope.
+3. **User story / diagrams** under `Cursor-Project/User story/` or `Cursor-Project/config/Diagrams/` when in scope.
 4. Extract **expected behaviors** as bullet list (cite page ID + URL per item).
 
 **Doc gap signal:** behavior is user-visible but no Confluence/ticket statement → record **Finding: Doc gap**.

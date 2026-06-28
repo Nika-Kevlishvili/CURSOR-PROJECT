@@ -3,12 +3,7 @@ description: "Mandatory directory layout for new workspace files (reports, test_
 alwaysApply: false
 globs:
   - "Cursor-Project/**"
-  - "User story/**"
   - ".cursor/**"
-  - "agents/**"
-  - "examples/**"
-  - "docs/**"
-  - "postman/**"
 ---
 
 # FILE ORGANIZATION RULES [CRITICAL - ABSOLUTE REQUIREMENT]
@@ -17,15 +12,12 @@ globs:
     
     **Directory Structure:**
     - `.cursor/agents/` - Cursor subagent specs (`.md`); **canonical agent roles in this workspace**
-    - `examples/` - Example scripts and utility scripts (.py for demos/testing)
-    - `config/` - Configuration files (.json, .yaml, .properties, specs)
+    - `config/` - Configuration files (.json, .yaml, .properties, specs, templates)
     - `docs/` - Documentation files (.md, .txt, .rst)
-    - `User story/` - User stories, flows, and related documentation files (.txt, .drawio, .md) - **MANDATORY location for ALL story/flow files** (located at project root)
+    - `Cursor-Project/User story/` - User stories, flows, and related documentation files (.txt, .drawio, .md) - **MANDATORY location for ALL story/flow files**
     - `reports/` - Report files (.md) under **`Cursor-Project/reports/`** → **`Chat reports/`**, **`HandsOff reports/`**, **`Feedback/`**, each with **`YYYY/<english-month>/<DD>/`** before the filename — see **`Cursor-Project/reports/README.md`**
     - `test_cases/` - **Test cases (MANDATORY layout)** – `Backend/` for TC-BE-N; `Frontend/` for TC-FE-N **only when TC-FRONTEND-ASK.0 = Yes**. Same topic name per folder when both are generated. See `.cursor/rules/workspace/test_cases_structure.mdc`. Path: `Cursor-Project/test_cases/`
-    - `generated_test_cases/` - Legacy/alternative; when using test cases, prefer `test_cases/` with structure in test_cases_structure.mdc (located at project root: `Cursor-Project/test_cases/` or `Cursor-Project/generated_test_cases/`)
-    - `postman/` - Postman collections and related files
-    - `Phoenix/` - Phoenix Java project files
+    - `Phoenix/` - Phoenix Java project files (git submodules, READ-ONLY)
     
     **Process:**
     1. Identify file type and match to directory
@@ -34,28 +26,23 @@ globs:
     4. Use descriptive names following existing patterns
     
     **Special Rule for Stories and Flows:**
-    - When user requests creation of a story or flow file, it MUST be saved in `User story/` directory (at project root)
+    - When user requests creation of a story or flow file, it MUST be saved in `Cursor-Project/User story/` directory
     - This applies to: user stories, flow diagrams, story documentation, flow documentation
     - File types: .txt, .drawio, .md, or any format related to stories/flows
-    - Examples: user story files, flow diagrams, story documentation, detailed flows
     
     **CRITICAL: User Stories MUST be written in English:**
     - ALL user stories, acceptance criteria, business rules, and technical documentation within story files MUST be written in English
-    - This applies to ALL story files in `User story/` directory
+    - This applies to ALL story files in `Cursor-Project/User story/` directory
     - Only code examples, file paths, and technical identifiers may contain non-English text
     - Violation is a **MUST**
     
     **Examples:**
     - ✅ `.cursor/agents/bug-validator.md` (Cursor subagent — NOT Python in root)
-    - ✅ `Cursor-Project/examples/demo_script.py` (NOT in root)
-    - ✅ `examples/demo_script.py` (NOT in root)
     - ✅ `Cursor-Project/reports/Chat reports/2026/april/12/Summary_1430.md` (layout per `reports/README.md`; `12` = real save day)
     - ❌ `reports/AgentReport.md` in workspace root → Should be under `Cursor-Project/reports/<area>/YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`**
-    - ✅ `User story/MY_USER_STORY.txt` (story files MUST go here)
-    - ✅ `User story/MY_FLOW_DIAGRAM.drawio` (flow files MUST go here)
-    - ❌ `custom_agent.py` in root → Should be under `Cursor-Project/examples/` or a proper package path if Python returns
-    - ❌ `MY_STORY.txt` in docs root → Should be `User story/MY_STORY.txt`
-    - ❌ `MY_STORY.txt` in root → Should be `User story/MY_STORY.txt`
+    - ✅ `Cursor-Project/User story/MY_USER_STORY.txt` (story files MUST go here)
+    - ✅ `Cursor-Project/User story/MY_FLOW_DIAGRAM.drawio` (flow files MUST go here)
+    - ❌ `MY_STORY.txt` in root → Should be `Cursor-Project/User story/MY_STORY.txt`
    - ✅ `Cursor-Project/test_cases/Backend/Invoice_cancellation.md` + `Cursor-Project/test_cases/Frontend/Invoice_cancellation.md` (test cases – two-folder layout; see test_cases_structure.mdc)
    - ✅ `Cursor-Project/test_cases/Backend/Product_contract_create.md` + `Cursor-Project/test_cases/Frontend/Product_contract_create.md`
     - ✅ `Cursor-Project/generated_test_cases/Object/customer/Create.md` (legacy hierarchical test cases)

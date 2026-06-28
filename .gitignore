@@ -1,3 +1,74 @@
 # Cursor hook / script operational logs (switch-phoenix-branches, etc.)
 .cursor/logs/
 *.log
+
+# macOS artifacts (ZIP extraction, Finder metadata)
+__MACOSX/
+.DS_Store
+**/._*
+
+# Dependencies
+node_modules/
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Stray root-level exports
+*.xlsx
+correction
+
+# Temporary / ad-hoc outputs
+out.txt
+
+# --- Cursor-Project specific ---
+
+# # Environment variables
+# Cursor-Project/.env
+# Cursor-Project/.env.local
+# Cursor-Project/.env.*.local
+
+# Jira local exports (attachments, issue dumps)
+Cursor-Project/config/jira/attachments/
+
+# Jira ad-hoc / ticket-specific temp caches (prefixed with _)
+Cursor-Project/config/jira/_pdt*
+Cursor-Project/config/jira/out.txt
+
+# Confluence retry / fresh / probe / ticket-specific caches
+Cursor-Project/config/confluence/_*
+Cursor-Project/config/confluence/pdt*
+Cursor-Project/config/confluence/pages/*-fresh.json
+Cursor-Project/config/confluence/pages/*-retry.json
+Cursor-Project/config/confluence/pages/pdt*.json
+Cursor-Project/config/confluence/search-*.json
+!Cursor-Project/config/confluence/search-confluence-rest.ps1
+
+# Cross-dependency analysis outputs (regenerated per ticket)
+Cursor-Project/cross_dependencies/
+
+# Cursor configuration with sensitive data
+# Note: .cursor/mcp-config.json contains placeholder passwords
+# If you update it with real passwords, uncomment the next line:
+# .cursor/mcp-config.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+# venv/
+# env/
+# ENV/
+
+# Reports (generated per session — regenerable)
+Cursor-Project/reports/
+
+# Test cases (generated per ticket — regenerable)
+Cursor-Project/test_cases/

@@ -1,11 +1,11 @@
 ---
 name: phoenix-file-organization
-description: Places new files in the correct project directories (docs, User story, reports, config, postman, test_cases, .cursor). Use when creating or saving files or when the user asks where to put a file.
+description: Places new files in the correct project directories (docs, User story, reports, config, test_cases, .cursor). Use when creating or saving files or when the user asks where to put a file.
 ---
 
 # Phoenix File Organization
 
-Ensures new files are saved in the correct directories (Rule 31 under `workspace/file_organization_rules.mdc`). Reports go under **`Cursor-Project/reports/`** subfolders (`Chat reports/`, `HandsOff reports/`, `Feedback/`); stories and flows go in `User story/`.
+Ensures new files are saved in the correct directories (Rule 31 under `workspace/file_organization_rules.mdc`). Reports go under **`Cursor-Project/reports/`** subfolders (`Chat reports/`, `HandsOff reports/`, `Feedback/`); stories and flows go in `Cursor-Project/User story/`.
 
 ## When to Apply
 
@@ -20,12 +20,10 @@ Ensures new files are saved in the correct directories (Rule 31 under `workspace
 | Cursor subagent specs | **`.cursor/agents/*.md`** | Workspace root `.cursor/` |
 | Cursor rules | **`.cursor/rules/**/*.mdc`** | Thematic folders: `main/`, `safety/`, etc. |
 | Cursor skills / commands | **`.cursor/skills/`**, **`.cursor/commands/`** | |
-| Example/demo scripts | `Cursor-Project/examples/` | |
 | Config, templates, swagger | `Cursor-Project/config/` | Templates: `config/template/` |
 | Documentation | `Cursor-Project/docs/` | |
-| User stories, flows | **`User story/`** (project root) | **Mandatory** for story/flow files |
+| User stories, flows | **`Cursor-Project/User story/`** | **Mandatory** for story/flow files |
 | Reports | **`Cursor-Project/reports/`** → `Chat reports/`, `HandsOff reports/`, `Feedback/` | See `reports/README.md` |
-| Postman | `Cursor-Project/postman/` | |
 | Test cases | **`Cursor-Project/test_cases/Backend/<Topic>.md`** always; **`Frontend/<Topic>.md`** when TC-FRONTEND scope includes UI | Per `test_cases_structure.mdc` |
 | Phoenix code | `Cursor-Project/Phoenix/**` | AI: read-only (Rule 0.8) |
 
@@ -39,14 +37,14 @@ Ensures new files are saved in the correct directories (Rule 31 under `workspace
 
 ## User Stories and Flows
 
-- All user stories, flow diagrams, story docs → **`User story/`** at project root.
+- All user stories, flow diagrams, story docs → **`Cursor-Project/User story/`**.
 - Persisted story content in **English** (Rule 0.7).
 
 ## Examples
 
 - ✅ `Cursor-Project/reports/Chat reports/2026/april/12/Summary_1200.md` (per `reports/README.md`; day = real save date)
 - ✅ `Cursor-Project/reports/Feedback/2026/april/12/Feedback_1430.md` (via **`/feedback`** or explicit save-feedback request)
-- ✅ `User story/MY_USER_STORY.txt`
+- ✅ `Cursor-Project/User story/MY_USER_STORY.txt`
 - ✅ `.cursor/agents/phoenix-qa.md`
 - ❌ Report in workspace-only `reports/` instead of `Cursor-Project/reports/<area>/YYYY/<english-month>/<DD>/` per **`Cursor-Project/reports/README.md`**
 

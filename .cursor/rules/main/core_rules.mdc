@@ -64,7 +64,7 @@ alwaysApply: true
    - **Violation:** Critical only if **Rule 37** file is skipped when HandsOff was run, or if the user ran **`/report`** / **`/feedback`** / explicitly requested a saved report or feedback file and it was omitted — not when you omit optional on-disk summaries
    
    ### Rule 0.7: MANDATORY English for Project Artifacts (Not Chat)
-   - **In scope (English REQUIRED):** Anything **created or modified on disk** in this workspace — file/folder names, paths, code comments, repo docs, reports under `Cursor-Project/reports/`, test cases, user stories in `User story/`, config/templates, **`.cursor/`** content, and other **persisted** project text
+   - **In scope (English REQUIRED):** Anything **created or modified on disk** in this workspace — file/folder names, paths, code comments, repo docs, reports under `Cursor-Project/reports/`, test cases, user stories in `Cursor-Project/User story/`, config/templates, **`.cursor/`** content, and other **persisted** project text
    - **Out of scope:** **Cursor chat replies** to the user may be in the **user’s language** (or English if they prefer). Rule 0.7 does **not** force English-only conversation in chat
    - Violation is a **MUST** when **persisted** project artifacts are not in English without an explicit project exception
    
@@ -75,7 +75,7 @@ alwaysApply: true
    - **TIER B — EnergoTS (restricted):**
      - `Cursor-Project/EnergoTS/**` **outside** `Cursor-Project/EnergoTS/tests/**` — Cursor AI MUST NOT modify (fixtures, config, app code, etc.). **No agent** may write here except as forbidden for all.
      - `Cursor-Project/EnergoTS/tests/**` — ONLY **EnergoTSTestAgent** (and **EnergoTSTestAgentAdapter**) may create/modify/delete files here (see Rule 0.8.1). **Generic Cursor AI, other agents, and direct tool usage** MUST NOT edit this tree even if the user asks.
-   - **TIER C — ALLOWED (provisional):** Any path under the workspace **not** in Tier A or Tier B **non-test EnergoTS** restrictions — including but not limited to: `Cursor-Project/docs/**`, `Cursor-Project/examples/**`, `Cursor-Project/config/**`, `Cursor-Project/postman/**`, `Cursor-Project/reports/**`, `Cursor-Project/test_cases/**`, `User story/**`, root `.cursor/**`, workspace root files, etc. User-requested edits are permitted there. (**`Cursor-Project/agents/`** Python package is **not** in this workspace; Cursor behavior is defined by **`.cursor/agents/*.md`**, rules, skills, MCP.)
+   - **TIER C — ALLOWED (provisional):** Any path under the workspace **not** in Tier A or Tier B **non-test EnergoTS** restrictions — including but not limited to: `Cursor-Project/docs/**`, `Cursor-Project/config/**`, `Cursor-Project/reports/**`, `Cursor-Project/test_cases/**`, `Cursor-Project/User story/**`, root `.cursor/**`, workspace root files, etc. User-requested edits are permitted there. (**`Cursor-Project/agents/`** Python package is **not** in this workspace; Cursor behavior is defined by **`.cursor/agents/*.md`**, rules, skills, MCP.)
    - **If the user asks to change Tier A or Tier B (non-agent):** Refuse implementation; analysis and recommendations only.
    - **ENFORCEMENT:** Do not weaken Phoenix or EnergoTS protections in hooks or rules without an explicit project-owner decision.
    - Violation of Tier A or Tier B restrictions is a **BLOCK** (hooks enforce).

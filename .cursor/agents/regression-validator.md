@@ -51,7 +51,7 @@ Every completed validation MUST include a **standalone `## Verdict` section** ne
 
 **PROCESS BLOCKED:** Verdict = `UNKNOWN`; Reason must state which prerequisite failed; Evaluation criteria table still required (mark failed gates ❌).
 
-Canonical template: `Cursor-Project/config/templates/regression-report-template.md`
+Canonical template: `Cursor-Project/config/template/regression-report-template.md`
 
 ## Workflow summary (detail in SKILL only)
 
