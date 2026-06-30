@@ -59,12 +59,17 @@ Use diagrams **when they sharpen expected flow or scope**, not as a substitute f
 
 1. **Local diagram library (no attachment on ticket)**  
    - Search **`Cursor-Project/config/Diagrams/`** — **`Bundle 4`**, **`Bundle 5`**, **`Bundle 6`** — when the bug has **no** diagram attachment and no diagram URL tied to this scope in Jira/Confluence evidence yet.  
-   - Match by process/domain keywords from the ticket, filenames, and (if ambiguous) open candidate **`.svg`** files and verify labels/branches fit **this** case.  
-   - If a clear match exists: cite **full workspace path** in the analysis (e.g. expected sequence vs reporter steps).
+   - Match by process/domain keywords from the ticket, filenames, and (if ambiguous) open candidate files and verify labels/branches fit **this** case.
+   - **Companion file priority (Rule DIAGRAM.0 — MUST for AI analysis):**
+     - **First:** Look for `.semantic.md` companion file alongside the diagram (e.g., `Invoice cancelation -new.semantic.md`).
+     - **Read the companion file** — it contains AI-readable structure: Decision Points, User Actions, Process Steps, Save Operations, and Flow Connections.
+     - **Fallback only:** If no companion file exists, run `.cursor/commands/extract-diagram-semantic.ps1` to generate one, or attempt raw parsing and flag as `raw_svg_analysis=true`.
+   - If a clear match exists: cite **full workspace path** of the **companion file** (preferred) or diagram in the analysis.
 
 2. **Diagrams from Jira / Confluence links**  
    - Extract URLs from ticket rich-text and linked pages per **`evidence_only_project_answers.mdc`** (Figma, diagrams.net, embedded media).  
    - When `getConfluencePage` or linked URLs expose **direct downloadable assets** (e.g. PNG/SVG/PDF): save **read-only** copies under **`Cursor-Project/config/confluence/diagrams/<pageId-or-issueKey>/`** (create folders as needed) and cite that path.  
+   - **Generate companion file:** For downloaded `.drawio.svg` or `.drawio` diagrams, run `.cursor/commands/extract-diagram-semantic.ps1 -Path <diagram>` to create a `.semantic.md` companion for AI analysis.
    - Macro-only embeds without a direct file URL: state limitation in chat; do not invent flows.
 
 3. **Authority order (Senior QA — Rule QA.0)**  
@@ -72,7 +77,8 @@ Use diagrams **when they sharpen expected flow or scope**, not as a substitute f
    - **Agreement:** note briefly. **Mismatch:** mandatory **Finding** (Code↔Doc mismatch) — cite both sides; diagrams alone never overturn verified code or Confluence, but code↔Confluence conflict is never “resolved” silently.
 
 4. **Tracking for the final report**  
-   - Maintain a list of **every diagram** that informed this validation (whether **local** `Cursor-Project/config/Diagrams/...`, **downloaded** under `Cursor-Project/config/confluence/diagrams/...`, or **Jira attachment** path after download). Each entry must be repeatable: **full workspace path** and, when applicable, **source wiki URL** or **Jira attachment filename + issue key**.
+   - Maintain a list of **every diagram** that informed this validation (whether **local** `Cursor-Project/config/Diagrams/...`, **downloaded** under `Cursor-Project/config/confluence/diagrams/...`, or **Jira attachment** path after download). Each entry must be repeatable: **full workspace path** (prefer `.semantic.md` companion path when used) and, when applicable, **source wiki URL** or **Jira attachment filename + issue key**.
+   - Include `diagram_companion_used=true|false` in the evidence checklist to track whether AI-readable companion files were available.
 
 ### Step 2: Confluence validation (evidence strength)
 

@@ -60,7 +60,8 @@ Base: **40**
 | DB evidence gathered (same env) | **+10** | Step 4b completed with ≥1 query result | Supporting evidence; confirms data state but not behavior rules |
 | Environment aligned (PHOENIX-SWITCH.0) | **+5** | Step 0.1 exit code 0 | Prerequisite; low weight because it's binary pass/fail |
 | User requirements clear (ticket has steps + expected) | **+5** | Step 1 extracted from ticket text (not inferred) | Reduces ambiguity but doesn't add technical evidence |
-| Diagram evidence used | **+3** | Step 1b matched ≥1 diagram | Supplementary; never overrides code/Confluence |
+| Diagram evidence used (with companion) | **+5** | Step 1b matched ≥1 diagram via `.semantic.md` companion file | AI-readable structure (decisions, actions, outcomes) |
+| Diagram evidence used (raw SVG fallback) | **+2** | Step 1b matched ≥1 diagram without companion file | Limited parsing; flag `raw_svg_analysis=true` |
 | Confluence exact match (not just contextual) | **+5** | Bonus on top of +15 above | Exact match is stronger than contextual |
 | Swagger refresh failed (using cached) | **-10** | Script exit ≠ 0; cached spec used | Stale spec may have wrong fields/enums — significant risk |
 | No Confluence found | **-10** | Step 2 returned 0 relevant pages | Missing secondary source |
@@ -72,7 +73,7 @@ Base: **40**
 | Conflict present but not reported as Finding | **-15** | Violates Rule QA.0 |
 | Environment alignment partial (exit code 2) | **-5** | Mixed-state repos | Some repos may be on wrong branch |
 
-**Max achievable:** 40 + 73 = 113 → capped at **100**
+**Max achievable:** 40 + 75 = 115 → capped at **100**
 
 ---
 

@@ -10,8 +10,8 @@ import { payment } from '../../EnergoTS/jsons/payloads/create/Receivables/paymen
 const energoRoot = path.resolve(__dirname, '../../EnergoTS');
 const token = JSON.parse(fs.readFileSync(path.join(energoRoot, 'fixtures/token.json'), 'utf8')).token;
 const baseURL = (process.env.BASE_URL || 'http://10.236.20.11:8091').replace(/\/?$/, '/');
-const PAST_OP_DATE = '2026-05-15';
-const OPEN_MAY_PERIOD_ID = 1041;
+const PAST_OP_DATE = process.env.PDT2962_PAST_OP_DATE ?? '2026-05-15';
+const OPEN_MAY_PERIOD_ID = Number(process.env.PDT2962_OPEN_PERIOD_ID ?? 1041);
 
 async function main() {
   const ctx = await request.newContext({
@@ -49,7 +49,14 @@ async function main() {
   const payId = typeof pay === 'number' ? pay : pay.id;
   const body = await (await ctx.get(`payment/${payId}`)).json();
   const receivable = body.offsettingResponseList?.find((x: { offsettingObjectType: string }) => x.offsettingObjectType === 'RECEIVABLE');
-  console.log(JSON.stringify({ paymentId: payId, receivableCrtId: receivable?.id, operationDate: PAST_OP_DATE, expectedAccountPeriodId: OPEN_MAY_PERIOD_ID }, null, 2));
+  console.log(JSON.stringify({
+    scenario: 'PDT-2962 Step 1: past operation_date in OPEN accounting period',
+    paymentId: payId,
+    crtId: receivable?.id,
+    operationDate: PAST_OP_DATE,
+    expectedAccountPeriodId: OPEN_MAY_PERIOD_ID,
+    offsetting: body.offsettingResponseList?.map((x: { id: number; offsettingObjectType: string }) => ({ crtId: x.id, type: x.offsettingObjectType })),
+  }, null, 2));
   await ctx.dispose();
 }
 main().catch((e) => { console.error(e); process.exit(1); });

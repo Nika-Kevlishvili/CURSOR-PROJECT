@@ -1,0 +1,24 @@
+--- dev
+
++++ test
+
+@@ -90,7 +90,6 @@
+
+                 (SELECT iri.related_invoice_id
+                    FROM invoice.invoice_related_invoices iri
+                   WHERE iri.invoice_id = p_invoice_id),
+-                p_reversal_created_from_id,  -- <<< CHANGE 1: 24062026 PDT-3013
+                 p_invoice_id
+             );
+             RAISE NOTICE 'main invoice %', p_invoice_id;
+@@ -294,8 +293,8 @@
+
+ 		    LOOP
+ 		        RAISE NOTICE 'receivable before % % %', r_rec.id, r_rec.current_amount, r_rec.currency_id;
+ 		
+-		
+ 		        IF r_rec.current_amount != 0 AND r_rec.currency_id IS NOT NULL THEN
++		
+ 		            SELECT x.r_current_amount, x.l_current_amount, x.trn_id
+ 		              INTO r_rec.current_amount, l_rec.current_amount, trn_id
+ 		              FROM receivable.automatic_liability_offsetting_pair(

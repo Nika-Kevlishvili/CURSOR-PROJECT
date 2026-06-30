@@ -107,3 +107,24 @@ Violation is a **MUST**.
 | **44** | Jira ticket analysis/triage with linked Confluence → read those pages **same pass** | **`.cursor/skills/jira-evidence/SKILL.md`**; Rule 39 scope |
 
 Abandoning mandatory reads when REST could satisfy them **without** user opt-out is a **MUST**.
+
+---
+
+## Rule DIAGRAM.0 — Diagram companion files [MUST]
+
+When analyzing diagrams under **`Cursor-Project/config/Diagrams/`**:
+
+1. **Check for `.semantic.md` companion file first** — these files contain AI-readable structure:
+   - **Decision Points** with branches (business logic)
+   - **User Actions** (entry points)
+   - **Process Steps** and **Save Operations** (outcomes)
+   - **Flow Connections** (relationships)
+2. **If companion exists:** Use it as the primary source; cite the companion file path in analysis.
+3. **If no companion:** Run **`.cursor/commands/extract-diagram-semantic.ps1 -Path <diagram>`** to generate one, or flag as `raw_svg_analysis=true`.
+4. **Authority unchanged:** Diagrams never override verified code or Confluence — they are supplementary evidence only.
+
+**Script:** **`.cursor/commands/extract-diagram-semantic.ps1`** (use `-All` to regenerate all companions).
+
+**Canonical procedure:** **`.cursor/skills/phoenix-bug-validation/SKILL.md`** Step 1b.
+
+Violation is a **MUST** when available companion files are ignored in favor of raw SVG parsing.

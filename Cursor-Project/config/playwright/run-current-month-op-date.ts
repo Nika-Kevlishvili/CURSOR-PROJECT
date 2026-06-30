@@ -12,7 +12,7 @@ const env = JSON.parse(fs.readFileSync(path.join(energoRoot, 'fixtures/envVariab
 const token = JSON.parse(fs.readFileSync(path.join(energoRoot, 'fixtures/token.json'), 'utf8')).token;
 const baseURL = (process.env.BASE_URL || 'http://10.236.20.11:8091').replace(/\/?$/, '/');
 
-const OP_DATE = '2026-06-17';
+const OP_DATE = process.env.PDT2962_OP_DATE ?? '2026-06-24';
 const OPEN_PERIOD_ID = env.accounting_period;
 
 async function main() {
