@@ -1,0 +1,10 @@
+{
+  "description": "Swagger/OpenAPI URLs per environment. Filled by setup.ps1.",
+  "environments": [
+    {
+      "id": "dev",
+      "swagger_ui": "http://localhost:8080/swagger-ui/index.html#",
+      "openapi_json": "http://localhost:8080/v3/api-docs"
+    }
+  ]
+}

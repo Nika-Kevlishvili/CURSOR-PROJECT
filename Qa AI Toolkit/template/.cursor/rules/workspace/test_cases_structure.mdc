@@ -1,0 +1,90 @@
+---
+description: "Mandatory two-folder test_cases layout (Backend/Frontend), TC numbering, README updates. Loads when editing test cases or running test-case / HandsOff workflows."
+alwaysApply: false
+globs:
+  - "Cursor-Project/test_cases/**"
+  - "Cursor-Project/generated_test_cases/**"
+  - ".cursor/commands/hands-off.md"
+  - ".cursor/agents/test-case-generator.md"
+  - ".cursor/agents/cross-dependency-finder.md"
+  - ".cursor/agents/environment-resolver.md"
+  - ".cursor/agents/hands-off.md"
+  - ".cursor/skills/test-case-generator/**"
+  - ".cursor/skills/cross-dependency-finder/**"
+---
+
+# TEST CASES FOLDER STRUCTURE [MANDATORY]
+
+## Gate order (Rule 35 — do not reorder)
+
+| Order | Gate | Skip when |
+|-------|------|-----------|
+| **1** | **TC-ENV-ASK.0** — resolve env (six options) | User named env in current chat |
+| **2** | **TC-FRONTEND-ASK.0** — Backend only vs Backend+Frontend | User explicitly said scope |
+| **3** | Phoenix alignment (`switch-phoenix-branches.ps1`) | Already aligned same env |
+| **4** | cross-dep → test-case-generator → quality validator | Never skip |
+
+**Detail:** `.cursor/skills/test-case-generator/SKILL.md` (gates), `.cursor/skills/environment-resolver/SKILL.md` (env).
+
+Violation of gate order is a **BLOCK**.
+
+---
+
+## Root layout
+
+**Path:** `Cursor-Project/test_cases/`
+
+| Folder | Contents | Required? |
+|--------|----------|-----------|
+| **Backend/** | Backend (API) test cases — `TC-BE-N` | **ALWAYS** |
+| **Frontend/** | Frontend (UI) test cases — `TC-FE-N` | **Only if user confirmed** |
+
+- `<Topic_name>.md` with underscores for multi-word names
+- Backend file contains ONLY backend TCs; Frontend file ONLY frontend TCs
+- Do NOT create empty Frontend file when user chose "No"
+
+---
+
+## TC numbering
+
+- **Backend:** `TC-BE-1`, `TC-BE-2`, … with type: `TC-BE-1 (Positive): {title}`
+- **Frontend:** `TC-FE-1`, `TC-FE-2`, … with type: `TC-FE-2 (Negative): {title}`
+- Each file MUST include at least one **(Positive)** and one **(Negative)** TC
+
+---
+
+## Content rules
+
+- Follow **`Cursor-Project/config/template/Test_case_template.md`** for structure
+- **Rule TC-STANDALONE-PRE.0:** Every TC's `Preconditions:` block MUST list full numbered setup chain for that scenario. FORBIDDEN: `Apply Test data steps 1–N` without repeating; `see TC-BE-X`; multi-scenario per TC. One scenario per TC. Violation is a **MUST**.
+- **Rule TC-NOSKIP-OBS.0:** No TCs whose primary criterion is internal skip/log/audit mechanics. Assert observable business outcomes only. Violation is a **MUST**.
+
+---
+
+## READMEs
+
+Update `test_cases/README.md`, `Backend/README.md` always; `Frontend/README.md` only when Frontend file exists.
+
+---
+
+## File skeletons
+
+**Backend** (`test_cases/Backend/<Topic>.md`):
+
+```
+# {Title} – {Scope} ({JIRA_KEY})
+**Jira:** … **Type:** … **Summary:** … **Scope:** …
+---
+## Test data (preconditions)
+{Shared setup reference}
+---
+## Backend Test Cases
+### TC-BE-1 (Positive): {title}
+**Description:** … **Preconditions:** … **Test steps:** … **Expected test case results:** …
+### TC-BE-2 (Negative): {title}
+…
+---
+## References
+```
+
+**Frontend** (`test_cases/Frontend/<Topic>.md`): same structure with `TC-FE-N` and `## Frontend Test Cases`.

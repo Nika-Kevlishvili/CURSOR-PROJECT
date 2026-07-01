@@ -1,0 +1,94 @@
+---
+alwaysApply: false
+description: "Jira MCP primary, Atlassian REST v3 read fallback after retries. Loads for Jira-backed workflows."
+globs:
+  - ".cursor/commands/hands-off.md"
+  - ".cursor/agents/hands-off.md"
+  - ".cursor/agents/bug-validator.md"
+  - ".cursor/agents/cross-dependency-finder.md"
+  - ".cursor/agents/test-case-generator.md"
+  - ".cursor/agents/environment-resolver.md"
+  - ".cursor/agents/jira-bug.md"
+  - ".cursor/skills/phoenix-bug-validation/**"
+  - ".cursor/skills/cross-dependency-finder/**"
+  - ".cursor/skills/jira-bug-template/**"
+  - ".cursor/skills/test-case-generator/**"
+  - ".cursor/skills/environment-resolver/**"
+---
+
+# JIRA READ PATH — MCP PRIMARY, REST FALLBACK [CRITICAL]
+
+## Rule JIRA.1: When Jira MCP fails, use REST for full issue read [CRITICAL]
+
+**Intent.** Any workflow that must **read** Jira issue data (HandsOff, bug validation, cross-dependency, test cases, ticket triage, attachment workflows) MUST prefer **Jira MCP** first. If Jira MCP is **unavailable** (server disabled, tool errors, auth failure) or **still fails after 2–3 retries** with backoff (see **`.cursor/rules/safety/safety_rules.mdc`** Rule 15), agents MUST **not** stop at “MCP broken” — they MUST fetch the **same class of information** via the **Atlassian Cloud REST API v3** read path below. **READ-ONLY:** no Jira writes via this fallback unless a separate user-approved workflow explicitly allows them.
+
+**Violation** is a **MUST** when an agent abandons Jira-backed work solely because MCP failed while REST credentials exist and the user did not block REST.
+
+---
+
+## 1. Primary path (unchanged)
+
+- Use Jira MCP tools per their descriptors (e.g. `getJiraIssue`, search helpers).
+- For **evidence completeness** (custom fields, links, attachments metadata), follow **`.cursor/rules/main/evidence_only_project_answers.mdc`** (Jira sections): `expand: "names"`, required custom fields, linked issues, attachments, comments/history when needed.
+
+---
+
+## 2. When to switch to REST fallback
+
+Switch after MCP failure is **confirmed** (not a single transient glitch without retry):
+
+- Tool returns error, 401/403, or missing Jira MCP server.
+- Repeated timeouts or connection errors after **2–3 retries** with short backoff.
+
+**Chat disclosure:** Every answer that used REST MUST include one line: **`Jira source: REST fallback (MCP unavailable or failed after retries).`**
+
+---
+
+## 3. REST fallback — credentials and base URL (Rule DB.1 style)
+
+- **Never** paste tokens, passwords, or API keys into rules, chat, or commits.
+- Use the same environment variables as **`Cursor-Project/config/jira/download-jira-attachments.ps1`**: **`JIRA_EMAIL`**, **`JIRA_API_TOKEN`**, **`JIRA_BASE_URL`** (from process env or project `.env` files that script already resolves — do not duplicate secret values in documentation).
+- If **both** MCP and REST fail (missing vars, 401, network): state the failure, stop substantive Jira-dependent conclusions, and ask the user (Rule CONF.0) — same honesty as **`PROCESS BLOCKED`** flows where Jira is mandatory.
+
+---
+
+## 4. REST fallback — request shape (full issue parity)
+
+Use **Jira Cloud REST API v3**:
+
+- **Single issue:** `GET {JIRA_BASE_URL}/rest/api/3/issue/{issueIdOrKey}`
+- **Query parameters (mandatory minimum):**
+  - `expand=names` — so field IDs map to human labels (matches MCP/evidence rule).
+  - Include **changelog** when the task needs history: add `changelog` to `expand` (e.g. `expand=names,changelog`).
+  - Prefer **not** over-narrowing `fields` unless the instance forces it: request breadth comparable to MCP “full issue” (summary, description, issuetype, status, priority, environment, labels, components, assignee, reporter, **attachment** list, **issuelinks**, and **all content-bearing custom fields** listed in **`evidence_only_project_answers.mdc`**). If the API response is truncated, add an explicit `fields` list that includes those custom field IDs.
+- **Linked issues:** Always inspect `fields.issuelinks` (and expand/fetch linked keys if the ticket text depends on them).
+- **Attachments — metadata:** Always read `fields.attachment[]` (filename, mimeType, size, content URL).
+- **Attachments — binary / DOCX / images for analysis:** run  
+  `powershell -ExecutionPolicy Bypass -File "Cursor-Project/config/jira/download-jira-attachments.ps1" -IssueKey "<KEY>"`  
+  per **`evidence_only_project_answers.mdc`** when content analysis is required.
+
+**Implementation in Cursor:** use **terminal** `Invoke-RestMethod` / `curl` with **Basic auth** (email + API token) and `Accept: application/json`, or an existing repo script that already performs authenticated GETs — **do not** add new secret stores.
+
+---
+
+## 5. Consistency with evidence-only Jira rules
+
+After REST fetch, apply the **same** consolidation rules as for MCP:
+
+- Do not rely on `description` alone; scan **customfield_10103** and other mapped fields per **`evidence_only_project_answers.mdc`**.
+- List linked issues and attachment presence explicitly when relevant.
+
+---
+
+## 6. Write operations
+
+This rule governs **read** fallback only. **Creating/updating** Jira issues stays on MCP or other explicitly approved tooling; do not improvise REST **POST/PUT** for Jira unless the user and project docs explicitly allow it.
+
+---
+
+## Integration
+
+- **Rule 32 / bug-validator:** Jira REST satisfies **Jira** read only. **Confluence** read requires Confluence MCP **or** **Rule 43 / CONFLUENCE.1** (`.cursor/rules/integrations/confluence_rest_fallback.mdc`) — not this file.
+- **Rule 37 / HandsOff:** Ticket fetch MUST succeed via MCP **or** this REST path before continuing the pipeline; document **`Jira source:`** in internal notes if reporting requires traceability.
+
+Canonical cross-reference: **`.cursor/rules/workflows/workflow_rules.mdc`** Rule **42**.

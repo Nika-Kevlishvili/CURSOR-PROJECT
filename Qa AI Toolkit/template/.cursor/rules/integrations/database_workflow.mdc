@@ -1,0 +1,61 @@
+---
+alwaysApply: false
+description: "PostgreSQL MCP environment mapping, connect-first workflow. Loads for DB MCP, bug validation DB steps, and production-data reads."
+globs:
+  - ".cursor/agents/database-query.md"
+  - ".cursor/skills/phoenix-database/**"
+  - ".cursor/skills/production-data-reader/**"
+  - ".cursor/agents/production-data-reader.md"
+  - ".cursor/skills/phoenix-bug-validation/**"
+  - ".cursor/agents/bug-validator.md"
+  - ".cursor/commands/hands-off.md"
+  - ".cursor/agents/hands-off.md"
+  - ".cursor/agents/cross-dependency-finder.md"
+  - ".cursor/skills/cross-dependency-finder/**"
+---
+
+# DATABASE WORKFLOW RULES
+
+**Full procedure + SQL patterns:** `.cursor/skills/phoenix-database/SKILL.md`
+
+## Rule DB.0: Environment Selection
+
+| User says | MCP server |
+|-----------|------------|
+| Dev | PostgreSQLDev |
+| Dev2 | PostgreSQLDev2 |
+| Test | PostgreSQLTest |
+| PreProd | PostgreSQLPreProd |
+| Prod | PostgreSQLProd (read-only) |
+| Experiments | PostgreSQLexperiments |
+
+**ALWAYS** use the exact environment the user requests. Never switch.
+
+## Rule DB.0a: No silent environment for PostgreSQL MCP
+
+Before ANY PostgreSQL MCP call: user MUST name environment in current task, or explicitly authorize defaults. Forbidden inference: ticket prefix, Playwright branch, habit, prior session. If missing → ask (AskQuestion, six options). Do not call MCP until answered.
+
+Violation is a **BLOCK**.
+
+## Rule DB.1: Connect first
+
+Read MCP tool descriptor for chosen server. Connect with `connect_db(...)`, then query with `query(sql="SELECT ...")`. Never embed Host/Password in rules, chat, or commits.
+
+## Rule DB.2: Query patterns
+
+**Key schemas:** Product contracts: `product_contract.contracts` → `contract_details` → `contract_pods` → `pod_details` → `pod.pod`. Service contracts: `service_contract.contracts` → `contract_details` → `contract_pods` → `pod.pod`. POD identifier in `pod.pod.identifier`.
+
+**Best practices:** DISTINCT on joins; include contract_type; order by contract_number; include status + date fields; LIMIT result sets; use schema prefixes.
+
+## Rule DB.5: Security
+
+Never commit or log database credentials. Credentials stay in Cursor MCP server config only. Violation is a **BLOCK** (security).
+
+## Rule DB.6: Workflow integration
+
+1. Connect using MCP from DB.0
+2. Execute queries using DB.2 patterns
+3. Format results for user
+4. Save markdown under `reports/` only if user asks or runs `/report` (Rule 0.6)
+
+Violation of database workflow rules is a **MUST**.

@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeSubmitPrompt": [
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/remind-test-case-env-first.ps1" }
+    ],
+    "afterFileEdit": [
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/protect-app-code.ps1" },
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/warn-app-code.ps1" }
+    ],
+    "beforeMCPExecution": [
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/block-confluence-write.ps1" },
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/control-database-write.ps1" }
+    ],
+    "beforeShellExecution": [],
+    "afterAgentResponse": [
+      { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/validate-confidence-format.ps1" }
+    ]
+  }
+}

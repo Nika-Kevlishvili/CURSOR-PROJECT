@@ -1,0 +1,386 @@
+---
+description: "Evidence-based confidence scoring matrix for all workflows. Three-Zone routing (GO/CAUTION/STOP), per-workflow factor tables, multi-agent aggregation, Prod safety gate, output formats, calibration."
+alwaysApply: false
+globs:
+  - ".cursor/skills/**/SKILL.md"
+  - ".cursor/agents/*.md"
+  - ".cursor/rules/workflows/*.mdc"
+  - ".cursor/commands/hands-off.md"
+  - "Cursor-Project/test_cases/**"
+  - "Cursor-Project/reports/**"
+---
+
+# Confidence Scoring Matrix
+
+Centralized evidence-based scoring for all workflows. Referenced by **Rule CONF.1** in `.cursor/rules/main/clarification_and_confidence.mdc`.
+
+Reference copy at: `Cursor-Project/config/confidence/confidence_scoring_matrix.md` (redirects here).
+
+---
+
+## How scoring works
+
+Every workflow output starts at a **base score of 40** (neutral — slightly below midpoint, forcing evidence to raise the score). Evidence factors **add** or **subtract** points. The final score is **capped at 100** and **floored at 0**, then routed through the **Three-Zone** system.
+
+### Why base 40?
+
+Base 40 means: with zero evidence gathered, the score is firmly in the STOP zone (< 55%). The agent **must** collect evidence to exit STOP. This prevents empty or skipped workflows from delivering results. The value is drawn from evidence-based scoring literature (claude-prism model, Antigravity Lab graduated approval) and tuned for this workspace where multiple evidence sources (code + Confluence + Swagger + DB) are available.
+
+---
+
+## Three-Zone routing
+
+| Zone | Range | Symbol | Behavior |
+|------|-------|--------|----------|
+| **GO** | **≥ 85%** | `GO` | Deliver result. Confidence block in footer. |
+| **CAUTION** | **55–84%** | `CAUTION` | Deliver result **+ explicit assumptions list** + `Recommend user verify: [item → method]`. |
+| **STOP** | **< 55%** | `STOP` | Do **NOT** deliver a business verdict or final deliverable. State what evidence is missing. Use **AskQuestion** to resolve gaps before continuing. Same pause behavior as CONF.0 gate. |
+
+**STOP zone does not mean failure** — it means the agent must gather more evidence or ask the user before the result is trustworthy enough to act on.
+
+### Prod + CAUTION safety gate
+
+When **environment = prod** or **preprod** AND the computed zone is **CAUTION** (55–84%):
+
+- The agent MUST add: `⚠️ Prod/PreProd CAUTION: This result has moderate confidence on a production environment. Delivering with caveats — user acknowledgement recommended before acting.`
+- If the workflow involves an **irreversible action** (Slack send, Jira update, verdict that blocks a release), the agent MUST **pause and ask** the user: "Confidence is CAUTION (XX%) on Prod. Proceed or gather more evidence?" — using AskQuestion with options `Proceed with caveats` / `Gather more evidence` / `Abort`.
+- This gate does NOT apply to GO zone (≥ 85%) on Prod — high evidence is sufficient.
+
+---
+
+## Evidence factors — Bug Validation (Rule 32)
+
+Base: **40**
+
+| Factor | Points | Condition | Weight rationale |
+|--------|--------|-----------|-----------------|
+| Phoenix code read + cited (file:line) | **+20** | Step 4 completed with ≥1 code citation | Runtime verification (Rule QA.0 dual-track) |
+| Confluence evidence found (exact or contextual match) | **+15** | Step 2 returned ≥1 relevant page with title+ID+URL | Documented product intent; essential for mismatch detection |
+| Swagger/OpenAPI aligned (after refresh) | **+10** | Step 3 completed; spec confirms or contradicts reporter claim | Contract-level; less authoritative than code for runtime behavior |
+| DB evidence gathered (same env) | **+10** | Step 4b completed with ≥1 query result | Supporting evidence; confirms data state but not behavior rules |
+| Environment aligned (PHOENIX-SWITCH.0) | **+5** | Step 0.1 exit code 0 | Prerequisite; low weight because it's binary pass/fail |
+| User requirements clear (ticket has steps + expected) | **+5** | Step 1 extracted from ticket text (not inferred) | Reduces ambiguity but doesn't add technical evidence |
+| Diagram evidence used | **+3** | Step 1b matched ≥1 diagram | Supplementary; never overrides code/Confluence |
+| Confluence exact match (not just contextual) | **+5** | Bonus on top of +15 above | Exact match is stronger than contextual |
+| Swagger refresh failed (using cached) | **-10** | Script exit ≠ 0; cached spec used | Stale spec may have wrong fields/enums — significant risk |
+| No Confluence found | **-10** | Step 2 returned 0 relevant pages | Missing secondary source |
+| DB query failed | **-5** | Step 4b query error or connection failure | Supporting evidence missing, not primary |
+| Assumption made (per assumption) | **-5** | Each inferred behavior not backed by evidence | Each assumption is a potential error |
+| Phase 2 exclusion applied (Prod/PreProd) | **-5** | Some wiki pages excluded from decision basis | Narrower evidence base |
+| Single evidence source only | **-15** | Only code OR only Confluence — not both | Cross-validation impossible; high risk |
+| Mismatch documented as Finding (Rule QA.2; both sides cited) | **+10** | Code↔Doc or Swagger↔Code conflict surfaced | Product-quality deliverable |
+| Conflict present but not reported as Finding | **-15** | Violates Rule QA.0 |
+| Environment alignment partial (exit code 2) | **-5** | Mixed-state repos | Some repos may be on wrong branch |
+
+**Max achievable:** 40 + 73 = 113 → capped at **100**
+
+---
+
+## Evidence factors — Test Case Generation (Rule 35)
+
+Base: **40**
+
+| Factor | Points | Condition | Weight rationale |
+|--------|--------|-----------|-----------------|
+| Cross-dependency data provided | **+15** | Step 1 (cross-dep) completed with structured output | TC quality depends heavily on knowing dependencies |
+| Phoenix code searched + cited | **+15** | Generator read relevant Phoenix files | Ensures TCs test real implementation |
+| Swagger/OpenAPI verified for endpoints | **+10** | Endpoint schemas checked against spec | Prevents wrong field names/enums in TCs |
+| Confluence evidence found | **+10** | Relevant wiki pages found and cited | Business rules for expected results |
+| User requirements clear (ticket well-defined) | **+10** | Jira ticket has clear scope, steps, expected behavior | Clear scope = better TC coverage |
+| Playwright instructions read | **+5** | `config/playwright_generation/` pack consumed | Alignment with downstream Playwright |
+| Quality validator passed (≥ 80/100) | **+5** | Step 2.5 all TCs ≥ 80 first pass | External validation of TC quality |
+| Environment aligned | **+5** | PHOENIX-SWITCH.0 exit code 0 | Correct code branch for TC generation |
+| No cross-dep data | **-20** | Step 1 skipped or failed | Critical input missing; highest penalty |
+| No Confluence found | **-10** | 0 relevant pages | Missing business rules |
+| Swagger not checked | **-10** | Endpoints used without spec verification | TCs may use wrong field names |
+| Quality validator required rewrite | **-5** | Per rewrite iteration needed | Each iteration signals initial quality gap |
+| Assumption made (per assumption) | **-5** | Inferred behavior | Each assumption is a potential error |
+| Single evidence source only | **-15** | Code-only or ticket-only | Insufficient cross-validation |
+| Spec↔code mismatch documented in References (Rule QA.2 Finding) | **+5** | Generator flagged divergence | Senior QA alignment |
+| Spec↔code mismatch known but no Finding in References | **-10** | Violates Rule QA.0 / TC generator authority |
+
+**Max achievable:** 40 + 75 = 115 → capped at **100**
+
+---
+
+## Evidence factors — Cross-Dependency Discovery (Rule 35a)
+
+Base: **40**
+
+| Factor | Points | Condition | Weight rationale |
+|--------|--------|-----------|-----------------|
+| Phoenix code searched + cited (file:line) | **+20** | Entry points, callers, consumers found in codebase | Runtime dependency map — primary source |
+| Confluence deep exploration completed (≥2 pages read in full) | **+15** | Deep search returned ≥2 relevant pages with full content read | Documented business rules, validation logic, entity relationships |
+| Confluence pages walked (descendants/related) | **+5** | Followed ≥1 descendant or related page link to find deeper context | Richer dependency map from wiki structure |
+| Jira ticket loaded + parsed | **+10** | Issue key, summary, description, links, custom fields extracted | Scope anchor; cross-references to other tickets/features |
+| Environment aligned (PHOENIX-SWITCH.0) | **+5** | Exit code 0 — correct branch for code reads | Prerequisite; binary pass/fail |
+| what_could_break populated (≥3 items) | **+5** | At least 3 items with item + location + reason | Core deliverable of cross-dep |
+| Upstream + downstream both populated | **+5** | Both arrays non-empty in output | Bidirectional dependency coverage |
+| No Confluence pages found | **-10** | Deep search returned 0 relevant pages | Major evidence gap — business rules unknown |
+| Confluence searched but only snippets used (no full page read) | **-5** | Search done but no `getPage` for any result | Shallow evidence despite deep exploration mandate |
+| No Phoenix code found for scope | **-15** | Could not locate relevant entry points or callers | Primary source missing |
+| Jira fetch failed (both MCP + REST) | **-10** | `PROCESS BLOCKED` for Jira | Scope anchor missing |
+| what_could_break empty | **-10** | Zero items in output | Core deliverable missing |
+| Single evidence source only (code-only or Confluence-only) | **-15** | Only one of code/Confluence populated | Cross-validation impossible |
+| Assumption made (per assumption) | **-5** | Inferred dependency not backed by code or Confluence | Each assumption = potential missed or wrong dependency |
+| Code↔Confluence mismatch documented as Finding | **+10** | Surfaced per Rule QA.2 | Product-quality signal |
+| Code↔Confluence mismatch present but not reported | **-15** | Violates Rule QA.0 | Hidden risk |
+| Environment alignment partial (exit code 2) | **-5** | Mixed-state repos | Some repos on wrong branch |
+
+**Max achievable:** 40 + 75 = 115 → capped at **100**
+
+---
+
+## Evidence factors — Database Query Results
+
+Base: **40**
+
+| Factor | Points | Condition | Weight rationale |
+|--------|--------|-----------|-----------------|
+| User named environment explicitly | **+20** | DB.0a satisfied — no inference | Wrong env = wrong data; highest weight |
+| Query returned results | **+15** | Non-empty result set | Evidence exists |
+| Schema/table verified to exist | **+10** | Table confirmed before query | Prevents misleading empty results |
+| Query uses standard patterns (DB.2) | **+5** | Follows documented join patterns | Tested patterns reduce query errors |
+| Multiple tables cross-referenced | **+5** | ≥2 schema joins for completeness | Richer evidence |
+| Environment aligned (Phoenix branch matches DB env) | **+5** | Same env for code + DB | Code-DB consistency |
+| Query returned empty | **-5** | No rows — may be correct but reduces certainty | Absence of evidence ≠ evidence of absence |
+| Non-standard query (ad hoc) | **-5** | Custom SQL not in DB.2 patterns | Untested query pattern |
+| Connection required retry | **-5** | MCP flaky but eventually connected | Infrastructure instability |
+
+---
+
+## Evidence factors — PhoenixExpert Analysis
+
+Base: **40**
+
+| Factor | Points | Condition | Weight rationale |
+|--------|--------|-----------|-----------------|
+| Phoenix code read + cited (file:line) | **+25** | Primary source — runtime behavior | Rule QA.0 dual-track |
+| Confluence checked (MCP or REST) | **+15** | Rule 0.5 satisfied | Documented product intent |
+| Swagger/OpenAPI referenced | **+10** | API contract evidence when applicable | Contract-level verification |
+| Code and Confluence agree | **+5** | No conflict | Cross-validation bonus |
+| Environment-specific analysis | **+5** | Branch aligned to target env | Correct branch = correct behavior |
+| No code found for topic | **-15** | Could not locate relevant implementation | Primary source missing |
+| No Confluence checked | **-10** | Rule 0.5 violated (or failed) | Mandatory check skipped |
+| Code and Confluence conflict documented as Finding (both cited) | **+10** | Mismatch surfaced per Rule QA.2 | Product-quality signal — reduces hidden risk |
+| Code and Confluence conflict ignored (only one side reported) | **-15** | Disagreement hidden | Violates Rule QA.0 |
+| Assumption made (per assumption) | **-5** | Inferred behavior | Each assumption is a potential error |
+
+---
+
+## Evidence factors — Jira Read Completeness (HandsOff sub-step)
+
+Base: **40**
+
+| Factor | Points | Condition | Weight rationale |
+|--------|--------|-----------|-----------------|
+| Issue fetched successfully (MCP or REST) | **+20** | Full issue JSON retrieved | Primary input for pipeline |
+| Custom fields read (environment, tester, etc.) | **+10** | `expand=names` or equivalent | Needed for env resolution, Slack routing |
+| Linked issues inspected | **+10** | `issuelinks` array processed | Cross-ticket context |
+| Attachments listed/downloaded | **+10** | `attachment[]` metadata read; binaries fetched if needed | Screenshots, logs, DOCX for reproduction |
+| Linked Confluence pages read (Rule 44) | **+10** | URLs from ticket fetched same pass | Business context |
+| Jira MCP failed → REST fallback used | **-5** | Disclosed as `Jira source: REST fallback` | Slightly less reliable path |
+| Missing custom fields | **-10** | Key fields (environment, tester) null/empty | Critical routing info missing |
+| No attachments processed | **-5** | Attachment array empty or not inspected | May miss reproduction evidence |
+| Both MCP and REST failed | **-20** | `PROCESS BLOCKED` | Cannot proceed |
+
+---
+
+## Evidence factors — Playwright Test Run Results (HandsOff sub-step)
+
+Base: **40**
+
+| Factor | Points | Condition | Weight rationale |
+|--------|--------|-----------|-----------------|
+| All tests passed | **+40** | Pass rate = 100% | Full validation |
+| Most tests passed (≥ 80%) | **+30** | Pass rate 80–99% | Strong but incomplete |
+| Some tests passed (50–79%) | **+15** | Mixed results | Partial validation |
+| Few tests passed (< 50%) | **+0** | Mostly failing | Minimal value |
+| No tests passed | **-10** | Pass rate = 0% | Total failure |
+| Tests actually executed (not skipped) | **+10** | ≥1 test ran to completion | Execution confirmed |
+| Environment stable during run | **+5** | No connection/timeout errors in log | Clean execution |
+| Flaky failures detected | **-5** | Same test passes on retry | Unreliable signal |
+| Environment errors during run | **-10** | Connection/timeout/500 errors in log | Results may not reflect code behavior |
+| Spec validator passed (≥ 80/100) before run | **+5** | Step 4.5 completed | Spec quality assured |
+
+**Pass rate mapping:**
+
+| Pass rate | Score contribution |
+|-----------|-------------------|
+| 100% | +40 |
+| 90–99% | +35 |
+| 80–89% | +30 |
+| 70–79% | +20 |
+| 50–69% | +15 |
+| 25–49% | +5 |
+| 1–24% | +0 |
+| 0% | -10 |
+
+---
+
+## HandsOff Pipeline aggregation (Rule 37)
+
+HandsOff computes sub-step scores then aggregates:
+
+**Sub-steps (each scored independently using their factor table above):**
+
+1. **Jira read** — Jira Read Completeness factors
+2. **Cross-dependency** — Cross-Dependency Discovery (Rule 35a) factors above
+3. **Test case generation** — TC Generation factors
+4. **Playwright spec quality** — validator score mapped: `validator_score / 100 × 100` (direct mapping — 82/100 rubric = 82% confidence)
+5. **Test run results** — Playwright Test Run Results factors
+
+**Aggregation: single lowest sub-step score (minimum)**
+
+`Final HandsOff confidence = MIN(sub-step scores)`
+
+Rationale: the pipeline is only as strong as its weakest link. A 95% TC score means nothing if the Playwright run scored 40%. Using the single minimum (not average of three lowest) is cleaner and more conservative.
+
+**Parent output format:**
+
+```
+**Confidence: XX% (ZONE)** [aggregation: minimum-of-critical]
+- Jira read: XX% (ZONE)
+- Cross-dependency: XX% (ZONE)
+- Test case generator: XX% (ZONE)
+- Playwright spec quality: XX% (ZONE)
+- Test run results: XX% (ZONE) ← limiting factor
+Reason: <which sub-step limited and why>
+```
+
+---
+
+## Output formats
+
+### Compact format (default for GO zone)
+
+When zone is **GO** (≥ 85%) and the workflow is routine, use the compact 2-line format:
+
+```
+**Confidence: 92% (GO)** Evidence: [+code cited, +Confluence exact, +Swagger aligned, +DB confirms]
+Reason: All evidence sources aligned with no assumptions.
+```
+
+### Standard format (default for CAUTION zone)
+
+```
+**Confidence: 72% (CAUTION)**
+Evidence: [+code cited, +Confluence contextual, -no DB evidence, -1 assumption]
+Assumptions: [1. Billing scheduler runs nightly — inferred from code, not confirmed]
+Recommend user verify: [Scheduler timing → check via DB query on billing_run table | DB state for contract X → query product_contract.contracts where id = Y]
+Reason: Code confirms behavior but Confluence match is contextual only.
+```
+
+### STOP format
+
+```
+**Confidence: 35% (STOP)**
+Evidence: [+code read, -no Confluence, -Swagger failed, -DB failed, -2 assumptions]
+BLOCKED: Cannot deliver reliable verdict. Missing: Confluence evidence, Swagger spec, DB confirmation.
+Action needed: [Retry Confluence search with broader CQL | Retry Swagger refresh after VPN check | Ask user for environment to query DB]
+```
+
+### "Recommend user verify" — action guidance (MANDATORY for CAUTION)
+
+Every item in the verify list MUST include **what** to verify AND **how** to verify:
+
+| Pattern | Example |
+|---------|---------|
+| `[item → method]` | `Scheduler timing → check via DB query: SELECT * FROM scheduler.job_log WHERE job_name = 'billing' ORDER BY run_date DESC LIMIT 5` |
+| `[item → method]` | `Contract status → verify in Portal: navigate to contract detail page for contract_number X` |
+| `[item → method]` | `Phase 2 behavior → check Confluence page ID 164356 descendants for matching rule` |
+
+**FORBIDDEN:** bare items without method (e.g. `Recommend user verify: [Scheduler timing, Contract status]` — no method = not actionable).
+
+### Per-item scores (SHOULD for ≥ 5 items)
+
+When delivering ≥ 5 items (e.g. test cases), include per-item scores:
+
+```
+**Overall confidence: 82% (CAUTION)**
+
+| TC | Score | Zone | Key factor |
+|----|-------|------|-----------|
+| TC-BE-1 | 90% | GO | All evidence aligned |
+| TC-BE-2 | 85% | GO | Code + Swagger confirmed |
+| TC-BE-3 | 68% | CAUTION | Assumed billing logic → verify via DB |
+| TC-BE-4 | 72% | CAUTION | No Confluence → search for page on invoicing |
+| TC-BE-5 | 88% | GO | DB confirmed edge case |
+
+Recommend user verify: [TC-BE-3 billing assumption → DB query on billing config | TC-BE-4 missing Confluence → search CQL `text ~ "invoice cancellation"`]
+```
+
+---
+
+## Multi-agent aggregation
+
+When a parent agent receives scores from multiple subagents:
+
+| Method | When to use |
+|--------|-------------|
+| **Minimum** | Pipeline workflows (HandsOff) where all steps must succeed |
+| **Weighted average** | Independent parallel results (e.g. PhoenixExpert + DB query) |
+
+Parent MUST show: individual sub-scores + aggregation method + final score.
+
+---
+
+## Factor weight recalibration
+
+### Current weights rationale
+
+All factor weights were set based on the workspace's evidence model (Rule QA.0 / 0.5: **dual-track** — code = runtime, Confluence = spec; mismatches = Findings) and common-sense proportionality:
+
+- **Code (+20/+25)** — highest weight for **runtime** verification
+- **Confluence (+10/+15)** — required for **documented product intent**; disagreement with code → Finding, not discard
+- **Swagger (+10)** — contract-level; may diverge from implementation
+- **DB (+10)** — supporting data state evidence; doesn't determine behavior rules
+- **Penalties (-5 to -20)** — proportional to the risk introduced by the gap
+
+### How to recalibrate (when calibration data exists)
+
+1. Review `Cursor-Project/config/confidence/conf_log.jsonl` for ≥ 25 entries
+2. Group by zone: compute actual accuracy per zone (what % of GO outcomes were correct? CAUTION? STOP?)
+3. If GO zone accuracy < 90%: thresholds or factor weights are too generous — increase penalties or raise GO threshold
+4. If STOP zone triggers on > 30% of workflows: weights are too harsh or base is too low — reduce penalties or raise base
+5. Adjust factor weights ±5 points per iteration; document the change and date in a `## Recalibration log` section at the bottom of this file
+6. Target: ECE (Expected Calibration Error) < 0.10 across all zones
+
+### Recalibration log
+
+| Date | Change | Reason |
+|------|--------|--------|
+| 2026-06-10 | Initial weights set | Based on evidence hierarchy + research literature |
+| 2026-06-11 | QA.0 alignment | Dual-track; Finding documented +10 / hidden conflict -15; TC References Finding factors |
+
+---
+
+## Calibration logging
+
+Log outcomes to **`Cursor-Project/config/confidence/conf_log.jsonl`** when the user provides explicit feedback on a workflow result (correct / incorrect / partial):
+
+```json
+{"ts":"2026-06-10T20:30:00","workflow":"bug-validation","ticket":"PDT-XXXX","conf":82,"zone":"CAUTION","outcome":"correct","env":"test","factors":["+code","+confluence_contextual","-no_db"]}
+```
+
+**When to log:**
+
+- User says the result was correct/wrong/partially correct
+- User corrects a verdict (e.g. "actually this is NOT VALID, not VALID")
+- Test run results differ from confidence prediction
+
+**Logging is manual** — the agent appends a line to `conf_log.jsonl` when it observes feedback. No automated pipeline required at this stage.
+
+**Fields:**
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `ts` | yes | ISO 8601 timestamp |
+| `workflow` | yes | bug-validation, test-cases, handsoff, db-query, phoenix-expert |
+| `ticket` | if applicable | Jira key |
+| `conf` | yes | Computed confidence score (0–100) |
+| `zone` | yes | GO, CAUTION, STOP |
+| `outcome` | yes | correct, incorrect, partial |
+| `env` | if applicable | dev, dev2, test, preprod, prod, experiments |
+| `factors` | yes | Array of factor strings that contributed |
+| `note` | optional | What was wrong and why |

@@ -1,0 +1,109 @@
+---
+alwaysApply: true
+description: "Workflow obligations (Rules 32–44): summary + exit criteria. Step-by-step detail in canonical SKILL/agent files per RULES_CANONICAL_INDEX.md."
+---
+
+# WORKFLOW RULES [CRITICAL]
+
+**Canonical map:** **`Cursor-Project/docs/RULES_CANONICAL_INDEX.md`**. **Procedures** live in **`.cursor/skills/**/SKILL.md`** and **`.cursor/agents/*.md`**. This file states **obligations and exit criteria** only — do not duplicate SKILL steps here.
+
+3. "Agents involved" footer for workflow/agent responses — Rule 0.1 in **`core_rules.mdc`**. Violation is a **MUST** when applicable.
+
+4. Confidence block for workflow deliverables — CONF.1 (Three-Zone) in **`clarification_and_confidence.mdc`**. Format: `**Confidence: XX% (ZONE)**` + Evidence factors + Reason. Zones: **GO** (≥ 85%), **CAUTION** (55–84% + assumptions + verify list), **STOP** (< 55% — do not deliver verdict, ask user). Scoring matrix: **`.cursor/rules/scoring/confidence_scoring_matrix.mdc`**. Violation is a **MUST** for applicable workflows.
+
+---
+
+## Rule 32 — Bug validation [CRITICAL]
+
+- Route: **`bug-validator`** / **`.cursor/skills/phoenix-bug-validation/SKILL.md`** / **`.cursor/agents/bug-validator.md`**
+- **READ-ONLY** — no code fixes during validation unless user asks **after** validation; no `agents.*` imports
+- **Not in scope:** automatic test cases, Playwright, **`energo-ts-run`** (Rules 35–37 / 36 unless user explicitly asks)
+- **Env:** **`environment-resolver`** first; empty Jira Environment → AskQuestion (six envs); **`PROCESS BLOCKED`** — no silent `test` default
+- **Phoenix align:** **Rule PHOENIX-SWITCH.0**; prod requires `-ConfirmProd` + user ack
+- **Evidence:** Confluence (broad discovery **bug-validator only**) + mandatory Swagger refresh + aligned Phoenix code + DB (supporting, same env)
+- **SKILL must cover (do not skip read):** diagram bundles under **`Cursor-Project/config/Diagrams/`** when ticket has no diagram; Confluence **Phase 2 exclusion** on Prod/PreProd (prefer Phase 1 wiki); attachment recovery — see **`.cursor/skills/phoenix-bug-validation/SKILL.md`**
+- **Slack** `bug-validation` **only when user explicitly asks**; disk report only when user explicitly asks to save (**Rule 0.6**)
+- **Rule 41** applies to any EnergoTS `.spec.ts` work — Rule 32 does not author specs
+
+Violation is a **BLOCK**.
+
+---
+
+## Rule 33 — Database (Test environment) [CRITICAL]
+
+- Test env queries → **PostgreSQLTest** MCP only; **connect before query**
+- Env gate before any PostgreSQL MCP: **Rule DB.0a**, **`.cursor/skills/phoenix-database/SKILL.md`**
+- Full patterns: **`.cursor/rules/integrations/database_workflow.mdc`**
+
+Violation is a **BLOCK**.
+
+---
+
+## Rule 35 / 35a — Test case generation [CRITICAL]
+
+When the user requests test cases, run **in order** (gates fixed — **`test_cases_structure.mdc`**):
+
+| Step | Action | Canonical |
+|------|--------|-----------|
+| **0a** | Ask environment (six envs) if not named | **`environment-resolver`**, TC-ENV-ASK.0 |
+| **0b** | Ask Backend vs Backend+Frontend | TC-FRONTEND-ASK.0 |
+| **0c** | Align Phoenix (`switch-phoenix-branches.ps1`) | PHOENIX-SWITCH.0 |
+| **1** | **cross-dependency-finder** (35a: Jira + code + deep Confluence exploration; **no** merge/git archaeology) | **`.cursor/skills/cross-dependency-finder/SKILL.md`** |
+| **2** | **test-case-generator** with `cross_dependency_data`; read playwright instructions pack + Test Case Template; **TC-STANDALONE-PRE.0** | **`.cursor/skills/test-case-generator/SKILL.md`** |
+| **2.5** | **test-case-quality-validator** — 10-axis, **≥80/100**, max **3** rewrites; block if still failing | **`.cursor/skills/test-case-quality-validator/SKILL.md`** |
+
+**Outputs:** `test_cases/Backend/<Topic>.md` always; `test_cases/Frontend/<Topic>.md` only if user chose Backend+Frontend.
+
+**Never skip** Step 1 (cross-dep) or Step 2.5 (quality gate). Violation is a **BLOCK**.
+
+---
+
+## Rule 36 — EnergoTS Playwright run [CRITICAL]
+
+- **`energo-ts-run`** only; EnergoTS **`cursor`** branch only (**Rule ENERGOTS.0**)
+- **`.cursor/skills/energo-ts-run/SKILL.md`**, **`.cursor/agents/energo-ts-run.md`**
+
+Violation is a **MUST**.
+
+---
+
+## Rule 37 — HandsOff [CRITICAL]
+
+- Jira ticket + **`/HandsOff`** or **`!HandsOff`** → full orchestration **without skipping steps**
+- **`.cursor/commands/hands-off.md`**, **`.cursor/agents/hands-off.md`**
+- Reporting: **`handsoff_playwright_report.mdc`**, **`playwright_detailed_reporting.mdc`** (Rule DPR.0)
+
+Violation is a **BLOCK**.
+
+---
+
+## Rule 39 — Confluence scope (non–Rule 32) [CRITICAL]
+
+- Default: ticket text + **linked Confluence URLs only**; no broad CQL/search unless user asks or PhoenixExpert Q&A requires it
+- **Bug** issue type alone does **not** grant broad wiki search outside **`bug-validator`**
+- Cross-dep: **deep Confluence exploration** — search broadly, read full pages, walk related pages to find detailed descriptions and dependencies (**`.cursor/skills/cross-dependency-finder/SKILL.md`**)
+
+Violation is a **MUST**.
+
+---
+
+## Rules 40–41 — Playwright authoring [CRITICAL]
+
+| Rule | Obligation | Detail |
+|------|------------|--------|
+| **40** | No `test.beforeAll` / `beforeAll` for preconditions | **`handsoff_playwright_report.mdc`**, playwright instructions |
+| **41** | Run **`update-swagger-specs.ps1`** before any EnergoTS `.spec.ts` create/edit | **`swagger_refresh_mandatory.mdc`** |
+
+Violation is a **MUST**.
+
+---
+
+## Rules 42–44 — Jira / Confluence reads [CRITICAL]
+
+| Rule | Obligation | Detail |
+|------|------------|--------|
+| **42** | Jira MCP first; REST read fallback after retries — disclose **`Jira source: REST fallback …`** | **`jira_rest_fallback.mdc`** |
+| **43** | Confluence MCP first; REST read fallback after retries — disclose **`Confluence source: REST fallback …`** | **`confluence_rest_fallback.mdc`** |
+| **44** | Jira ticket analysis/triage with linked Confluence → read those pages **same pass** | **`.cursor/skills/jira-evidence/SKILL.md`**; Rule 39 scope |
+
+Abandoning mandatory reads when REST could satisfy them **without** user opt-out is a **MUST**.

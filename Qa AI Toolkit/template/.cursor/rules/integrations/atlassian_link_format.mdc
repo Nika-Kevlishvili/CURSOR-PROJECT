@@ -1,0 +1,47 @@
+---
+description: Canonical Atlassian URL format for Confluence and Jira in reports, test cases, and chat deliverables
+alwaysApply: true
+---
+
+# ATLASSIAN LINK FORMAT [MUST]
+
+## Rule LINK.0: User-facing URLs
+
+Confluence wiki and Jira may live on **different** hosts. Values come from `.env` (`CONFLUENCE_WIKI_BASE`, `JIRA_BASE_URL`) set by `setup.ps1`.
+
+| System | Pattern |
+|--------|---------|
+| **Confluence** | `{CONFLUENCE_WIKI_BASE}/spaces/{CONFLUENCE_SPACE}/pages/{pageId}/{Title+slug}` |
+| **Jira** | `{JIRA_BASE_URL}/browse/{ISSUE_KEY}` |
+
+**Forbidden in deliverables:** REST API URLs as primary user links.
+
+---
+
+## Rule LINK.1: Confluence page links
+
+```markdown
+[Page title]({CONFLUENCE_WIKI_BASE}/spaces/{CONFLUENCE_SPACE}/pages/{pageId}/{Title+With+Plus+Encoding})
+```
+
+Encode title: spaces to `+`, `/` to `%2F`.
+
+---
+
+## Rule LINK.2: Jira ticket links
+
+```markdown
+[{TICKET_PREFIX}-123]({JIRA_BASE_URL}/browse/{TICKET_PREFIX}-123)
+```
+
+---
+
+## Rule LINK.3: Where this applies
+
+Chat reports, test cases, bug validation, and expert Q&A deliverables that cite wiki or Jira.
+
+---
+
+## Rule LINK.4: MCP / REST vs user links
+
+MCP/REST use API bases internally. User-facing citations use LINK.1 / LINK.2 patterns with hosts from `.env`.
