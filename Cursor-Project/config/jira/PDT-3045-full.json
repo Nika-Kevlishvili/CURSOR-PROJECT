@@ -1,0 +1,1023 @@
+﻿{
+    "expand":  "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
+    "id":  "75740",
+    "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/75740",
+    "key":  "PDT-3045",
+    "names":  {
+                  "issuetype":  "Issue Type",
+                  "components":  "Components",
+                  "customfield_10095":  "Tester",
+                  "description":  "Description",
+                  "customfield_10104":  "Design",
+                  "customfield_10745":  "Test Case",
+                  "attachment":  "Attachment",
+                  "summary":  "Summary",
+                  "created":  "Created",
+                  "customfield_10283":  "Clarification Reason",
+                  "reporter":  "Reporter",
+                  "customfield_10483":  "DB Points",
+                  "customfield_10484":  "Dev Points",
+                  "priority":  "Priority",
+                  "customfield_10485":  "QA points",
+                  "customfield_10048":  "Acceptance Criteria",
+                  "labels":  "Labels",
+                  "customfield_10103":  "Description formatted",
+                  "environment":  "Environment",
+                  "customfield_10877":  "Approved for Prod",
+                  "customfield_10217":  "Bug Description",
+                  "issuelinks":  "Linked Issues",
+                  "comment":  "Comment",
+                  "assignee":  "Assignee",
+                  "updated":  "Updated",
+                  "status":  "Status"
+              },
+    "changelog":  {
+                      "startAt":  0,
+                      "maxResults":  7,
+                      "total":  7,
+                      "histories":  [
+                                        {
+                                            "id":  "682682",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                           "accountId":  "712020:4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                           "emailAddress":  "n.kevlishvili@asterbit.io",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png"
+                                                                          },
+                                                           "displayName":  "nika kevlishvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-07-02T11:59:50.188+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "resolution",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "resolution",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "10000",
+                                                              "toString":  "Done"
+                                                          },
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10192",
+                                                              "fromString":  "Testing",
+                                                              "to":  "10627",
+                                                              "toString":  "Done on Dev"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "682663",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                           "accountId":  "712020:4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                           "emailAddress":  "n.kevlishvili@asterbit.io",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png"
+                                                                          },
+                                                           "displayName":  "nika kevlishvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-07-02T11:40:37.466+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10191",
+                                                              "fromString":  "Ready for testing",
+                                                              "to":  "10192",
+                                                              "toString":  "Testing"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "681940",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A1c10bc13-60f1-4bc6-8996-c811aaecb9a8",
+                                                           "accountId":  "712020:1c10bc13-60f1-4bc6-8996-c811aaecb9a8",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/fcd265168afe5232dc485b1f8fbe81df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FVC-2.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/fcd265168afe5232dc485b1f8fbe81df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FVC-2.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/fcd265168afe5232dc485b1f8fbe81df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FVC-2.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/fcd265168afe5232dc485b1f8fbe81df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FVC-2.png"
+                                                                          },
+                                                           "displayName":  "Vato Chitaia",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-07-01T16:09:35.104+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "3",
+                                                              "fromString":  "In Progress",
+                                                              "to":  "10191",
+                                                              "toString":  "Ready for testing"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "681868",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A1c10bc13-60f1-4bc6-8996-c811aaecb9a8",
+                                                           "accountId":  "712020:1c10bc13-60f1-4bc6-8996-c811aaecb9a8",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/fcd265168afe5232dc485b1f8fbe81df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FVC-2.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/fcd265168afe5232dc485b1f8fbe81df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FVC-2.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/fcd265168afe5232dc485b1f8fbe81df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FVC-2.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/fcd265168afe5232dc485b1f8fbe81df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FVC-2.png"
+                                                                          },
+                                                           "displayName":  "Vato Chitaia",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-07-01T13:37:42.006+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10447",
+                                                              "fromString":  "Ready for development",
+                                                              "to":  "3",
+                                                              "toString":  "In Progress"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "681833",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                           "accountId":  "712020:4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                           "emailAddress":  "n.kevlishvili@asterbit.io",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png"
+                                                                          },
+                                                           "displayName":  "nika kevlishvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-07-01T12:02:05.913+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Description formatted",
+                                                              "fieldtype":  "custom",
+                                                              "fieldId":  "customfield_10103",
+                                                              "from":  "",
+                                                              "fromString":  "{color:#ff991f}*Reproduce Steps:*{color}\n\n# Deducted volume invoice ( Debit/Credit ) \n# run correction flow for this volume invoice \n# check connection between , Volume , interim , correction debit and correction credit invoices.\n\n{color:#36b37e}Actual Result:{color}\n\nmissing connection , when user run correction flow for deducted volume invoice.\n\n{color:#ff5630}*Expected Result:*{color}\n\nIn interim invoice should be added both correction invoices.\nIn Deducted volume should be added both correction invoices.\nIn correction credit and debit invoices , should be added interim invoice and Deducted volume invoice.\n\n\nInterim - [https://testapps.energo-pro.bg/app/phoenix-epres/invoices/preview/basic-data?id=88249|https://testapps.energo-pro.bg/app/phoenix-epres/invoices/preview/basic-data?id=88249]\nDeducted volume - [https://testapps.energo-pro.bg/app/phoenix-epres/invoices/preview/basic-data?id=88250|https://testapps.energo-pro.bg/app/phoenix-epres/invoices/preview/basic-data?id=88250]\nCorrection Debit - [https://testapps.energo-pro.bg/app/phoenix-epres/billing-run/invoices/preview/basic-data?id=88253|https://testapps.energo-pro.bg/app/phoenix-epres/billing-run/invoices/preview/basic-data?id=88253]\nCorrection Credit - [https://testapps.energo-pro.bg/app/phoenix-epres/billing-run/invoices/preview/basic-data?id=88254|https://testapps.energo-pro.bg/app/phoenix-epres/billing-run/invoices/preview/basic-data?id=88254]",
+                                                              "to":  "",
+                                                              "toString":  "{color:#ff991f}*Reproduce Steps:*{color}\n\n# Deducted volume invoice ( Debit/Credit ) \n# run correction flow for this volume invoice \n# check connection between , Volume , interim , correction debit and correction credit invoices.\n\n{color:#36b37e}Actual Result:{color}\n\nmissing connection , when user run correction flow for deducted volume invoice.\n\n{color:#ff5630}*Expected Result:*{color}\n\nInterim -  Correction Credit, Correction Debit and Deducted volume\nDeducted volume - interim\n\nCorrection Debit - interim\nCorrection Credit - interim\n\n\nInterim - [https://testapps.energo-pro.bg/app/phoenix-epres/invoices/preview/basic-data?id=88249|https://testapps.energo-pro.bg/app/phoenix-epres/invoices/preview/basic-data?id=88249]\nDeducted volume - [https://testapps.energo-pro.bg/app/phoenix-epres/invoices/preview/basic-data?id=88250|https://testapps.energo-pro.bg/app/phoenix-epres/invoices/preview/basic-data?id=88250]\nCorrection Debit - [https://testapps.energo-pro.bg/app/phoenix-epres/billing-run/invoices/preview/basic-data?id=88253|https://testapps.energo-pro.bg/app/phoenix-epres/billing-run/invoices/preview/basic-data?id=88253]\nCorrection Credit - [https://testapps.energo-pro.bg/app/phoenix-epres/billing-run/invoices/preview/basic-data?id=88254|https://testapps.energo-pro.bg/app/phoenix-epres/billing-run/invoices/preview/basic-data?id=88254]"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "681824",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                           "accountId":  "712020:4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                           "emailAddress":  "n.kevlishvili@asterbit.io",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png"
+                                                                          },
+                                                           "displayName":  "nika kevlishvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-07-01T11:34:42.343+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Description formatted",
+                                                              "fieldtype":  "custom",
+                                                              "fieldId":  "customfield_10103",
+                                                              "from":  "",
+                                                              "fromString":  "{color:#ff991f}*Reproduce Steps:*{color}\n\n# Deducted volume invoice ( Debit/Credit ) \n# run correction flow for this volume invoice \n# check connection between , Volume , interim , correction debit and correction credit invoices.\n\n{color:#36b37e}Actual Result:{color}\n\nmissing connection , when user run correction flow for deducted volume invoice.\n\n{color:#ff5630}*Expected Result:*{color}\n\nIn interim invoice should be added both correction invoices.\nIn Deducted volume should be added both correction invoices.\nIn correction credit and debit invoices , should be added interim invoice and Deducted volume invoice.",
+                                                              "to":  "",
+                                                              "toString":  "{color:#ff991f}*Reproduce Steps:*{color}\n\n# Deducted volume invoice ( Debit/Credit ) \n# run correction flow for this volume invoice \n# check connection between , Volume , interim , correction debit and correction credit invoices.\n\n{color:#36b37e}Actual Result:{color}\n\nmissing connection , when user run correction flow for deducted volume invoice.\n\n{color:#ff5630}*Expected Result:*{color}\n\nIn interim invoice should be added both correction invoices.\nIn Deducted volume should be added both correction invoices.\nIn correction credit and debit invoices , should be added interim invoice and Deducted volume invoice.\n\n\nInterim - [https://testapps.energo-pro.bg/app/phoenix-epres/invoices/preview/basic-data?id=88249|https://testapps.energo-pro.bg/app/phoenix-epres/invoices/preview/basic-data?id=88249]\nDeducted volume - [https://testapps.energo-pro.bg/app/phoenix-epres/invoices/preview/basic-data?id=88250|https://testapps.energo-pro.bg/app/phoenix-epres/invoices/preview/basic-data?id=88250]\nCorrection Debit - [https://testapps.energo-pro.bg/app/phoenix-epres/billing-run/invoices/preview/basic-data?id=88253|https://testapps.energo-pro.bg/app/phoenix-epres/billing-run/invoices/preview/basic-data?id=88253]\nCorrection Credit - [https://testapps.energo-pro.bg/app/phoenix-epres/billing-run/invoices/preview/basic-data?id=88254|https://testapps.energo-pro.bg/app/phoenix-epres/billing-run/invoices/preview/basic-data?id=88254]"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "681822",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                           "accountId":  "712020:4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                           "emailAddress":  "n.kevlishvili@asterbit.io",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png"
+                                                                          },
+                                                           "displayName":  "nika kevlishvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-07-01T11:33:32.624+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "IssueParentAssociation",
+                                                              "fieldtype":  "jira",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "72744",
+                                                              "toString":  "PDT-2891"
+                                                          }
+                                                      ]
+                                        }
+                                    ]
+                  },
+    "fields":  {
+                   "issuetype":  {
+                                     "self":  "https://oppa-support.atlassian.net/rest/api/3/issuetype/10504",
+                                     "id":  "10504",
+                                     "description":  "bugs under a story or task",
+                                     "iconUrl":  "https://oppa-support.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10303?size=medium",
+                                     "name":  "Internal Bug",
+                                     "subtask":  true,
+                                     "avatarId":  10303,
+                                     "hierarchyLevel":  -1
+                                 },
+                   "components":  [
+
+                                  ],
+                   "customfield_10095":  {
+                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                             "accountId":  "712020:4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                             "emailAddress":  "n.kevlishvili@asterbit.io",
+                                             "avatarUrls":  {
+                                                                "48x48":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                "24x24":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                "16x16":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                "32x32":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png"
+                                                            },
+                                             "displayName":  "nika kevlishvili",
+                                             "active":  true,
+                                             "timeZone":  "Asia/Dubai",
+                                             "accountType":  "atlassian"
+                                         },
+                   "description":  null,
+                   "customfield_10104":  null,
+                   "customfield_10745":  {
+                                             "type":  "doc",
+                                             "version":  1,
+                                             "content":  [
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "PASSED:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\tyes/no"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Title:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Description:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Test Type:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Test Steps:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Expected Result:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Notes:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 }
+                                                                             ]
+                                                             }
+                                                         ]
+                                         },
+                   "attachment":  [
+
+                                  ],
+                   "summary":  "[Backend] missing connection , when user run correction flow for deducted volume invoice.",
+                   "created":  "2026-07-01T11:33:32.574+0400",
+                   "customfield_10283":  null,
+                   "reporter":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                    "accountId":  "712020:4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                    "emailAddress":  "n.kevlishvili@asterbit.io",
+                                    "avatarUrls":  {
+                                                       "48x48":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                       "24x24":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                       "16x16":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                       "32x32":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png"
+                                                   },
+                                    "displayName":  "nika kevlishvili",
+                                    "active":  true,
+                                    "timeZone":  "Asia/Dubai",
+                                    "accountType":  "atlassian"
+                                },
+                   "customfield_10483":  null,
+                   "customfield_10484":  null,
+                   "priority":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/priority/1",
+                                    "iconUrl":  "https://oppa-support.atlassian.net/images/icons/priorities/highest_new.svg",
+                                    "name":  "Highest",
+                                    "id":  "1"
+                                },
+                   "customfield_10485":  null,
+                   "customfield_10048":  null,
+                   "labels":  [
+                                  "Backend"
+                              ],
+                   "customfield_10103":  {
+                                             "type":  "doc",
+                                             "version":  1,
+                                             "content":  [
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Reproduce Steps:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "textColor",
+                                                                                                       "attrs":  {
+                                                                                                                     "color":  "#ff991f"
+                                                                                                                 }
+                                                                                                   }
+                                                                                               ]
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "91036eb051eb"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "orderedList",
+                                                                 "attrs":  {
+                                                                               "order":  1,
+                                                                               "localId":  "c9c15e8497c7"
+                                                                           },
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "listItem",
+                                                                                     "attrs":  {
+                                                                                                   "localId":  "0f894d250e84"
+                                                                                               },
+                                                                                     "content":  [
+                                                                                                     {
+                                                                                                         "type":  "paragraph",
+                                                                                                         "content":  [
+                                                                                                                         {
+                                                                                                                             "type":  "text",
+                                                                                                                             "text":  "Deducted volume invoice ( Debit/Credit ) "
+                                                                                                                         }
+                                                                                                                     ],
+                                                                                                         "attrs":  {
+                                                                                                                       "localId":  "bc6d813f852a"
+                                                                                                                   }
+                                                                                                     }
+                                                                                                 ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "listItem",
+                                                                                     "attrs":  {
+                                                                                                   "localId":  "0f894d250e84"
+                                                                                               },
+                                                                                     "content":  [
+                                                                                                     {
+                                                                                                         "type":  "paragraph",
+                                                                                                         "content":  [
+                                                                                                                         {
+                                                                                                                             "type":  "text",
+                                                                                                                             "text":  "run correction flow for this volume invoice "
+                                                                                                                         }
+                                                                                                                     ],
+                                                                                                         "attrs":  {
+                                                                                                                       "localId":  "451e64060b44"
+                                                                                                                   }
+                                                                                                     }
+                                                                                                 ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "listItem",
+                                                                                     "attrs":  {
+                                                                                                   "localId":  "0f894d250e84"
+                                                                                               },
+                                                                                     "content":  [
+                                                                                                     {
+                                                                                                         "type":  "paragraph",
+                                                                                                         "content":  [
+                                                                                                                         {
+                                                                                                                             "type":  "text",
+                                                                                                                             "text":  "check connection between , Volume , interim , correction debit and correction credit invoices."
+                                                                                                                         }
+                                                                                                                     ],
+                                                                                                         "attrs":  {
+                                                                                                                       "localId":  "dae87dba4ca1"
+                                                                                                                   }
+                                                                                                     }
+                                                                                                 ]
+                                                                                 }
+                                                                             ]
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Actual Result:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "textColor",
+                                                                                                       "attrs":  {
+                                                                                                                     "color":  "#36b37e"
+                                                                                                                 }
+                                                                                                   }
+                                                                                               ]
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "10078f1362a8"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "missing connection , when user run correction flow for deducted volume invoice."
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "00dec653b119"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Expected Result:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "textColor",
+                                                                                                       "attrs":  {
+                                                                                                                     "color":  "#ff5630"
+                                                                                                                 }
+                                                                                                   }
+                                                                                               ]
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "a6890acb59a6"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Interim -  Correction Credit, Correction Debit and Deducted volume"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Deducted volume - interim"
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "c582535d2779"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Correction Debit - interim"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Correction Credit - interim"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Interim - "
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "https://testapps.energo-pro.bg/app/phoenix-epres/invoices/preview/basic-data?id=88249",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "link",
+                                                                                                       "attrs":  {
+                                                                                                                     "href":  "https://testapps.energo-pro.bg/app/phoenix-epres/invoices/preview/basic-data?id=88249"
+                                                                                                                 }
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Deducted volume - "
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "https://testapps.energo-pro.bg/app/phoenix-epres/invoices/preview/basic-data?id=88250",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "link",
+                                                                                                       "attrs":  {
+                                                                                                                     "href":  "https://testapps.energo-pro.bg/app/phoenix-epres/invoices/preview/basic-data?id=88250"
+                                                                                                                 }
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Correction Debit - "
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "https://testapps.energo-pro.bg/app/phoenix-epres/billing-run/invoices/preview/basic-data?id=88253",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "link",
+                                                                                                       "attrs":  {
+                                                                                                                     "href":  "https://testapps.energo-pro.bg/app/phoenix-epres/billing-run/invoices/preview/basic-data?id=88253"
+                                                                                                                 }
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Correction Credit - "
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "https://testapps.energo-pro.bg/app/phoenix-epres/billing-run/invoices/preview/basic-data?id=88254",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "link",
+                                                                                                       "attrs":  {
+                                                                                                                     "href":  "https://testapps.energo-pro.bg/app/phoenix-epres/billing-run/invoices/preview/basic-data?id=88254"
+                                                                                                                 }
+                                                                                                   }
+                                                                                               ]
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "829a65d83ed8"
+                                                                           }
+                                                             }
+                                                         ]
+                                         },
+                   "environment":  {
+                                       "type":  "doc",
+                                       "version":  1,
+                                       "content":  [
+                                                       {
+                                                           "type":  "paragraph",
+                                                           "content":  [
+                                                                           {
+                                                                               "type":  "text",
+                                                                               "text":  "DEV , TEST"
+                                                                           }
+                                                                       ]
+                                                       }
+                                                   ]
+                                   },
+                   "customfield_10877":  {
+                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/customFieldOption/10249",
+                                             "value":  "Yes",
+                                             "id":  "10249"
+                                         },
+                   "customfield_10217":  {
+                                             "type":  "doc",
+                                             "version":  1,
+                                             "content":  [
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Link:"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "A.R.(არსებული სიტუაცია):"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "E.R.( სასურველი შედეგი):"
+                                                                                 }
+                                                                             ]
+                                                             }
+                                                         ]
+                                         },
+                   "issuelinks":  [
+
+                                  ],
+                   "comment":  {
+                                   "comments":  [
+                                                    {
+                                                        "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/75740/comment/69954",
+                                                        "id":  "69954",
+                                                        "author":  {
+                                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                                       "accountId":  "712020:4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                                       "emailAddress":  "n.kevlishvili@asterbit.io",
+                                                                       "avatarUrls":  {
+                                                                                          "48x48":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                                          "24x24":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                                          "16x16":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                                          "32x32":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png"
+                                                                                      },
+                                                                       "displayName":  "nika kevlishvili",
+                                                                       "active":  true,
+                                                                       "timeZone":  "Asia/Dubai",
+                                                                       "accountType":  "atlassian"
+                                                                   },
+                                                        "body":  {
+                                                                     "type":  "doc",
+                                                                     "version":  1,
+                                                                     "content":  [
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "mention",
+                                                                                                             "attrs":  {
+                                                                                                                           "id":  "63b7cf707cde7bff9d7adad8",
+                                                                                                                           "text":  "@Valeri.Valev",
+                                                                                                                           "accessLevel":  "",
+                                                                                                                           "localId":  "11c64b61-e30a-417d-9ebc-32ddf16676c4"
+                                                                                                                       }
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  " Please approve, if Bug description is okay."
+                                                                                                         }
+                                                                                                     ],
+                                                                                         "attrs":  {
+                                                                                                       "localId":  "8f36ced27c93"
+                                                                                                   }
+                                                                                     }
+                                                                                 ]
+                                                                 },
+                                                        "updateAuthor":  {
+                                                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                                             "accountId":  "712020:4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                                             "emailAddress":  "n.kevlishvili@asterbit.io",
+                                                                             "avatarUrls":  {
+                                                                                                "48x48":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                                                "24x24":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                                                "16x16":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                                                "32x32":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png"
+                                                                                            },
+                                                                             "displayName":  "nika kevlishvili",
+                                                                             "active":  true,
+                                                                             "timeZone":  "Asia/Dubai",
+                                                                             "accountType":  "atlassian"
+                                                                         },
+                                                        "created":  "2026-07-01T11:39:33.140+0400",
+                                                        "updated":  "2026-07-01T11:39:33.140+0400",
+                                                        "jsdPublic":  true
+                                                    },
+                                                    {
+                                                        "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/75740/comment/69956",
+                                                        "id":  "69956",
+                                                        "author":  {
+                                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=63b7cf707cde7bff9d7adad8",
+                                                                       "accountId":  "63b7cf707cde7bff9d7adad8",
+                                                                       "avatarUrls":  {
+                                                                                          "48x48":  "https://secure.gravatar.com/avatar/8d95627dafaff804d04215f7680e71ce?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FV-5.png",
+                                                                                          "24x24":  "https://secure.gravatar.com/avatar/8d95627dafaff804d04215f7680e71ce?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FV-5.png",
+                                                                                          "16x16":  "https://secure.gravatar.com/avatar/8d95627dafaff804d04215f7680e71ce?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FV-5.png",
+                                                                                          "32x32":  "https://secure.gravatar.com/avatar/8d95627dafaff804d04215f7680e71ce?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FV-5.png"
+                                                                                      },
+                                                                       "displayName":  "Valeri.Valev",
+                                                                       "active":  true,
+                                                                       "timeZone":  "Asia/Dubai",
+                                                                       "accountType":  "atlassian"
+                                                                   },
+                                                        "body":  {
+                                                                     "type":  "doc",
+                                                                     "version":  1,
+                                                                     "content":  [
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "mention",
+                                                                                                             "attrs":  {
+                                                                                                                           "id":  "712020:4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                                                                                           "text":  "@nika kevlishvili",
+                                                                                                                           "accessLevel":  "",
+                                                                                                                           "localId":  "c7fede0fc50d"
+                                                                                                                       }
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "hardBreak"
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "Interim -  Correction Credit, Correction Debit and Deducted volume"
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "hardBreak"
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "Deducted volume - interim"
+                                                                                                         }
+                                                                                                     ],
+                                                                                         "attrs":  {
+                                                                                                       "localId":  "aa4572b0f1a2"
+                                                                                                   }
+                                                                                     },
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "Correction Debit - interim"
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "hardBreak"
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "Correction Credit - interim"
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "hardBreak"
+                                                                                                         }
+                                                                                                     ],
+                                                                                         "attrs":  {
+                                                                                                       "localId":  "aa4572b0f1a2"
+                                                                                                   }
+                                                                                     }
+                                                                                 ]
+                                                                 },
+                                                        "updateAuthor":  {
+                                                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=63b7cf707cde7bff9d7adad8",
+                                                                             "accountId":  "63b7cf707cde7bff9d7adad8",
+                                                                             "avatarUrls":  {
+                                                                                                "48x48":  "https://secure.gravatar.com/avatar/8d95627dafaff804d04215f7680e71ce?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FV-5.png",
+                                                                                                "24x24":  "https://secure.gravatar.com/avatar/8d95627dafaff804d04215f7680e71ce?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FV-5.png",
+                                                                                                "16x16":  "https://secure.gravatar.com/avatar/8d95627dafaff804d04215f7680e71ce?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FV-5.png",
+                                                                                                "32x32":  "https://secure.gravatar.com/avatar/8d95627dafaff804d04215f7680e71ce?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FV-5.png"
+                                                                                            },
+                                                                             "displayName":  "Valeri.Valev",
+                                                                             "active":  true,
+                                                                             "timeZone":  "Asia/Dubai",
+                                                                             "accountType":  "atlassian"
+                                                                         },
+                                                        "created":  "2026-07-01T11:45:00.061+0400",
+                                                        "updated":  "2026-07-01T11:45:00.061+0400",
+                                                        "jsdPublic":  true
+                                                    },
+                                                    {
+                                                        "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/75740/comment/69960",
+                                                        "id":  "69960",
+                                                        "author":  {
+                                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                                       "accountId":  "712020:4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                                       "emailAddress":  "n.kevlishvili@asterbit.io",
+                                                                       "avatarUrls":  {
+                                                                                          "48x48":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                                          "24x24":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                                          "16x16":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                                          "32x32":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png"
+                                                                                      },
+                                                                       "displayName":  "nika kevlishvili",
+                                                                       "active":  true,
+                                                                       "timeZone":  "Asia/Dubai",
+                                                                       "accountType":  "atlassian"
+                                                                   },
+                                                        "body":  {
+                                                                     "type":  "doc",
+                                                                     "version":  1,
+                                                                     "content":  [
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "mention",
+                                                                                                             "attrs":  {
+                                                                                                                           "id":  "63b7cf707cde7bff9d7adad8",
+                                                                                                                           "text":  "@Valeri.Valev",
+                                                                                                                           "accessLevel":  "",
+                                                                                                                           "localId":  "689ab6b25f5b"
+                                                                                                                       }
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  " okay , thank you."
+                                                                                                         }
+                                                                                                     ],
+                                                                                         "attrs":  {
+                                                                                                       "localId":  "f12d677af764"
+                                                                                                   }
+                                                                                     }
+                                                                                 ]
+                                                                 },
+                                                        "updateAuthor":  {
+                                                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                                             "accountId":  "712020:4639bb27-748b-483b-8d8b-99f4c841d7d2",
+                                                                             "emailAddress":  "n.kevlishvili@asterbit.io",
+                                                                             "avatarUrls":  {
+                                                                                                "48x48":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                                                "24x24":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                                                "16x16":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png",
+                                                                                                "32x32":  "https://secure.gravatar.com/avatar/346c4c5d5dcf4b096d72210596a3fb4c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNK-3.png"
+                                                                                            },
+                                                                             "displayName":  "nika kevlishvili",
+                                                                             "active":  true,
+                                                                             "timeZone":  "Asia/Dubai",
+                                                                             "accountType":  "atlassian"
+                                                                         },
+                                                        "created":  "2026-07-01T12:01:52.760+0400",
+                                                        "updated":  "2026-07-01T12:01:52.760+0400",
+                                                        "jsdPublic":  true
+                                                    }
+                                                ],
+                                   "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/75740/comment",
+                                   "maxResults":  3,
+                                   "total":  3,
+                                   "startAt":  0
+                               },
+                   "assignee":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A1c10bc13-60f1-4bc6-8996-c811aaecb9a8",
+                                    "accountId":  "712020:1c10bc13-60f1-4bc6-8996-c811aaecb9a8",
+                                    "avatarUrls":  {
+                                                       "48x48":  "https://secure.gravatar.com/avatar/fcd265168afe5232dc485b1f8fbe81df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FVC-2.png",
+                                                       "24x24":  "https://secure.gravatar.com/avatar/fcd265168afe5232dc485b1f8fbe81df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FVC-2.png",
+                                                       "16x16":  "https://secure.gravatar.com/avatar/fcd265168afe5232dc485b1f8fbe81df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FVC-2.png",
+                                                       "32x32":  "https://secure.gravatar.com/avatar/fcd265168afe5232dc485b1f8fbe81df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FVC-2.png"
+                                                   },
+                                    "displayName":  "Vato Chitaia",
+                                    "active":  true,
+                                    "timeZone":  "Asia/Dubai",
+                                    "accountType":  "atlassian"
+                                },
+                   "updated":  "2026-07-02T11:59:50.188+0400",
+                   "status":  {
+                                  "self":  "https://oppa-support.atlassian.net/rest/api/3/status/10627",
+                                  "description":  "",
+                                  "iconUrl":  "https://oppa-support.atlassian.net/",
+                                  "name":  "Done on Dev",
+                                  "id":  "10627",
+                                  "statusCategory":  {
+                                                         "self":  "https://oppa-support.atlassian.net/rest/api/3/statuscategory/3",
+                                                         "id":  3,
+                                                         "key":  "done",
+                                                         "colorName":  "green",
+                                                         "name":  "Done"
+                                                     }
+                              }
+               }
+}
