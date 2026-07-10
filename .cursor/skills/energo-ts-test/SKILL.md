@@ -1,17 +1,16 @@
 ---
 name: energo-ts-test
-description: Manages EnergoTS Playwright test automation under Cursor-Project/EnergoTS/tests/ only (*.spec.ts, *.fixtures.ts). Rule 0.8.1 sole writer. Mandatory Swagger refresh + playwright instructions pack before edits. HandsOff Step 4.
+description: Manages EnergoTS Playwright test automation under Cursor-Project/EnergoTS/tests/ only (*.spec.ts, *.fixtures.ts). Rule 0.8.1 sole writer. Mandatory Swagger refresh + playwright instructions pack before edits.
 ---
 
 # EnergoTS Test Skill
 
 **Subagent (I/O):** `.cursor/agents/energo-ts-test.md`  
-**Validator after authoring:** `playwright-test-validator` (HandsOff Step 4.5)
+**Validator after authoring:** `playwright-test-validator`
 
 ## When to apply
 
-- HandsOff Step 4 — map test cases → `EnergoTS/tests/cursor/{KEY}-*.spec.ts`
-- User asks to create, modify, or analyze EnergoTS Playwright tests
+- User asks to create, modify, or analyze EnergoTS Playwright tests (map test cases → `EnergoTS/tests/cursor/{KEY}-*.spec.ts` when TC `.md` exists)
 - Any write under `Cursor-Project/EnergoTS/tests/` (**`.spec.ts`**, **`.fixtures.ts`** only — hooks enforce)
 
 ## Mandatory before `.spec.ts` / `.fixtures.ts` edits
@@ -38,7 +37,7 @@ Format: `test('[JIRA-KEY]: {Exact Jira Task Title}', async ({...}) => {`
 
 - **Exact** Jira title — no abbreviations, no added "| Happy path" unless in Jira title.
 
-## HandsOff bridge (test cases → spec)
+## Test cases → spec bridge
 
 **Inputs:** Backend TC path (required); Frontend path when exists; Jira key + title.
 
@@ -108,11 +107,11 @@ Legacy snippet (`attachManualVerificationLinks` without `testRunSummary`) — do
 
 ## Post-authoring validation [MANDATORY — all paths]
 
-After **any** new or materially changed `.spec.ts` / `.fixtures.ts` write — **HandsOff Step 4**, standalone bug automation, or direct user request — the authoring agent **MUST** invoke **playwright-test-validator** before declaring completion or before **energo-ts-run**.
+After **any** new or materially changed `.spec.ts` / `.fixtures.ts` write — standalone bug automation, Rule 35 flow, or direct user request — the authoring agent **MUST** invoke **playwright-test-validator** before declaring completion or before **energo-ts-run**.
 
 | Input | When |
 |-------|------|
-| `backend_path` (+ optional `frontend_path`) | TC `.md` exists on disk (HandsOff, Rule 35) |
+| `backend_path` (+ optional `frontend_path`) | TC `.md` exists on disk (Rule 35) |
 | `jira_key` only (no TC file) | Bug-only automation — align coverage to Jira reproduce steps + expected/actual |
 
 1. Invoke **playwright-test-validator** (`.cursor/agents/playwright-test-validator.md`) with spec path + inputs above.

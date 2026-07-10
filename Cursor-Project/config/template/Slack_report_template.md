@@ -1,17 +1,16 @@
 # Slack Report Template – Playwright Test Results (long form, optional)
 
-**Default Slack format (paths 2 & 3):** Use **`Slack_report_summary_short_template.md`** — short Slack message + **detailed** report on disk per **`Cursor-Project/config/playwright/Playwright_run_detailed_report_template.md`**. Use **this** file only if the user **explicitly** requests the **full** long Playwright body in Slack (same content as before).
+**Default Slack format (path 2):** Use **`Slack_report_summary_short_template.md`** — short Slack message + **detailed** report on disk per **`Cursor-Project/config/playwright/Playwright_run_detailed_report_template.md`**. Use **this** file only if the user **explicitly** requests the **full** long Playwright body in Slack (same content as before).
 
-**Workspace overview:** Three Slack paths are defined in **`Slack_reporting_paths.md`**. This file applies only to **paths 2 and 3** (HandsOff and user-requested scoped Playwright), and only when **long** Slack is requested. **Bug validation (path 1)** uses a different report format and channel — do **not** use this template there.
+**Workspace overview:** Two Slack paths are defined in **`Slack_reporting_paths.md`**. This file applies only to **path 2** (user-requested scoped Playwright), and only when **long** Slack is requested. **Bug validation (path 1)** uses a different report format and channel — do **not** use this template there.
 
 **Scope (legacy long Slack):** Use this template for **Slack** messages that must repeat the full per-test narrative (rare):
 
-1. **HandsOff** – end of `/HandsOff` / `!HandsOff` (mandatory).
-2. **User-triggered scoped runs** – when the user explicitly asks to post results to Slack for a **specific** subset of tests (same recipients and structure). Orchestration: `.cursor/commands/send-playwright-results-slack.md`.
+1. **User-triggered scoped runs** – when the user explicitly asks to post results to Slack for a **specific** subset of tests (same recipients and structure). Orchestration: `.cursor/commands/send-playwright-results-slack.md`.
 
-The same structure MUST be used every time Playwright test results are sent to Slack for these flows.
+The same structure MUST be used every time Playwright test results are sent to Slack for this flow.
 
-**Reference:** `Slack_reporting_paths.md`; `.cursor/rules/workflows/handsoff_playwright_report.mdc` §4; `.cursor/commands/hands-off.md` Step 6–7; `.cursor/commands/send-playwright-results-slack.md`.
+**Reference:** `Slack_reporting_paths.md`; `.cursor/rules/workflows/playwright_detailed_reporting.mdc` §4; `.cursor/commands/send-playwright-results-slack.md`.
 
 ---
 

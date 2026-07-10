@@ -24,4 +24,4 @@ To fix a failing spec, re-run energo-ts-test with validator output as context, o
 
 ## Rubric reference
 
-`.cursor/skills/playwright-test-validator/SKILL.md` — **10 criteria (0–100 total)**, pass **≥80/100**, max **3** regeneration loops in HandsOff / energo-ts-test flow.
+`.cursor/skills/playwright-test-validator/SKILL.md` — **10 criteria (0–100 total)**, pass **≥80/100**, max **3** regeneration loops in energo-ts-test flow.

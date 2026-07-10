@@ -44,7 +44,7 @@
 - Test cases<br>test_cases/Backend/&lt;Topic&gt;.md<br>test_cases/Frontend/&lt;Topic&gt;.md
 - report-generator
 - environment-resolver
-- Slack<br>Path 1: #bug-validation (C0AUEEDVCEL)<br>Path 2+3: Tester DM + #ai-report (C0AK96S1D7X)
+- Slack<br>Path 1: #bug-validation (C0AUEEDVCEL)<br>Path 2: Scoped Playwright — Tester DM + #ai-report (C0AK96S1D7X)
 - <b>Cross-cutting concerns (apply to every interaction)</b>
 - Jira bug (Exp)
 - Bug validation
@@ -54,8 +54,8 @@
 - Agents<br><font style='font-size:10px'>.cursor/agents/*.md</font>
 - EnergoTS<br>Cursor-Project/EnergoTS/<br><b>tests/cursor/</b> = AI-writable (agent only)
 - test-case-quality-validator
-- Reports (Rule 0.6)<br>reports/Chat reports/<br>reports/HandsOff reports/<br>reports/Feedback/
-- /HandsOff &middot; !HandsOff
+- Reports (Rule 0.6)<br>reports/Chat reports/<br>reports/Feedback/
+- Scoped Playwright + Slack<br>(send-playwright-results-slack)
 - PostgreSQL MCP<br>Gate: env MUST be explicit (DB.0a)<br>Dev | Dev2 | Test | PreProd | Prod | Experiments
 - test-runner
 - <b>.cursor Orchestration Layer</b>
@@ -65,7 +65,6 @@
 - <b>Safety Guards (enforcement)</b>
 - <b>User / Chat Intent</b>
 - bug-validator<br>(BugFinderAgent)
-- hands-off<br>(orchestrator)
 - shell
 - <b>Integrations (read-only / gated)</b>
 - Hooks enforcement (hooks.json + hooks/*.ps1)<br>Block forbidden ops: Phoenix edits, EnergoTS branch switch
@@ -78,7 +77,6 @@ Direct relationships between steps:
 - Phoenix Q&A [Rule 0.2] --> phoenix-qa<br>(PhoenixExpert)
 - Bug validation [Rule 32] --> bug-validator<br>(BugFinderAgent)
 - Generate test cases [Rule 35] --> cross-dependency-finder
-- /HandsOff &middot; !HandsOff [Rule 37] --> hands-off<br>(orchestrator)
 - Run Playwright tests [Rule 36] --> energo-ts-run
 - DB query [DB.0a] --> database-query
 - Prod data read [PDR.0] --> production-data-reader
@@ -88,12 +86,11 @@ Direct relationships between steps:
 - test-case-generator [writes TCs] --> Test cases<br>test_cases/Backend/&lt;Topic&gt;.md<br>test_cases/Frontend/&lt;Topic&gt;.md
 - energo-ts-test<br>(EnergoTSTestAgent) [writes .spec.ts] --> EnergoTS<br>Cursor-Project/EnergoTS/<br><b>tests/cursor/</b> = AI-writable (agent only)
 - phoenix-qa<br>(PhoenixExpert) [reads code] --> Phoenix (READ-ONLY — never edit)<br>Cursor-Project/Phoenix/**<br>Env-aligned via switch-phoenix-branches.ps1
-- report-generator [saves report] --> Reports (Rule 0.6)<br>reports/Chat reports/<br>reports/HandsOff reports/<br>reports/Feedback/
+- report-generator [saves report] --> Reports (Rule 0.6)<br>reports/Chat reports/<br>reports/Feedback/
 - bug-validator<br>(BugFinderAgent) [reads] --> Confluence<br>MCP primary → REST fallback (Rule 43)<br>Broad search ONLY in bug-validator
 - database-query [queries] --> PostgreSQL MCP<br>Gate: env MUST be explicit (DB.0a)<br>Dev | Dev2 | Test | PreProd | Prod | Experiments
 - production-data-reader [queries (Prod)] --> PostgreSQL MCP<br>Gate: env MUST be explicit (DB.0a)<br>Dev | Dev2 | Test | PreProd | Prod | Experiments
-- hands-off<br>(orchestrator) [fetches ticket] --> Jira<br>MCP primary → REST fallback (Rule 42)<br>Attachments: download-jira-attachments.ps1
-- hands-off<br>(orchestrator) [uploads reports] --> Slack<br>Path 1: #bug-validation (C0AUEEDVCEL)<br>Path 2+3: Tester DM + #ai-report (C0AK96S1D7X)
+- energo-ts-run [scoped Slack path 2] --> Slack<br>Path 2: Scoped Playwright — Tester DM + #ai-report (C0AK96S1D7X)
 
 ---
 

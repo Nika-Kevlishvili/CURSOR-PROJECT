@@ -18,7 +18,6 @@ try {
         'Agents involved:',
         'bug validation', 'Bug Validation', 'BugFinder',
         'test case', 'Test Case', 'TC-BE-', 'TC-FE-',
-        'HandsOff', 'handsoff',
         'PhoenixExpert',
         'DB environment:', 'ProductionDataReader',
         'CrossDependencyFinder',

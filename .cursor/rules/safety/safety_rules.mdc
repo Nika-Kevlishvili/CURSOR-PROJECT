@@ -80,7 +80,7 @@ alwaysApply: true
     
 29. Agents SHOULD handle errors with retry logic and context logging (see Rule 15).
     
-30. Cursor AI MUST NOT skip **mandated** report-file steps when Rule **37 (HandsOff)** requires **`{JIRA_KEY}.md`** or when the user ran **`/report`** / **`/feedback`** / explicitly requested a saved file. Rule 32 does **not** mandate a disk file.
+30. Cursor AI MUST NOT skip **mandated** report-file steps when the user ran **`/report`** / **`/feedback`** / explicitly requested a saved file. Rule 32 does **not** mandate a disk file.
     - Omitting **optional** disk reports after routine tasks is **not** a violation (Rule 0.6 default).
     - Violation is a **MUST** when a required workflow artifact or explicit user file request is skipped.
     

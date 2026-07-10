@@ -7,9 +7,9 @@ description: Validates bug reports using Rule 32 workflow — Confluence, refres
 
 Ensures **Rule 32** bug validation (mandated by `.cursor/rules/workflows/workflow_rules.mdc`; **this SKILL is the canonical procedure**): **primary evidence** from **Confluence**, **OpenAPI/Swagger** (after mandatory refresh), **Phoenix code** (aligned to the target environment), and **database** (entity data, audit logs, relationships) — plus ticket/diagram recovery patterns → **full reply in chat**. **READ-ONLY** — no code changes during validation; database queries are SELECT-only. Persisted `BugValidation_*.md` only if the user explicitly asks to save.
 
-**Out of scope for Rule 32:** automatic **test case** generation, **Playwright** spec authoring, **playwright-test-validator**, and **energo-ts-run**. Those belong to **Rule 35** (test cases), **Rule 36/37** (runs / HandsOff), or explicit user requests — not the bug-validator workflow.
+**Out of scope for Rule 32:** automatic **test case** generation, **Playwright** spec authoring, **playwright-test-validator**, and **energo-ts-run**. Those belong to **Rule 35** (test cases), **Rule 36** (runs), or explicit user requests — not the bug-validator workflow.
 
-**Confluence (exclusive to Rule 32):** **Broad, proactive** Confluence information gathering (Step 2 below) applies **only** when running **this** skill / **`bug-validator`** agent. **Do not** copy Step 2 into cross-dependency-finder, test-case-generator, HandsOff, or general Jira/Phoenix Q&A — those workflows keep **Rule 39** (linked-only for non-bugs), **Rule 35a** deep Confluence exploration for cross-dep, or user-requested search only.
+**Confluence (exclusive to Rule 32):** **Broad, proactive** Confluence information gathering (Step 2 below) applies **only** when running **this** skill / **`bug-validator`** agent. **Do not** copy Step 2 into cross-dependency-finder, test-case-generator, or general Jira/Phoenix Q&A — those workflows keep **Rule 39** (linked-only for non-bugs), **Rule 35a** deep Confluence exploration for cross-dep, or user-requested search only.
 
 ## When to Apply
 
@@ -82,7 +82,7 @@ Use diagrams **when they sharpen expected flow or scope**, not as a substitute f
 
 ### Step 2: Confluence validation (evidence strength)
 
-**Rule 32 only (vs Rule 39 / Rule 35a):** **Only bug-validator** performs proactive Confluence discovery here. **Do not** limit to URLs in the ticket. Other agents handling the **same bug ticket** (cross-dep, test cases, HandsOff) **must not** treat “it’s a Bug” as permission for broad wiki search — they follow **their** Confluence limits unless the user explicitly asks for wider search.
+**Rule 32 only (vs Rule 39 / Rule 35a):** **Only bug-validator** performs proactive Confluence discovery here. **Do not** limit to URLs in the ticket. Other agents handling the **same bug ticket** (cross-dep, test cases) **must not** treat “it’s a Bug” as permission for broad wiki search — they follow **their** Confluence limits unless the user explicitly asks for wider search.
 
 **2a — Topic scope (MANDATORY)**
 
@@ -181,7 +181,7 @@ Use **Confluence classification + code analysis + database evidence**, with **Sw
   - Confluence mandatory read path failed after MCP retries **and** REST fallback failed or could not run (**Step 2**), **or**
   - The user must confirm **prod** alignment and has not acknowledged yet.
 - **`PROCESS BLOCKED`** output must not contain `VALID` / `NEEDS CLARIFICATION` / `NEEDS APPROVAL` / `NOT VALID` / `INSUFFICIENT EVIDENCE`; it must contain blocker details and a direct user question for next action.
-- **Do not** claim Playwright-based reproducibility as part of Rule 32; if the user wants automated reproduction, route to **HandsOff (Rule 37)** or an explicit **test case / Playwright** request (**Rule 35 / 36**).
+- **Do not** claim Playwright-based reproducibility as part of Rule 32; if the user wants automated reproduction, route to an explicit **test case / Playwright** request (**Rule 35 / 36**).
 
 ## READ-ONLY
 

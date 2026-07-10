@@ -15,7 +15,7 @@ Cursor-Project/
 ├── menu_data/             # Phoenix UI menu structure snapshots
 ├── Phoenix/               # Phoenix Java projects (submodules, read-only — Rule 0.8 Tier A)
 ├── postman/               # Postman collections
-├── reports/               # Chat reports, HandsOff reports, Feedback (see reports/README.md)
+├── reports/               # Chat reports, Chat reports (ScopedPlaywright), Feedback (see reports/README.md)
 ├── scripts/               # Validation, git hooks
 ├── test_cases/            # Backend/ and Frontend/ test case files
 └── User story/            # User stories and flow documentation

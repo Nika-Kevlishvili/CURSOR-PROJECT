@@ -95,7 +95,7 @@ the assistant MAY answer from general knowledge, but MUST still respect:
 
 ## Jira and Confluence ticket work (load SKILL — not inlined here)
 
-For **Jira fetch, triage, analysis, HandsOff, cross-dep, or bug validation** that uses a ticket:
+For **Jira fetch, triage, analysis, cross-dep, or bug validation** that uses a ticket:
 
 1. **Before substantive Jira reads** → load **`.cursor/skills/jira-evidence/SKILL.md`** (Rule 0.0).
 2. **REST fallback** when MCP fails → **`.cursor/rules/integrations/jira_rest_fallback.mdc`** (Rule 42).

@@ -24,4 +24,4 @@ To fix failing TCs after this report, run `/test-case-generate <Jira_key>` with 
 
 ## Rubric reference
 
-`Cursor-Project/docs/test_case_quality_rubric.md` — **10 axes (0–100 total)**, pass **≥80/100**, max **3** rewrite iterations in HandsOff flow.
+`Cursor-Project/docs/test_case_quality_rubric.md` — **10 axes (0–100 total)**, pass **≥80/100**, max **3** rewrite iterations in test-case flow.

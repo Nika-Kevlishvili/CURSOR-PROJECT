@@ -1,7 +1,7 @@
 ---
 name: test-case-quality-validator
 model: inherit
-description: STRICT quality validator for test case .md files (10-axis, ≥80/100). Rule 35 Step 2.5 / HandsOff Step 3.5. READ-ONLY.
+description: STRICT quality validator for test case .md files (10-axis, ≥80/100). Rule 35 Step 2.5. READ-ONLY.
 ---
 
 # Test Case Quality Validator Subagent

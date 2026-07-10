@@ -23,14 +23,14 @@ description: Runs specific Playwright tests from EnergoTS (local repo synced fro
 ## Outputs
 
 - Pass/fail summary, failed test names/locations, stdout/stderr highlights
-- **`playwright-report-detailed.md`** — HandsOff/path 3 orchestrator generates; ad-hoc only if user explicitly asks (Rule DPR.0)
+- **`playwright-report-detailed.md`** — scoped Slack path 2 orchestrator generates; ad-hoc only if user explicitly asks (Rule DPR.0)
 - Optional Chat reports file on user request (Rule 0.6)
 
-## HandsOff vs ad-hoc
+## Scoped Slack vs ad-hoc
 
 | Context | This agent |
 |---------|------------|
-| **HandsOff Step 5** | Run tests after Step 4.5 pass; parent handles DPR.0 generation + Slack |
+| **Scoped Slack (path 2)** | Run tests; parent handles DPR.0 generation + Slack upload |
 | **Ad-hoc** | User asks to run a test; optional detailed report only when explicitly requested |
 
 ## Constraints

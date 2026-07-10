@@ -4,10 +4,10 @@ Uploads a local file to Slack (channel or DM) using Web API external upload (fil
 
 .DESCRIPTION
 Requires **SLACK_API_TOKEN** (same as EnergoTS CI / SlackReporter) or **SLACK_BOT_TOKEN** — **Bot User OAuth Token** (`xoxb-...`) with **files:write**. Do **not** use App-level tokens (`xapp-...`); they return `not_allowed_token_type` for file uploads.
-Upload the same file twice for HandsOff: once to Tester user ID (DM), once to #ai-report channel ID.
+Upload the same file twice for scoped Playwright Slack (path 2): once to Tester user ID (DM), once to #ai-report channel ID.
 
 .PARAMETER FilePath
-Absolute path to the file (e.g. detailed HandsOff report .md).
+Absolute path to the file (e.g. detailed scoped Playwright report .md).
 
 .PARAMETER ChannelOrUserId
 Slack channel ID (e.g. C0AK96S1D7X) or user ID for DM (e.g. Uxxxx).

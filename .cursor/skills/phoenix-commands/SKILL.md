@@ -1,6 +1,6 @@
 ---
 name: phoenix-commands
-description: Maps user intent to **agents**, **skills**, and remaining **operational** command docs under `.cursor/commands/` (HandsOff checklist, branch switch, Swagger refresh, git/sync helpers). Duplicative slash-command markdown files were removed — route workflows via Task/subagents or natural language.
+description: Maps user intent to **agents**, **skills**, and remaining **operational** command docs under `.cursor/commands/` (branch switch, Swagger refresh, git/sync helpers). Duplicative slash-command markdown files were removed — route workflows via Task/subagents or natural language.
 ---
 
 # Phoenix routing (agents / skills / operational commands)
@@ -9,14 +9,14 @@ Use this skill when the user asks **which workflow or agent** applies.
 
 **Canonical behavior:** procedural detail lives in **`.cursor/agents/*.md`** and **`.cursor/skills/*/SKILL.md`**.
 
-**Remaining `.cursor/commands/*.md`:** operational procedures only — notably **`hands-off.md`** (Rule 37 checklist), **`switch-phoenix-branches.md`** (+ `.ps1`), **`update-swagger-specs.md`**, **`send-playwright-results-slack.md`**, and git/sync helpers (`sync-*`, `pull-energots`, `push-energots`, `update-*`).
+**Remaining `.cursor/commands/*.md`:** operational procedures only — notably **`switch-phoenix-branches.md`** (+ `.ps1`), **`update-swagger-specs.md`**, **`send-playwright-results-slack.md`**, and git/sync helpers (`sync-*`, `pull-energots`, `push-energots`, `update-*`).
 
 Rules load first (**Rule 0.0**) from **`.cursor/rules/`**.
 
 ## When to Apply
 
-- User asks how to run Phoenix Q&A, bug validation, test cases, HandsOff, reports, or EnergoTS tests.
-- User mentions an agent name or workflow keyword (`bug-validator`, `cross-dependency-finder`, HandsOff, etc.).
+- User asks how to run Phoenix Q&A, bug validation, test cases, reports, or EnergoTS tests.
+- User mentions an agent name or workflow keyword (`bug-validator`, `cross-dependency-finder`, etc.).
 - Need to align intent with the correct **Task/subagent** or skill.
 
 ## Intent → canonical agent / skill
@@ -36,7 +36,7 @@ Rules load first (**Rule 0.0**) from **`.cursor/rules/`**.
 | Test cases (.md, Backend + Frontend) | **`cross-dependency-finder`** then **`test-case-generator`** — `.cursor/skills/test-case-generator/SKILL.md` |
 | Run EnergoTS Playwright | **`energo-ts-run`** — `.cursor/agents/energo-ts-run.md`, skill (**Rules 36, ENERGOTS.0**) |
 | Author EnergoTS `.spec.ts` | **`energo-ts-test`** — `.cursor/agents/energo-ts-test.md` (**Rule 0.8.1**, Swagger **Rule 41**) |
-| Full HandsOff pipeline | **`.cursor/commands/hands-off.md`** + **`.cursor/agents/hands-off.md`**; triggers **`/HandsOff`** / **`!HandsOff`** + Jira (**Rule 37**) |
+| Scoped Playwright Slack | **`.cursor/commands/send-playwright-results-slack.md`** — user-triggered test results to Slack |
 
 ## Section notes
 
@@ -52,11 +52,7 @@ Confluence (MCP, fresh) → codebase → **dual-track** answer (runtime vs spec)
 
 Rule **32**: **`bug-validator`** subagent; evidence from **Confluence (mandatory full wiki URL per decision page in chat + Slack)**, mandatory **`update-swagger-specs.ps1`**, aligned Phoenix code, reproduce steps + diagrams per skill; **no** automatic test-case or Playwright pipeline inside Rule 32. **Env gate:** if Jira Environment is empty, parent must **not** delegate with a pre-filled env — subagent asks user (six options) before alignment/DB. Chat always; Slack **`bug-validation`** **only when user asks**; no disk unless user explicitly asks to save.
 
-### HandsOff
-
-No separate HandsOff skill file — orchestrator follows **`hands-off.md`** checklist end-to-end.
-
 ## Summary
 
 - Route duplicated workflows through **agents/skills**, not deleted `.md` stubs.
-- **HandsOff**, branch switching, Swagger refresh, and git/sync docs remain under **`.cursor/commands/`** as runnable/checklist references.
+- Branch switching, Swagger refresh, and git/sync docs remain under **`.cursor/commands/`** as runnable/checklist references.

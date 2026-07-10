@@ -466,7 +466,7 @@ Start at base **40**, inherit ticket quality from Step 1 (same +20/+10), then:
 
 **Bundle (when Step 1c found related tickets):** `Final = MIN(TicketFinal)` across all tickets in `$relatedTicketBundle`.
 
-Rationale: same as HandsOff aggregation — the pipeline is only as strong as its weakest link. A perfect Dev score on the FE ticket is meaningless if the linked BE ticket is missing on Dev2.
+Rationale: same as regression-validation aggregation — the pipeline is only as strong as its weakest link. A perfect Dev score on the FE ticket is meaningless if the linked BE ticket is missing on Dev2.
 
 ### 7c. Three-Zone routing
 

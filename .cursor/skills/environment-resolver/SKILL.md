@@ -1,17 +1,16 @@
 ---
 name: environment-resolver
-description: Resolves target environment (dev, dev2, test, preprod, prod, experiments) from user message or Jira before Phoenix branch alignment, bug validation, test cases, or HandsOff. Asks user when ambiguous (Rule CONF.0). No silent Test default.
+description: Resolves target environment (dev, dev2, test, preprod, prod, experiments) from user message or Jira before Phoenix branch alignment, bug validation, or test cases. Asks user when ambiguous (Rule CONF.0). No silent Test default.
 ---
 
 # Environment Resolver Skill
 
-Canonical procedure for **TC-ENV-ASK.0**, **DB.0a**, and HandsOff Step 1 environment gate.
+Canonical procedure for **TC-ENV-ASK.0**, **DB.0a**, and environment gate before Phoenix alignment.
 
 **Subagent (I/O contract):** `.cursor/agents/environment-resolver.md`
 
 ## When to apply
 
-- **HandsOff Step 1** — before `switch-phoenix-branches.ps1`.
 - **Rule 35 Step 0a** — before TC-FRONTEND-ASK.0 and Phoenix alignment.
 - **Rule 32 / DB.0a** — when environment is missing for Phoenix or PostgreSQL work.
 

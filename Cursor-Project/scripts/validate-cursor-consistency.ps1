@@ -79,7 +79,7 @@ if (-not (Test-Path -LiteralPath $hooksJsonPath)) {
 }
 
 # --- DRY precondition forbidden in .cursor orchestration
-$dryOrchestrationPattern = 'DRY preconditions|Reuse model — DRY|precondition DRY rules'
+$dryOrchestrationPattern = 'DRY preconditions|Reuse model - DRY|precondition DRY rules'
 Get-ChildItem -Path $CursorRoot -Recurse -Include '*.md', '*.mdc' -File | ForEach-Object {
     $t = Get-Content -LiteralPath $_.FullName -Raw
     if ([regex]::IsMatch($t, $dryOrchestrationPattern)) {
@@ -100,7 +100,7 @@ Get-ChildItem -Path $CursorRoot -Recurse -Include '*.md', '*.mdc' -File | ForEac
     $t = Get-Content -LiteralPath $_.FullName -Raw
     foreach ($pat in $qaForbiddenPatterns) {
         if ($t -like "*$pat*") {
-            Add-Failure "Legacy code-wins authority in orchestration (use dual-track + Finding): $($_.FullName.Replace($RepoRoot, '').TrimStart('\')) — pattern: $pat"
+            Add-Failure "Legacy code-wins authority in orchestration (use dual-track + Finding): $($_.FullName.Replace($RepoRoot, '').TrimStart('\')) - pattern: $pat"
         }
     }
 }
@@ -144,27 +144,13 @@ foreach ($ref in $qaCrossRefs) {
 $confPath = Join-Path $RulesRoot 'main\clarification_and_confidence.mdc'
 if (Test-Path -LiteralPath $confPath) {
     $conf = Get-Content -LiteralPath $confPath -Raw
-    if ($conf -match 'Conflicting evidence \| — \| -10' -and $conf -notmatch 'Finding \(Rule QA\.2') {
+    if ($conf -match 'Conflicting evidence \| - \| -10' -and $conf -notmatch 'Finding \(Rule QA\.2') {
         Add-Failure 'clarification_and_confidence.mdc still has legacy Conflicting evidence -10 without QA Finding factors'
     }
 }
 
-# --- Cross-file: Backend-only HandsOff consistency
+# --- Cross-file: Backend-only TC consistency
 $crossFileChecks = @(
-    @{
-        Path = '.cursor\rules\workflows\handsoff_playwright_report.mdc'
-        Forbidden = @(
-            'verify that both `.md` files exist',
-            'verify both `.md` files exist',
-            'save as **two separate files**'
-        )
-        Required = @('TC-FRONTEND', 'Frontend scope', 'Backend-only', 'when Frontend scope', 'when that file exists')
-    }
-    @{
-        Path = '.cursor\agents\hands-off.md'
-        Forbidden = @('two separate files', 'Verify both `.md` files')
-        Required = @('TC-FRONTEND', 'Frontend scope', 'Backend file **always**', 'Backend file always')
-    }
     @{
         Path = '.cursor\agents\test-case-quality-validator.md'
         Forbidden = @('shared by both files', 'Read both TC files')
@@ -189,31 +175,10 @@ $crossFileChecks = @(
         Path = 'Cursor-Project\config\template\Test_case_template.md'
         Forbidden = @(
             'Each topic produces **two separate files**',
-            'Apply Test data steps 1–11',
+            'Apply Test data steps 1-11',
             'Delta: confirm invoice status'
         )
         Required = @('TC-FRONTEND-ASK.0', 'STANDALONE', 'FORBIDDEN in new files')
-    }
-    @{
-        Path = '.cursor\commands\hands-off.md'
-        Forbidden = @(
-            'may still proceed to Step 5',
-            'After the limit, proceed to Step 5'
-        )
-        Required = @('Step 3.5', 'test-case-quality-validator', 'BLOCK WORKFLOW', 'TC quality')
-    }
-    @{
-        Path = '.cursor\agents\hands-off.md'
-        Forbidden = @('may still proceed', 'proceed to run tests and **include validation')
-        Required = @('Step 3.5', 'test-case-quality-validator', 'BLOCK', 'TC quality')
-    }
-    @{
-        Path = '.cursor\rules\workflows\handsoff_playwright_report.mdc'
-        Forbidden = @(
-            'proceed to run tests and **include validation',
-            'Step 1.5):** test-case-quality'
-        )
-        Required = @('Step 3.5', 'BLOCK WORKFLOW', 'test-case-quality-validator')
     }
     @{
         Path = 'Cursor-Project\test_cases\README.md'
@@ -314,7 +279,7 @@ $skillAliases = @{
     'jira-bug' = 'jira-bug-template'
     'senior-qa' = 'senior-qa-analysis'
 }
-$noSkillOk = @('hands-off', 'phoenix-qa', 'report-generator', 'shell', 'test-runner', 'environment-access', 'postman-collection', 'jira-bug')
+$noSkillOk = @('phoenix-qa', 'report-generator', 'shell', 'test-runner', 'environment-access', 'postman-collection', 'jira-bug')
 
 Get-ChildItem -Path $agentsDir -Filter '*.md' -File | Where-Object { $_.Name -ne 'README.md' } | ForEach-Object {
     $baseName = $_.BaseName
@@ -325,7 +290,7 @@ Get-ChildItem -Path $agentsDir -Filter '*.md' -File | Where-Object { $_.Name -ne
     }
 }
 
-# --- CRITICAL → BLOCK/MUST tiering (Rule 0.9)
+# --- CRITICAL to BLOCK/MUST tiering (Rule 0.9)
 $legacyCritical = 0
 Get-ChildItem -Path $RulesRoot -Recurse -Filter '*.mdc' -File | ForEach-Object {
     $raw = Get-Content -LiteralPath $_.FullName -Raw
@@ -356,22 +321,32 @@ if (Test-Path -LiteralPath $phoenixSwitch) {
 $blockConfluence = Join-Path $CursorRoot 'hooks\block-confluence-write.ps1'
 if (Test-Path -LiteralPath $blockConfluence) {
     $bc = Get-Content -LiteralPath $blockConfluence -Raw
-    if ($bc -match 'catch\s*\{[^}]*permission\s*=\s*"allow"') {
+    if ([regex]::IsMatch($bc, '(?s)catch\s*\{.*?permission\s*=\s*"allow"')) {
         Add-Failure 'block-confluence-write.ps1 catch block must deny (fail-secure), not allow'
+    }
+    if (-not [regex]::IsMatch($bc, '(?s)catch\s*\{.*?permission\s*=\s*"deny"')) {
+        Add-Failure 'block-confluence-write.ps1 catch block must set permission deny (fail-secure)'
     }
 }
 
-# --- handsoff_playwright_report.mdc should be slim (detail in SKILL)
+# --- playwright_test_constraints.mdc (Rule 40)
+$playwrightConstraints = Join-Path $RulesRoot 'workflows\playwright_test_constraints.mdc'
+if (-not (Test-Path -LiteralPath $playwrightConstraints)) {
+    Add-Failure 'Missing playwright_test_constraints.mdc (Rule 40 canonical home)'
+} else {
+    $pc = Get-Content -LiteralPath $playwrightConstraints -Raw
+    if ($pc -notmatch 'Rule 40') {
+        Add-Failure 'playwright_test_constraints.mdc missing Rule 40'
+    }
+    if ($pc -notmatch 'beforeAll') {
+        Add-Failure 'playwright_test_constraints.mdc missing beforeAll ban'
+    }
+}
+
+# --- handsoff_playwright_report.mdc removed (Rule 37 retired)
 $handsoffReport = Join-Path $RulesRoot 'workflows\handsoff_playwright_report.mdc'
 if (Test-Path -LiteralPath $handsoffReport) {
-    $hrLines = ((Get-Content -LiteralPath $handsoffReport -Raw) -split '\r?\n').Count
-    if ($hrLines -gt 55) {
-        Add-Warning ('handsoff_playwright_report.mdc has {0} lines (target at most 55, detail in hands-off-playwright-report SKILL)' -f $hrLines)
-    }
-    $hr = Get-Content -LiteralPath $handsoffReport -Raw
-    if ($hr -notmatch 'hands-off-playwright-report/SKILL') {
-        Add-Failure 'handsoff_playwright_report.mdc missing pointer to hands-off-playwright-report SKILL'
-    }
+    Add-Failure 'handsoff_playwright_report.mdc should be removed (HandsOff Rule 37 retired)'
 }
 
 # --- Fat agents must be thin I/O contracts (P1b)

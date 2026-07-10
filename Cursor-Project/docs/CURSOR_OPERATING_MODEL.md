@@ -12,7 +12,7 @@
 This repository is **not** the Phoenix application. It is the **QA automation and validation control plane** for Phoenix delivery:
 
 0. **Product quality first (Rule QA.0):** Default **Senior QA Tester** lens — hunt code defects, documentation gaps, and code↔doc mismatches; never silently collapse spec vs runtime conflicts.
-1. **Jira → test cases → Playwright API tests → reports** (HandsOff and related flows).
+1. **Jira → test cases → Playwright API tests → reports** (standalone workflows).
 2. **Bug triage** with evidence (Confluence, Swagger, Phoenix code read-only, optional DB).
 3. **Safe AI operation** — hooks and rules block Phoenix edits, Confluence writes, wrong EnergoTS branches, and silent environment guesses.
 
@@ -114,7 +114,7 @@ flowchart TD
 | `workflow_rules.mdc` | true | true |
 | `agent_rules.mdc` | true | true |
 | `phoenix.mdc` | false + globs | false + globs (index) |
-| `playwright_detailed_reporting.mdc` | false + globs | false + globs (HandsOff/path 3) |
+| `playwright_detailed_reporting.mdc` | false + globs | false + globs (scoped Slack path 2) |
 | `file_organization_rules.mdc` | false + globs | false + globs (file writes) |
 | `database_workflow.mdc` | false + globs | false + globs (DB MCP) |
 | `jira_rest_fallback.mdc` | false + globs | false + globs (Jira reads) |
@@ -122,7 +122,7 @@ flowchart TD
 | `jira_bug_agent.mdc` | false + globs | false + globs (Jira bug agent) |
 | `production_data_reader.mdc` | false + globs | false + globs (PDR) |
 | `test_cases_structure.mdc` | false + globs | false + globs |
-| `handsoff_playwright_report.mdc` | false + globs | false + globs |
+| `playwright_test_constraints.mdc` | false + globs | false + globs |
 | `swagger_refresh_mandatory.mdc` | false + globs | false + globs |
 | `phoenix_branch_switching.mdc` | false + globs | false + globs |
 | `energots_branch_lock.mdc` | false + globs | false + globs |
@@ -138,7 +138,7 @@ flowchart TD
 | When | Rules | Procedure |
 |------|-------|-----------|
 | Test cases | `workspace/test_cases_structure.mdc` | cross-dep SKILL → test-case-generator SKILL |
-| HandsOff / Playwright | `handsoff_playwright_report.mdc`, `swagger_refresh_mandatory.mdc`, `energots_branch_lock.mdc` | `commands/hands-off.md`, energo-ts-test agent |
+| Playwright | `playwright_test_constraints.mdc`, `swagger_refresh_mandatory.mdc`, `energots_branch_lock.mdc` | energo-ts-test agent |
 | Bug validation | `phoenix_branch_switching.mdc`, integrations | **`phoenix-bug-validation` SKILL** (primary) |
 | DB | `integrations/database_workflow.mdc` | `phoenix-database` SKILL |
 | EnergoTS tree | `energots_branch_lock.mdc` | ENERGOTS.0 + hooks |
@@ -153,13 +153,13 @@ flowchart TD
 |-------|-----------|----------------------|
 | TC preconditions | **STANDALONE** — full numbered chain per TC | DRY `Apply Test data steps 1–N` only |
 | TC quality | **10 axes, ≥80/100**, max **3** rewrites | 6 axes, ≥8/12 |
-| Playwright reports | **Smart** `{JIRA_KEY}.md` under `reports/HandsOff reports/…` **+ machine** `EnergoTS/playwright-report-detailed.md` for Slack (DPR.0) | NPR “never EnergoTS/” — merge/remove |
+| Playwright reports | **Smart** `{JIRA_KEY}.md` under `reports/Chat reports (ScopedPlaywright)/…` **+ machine** `EnergoTS/playwright-report-detailed.md` for Slack (DPR.0) | NPR “never EnergoTS/” — merge/remove |
 | JSON/HTML reports | Input only | Primary deliverable |
 | EnergoTS git branch | **`cursor` only** | checkout main/dev/test in EnergoTS |
 | Playwright setup | Helpers + `test.step('Precondition:…')` | `test.beforeAll` (Rule 40) |
 | Swagger | Run `update-swagger-specs.ps1` before `.spec.ts` | Guessed field names |
 | Environment | User picks 1 of 6 envs | Silent default to Test |
-| Frontend TC files | Only if user chose Yes (TC-FRONTEND-ASK.0) | HandsOff forcing both files |
+| Frontend TC files | Only if user chose Yes (TC-FRONTEND-ASK.0) | Forcing both files without user choice |
 
 ---
 
@@ -173,11 +173,10 @@ flowchart TD
 | Cross-dependencies | `cross-dependency-finder` | `cross-dependency-finder` | 35a, 39 |
 | Generate test cases | `test-case-generator` | `test-case-generator` | 35, STANDALONE; Backend always; Frontend if TC-FRONTEND-ASK.0 = Yes |
 | Score test cases | `test-case-quality-validator` | `test-case-quality-validator` | rubric 10-axis, ≥80/100 |
-| Full HandsOff | `hands-off` | `commands/hands-off.md` | 37, DPR |
 | Write Playwright spec | `energo-ts-test` | `energo-ts-test` | 0.8.1, 41, 40 |
-| Validate spec | `playwright-test-validator` | `playwright-test-validator` | handsoff §2a |
+| Validate spec | `playwright-test-validator` | `playwright-test-validator` | Rule 35 quality gate |
 | Run Playwright | `energo-ts-run` | `energo-ts-run` | 36, ENERGOTS.0 |
-| Scoped Playwright + Slack | parent or energo-ts-run | `send-playwright-results-slack.md` | DPR, path 3 |
+| Scoped Playwright + Slack | parent or energo-ts-run | `send-playwright-results-slack.md` | DPR, path 2 |
 | DB query | `database-query` | `phoenix-database` | 33, DB.0a |
 | Production DB read | `production-data-reader` | `production-data-reader` | PDR.0 |
 | Jira bug text (Experiments) | `jira-bug` | `jira-bug-template` | JIRA.0 |
@@ -192,7 +191,7 @@ flowchart TD
 
 ## 5. Workflow diagrams
 
-**Full checklists:** `.cursor/commands/hands-off.md` (HandsOff), `.cursor/skills/phoenix-bug-validation/SKILL.md` (Rule 32).
+**Full checklists:** `.cursor/skills/phoenix-bug-validation/SKILL.md` (Rule 32), `.cursor/commands/send-playwright-results-slack.md` (scoped Slack).
 
 ### 5.1 Test cases (Rule 35) — ASCII
 
@@ -213,27 +212,7 @@ flowchart TD
       DONE
 ```
 
-### 5.2 HandsOff (Rule 37) — ASCII (aligned with hands-off.md)
-
-```
-Step 1   Jira fetch (42, 44) + environment-resolver + switch-phoenix-branches.ps1
-Step 2   cross-dependency-finder (35a)
-Step 3   test-case-generator
-           - Backend/Topic.md always
-           - Frontend/Topic.md only if TC-FRONTEND-ASK.0 = Yes
-Step 3.5 test-case-quality-validator (mandatory, >= 80/100)
-Step 4   update-swagger-specs.ps1 + energo-ts-test -> tests/cursor/*.spec.ts
-Step 4.5 playwright-test-validator (mandatory before run)
-Step 5   energo-ts-run (cursor branch, Rule 36)
-Step 6   {JIRA_KEY}.md -> reports/HandsOff reports/YYYY/month/DD/
-         + generate-detailed-report.mjs -> EnergoTS/playwright-report-detailed.md
-Step 7   Slack path 2: short text + upload BOTH .md (Tester + #ai-report)
-Step 8   Agent follow-up questions (attributed), after report
-
-Canonical detail: .cursor/commands/hands-off.md
-```
-
-### 5.3 Bug validation (Rule 32) — ASCII
+### 5.2 Bug validation (Rule 32) — ASCII
 
 ```
 env gate (STOP if unknown)
@@ -246,35 +225,20 @@ env gate (STOP if unknown)
   -> Slack path 1: bug-validation channel (C0AUEEDVCEL) when MCP allows
   -> Disk BugValidation_*.md ONLY on /report or explicit save (Rule 0.6)
 
-EXCLUDED: test cases, Playwright, HandsOff
+EXCLUDED: test cases, Playwright automation pipeline
 ```
 
-### 5.4 Scoped Playwright Slack (path 3) — ASCII
+### 5.3 Scoped Playwright Slack (path 2) — ASCII
 
 ```
-User asks Slack for specific test run (not full HandsOff)
+User asks Slack for specific test run
   -> energo-ts-run (or existing spec)
   -> generate-detailed-report.mjs if JSON exists
   -> ScopedPlaywright_*.md -> reports/Chat reports/YYYY/month/DD/
-  -> Slack path 3: short text + upload smart .md + playwright-report-detailed.md
+  -> Slack path 2: short text + upload smart .md + playwright-report-detailed.md
 
 Does NOT run cross-dep or test-case generation unless user asks separately.
 Command: .cursor/commands/send-playwright-results-slack.md
-```
-
-### 5.5 Mermaid — HandsOff (10 nodes)
-
-```mermaid
-flowchart LR
-  J[Jira] --> E[Env]
-  E --> C[Cross-dep]
-  C --> T[TC gen]
-  T --> Q[TC quality]
-  Q --> W[Swagger]
-  W --> P[Spec]
-  P --> V[Spec validate]
-  V --> R[Run]
-  R --> S[Reports Slack]
 ```
 
 ---
@@ -286,16 +250,15 @@ flowchart LR
 | Backend TCs | `Cursor-Project/test_cases/Backend/<Topic>.md` | Yes | — |
 | Frontend TCs | `Cursor-Project/test_cases/Frontend/<Topic>.md` | If TC-FRONTEND = Yes | — |
 | Playwright spec | `Cursor-Project/EnergoTS/tests/cursor/<KEY>-*.spec.ts` | Yes | — |
-| HandsOff smart report | `Cursor-Project/reports/HandsOff reports/YYYY/month/DD/{KEY}.md` | Yes | **Path 2** upload |
-| Scoped Playwright report | `Cursor-Project/reports/Chat reports/YYYY/month/DD/ScopedPlaywright_*.md` | If user scoped Slack | **Path 3** upload |
+| Scoped Playwright report | `Cursor-Project/reports/Chat reports/YYYY/month/DD/ScopedPlaywright_*.md` | If user scoped Slack | **Path 2** upload |
 | Chat report (`/report`) | `Cursor-Project/reports/Chat reports/YYYY/month/DD/*.md` | User `/report` or explicit save | Only if user asks |
 | Feedback (`/feedback`) | `Cursor-Project/reports/Feedback/YYYY/month/DD/Feedback_*.md` | User `/feedback` | — |
-| Machine report | `Cursor-Project/EnergoTS/playwright-report-detailed.md` | Generated (DPR) | **Path 2 or 3** upload |
+| Machine report | `Cursor-Project/EnergoTS/playwright-report-detailed.md` | Generated (DPR) | **Path 2** upload |
 | Playwright JSON | `Cursor-Project/EnergoTS/playwright-report.json` | Ephemeral input | — |
 | Bug validation | Chat default | Optional `BugValidation_*.md` on `/report` | **Path 1** channel |
 | Routine Q&A | Chat only | No auto file (Rule 0.6) | — |
 
-**Slack index:** [config/template/Slack_reporting_paths.md](../config/template/Slack_reporting_paths.md) — three paths; do not merge.
+**Slack index:** [config/template/Slack_reporting_paths.md](../config/template/Slack_reporting_paths.md) — two paths; do not merge.
 
 ---
 
@@ -325,7 +288,7 @@ flowchart LR
 | TC quality skill | 10-axis / 80 sync with agent | 10-axis / 80 sync with agent | **Done (1)** |
 | Reports | DPR + smart report; NPR removed | DPR + smart report; NPR removed | **Done (1)** |
 | EnergoTS hooks | Wired in hooks.json | Wired | **Done (1)** |
-| HandsOff Frontend | Respects Backend-only (TC-FRONTEND-ASK.0) | Respect Backend-only | **Done (1)** |
+| TC Frontend scope | Respects Backend-only (TC-FRONTEND-ASK.0) | Respect Backend-only | **Done (1)** |
 | alwaysApply rules | **6 core** + scoped globs | ~6 core + scoped | **Done (3)** |
 | Rule 35 in workflow_rules | Slim table → SKILL links | Summary only | **Done (3)** |
 | Agent/skills README | Full 1:1 matrix (16 skills) | Full 1:1 matrix | **Done (2)** |
@@ -333,19 +296,19 @@ flowchart LR
 | Missing skills | 3 agents had no SKILL | Thin SKILL routers added | **Done (2)** |
 | EnergoTS Tier B hook | protect-energots-writes.ps1 wired | Wired | **Done (2)** |
 | validate-cursor-consistency | Cross-file + 6 core alwaysApply | CI script | **Done (3)** |
-| Post-audit remediation | HandsOff Backend-only aligned; rubric Axis 4 STANDALONE; template example; legacy TC policy | Consistent orchestration | **Done (audit)** |
+| Post-audit remediation | TC Backend-only aligned; rubric Axis 4 STANDALONE; template example; legacy TC policy | Consistent orchestration | **Done (audit)** |
 | Doc map sync | AGENT_SUBAGENT_MAP, §4 cheat sheet, CURSOR_SUBAGENTS, COMMANDS_REFERENCE | Match Backend/Frontend layout; no git-sync ghost | **Done (P0 audit)** |
 | Repo hygiene | `.cursor/logs/` gitignored; tracked switch logs removed | No operational log noise in git | **Done (P0 audit)** |
 | Jira evidence slim | Heavy Jira blocks → `jira-evidence` SKILL; alwaysApply evidence gate only | −~90 lines alwaysApply | **Done (P1)** |
 | Router skills expanded | environment-resolver, energo-ts-test, playwright-test-validator, test-case-quality-validator | Real HOW in SKILL; thin agents | **Done (P1)** |
 | Hook hardening | Phoenix = all file types; EnergoTS tests/ = *.spec.ts + *.fixtures.ts only | Tier A/B enforcement | **Done (P1)** |
 | Legacy TC STANDALONE | expand script **disabled** (multiline bug); 4 DRY topics reverted | Manual migration when editing | **Reverted — safe** |
-| HandsOff Step 3.5 | TC quality gate in command + agent + handsoff report | Mandatory before Playwright | **Done (remediation)** |
+| Rule 35 Step 2.5 | TC quality gate in command + agent + test_cases_structure.mdc | Mandatory before Playwright | **Done (remediation)** |
 | Strict validator exit | Playwright 4.5 BLOCK after 3 failures | No silent proceed to run | **Done (remediation)** |
 | Fat agent thinning (P1b) | bug-validator, test-case-generator, cross-dependency-finder → I/O contract (~45–65 lines) | Procedure only in SKILL | **Done (P1b)** |
 | P2 agent thinning | production-data-reader, energo-ts-run → I/O contract | Procedure in SKILL | **Done (P2)** |
-| P2 gate dedupe | HandsOff Steps 3–4.5 → SKILL pointers; TC gates authoritative in test_cases_structure.mdc | Less triplication | **Done (P2 partial)** |
-| Critical audit P0 | Rule 0.4 scoped; 0.8.1 hook honesty; Confluence fail-secure; handsoff .mdc slim + SKILL | Runtime honesty | **Done (audit)** |
+| P2 gate dedupe | TC quality gates -> SKILL pointers; TC gates authoritative in test_cases_structure.mdc | Less triplication | **Done (P2 partial)** |
+| Critical audit P0 | Rule 0.4 scoped; 0.8.1 hook honesty; Confluence fail-secure; playwright_test_constraints.mdc + SKILL | Runtime honesty | **Done (audit)** |
 | CI validate | `.github/workflows/validate-cursor-rules.yml` on `.cursor/**` PRs | Regression detection | **Done (audit)** |
 | P2b jira-bug + phoenix-switch slim | jira-bug.md 86→30; phoenix_branch_switching.mdc 306→43 + SKILL | Maintainability | **Done (P2b)** |
 | P3 CRITICAL → BLOCK/MUST | All `.mdc` files migrated to Rule 0.9 tiering (0 legacy CRITICAL violations left) | LLM followability | **Done (P3)** |
@@ -358,7 +321,7 @@ flowchart LR
 
 | Phase | Days (estimate) | Outcome |
 |-------|-----------------|---------|
-| **1 Truth** | 1–2 | NPR→DPR; STANDALONE canonical; TC quality skill sync; wire EnergoTS hooks; HandsOff Backend-only |
+| **1 Truth** | 1–2 | NPR→DPR; STANDALONE canonical; TC quality skill sync; wire EnergoTS hooks; TC Backend-only |
 | **2 Registry** | 2–3 | README indexes; 3 new skills; `protect-energots-writes.ps1`; fix warn-phoenix |
 | **3 Slim** | done | Dedupe Rule 35 in `workflow_rules.mdc`; **6** alwaysApply core; `validate-cursor-consistency.ps1` |
 

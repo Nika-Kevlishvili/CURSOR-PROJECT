@@ -5,7 +5,6 @@ globs:
   - ".cursor/skills/**/SKILL.md"
   - ".cursor/agents/*.md"
   - ".cursor/rules/workflows/*.mdc"
-  - ".cursor/commands/hands-off.md"
   - "Cursor-Project/test_cases/**"
   - "Cursor-Project/reports/**"
 ---
@@ -169,7 +168,7 @@ Base: **40**
 
 ---
 
-## Evidence factors — Jira Read Completeness (HandsOff sub-step)
+## Evidence factors — Jira Read Completeness
 
 Base: **40**
 
@@ -187,7 +186,7 @@ Base: **40**
 
 ---
 
-## Evidence factors — Playwright Test Run Results (HandsOff sub-step)
+## Evidence factors — Playwright Test Run Results
 
 Base: **40**
 
@@ -202,7 +201,7 @@ Base: **40**
 | Environment stable during run | **+5** | No connection/timeout errors in log | Clean execution |
 | Flaky failures detected | **-5** | Same test passes on retry | Unreliable signal |
 | Environment errors during run | **-10** | Connection/timeout/500 errors in log | Results may not reflect code behavior |
-| Spec validator passed (≥ 80/100) before run | **+5** | Step 4.5 completed | Spec quality assured |
+| Spec validator passed (≥ 80/100) before run | **+5** | Validator completed | Spec quality assured |
 
 **Pass rate mapping:**
 
@@ -223,7 +222,7 @@ Base: **40**
 
 Base: **40** (applied to **each** sub-score: Dev sub-score and Dev2 sub-score independently).
 
-**Aggregation:** `Final = MIN(Dev sub-score, Dev2 sub-score)` — same minimum-of-critical as HandsOff.
+**Aggregation:** `Final = MIN(Dev sub-score, Dev2 sub-score)` — same minimum-of-critical as regression pipelines.
 
 **Mutually exclusive groups:** factors marked `[GROUP X]` — apply **only one** from each group per sub-score. Applying multiple from the same group is a scoring error.
 
@@ -281,38 +280,6 @@ Base: **40** (applied to **each** sub-score: Dev sub-score and Dev2 sub-score in
 - Dev: XX% (ZONE)
 - Dev2: XX% (ZONE) ← limiting factor
 Reason: <which sub-score limited and why>
-```
-
----
-
-## HandsOff Pipeline aggregation (Rule 37)
-
-HandsOff computes sub-step scores then aggregates:
-
-**Sub-steps (each scored independently using their factor table above):**
-
-1. **Jira read** — Jira Read Completeness factors
-2. **Cross-dependency** — Cross-Dependency Discovery (Rule 35a) factors above
-3. **Test case generation** — TC Generation factors
-4. **Playwright spec quality** — validator score mapped: `validator_score / 100 × 100` (direct mapping — 82/100 rubric = 82% confidence)
-5. **Test run results** — Playwright Test Run Results factors
-
-**Aggregation: single lowest sub-step score (minimum)**
-
-`Final HandsOff confidence = MIN(sub-step scores)`
-
-Rationale: the pipeline is only as strong as its weakest link. A 95% TC score means nothing if the Playwright run scored 40%. Using the single minimum (not average of three lowest) is cleaner and more conservative.
-
-**Parent output format:**
-
-```
-**Confidence: XX% (ZONE)** [aggregation: minimum-of-critical]
-- Jira read: XX% (ZONE)
-- Cross-dependency: XX% (ZONE)
-- Test case generator: XX% (ZONE)
-- Playwright spec quality: XX% (ZONE)
-- Test run results: XX% (ZONE) ← limiting factor
-Reason: <which sub-step limited and why>
 ```
 
 ---
@@ -385,7 +352,7 @@ When a parent agent receives scores from multiple subagents:
 
 | Method | When to use |
 |--------|-------------|
-| **Minimum** | Pipeline workflows (HandsOff) where all steps must succeed |
+| **Minimum** | Pipeline workflows (e.g. regression validation) where all steps must succeed |
 | **Weighted average** | Independent parallel results (e.g. PhoenixExpert + DB query) |
 
 Parent MUST show: individual sub-scores + aggregation method + final score.
@@ -444,7 +411,7 @@ Log outcomes to **`Cursor-Project/config/confidence/conf_log.jsonl`** when the u
 | Field | Required | Description |
 |-------|----------|-------------|
 | `ts` | yes | ISO 8601 timestamp |
-| `workflow` | yes | bug-validation, test-cases, handsoff, db-query, phoenix-expert, regression-validation |
+| `workflow` | yes | bug-validation, test-cases, scoped-playwright-slack, db-query, phoenix-expert, regression-validation |
 | `ticket` | if applicable | Jira key |
 | `conf` | yes | Computed confidence score (0–100) |
 | `zone` | yes | GO, CAUTION, STOP |

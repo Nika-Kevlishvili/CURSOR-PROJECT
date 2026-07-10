@@ -7,7 +7,7 @@ Cursor loads all `.mdc` files under `.cursor/rules/` **recursively**.
 | **`main/`** | `core_rules.mdc` (Rule 0.x), `phoenix.mdc` (index) |
 | **`safety/`** | `safety_rules.mdc` |
 | **`agents/`** | `agent_rules.mdc` |
-| **`workflows/`** | `workflow_rules.mdc`, `handsoff_playwright_report.mdc` |
+| **`workflows/`** | `workflow_rules.mdc`, `playwright_test_constraints.mdc`, `playwright_detailed_reporting.mdc` |
 | **`workspace/`** | `file_organization_rules.mdc`, `test_cases_structure.mdc` |
 | **`integrations/`** | `database_workflow.mdc`, `energots_branch_lock.mdc`, `production_data_reader.mdc`, `jira_bug_agent.mdc` |
 

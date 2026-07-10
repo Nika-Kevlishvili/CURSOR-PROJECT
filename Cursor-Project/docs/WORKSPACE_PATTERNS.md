@@ -16,11 +16,11 @@ Orientation: `.cursor/README.md`.
 
 ### 2.1 Environment-gated Phoenix reads
 
-Before environment-sensitive Phoenix work (Q&A, bug validation, cross-dependencies, test-case generation, HandsOff), align every nested repo under `Cursor-Project/Phoenix/*` to the correct `origin/<branch>` using **`switch-phoenix-branches.ps1`**. Phoenix files remain **read-only** for AI (Tier A); see **`core_rules.mdc`** Rule 0.8 and **`phoenix_branch_switching.mdc`**.
+Before environment-sensitive Phoenix work (Q&A, bug validation, cross-dependencies, test-case generation), align every nested repo under `Cursor-Project/Phoenix/*` to the correct `origin/<branch>` using **`switch-phoenix-branches.ps1`**. Phoenix files remain **read-only** for AI (Tier A); see **`core_rules.mdc`** Rule 0.8 and **`phoenix_branch_switching.mdc`**.
 
 ### 2.2 Jira-centric pipelines
 
-Issue keys drive **HandsOff** (Rule 37), **bug validation** (Rule 32), and **test-case generation** (Rule 35).
+Issue keys drive **bug validation** (Rule 32) and **test-case generation** (Rule 35).
 
 - **Reads:** Jira **MCP first**; on repeated failure, **Atlassian REST API v3** read fallback — **`jira_rest_fallback.mdc`** (Rule 42). Disclose `Jira source: REST fallback …` in chat when used.
 - **Attachments:** **`Cursor-Project/config/jira/download-jira-attachments.ps1`** when content analysis is required.
@@ -48,8 +48,8 @@ Typical ordered chain:
 
 ### 2.5 Reporting and Slack
 
-- **Default:** answers in **chat**; no new report files unless HandsOff, `/report`, `/feedback`, or explicit user save — **Rule 0.6** in **`core_rules.mdc`**.  
-- **Paths and uploads:** **`Cursor-Project/config/template/Slack_reporting_paths.md`**, **`playwright_detailed_reporting.mdc`**, **`handsoff_playwright_report.mdc`**.
+- **Default:** answers in **chat**; no new report files unless `/report`, `/feedback`, or explicit user save — **Rule 0.6** in **`core_rules.mdc`**.  
+- **Paths and uploads:** **`Cursor-Project/config/template/Slack_reporting_paths.md`**, **`playwright_detailed_reporting.mdc`**.
 
 ### 2.6 Safety and enforcement
 
@@ -75,7 +75,7 @@ flowchart TB
   subgraph cp ["Cursor-Project"]
     config["config: swagger, jira, slack, playwright, diagrams"]
     tc["test_cases Backend + Frontend"]
-    rep["reports Chat + HandsOff + Feedback"]
+    rep["reports Chat + Feedback"]
     ets["EnergoTS; tests/ cursor-only AI writes"]
     phx["Phoenix/* read-only; branch via script"]
   end

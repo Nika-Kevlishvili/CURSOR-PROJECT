@@ -1,6 +1,6 @@
 ---
 name: test-case-quality-validator
-description: STRICT test case .md validator — 10 axes, 0–100 total, pass ≥80/100. Rule 35 Step 2.5 and HandsOff Step 3.5. Max 3 rewrites. READ-ONLY.
+description: STRICT test case .md validator — 10 axes, 0–100 total, pass ≥80/100. Rule 35 Step 2.5. Max 3 rewrites. READ-ONLY.
 ---
 
 # Test Case Quality Validator Skill
@@ -11,7 +11,7 @@ description: STRICT test case .md validator — 10 axes, 0–100 total, pass ≥
 ## When to apply
 
 - After test-case-generator saves Backend (+ Frontend when scope includes it).
-- HandsOff Step 3.5 (mandatory before Playwright).
+- Rule 35 Step 2.5 (mandatory before Playwright when user requests specs).
 - `/test-case-quality <Topic_name>`
 
 ## Inputs

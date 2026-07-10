@@ -38,7 +38,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment dev -DryRun
 ```
 
-**When Cursor agents must run this:** before environment-sensitive Phoenix code reading — Phoenix Q&A, bug validation (Rule 32), cross-dependency analysis (Rule 35a), test case generation (Rule 35), and the HandsOff flow (Rule 37). See Rule PHOENIX-SWITCH.0.
+**When Cursor agents must run this:** before environment-sensitive Phoenix code reading — Phoenix Q&A, bug validation (Rule 32), cross-dependency analysis (Rule 35a), and test case generation (Rule 35). See Rule PHOENIX-SWITCH.0.
 
 **Scope:** Only repos under `Cursor-Project/Phoenix/`. Read-only for the remote (no commits, no pushes, no MRs). Phoenix source files remain READ-ONLY for Cursor AI (Rule 0.8 Tier A). EnergoTS is unaffected — that path stays locked to `cursor` (Rule ENERGOTS.0).
 
@@ -185,7 +185,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 - Save summary: **`…/Chat reports/<segment>/Summary_{HHMM}.md`**.
 - Use **`Cursor-Project/reports/README.md`** for folder reuse vs creation.
 
-**When to use:** When you want a persisted run log or summary — **not** automatically after every chat task. **HandsOff** alone mandates `{JIRA_KEY}.md` under **HandsOff reports**. Bug validation does **not** auto-save `BugValidation_*.md`; use **`/report`** or ask explicitly.
+**When to use:** When you want a persisted run log or summary — **not** automatically after every chat task. Bug validation does **not** auto-save `BugValidation_*.md`; use **`/report`** or ask explicitly.
 
 ---
 
@@ -199,7 +199,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 - **Confluence:** MCP + REST fallback; classify evidence strength.
 - **Swagger:** Run **`update-swagger-specs.ps1`**; cite refreshed or cached **`Cursor-Project/config/swagger/<id>/swagger-spec.json`** for API-level claims.
 - **Code:** Search aligned Phoenix codebase; file/line evidence; compare to bug report.
-- **Verdict:** Five-verdict matrix (see **`phoenix-bug-validation`** skill); full analysis in chat + Slack **`bug-validation`**. **Does not** auto-generate test cases or run Playwright (use test-case / HandsOff flows separately).
+- **Verdict:** Five-verdict matrix (see **`phoenix-bug-validation`** skill); full analysis in chat + Slack **`bug-validation`**. **Does not** auto-generate test cases or run Playwright (use test-case / Playwright flows separately).
 - Save **`BugValidation_{Name}.md`** under **Chat reports** only if the user runs **`/report`** or explicitly requests a file (per **`Cursor-Project/reports/README.md`**).
 
 **When to use:** Validate a bug report against Confluence, OpenAPI, and code before any fix.
@@ -276,27 +276,6 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 
 ---
 
-## 17. HandsOff (full automated flow)
-
-**Trigger:** User provides a **Jira ticket** (link, key e.g. REG-123, or name) and types **/HandsOff** or **!HandsOff**.
-
-**What it can do:**
-1. **Get Jira ticket** – Parse issue key; call Jira MCP getJiraIssue → description, summary, tester/assignee.
-2. **Cross-dependencies** – Run cross-dependency-finder for this Jira key (Rule 35a: Jira + codebase + deep Confluence exploration; no local merge/git); get cross_dependency_data.
-3. **Test cases** – Run test-case-generator; save **`test_cases/Backend/<Topic>.md`** always; **`Frontend/<Topic>.md`** only if TC-FRONTEND-ASK.0 = Yes.
-4. **TC quality (Step 3.5)** – **test-case-quality-validator**; 10-axis ≥80/100; max 3 rewrites; **BLOCK** if still failing.
-5. **Playwright tests** – **`energo-ts-test`** + **`energo-ts-test/SKILL.md`** → **`EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`**; **`cursor`** branch (Rule ENERGOTS.0).
-6. **Spec validation (Step 4.5)** – **playwright-test-validator**; **BLOCK** after 3 failed iterations unless user opts out.
-7. **Run tests** – Playwright by Jira key or spec path; capture pass/fail and failure reasons.
-8. **Report** – **`HandsOff reports/…/{JIRA_KEY}.md`** + **`playwright-report-detailed.md`** (DPR.0).
-9. **Slack** – Three-block text + upload both `.md` files to Tester + **#ai-report**.
-
-**Canonical:** **`.cursor/commands/hands-off.md`**
-
-**When to use:** Run the full pipeline automatically for a Jira ticket: fetch → cross-deps → test cases → create Playwright tests → run → report (save + send to Slack). No user intervention after providing the ticket and /HandsOff.
-
----
-
 ## Summary table
 
 | Command / trigger           | Main action |
@@ -317,8 +296,6 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 | **Cross-dependency finder** | Find dependencies and what could break; feed test-case-generator. |
 | **Test case generate**     | Generate test cases (after cross-dependency finder). |
 | **EnergoTS test**          | Create/edit EnergoTS tests in `EnergoTS/tests/` only. |
-| **HandsOff**               | Full flow: Jira → cross-deps → test cases → Playwright → run → report (save as Jira key + send to Slack to tester). |
-
 ---
 
 *Document generated for Cursor workspace. All commands follow project rules (e.g. Rule 0.6 reports, Rule 0.8 no code edit except EnergoTS tests).*

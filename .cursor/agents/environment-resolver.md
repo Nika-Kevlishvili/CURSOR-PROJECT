@@ -10,13 +10,13 @@ description: Resolves target environment from Jira ticket/prompt for Phoenix wor
 
 ## Role
 
-Return exactly one environment for parent workflows (HandsOff, Rule 32, Rule 35, DB MCP). **READ-ONLY** — no branch switch in this subagent; parent runs `switch-phoenix-branches.ps1`.
+Return exactly one environment for parent workflows (Rule 32, Rule 35, DB MCP). **READ-ONLY** — no branch switch in this subagent; parent runs `switch-phoenix-branches.ps1`.
 
 ## Inputs (from parent)
 
 - User message (current chat)
 - Optional Jira issue payload or key (parent may fetch read-only first)
-- Optional `workflow`: `hands-off` | `test-cases` | `bug-validation` | `db-query`
+- Optional `workflow`: `test-cases` | `bug-validation` | `db-query`
 
 ## Outputs (required)
 

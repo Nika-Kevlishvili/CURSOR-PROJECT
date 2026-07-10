@@ -17,7 +17,7 @@ description: "Workflow obligations (Rules 32–44): summary + exit criteria. Ste
 
 - Route: **`bug-validator`** / **`.cursor/skills/phoenix-bug-validation/SKILL.md`** / **`.cursor/agents/bug-validator.md`**
 - **READ-ONLY** — no code fixes during validation unless user asks **after** validation; no `agents.*` imports
-- **Not in scope:** automatic test cases, Playwright, **`energo-ts-run`** (Rules 35–37 / 36 unless user explicitly asks)
+- **Not in scope:** automatic test cases, Playwright, **`energo-ts-run`** (Rules 35 / 36 unless user explicitly asks)
 - **Env:** **`environment-resolver`** first; empty Jira Environment → AskQuestion (six envs); **`PROCESS BLOCKED`** — no silent `test` default
 - **Phoenix align:** **Rule PHOENIX-SWITCH.0**; prod requires `-ConfirmProd` + user ack
 - **Evidence:** Confluence (broad discovery **bug-validator only**) + mandatory Swagger refresh + aligned Phoenix code + DB (supporting, same env)
@@ -67,16 +67,6 @@ Violation is a **MUST**.
 
 ---
 
-## Rule 37 — HandsOff [CRITICAL]
-
-- Jira ticket + **`/HandsOff`** or **`!HandsOff`** → full orchestration **without skipping steps**
-- **`.cursor/commands/hands-off.md`**, **`.cursor/agents/hands-off.md`**
-- Reporting: **`handsoff_playwright_report.mdc`**, **`playwright_detailed_reporting.mdc`** (Rule DPR.0)
-
-Violation is a **BLOCK**.
-
----
-
 ## Rule 39 — Confluence scope (non–Rule 32) [CRITICAL]
 
 - Default: ticket text + **linked Confluence URLs only**; no broad CQL/search unless user asks or PhoenixExpert Q&A requires it
@@ -91,7 +81,7 @@ Violation is a **MUST**.
 
 | Rule | Obligation | Detail |
 |------|------------|--------|
-| **40** | No `test.beforeAll` / `beforeAll` for preconditions | **`handsoff_playwright_report.mdc`**, playwright instructions |
+| **40** | No `test.beforeAll` / `beforeAll` for preconditions | **`playwright_test_constraints.mdc`**, playwright instructions |
 | **41** | Run **`update-swagger-specs.ps1`** before any EnergoTS `.spec.ts` create/edit | **`swagger_refresh_mandatory.mdc`** |
 
 Violation is a **MUST**.

@@ -16,7 +16,7 @@
 
 ## User Actions (Entry Points)
 
-- Triggered by: Jira ticket + /HandsOff or !HandsOff — must NOT skip any step
+- Triggered by: User request (standalone workflows — test cases, Playwright, bug validation, scoped Slack)
 - User request arrives
 
 ## Decision Points (Business Logic)
@@ -52,7 +52,7 @@ These are the branching points in the process. Each decision leads to different 
 - **Phoenix Q&A** --> phoenix-qa<br>(PhoenixExpert)
 - **Bug report** --> bug-validator<br>(BugFinderAgent)
 - **Test cases** --> cross-dep → tc-gen<br>→ tc-qual-val
-- **/HandsOff** --> hands-off<br>(full orchestrator)
+- **Scoped Playwright + Slack** --> energo-ts-run<br>+ send-playwright-results-slack
 - **Run tests** --> energo-ts-run
 - **DB query** --> database-query
 - **Prod data** --> prod-data-reader
@@ -66,9 +66,9 @@ These are the branching points in the process. Each decision leads to different 
 ## Process Steps
 
 - 4b. playwright<br>test-validator (≥80)
-- <b>Slack (3 reporting paths)</b>
+- <b>Slack (2 reporting paths)</b>
 - database_workflow.mdc<br>Rules DB.0–DB.6
-- <b>Mandatory Prerequisites for all HandsOff</b><br><br>• Swagger refresh before .spec.ts (Rule 41)<br>• No beforeAll in preconditions (Rule 40)<br>• EnergoTS cursor branch locked (Rule ENERGOTS.0)<br>• Phoenix alignment checked (PHOENIX-SWITCH.0)<br>• Hooks enforce all gates automatically
+- <b>Mandatory Prerequisites for Playwright workflows</b><br><br>• Swagger refresh before .spec.ts (Rule 41)<br>• No beforeAll in preconditions (Rule 40)<br>• EnergoTS cursor branch locked (Rule ENERGOTS.0)<br>• Phoenix alignment checked (PHOENIX-SWITCH.0)<br>• Hooks enforce all gates automatically
 - 3b. tc-quality<br>validator (≥80)
 - Process box = Cross-cutting concern
 - Test
@@ -83,12 +83,11 @@ These are the branching points in the process. Each decision leads to different 
 - DEFAULT: Full answer in chat only<br>No automatic disk files
 - bug-validator
 - database-query
-- Path 2: HandsOff<br>Tester DM + #ai-report (C0AK96S1D7X)
+- Path 2: Scoped Playwright<br>Tester DM + #ai-report (C0AK96S1D7X)
 - <b>Confluence (Rules 39, 43, 1a)</b>
 - PostgreSQL
 - env-resolver
 - FORBIDDEN: Phoenix delivery
-- hands-off<br>(full orchestrator)
 - 6. Execute (hooks enforce guards)
 - report-generator
 - Experiments
@@ -106,16 +105,16 @@ These are the branching points in the process. Each decision leads to different 
 - Citations: file path + lines / page title + ID<br>(evidence_only_project_answers.mdc)
 - Path 1: Bug validation<br>#bug-validation (C0AUEEDVCEL)
 - Step 1b: Check diagrams<br>Ticket attachments → config/Diagrams/<br>(Bundle 4/5/6 .svg fallback)
-- hands-off.md &middot; switch-phoenix-branches.md &middot; update-swagger-specs.md<br>git-sync.md &middot; (others as needed)
+- switch-phoenix-branches.md &middot; update-swagger-specs.md<br>send-playwright-results-slack.md &middot; git-sync.md &middot; (others as needed)
 - CANNOT REPRODUCE
 - Attachments<br>download-jira-attachments.ps1
 - 2. Swagger refresh<br>update-swagger-specs.ps1<br>(MANDATORY — Rule 41)
 - Agents involved: [list]<br>(Rule 0.1 — every response)
 - 3. test-case<br>generator
-- Intent → Rule → Agent(s) → Key Output<hr>Phoenix Q&A → 0.2, 0.4 → phoenix-qa → Chat answer + citations<br>Bug validation → 32 → bug-validator → 5-verdict analysis + Slack<br>Test cases → 35/35a → cross-dep + tc-gen + tc-qual-val → Backend/ + Frontend/ .md<br>HandsOff → 37 → hands-off orchestrator → {KEY}.md + Playwright + Slack<br>Playwright run → 36 → energo-ts-run → Test results + JSON report<br>DB query → DB.0a → database-query → Query results in chat<br>Prod data → PDR.0 → production-data-reader → Entity analysis in chat<br>Postman → 17.P2 → postman-collection (consults PhoenixExpert) → .json<br>Jira bug → JIRA.0 → jira-bug (Experiments board only) → Jira ticket text<br>Report/Feedback → 0.6 → report-generator → .md under reports/<br>Env access → 10 → environment-access → Browser session
+- Intent → Rule → Agent(s) → Key Output<hr>Phoenix Q&A → 0.2, 0.4 → phoenix-qa → Chat answer + citations<br>Bug validation → 32 → bug-validator → 5-verdict analysis + Slack<br>Test cases → 35/35a → cross-dep + tc-gen + tc-qual-val → Backend/ + Frontend/ .md<br>Playwright run → 36 → energo-ts-run → Test results + JSON report<br>Scoped Playwright Slack → DPR.0 → ScopedPlaywright_*.md + machine report<br>DB query → DB.0a → database-query → Query results in chat<br>Prod data → PDR.0 → production-data-reader → Entity analysis in chat<br>Postman → 17.P2 → postman-collection (consults PhoenixExpert) → .json<br>Jira bug → JIRA.0 → jira-bug (Experiments board only) → Jira ticket text<br>Report/Feedback → 0.6 → report-generator → .md under reports/<br>Env access → 10 → environment-access → Browser session
 - Step 2: test-case-generator<br>Reads playwright instructions folder (MANDATORY)<br>Uses prompt + Confluence + codebase + cross_dependency_data<br>Writes Backend/&lt;Topic&gt;.md + Frontend/&lt;Topic&gt;.md
 - Prod = read-only (SELECT only)<br>production-data-reader uses PostgreSQLProd
-- HandsOff (Rule 37):<br>{JIRA_KEY}.md MANDATORY under HandsOff reports/
+- Scoped Playwright Slack (DPR.0):<br>ScopedPlaywright_*.md under Chat reports (ScopedPlaywright)/
 - integrations/*.mdc<br>Jira/Conf fallback, branch switch,<br>Swagger, EnergoTS lock, prod reader
 - env-access
 - update-swagger-specs.ps1<br>MANDATORY before any .spec.ts create/edit
@@ -151,7 +150,7 @@ These are the branching points in the process. Each decision leads to different 
 - INCONCLUSIVE
 - <b>Mandatory Response Elements</b>
 - Step 3: Swagger refresh (MANDATORY)<br>update-swagger-specs.ps1
-- Purple = HandsOff orchestration
+- Purple = Scoped Playwright Slack orchestration
 - test-runner
 - <b>Commands (.cursor/commands/*.md)</b><br>Operational checklists
 - switch-phoenix-branches.ps1<br>(align Phoenix repos to env branch)
@@ -188,13 +187,13 @@ These are the branching points in the process. Each decision leads to different 
 - <b>Shape Legend</b>
 - energo-ts-run
 - core_rules.mdc<br>Rule 0.x (PhoenixExpert, reports, path tiers)
-- hands-off
+- send-playwright-results-slack
 - GitLab — READ-ONLY<br>No commits, pushes, merges, edits
 - postman-collection
 - <b>Jira (Rules 42, 44, JIRA.0)</b>
 - Blue = Test cases / analysis
 - Block Phoenix edits &middot; Enforce EnergoTS cursor branch<br>Prevent forbidden Confluence writes &middot; Swagger refresh check
-- <b>Steps 6–7: Report + Slack delivery</b><br><br>1. Smart report: {JIRA_KEY}.md under HandsOff reports/ (YYYY/month/DD/)<br>2. Machine report: playwright-report-detailed.md (if JSON exists)<br>3. Slack short summary (3-block) to #ai-report (C0AK96S1D7X)<br>4. Both .md files uploaded as attachments (not pasted)<br>5. Tester DM (customfield_10095) when available<br>6. upload-file-to-slack.ps1 for file delivery
+- <b>Scoped Playwright Slack delivery (path 2)</b><br><br>1. Smart report: ScopedPlaywright_*.md under Chat reports (ScopedPlaywright)/ (YYYY/month/DD/)<br>2. Machine report: playwright-report-detailed.md (if JSON exists)<br>3. Slack short summary (3-block) to #ai-report (C0AK96S1D7X)<br>4. Both .md files uploaded as attachments (not pasted)<br>5. Tester DM (customfield_10095) when available<br>6. upload-file-to-slack.ps1 for file delivery
 - shell
 - <b>Intent → Rule → Agent Mapping</b>
 - config/swagger/<env>/swagger-spec.json
@@ -219,7 +218,7 @@ These are the branching points in the process. Each decision leads to different 
 - Step 1: cross-dependency-finder (MANDATORY FIRST)<br>Jira-anchored analysis (Rule 35a)<br>No local merge/git — Jira + codebase + shallow Confluence
 - <b>Code Modification Tiers (Rule 0.8)</b>
 - REST fallback (Rule 43)<br>get-confluence-page-rest.ps1<br>Confluence Cloud REST
-- 1. PhoenixExpert is mandatory before any Phoenix task (Rule 0.4/8)<br>2. Environment must be explicit — never inferred (Rule CONF.0 / DB.0a)<br>3. Phoenix code is NEVER edited — read-only via aligned branches (Rule 0.8)<br>4. EnergoTS tests/ writable ONLY by EnergoTSTestAgent (Rule 0.8.1)<br>5. Confluence + GitLab = read-only always (Rule 1)<br>6. Swagger refresh mandatory before .spec.ts files (Rule 41)<br>7. No beforeAll in EnergoTS preconditions (Rule 40)<br>8. Every response: Confidence % + Agents involved (Rules CONF.1 / 0.1)<br>9. Disk reports only on /report, /feedback, HandsOff — NOT by default (Rule 0.6)<br>10. Jira bugs: Experiments board only, never Phoenix delivery (Rule JIRA.0)
+- 1. PhoenixExpert is mandatory before any Phoenix task (Rule 0.4/8)<br>2. Environment must be explicit — never inferred (Rule CONF.0 / DB.0a)<br>3. Phoenix code is NEVER edited — read-only via aligned branches (Rule 0.8)<br>4. EnergoTS tests/ writable ONLY by EnergoTSTestAgent (Rule 0.8.1)<br>5. Confluence + GitLab = read-only always (Rule 1)<br>6. Swagger refresh mandatory before .spec.ts files (Rule 41)<br>7. No beforeAll in EnergoTS preconditions (Rule 40)<br>8. Every response: Confidence % + Agents involved (Rules CONF.1 / 0.1)<br>9. Disk reports only on /report, /feedback, explicit save — NOT by default (Rule 0.6)<br>10. Jira bugs: Experiments board only, never Phoenix delivery (Rule JIRA.0)
 - Resolve test file<br>(newly created / Jira key /<br>file path / domain)
 - jira-bug
 - <b>External System Permissions (Rule 1)</b>
@@ -269,14 +268,13 @@ Direct relationships between steps:
 - What type of<br>request? [Phoenix Q&A] --> phoenix-qa<br>(PhoenixExpert)
 - What type of<br>request? [Bug report] --> bug-validator<br>(BugFinderAgent)
 - What type of<br>request? [Test cases] --> cross-dep → tc-gen<br>→ tc-qual-val
-- What type of<br>request? [/HandsOff] --> hands-off<br>(full orchestrator)
+- What type of<br>request? [Scoped Playwright + Slack] --> energo-ts-run<br>+ send-playwright-results-slack
 - What type of<br>request? [Run tests] --> energo-ts-run
 - What type of<br>request? [DB query] --> database-query
 - What type of<br>request? [Prod data] --> prod-data-reader
 - What type of<br>request? [Other] --> Other: jira-bug,<br>postman, report,<br>env-access, shell
 - bug-validator<br>(BugFinderAgent) --> Environment<br>needed?
 - cross-dep → tc-gen<br>→ tc-qual-val --> Environment<br>needed?
-- hands-off<br>(full orchestrator) --> Environment<br>needed?
 - database-query --> Environment<br>needed?
 - Environment<br>needed? [Yes] --> environment-resolver<br>(ask user or extract from ticket)
 - environment-resolver<br>(ask user or extract from ticket) --> switch-phoenix-branches.ps1<br>(align Phoenix repos to env branch)

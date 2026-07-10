@@ -12,13 +12,12 @@ Use this file as the **single map** from “agent role” to **where it lives to
 | **phoenix-qa.md** | Phoenix Q&A (PhoenixExpert + Senior QA lens) | `phoenix-agent-workflow` | `/phoenix`, Phoenix questions (Rule 0.2, QA.0) |
 | **senior-qa.md** | Senior QA Tester (Rule QA.0) | `senior-qa-analysis` | QA audit, doc gaps, code↔doc mismatches, spec vs implementation |
 | **bug-validator.md** | Bug validation + Quality Findings | `phoenix-bug-validation` | Rule 32; **`bug-validator`** subagent |
-| **environment-resolver.md** | Environment gate (6 envs) | `environment-resolver` | TC-ENV-ASK.0, DB.0a, HandsOff Step 1 |
+| **environment-resolver.md** | Environment gate (6 envs) | `environment-resolver` | TC-ENV-ASK.0, DB.0a |
 | **cross-dependency-finder.md** | Cross-dependencies (35, 35a) | `cross-dependency-finder` | Before test cases; Jira + code + deep Confluence exploration |
 | **test-case-generator.md** | Test cases (Rule 35) | `test-case-generator` | After **`cross-dependency-finder`** |
-| **test-case-quality-validator.md** | TC quality (10-axis ≥80) | `test-case-quality-validator` | Rule 35 Step 2.5; HandsOff Step 3.5 |
-| **hands-off.md** | HandsOff orchestrator | `commands/hands-off.md` | Rule 37; `/HandsOff`, `!HandsOff` |
+| **test-case-quality-validator.md** | TC quality (10-axis ≥80) | `test-case-quality-validator` | Rule 35 Step 2.5 |
 | **energo-ts-test.md** | Playwright test authoring | `energo-ts-test` | Rule 0.8.1; `EnergoTS/tests/` only |
-| **playwright-test-validator.md** | Spec vs test cases | `playwright-test-validator` | HandsOff Step 4.5 |
+| **playwright-test-validator.md** | Spec vs test cases | `playwright-test-validator` | After energo-ts-test authoring |
 | **energo-ts-run.md** | Playwright test run | `energo-ts-run` | Rule 36; `cursor` branch only |
 | **test-runner.md** | Test execution | — (consult PhoenixExpert) | Test-related runs |
 | **database-query.md** | PostgreSQL (Dev/Test/Prod) | `phoenix-database` | DB questions; `database_workflow.mdc` |
@@ -26,7 +25,7 @@ Use this file as the **single map** from “agent role” to **where it lives to
 | **jira-bug.md** | Jira bug text (Experiments) | `jira-bug-template` | Rule JIRA.0; `/jira-bug` |
 | **postman-collection.md** | Postman collections | — (stub; consult PhoenixExpert) | Postman generation flows |
 | **environment-access.md** | Dev / Dev2 access | — (stub agent) | Rule 10; browser/MCP |
-| **report-generator.md** | Persisted reports (Rule 0.6) | `phoenix-reporting` | HandsOff `{JIRA_KEY}.md`; **`/report`**; **`/feedback`** |
+| **report-generator.md** | Persisted reports (Rule 0.6) | `phoenix-reporting` | **`/report`**; **`/feedback`**; explicit save |
 | **shell.md** | CLI / terminal delegation | — | Parent Task `shell`; hooks |
 
 **Git / sync (no dedicated subagent):** Phoenix branch alignment → **`.cursor/commands/switch-phoenix-branches.ps1`** (+ `.md`). Workspace git helpers → **`sync-workspace-repo`**, **`sync-cursor-with-staging`**, **`update-main-from-experiments`** under `.cursor/commands/`. Historical **`git-sync.md`** agent was removed.

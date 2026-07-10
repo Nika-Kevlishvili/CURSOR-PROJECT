@@ -5,7 +5,7 @@ description: "Align Cursor-Project/Phoenix/* repos to origin/<branch> for enviro
 
 # Phoenix Branch Switching Skill (Rule PHOENIX-SWITCH.0)
 
-Align every `Cursor-Project/Phoenix/*` repo to the target environment's `origin/<branch>` before reading Phoenix code for env-sensitive tasks (Q&A, bug validation, cross-dep, test cases, HandsOff). Phoenix files remain **READ-ONLY** (Rule 0.8 Tier A).
+Align every `Cursor-Project/Phoenix/*` repo to the target environment's `origin/<branch>` before reading Phoenix code for env-sensitive tasks (Q&A, bug validation, cross-dep, test cases). Phoenix files remain **READ-ONLY** (Rule 0.8 Tier A).
 
 Does **not** apply to `EnergoTS/` (locked to `cursor` per Rule ENERGOTS.0).
 Does **not** constitute merge-history archaeology (Rule 35a safe).
@@ -17,7 +17,7 @@ Before reading Phoenix code when the task targets a specific environment:
 - Bug validation (Rule 32)
 - Cross-dependency analysis (Rule 35a)
 - Test case generation (Rule 35)
-- HandsOff (Rule 37)
+
 
 **Not required** for documentation-only answers with no env-specific code dependency.
 

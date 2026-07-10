@@ -1,44 +1,41 @@
 ---
-description: "playwright-report-detailed.md (JSON→MD) next to EnergoTS JSON: HandsOff/path 3 generate + upload with smart report to Tester + #ai-report. Rule DPR.0."
+description: "playwright-report-detailed.md (JSON→MD) next to EnergoTS JSON: scoped Slack path 2 generate + upload with smart report to Tester + #ai-report. Rule DPR.0."
 alwaysApply: false
 globs:
-  - ".cursor/commands/hands-off.md"
-  - ".cursor/agents/hands-off.md"
   - ".cursor/commands/send-playwright-results-slack.md"
   - ".cursor/agents/energo-ts-run.md"
   - ".cursor/skills/energo-ts-run/**"
-  - ".cursor/rules/workflows/handsoff_playwright_report.mdc"
   - "Cursor-Project/config/playwright/**"
   - "Cursor-Project/EnergoTS/playwright-report.json"
 ---
 
 # PLAYWRIGHT MACHINE DETAILED MARKDOWN (Rule DPR.0)
 
-## Rule DPR.0: `playwright-report-detailed.md` vs HandsOff smart report
+## Rule DPR.0: `playwright-report-detailed.md` vs scoped smart report
 
 This rule governs **`playwright-report-detailed.md`** written next to **`playwright-report.json`** (default **`Cursor-Project/EnergoTS/playwright-report-detailed.md`**) by **`Cursor-Project/config/playwright/generate-detailed-report.mjs`** when run from **`Cursor-Project/EnergoTS`**. See **`Cursor-Project/config/playwright/README-detailed-reporting.md`**.
 
-### Two complementary files (HandsOff / path 3)
+### Two complementary files (scoped Slack path 2)
 
 | Artifact | Role | Slack |
 |----------|------|--------|
-| **`{JIRA_KEY}.md`** in **HandsOff reports** (or **ScopedPlaywright_*.md** in Chat reports for path 3) | Human-oriented report per **`Playwright_run_detailed_report_template.md`** (TC mapping, expected vs actual, links) | **MANDATORY file upload** to Tester + **`C0AK96S1D7X`** (#ai-report) when token exists — see **`handsoff_playwright_report.mdc`** §4 |
+| **ScopedPlaywright_*.md** in **Chat reports** | Human-oriented report per **`Playwright_run_detailed_report_template.md`** (TC mapping, expected vs actual, links) | **MANDATORY file upload** to Tester + **`C0AK96S1D7X`** (#ai-report) when token exists — see **`send-playwright-results-slack.md`** |
 | **`playwright-report-detailed.md`** in **`EnergoTS/`** (same folder as JSON) | Machine report from JSON (Jira + TC id + scenario from `test()` title when titled `[KEY] TC-BE-n: …`, steps, annotations, outcomes) | **MANDATORY file upload** to the **same recipients** when the file exists after generation |
 
-### HandsOff (Rule 37) and path 3 (scoped Slack) — generation + upload
+### Scoped Slack (path 2) — generation + upload
 
 1. **After tests produce `playwright-report.json`:** From **`Cursor-Project/EnergoTS`**, run **`node ../config/playwright/generate-detailed-report.mjs`** when **`playwright-report.json`** exists. This writes **`Cursor-Project/EnergoTS/playwright-report-detailed.md`** (default: same directory as the JSON). If JSON is missing, skip generation and note it in the smart report **Notes** (optional block).
-2. **Slack #ai-report** (`C0AK96S1D7X`) is the **report channel** for these uploads: upload **both** `.md` files there as **attachments** (not pasted body text). Also upload **both** files to the **Tester DM** when Jira Tester (`customfield_10095`) exists — same rules as **`hands-off.md`** Step 7.
+2. **Slack #ai-report** (`C0AK96S1D7X`) is the **report channel** for these uploads: upload **both** `.md` files there as **attachments** (not pasted body text). Also upload **both** files to the **Tester DM** when Jira Tester (`customfield_10095`) exists — same rules as **`send-playwright-results-slack.md`**.
 3. **Do NOT** paste the full contents of **`playwright-report-detailed.md`** (or the smart report) into the Slack **chat body** — short three-block summary only, per **`Slack_report_summary_short_template.md`**.
 
-### Outside HandsOff / path 3 (ad-hoc)
+### Outside scoped Slack (ad-hoc)
 
 - User may run **`generate-detailed-report.mjs`** after any scoped test run; upload **`playwright-report-detailed.md`** only when the user explicitly asks for Slack delivery and **only** to recipients allowed by the active workflow (typically same Tester + #ai-report for Playwright results). Do **not** send to arbitrary channels.
 
 ### PROHIBITED (CRITICAL)
 
-1. **Do NOT** skip **`playwright-report-detailed.md`** generation during **HandsOff** or **path 3** when **`playwright-report.json`** exists (unless generation fails — then document in **Notes**).
-2. **Do NOT** skip uploading **`playwright-report-detailed.md`** to **`C0AK96S1D7X`** (and Tester when applicable) when the file exists and **`SLACK_API_TOKEN`/`SLACK_BOT_TOKEN`** allows upload — same **mandatory file** policy as the smart **`{JIRA_KEY}.md`**.
+1. **Do NOT** skip **`playwright-report-detailed.md`** generation during **scoped Slack path 2** when **`playwright-report.json`** exists (unless generation fails — then document in **Notes**).
+2. **Do NOT** skip uploading **`playwright-report-detailed.md`** to **`C0AK96S1D7X`** (and Tester when applicable) when the file exists and **`SLACK_API_TOKEN`/`SLACK_BOT_TOKEN`** allows upload — same **mandatory file** policy as the smart **ScopedPlaywright** `.md`.
 3. **Do NOT** deliver Playwright detailed narratives **only** as long chat messages instead of **file attachments** when upload is possible.
 4. **Do NOT** use Slack **Notes** with local disk paths as the **primary** delivery when **`upload-file-to-slack.ps1`** can run with a valid token — paths in Notes are **only** after a **failed** upload attempt (see **`Slack_report_summary_short_template.md`**).
 
@@ -46,12 +43,12 @@ This rule governs **`playwright-report-detailed.md`** written next to **`playwri
 
 | Artifact | Path | Role |
 |----------|------|------|
-| **Smart (human) report** | `Cursor-Project/reports/HandsOff reports/…/{JIRA_KEY}.md` or `Cursor-Project/reports/Chat reports/…/ScopedPlaywright_*.md` | Per **`Playwright_run_detailed_report_template.md`**; primary narrative for testers |
+| **Smart (human) report** | `Cursor-Project/reports/Chat reports/…/ScopedPlaywright_*.md` | Per **`Playwright_run_detailed_report_template.md`**; primary narrative for testers |
 | **Machine report** | `Cursor-Project/EnergoTS/playwright-report-detailed.md` (next to JSON) | JSON→MD via **`generate-detailed-report.mjs`**; uploaded with smart report to Slack |
 
 **Forbidden as the primary detailed deliverable:** `playwright-report.json`, `playwright-report/index.html`, or any non-Markdown format used **instead of** the smart `.md` under **`reports/`**.
 
-**Ad-hoc detailed reports (outside HandsOff / path 3):** Save smart `.md` only under **`Cursor-Project/reports/Chat reports/YYYY/<english-month>/<DD>/`** (or HandsOff/Feedback when that workflow applies). Do **not** treat EnergoTS JSON/HTML as the final human report.
+**Ad-hoc detailed reports:** Save smart `.md` only under **`Cursor-Project/reports/Chat reports/YYYY/<english-month>/<DD>/`** (or Feedback when that workflow applies). Do **not** treat EnergoTS JSON/HTML as the final human report.
 
 ### Smart report content (when user requests a detailed report)
 
@@ -72,11 +69,11 @@ Before upload: confirm `.md` under **`reports/`**; every in-scope TC has Expecte
 
 ### Routine runs without explicit report request
 
-Provide a **concise in-chat summary only**; do not persist detailed report files (Rule 0.6 default). Machine **`playwright-report-detailed.md`** generation applies only during **HandsOff**, **path 3**, or when the user explicitly asks.
+Provide a **concise in-chat summary only**; do not persist detailed report files (Rule 0.6 default). Machine **`playwright-report-detailed.md`** generation applies only during **scoped Slack path 2**, or when the user explicitly asks.
 
 ### Relation to other rules
 
-- **HandsOff Slack** — **`handsoff_playwright_report.mdc`** §4 (recipients, short text, uploads). This rule adds the **machine** file to the same upload set.
+- **Scoped Slack** — **`send-playwright-results-slack.md`** (recipients, short text, uploads). This rule adds the **machine** file to the same upload set.
 - **Rule 0.8:** Prefer **`generate-detailed-report.mjs`** under **`Cursor-Project/config/playwright/`** over editing **`EnergoTS/`** non-test utilities.
 
-**Violation** of §PROHIBITED is a **MUST** for orchestrators running **HandsOff** or **path 3** (scoped Playwright Slack).
+**Violation** of §PROHIBITED is a **MUST** for orchestrators running **scoped Playwright Slack** (path 2).

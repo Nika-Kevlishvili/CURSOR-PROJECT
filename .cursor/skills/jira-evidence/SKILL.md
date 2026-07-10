@@ -1,11 +1,11 @@
 ---
 name: jira-evidence
-description: Jira ticket read completeness — custom fields, linked issues, attachments, linked Confluence. Load before substantive Jira fetch, triage, analysis, HandsOff Step 1, cross-dep, or bug validation when Jira is the source. Rule 42 REST fallback when MCP fails.
+description: Jira ticket read completeness — custom fields, linked issues, attachments, linked Confluence. Load before substantive Jira fetch, triage, analysis, cross-dep, or bug validation when Jira is the source. Rule 42 REST fallback when MCP fails.
 ---
 
 # Jira Evidence Skill
 
-**When to load (Rule 0.0):** Any substantive work that **reads or analyzes a Jira issue** — triage, summary, HandsOff, cross-dependency, test cases, bug validation ticket fetch, attachment analysis.
+**When to load (Rule 0.0):** Any substantive work that **reads or analyzes a Jira issue** — triage, summary, cross-dependency, test cases, bug validation ticket fetch, attachment analysis.
 
 **AlwaysApply pointer:** `.cursor/rules/main/evidence_only_project_answers.mdc` (core evidence gate only). **This SKILL** holds Jira-specific procedure.
 

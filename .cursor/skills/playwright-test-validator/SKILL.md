@@ -1,6 +1,6 @@
 ---
 name: playwright-test-validator
-description: STRICT Playwright spec validator (0–100, pass ≥80). Compares spec vs test case .md files and playwright instructions. HandsOff Step 4.5 before run. READ-ONLY.
+description: STRICT Playwright spec validator (0–100, pass ≥80). Compares spec vs test case .md files and playwright instructions. After energo-ts-test authoring. READ-ONLY.
 ---
 
 # Playwright Test Validator Skill
@@ -9,7 +9,7 @@ description: STRICT Playwright spec validator (0–100, pass ≥80). Compares sp
 
 ## When to apply
 
-- **HandsOff Step 4.5** — after energo-ts-test creates spec, before Step 5 run.
+- After **energo-ts-test** creates spec, before test run.
 - **Standalone / bug-only automation** — **mandatory** immediately after energo-ts-test writes or changes a spec (energo-ts-test SKILL § Post-authoring validation).
 - User asks to validate a Playwright spec (`/playwright-validate <JIRA_KEY>` or natural language).
 

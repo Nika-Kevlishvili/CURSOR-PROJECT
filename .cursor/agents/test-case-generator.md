@@ -16,7 +16,7 @@ description: Generates test cases from bug or task descriptions using Confluence
 | **0b** | TC-FRONTEND-ASK.0 — Backend vs Backend+Frontend | Writing `.md` files |
 | **0c** | Phoenix alignment (`switch-phoenix-branches.ps1`) | cross-dep code reads |
 | **1** | **cross-dependency-finder** → `cross_dependency_data` | This agent |
-| **2.5** | **test-case-quality-validator** (≥80/100, max 3 iterations) | HandsOff Step 4 / Playwright |
+| **2.5** | **test-case-quality-validator** (≥80/100, max 3 iterations) | Before Playwright authoring |
 
 Do **not** run when the user requested test cases but cross-dependency-finder was skipped.
 

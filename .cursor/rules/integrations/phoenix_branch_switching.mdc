@@ -7,8 +7,6 @@ globs:
   - ".cursor/agents/bug-validator.md"
   - ".cursor/agents/cross-dependency-finder.md"
   - ".cursor/agents/test-case-generator.md"
-  - ".cursor/agents/hands-off.md"
-  - ".cursor/commands/hands-off.md"
   - ".cursor/commands/switch-phoenix-branches.md"
   - ".cursor/commands/switch-phoenix-branches.ps1"
 ---
@@ -18,7 +16,7 @@ globs:
 
 ## Intent
 
-Before reading Phoenix code for env-sensitive work (Q&A, bug validation, cross-dep, test cases, HandsOff), align every `Cursor-Project/Phoenix/*` repo to `origin/<branch>` via the sanctioned script. Phoenix remains **READ-ONLY** (Rule 0.8 Tier A).
+Before reading Phoenix code for env-sensitive work (Q&A, bug validation, cross-dep, test cases), align every `Cursor-Project/Phoenix/*` repo to `origin/<branch>` via the sanctioned script. Phoenix remains **READ-ONLY** (Rule 0.8 Tier A).
 
 ## Branch mapping
 

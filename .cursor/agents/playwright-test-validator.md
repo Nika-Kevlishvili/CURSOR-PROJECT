@@ -1,7 +1,7 @@
 ---
 name: playwright-test-validator
 model: inherit
-description: STRICT Playwright spec validator (0–100, pass ≥80). Forces regeneration until quality achieved. READ-ONLY. HandsOff Step 4.5.
+description: STRICT Playwright spec validator (0–100, pass ≥80). Forces regeneration until quality achieved. READ-ONLY. After energo-ts-test authoring.
 ---
 
 # Playwright Test Validator Subagent

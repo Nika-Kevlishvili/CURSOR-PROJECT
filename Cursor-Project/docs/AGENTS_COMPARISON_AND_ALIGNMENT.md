@@ -6,7 +6,7 @@
 
 | Layer | Location | Role |
 |-------|-----------|------|
-| **Rules** | `.cursor/rules/**/*.mdc` | Mandatory constraints, workflows (Rule 32, 35, 35a, DB, Git sync, HandsOff, etc.) |
+| **Rules** | `.cursor/rules/**/*.mdc` | Mandatory constraints, workflows (Rule 32, 35, 35a, DB, Git sync, etc.) |
 | **Subagents** | `.cursor/agents/*.md` | Delegation specs: how to run a role in Cursor (Phoenix Q&A, bug validation, git-sync, …) |
 | **Skills** | `.cursor/skills/**/SKILL.md` | When/how to trigger workflows from the main agent |
 | **Commands** | `.cursor/commands/*.md` (+ `.ps1` where present) | Slash / `!` command procedures |

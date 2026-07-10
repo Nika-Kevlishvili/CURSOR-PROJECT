@@ -65,7 +65,7 @@ Show confidence in responses that deliver **substantive work products**:
 
 - Bug validation verdicts (Rule 32)
 - Test case deliverables (Rule 35)
-- HandsOff results (Rule 37)
+- Scoped Playwright Slack results (path 2)
 - Database query results
 - PhoenixExpert analysis
 - Subagent results returned to parent
@@ -133,7 +133,7 @@ Place the confidence block near the end of each response, before the mandatory `
 4. **Per-item scores (SHOULD for ≥ 5 items)** — when producing ≥ 5 items (e.g. test cases), include per-item scores alongside the overall score. See scoring matrix for table format.
 5. **Subagents** — subagents MUST include confidence scores in their results returned to the parent agent. Parent MUST show sub-scores + aggregation method + final score for pipeline workflows.
 6. **STOP zone enforcement** — if the computed score falls below 55%, the agent MUST NOT deliver a business verdict, final test cases, or actionable recommendation. It MUST pause and gather evidence or ask the user. Violation is a **MUST**.
-7. **Multi-agent aggregation** — pipeline workflows (HandsOff) use **minimum-of-critical**; parallel results use **weighted average**. See scoring matrix for details.
+7. **Multi-agent aggregation** — pipeline workflows (e.g. regression validation) use **minimum-of-critical**; parallel results use **weighted average**. See scoring matrix for details.
 
 ---
 

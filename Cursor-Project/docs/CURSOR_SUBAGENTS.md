@@ -23,9 +23,8 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 | **Cross-Dependency Finder** | `cross-dependency-finder.md` | `cross-dependency-finder` | Rule 35a: Jira + codebase + deep Confluence exploration; **no** local merge/git. |
 | **Test Case Generator** | `test-case-generator.md` | `test-case-generator` | Rule 35: after cross-dep; **`test_cases/Backend/`** always; **`Frontend/`** if TC-FRONTEND-ASK.0 = Yes. |
 | **Test Case Quality Validator** | `test-case-quality-validator.md` | `test-case-quality-validator` | 10-axis rubric, ≥80/100, max 3 rewrites (Rule 35 Step 2.5). |
-| **HandsOff** | `hands-off.md` | `commands/hands-off.md` | Rule 37 full pipeline: TC → Playwright → reports → Slack. |
 | **EnergoTS Test Author** | `energo-ts-test.md` | `energo-ts-test` | Rule 0.8.1: write only under `EnergoTS/tests/`. |
-| **Playwright Test Validator** | `playwright-test-validator.md` | `playwright-test-validator` | HandsOff Step 4.5: spec vs test cases before run. |
+| **Playwright Test Validator** | `playwright-test-validator.md` | `playwright-test-validator` | Spec vs test cases quality gate. |
 | **EnergoTS Run** | `energo-ts-run.md` | `energo-ts-run` | Rule 36: run Playwright on **`cursor`** branch only. |
 | **Test Runner** | `test-runner.md` | — | Run tests; consult PhoenixExpert first. |
 | **Database Query** | `database-query.md` | `phoenix-database` | PostgreSQL MCP; correct env; connect first. |
@@ -33,7 +32,7 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 | **Jira Bug** | `jira-bug.md` | `jira-bug-template` | Rule JIRA.0: Experiments board only. |
 | **Postman Collection** | `postman-collection.md` | — (stub) | Generate Postman collections; consult PhoenixExpert. |
 | **Environment Access** | `environment-access.md` | — (stub) | Dev/Dev2 portal access (Rule 10). |
-| **Report Generator** | `report-generator.md` | `phoenix-reporting` | Rule 0.6: HandsOff, **`/report`**, **`/feedback`**. |
+| **Report Generator** | `report-generator.md` | `phoenix-reporting` | Rule 0.6: **`/report`**, **`/feedback`**, explicit save. |
 | **Shell / CLI** | `shell.md` | — | Bash/PowerShell; respects hooks. |
 
 **Git / Phoenix sync (no subagent):** use **`.cursor/commands/switch-phoenix-branches.ps1`** and workspace sync commands (`sync-workspace-repo`, `sync-cursor-with-staging`). Historical **`git-sync.md`** subagent removed.

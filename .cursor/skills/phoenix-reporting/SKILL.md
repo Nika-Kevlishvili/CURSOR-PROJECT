@@ -1,6 +1,6 @@
 ---
 name: phoenix-reporting
-description: On-demand only: writes markdown under Cursor-Project/reports/ using Chat reports, HandsOff reports, or Feedback plus YYYY/monthname/DD per reports/README.md. Rule 0.6 — no automatic post-task files; never use flat reports/YYYY-MM-DD/ at reports root.
+description: On-demand only: writes markdown under Cursor-Project/reports/ using Chat reports or Feedback plus YYYY/monthname/DD per reports/README.md. Rule 0.6 — no automatic post-task files; never use flat reports/YYYY-MM-DD/ at reports root.
 ---
 
 # Phoenix Reporting
@@ -10,11 +10,10 @@ description: On-demand only: writes markdown under Cursor-Project/reports/ using
 Path pattern:
 
 ```text
-Cursor-Project/reports/<Chat reports|HandsOff reports|Feedback>/YYYY/<english-month>/<DD>/<filename>.md
+Cursor-Project/reports/<Chat reports|Feedback>/YYYY/<english-month>/<DD>/<filename>.md
 ```
 
 - **Reuse** existing `YYYY`, `monthname`, and **`DD`** folders for that same calendar day; **create** only missing path segments.
-- **Rule 37 (HandsOff):** `{JIRA_KEY}.md` → **HandsOff reports** (mandatory when that workflow runs)
 - **`/report` or explicit user request:** → **Chat reports** (or **Feedback/** if the user names that area for a generic report).
 - **`/feedback` or explicit save-feedback request:** → **Feedback** as `Feedback_{Slug}_{HHMM}.md` (workflow below).
 - **Rule 32 (bug validation):** analysis stays **in chat**; `BugValidation_*.md` under **Chat reports** only if the user also runs **`/report`** or explicitly asks to save.
@@ -23,7 +22,7 @@ No Python `ReportingService`. English on disk (Rule 0.7).
 
 **Atlassian links:** Confluence → `https://asterbit.atlassian.net/wiki/spaces/Phoenix/pages/{id}/{slug}`; Jira PDT → `https://oppa-support.atlassian.net/browse/{KEY}`. Never `oppa-support` for wiki. See **`.cursor/rules/integrations/atlassian_link_format.mdc`**.
 
-**Do not:** create `Summary_*.md`, `BugValidation_*.md`, `Feedback_*.md`, or other report files after routine tasks, bug validation, or tests without **`/report`**, **`/feedback`**, or an explicit save request — except **HandsOff** → **HandsOff reports** per Rule 37. **Do not** use `Cursor-Project/reports/YYYY-MM-DD/` as a report root.
+**Do not:** create `Summary_*.md`, `BugValidation_*.md`, `Feedback_*.md`, or other report files after routine tasks, bug validation, or tests without **`/report`**, **`/feedback`**, or an explicit save request. **Do not** use `Cursor-Project/reports/YYYY-MM-DD/` as a report root.
 
 ## Chat reports naming (optional)
 
@@ -44,7 +43,7 @@ Path: **`Cursor-Project/reports/Feedback/YYYY/<english-month>/<DD>/Feedback_{Slu
 
 ### Filename slug
 
-`{Slug}` — short **kebab-case** English hint from **this chat** (e.g. `hands-off-reporting-rules`, `misc`). Avoid sensitive data, URLs, ticket keys, usernames. Prefer latest dominant topic if mixed.
+`{Slug}` — short **kebab-case** English hint from **this chat** (e.g. `scoped-playwright-report`, `misc`). Avoid sensitive data, URLs, ticket keys, usernames. Prefer latest dominant topic if mixed.
 
 ### Workflow (order)
 

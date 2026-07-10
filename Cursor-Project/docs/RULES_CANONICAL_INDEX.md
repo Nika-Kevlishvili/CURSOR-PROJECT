@@ -16,9 +16,8 @@ Single map from **rule / topic** to the **primary procedural** file(s). When `wo
 | DB.0a DB env gate | Ask env in chat before MCP (`phoenix-database` SKILL Step 0, `database-query` agent) | `.cursor/skills/phoenix-database/SKILL.md`, `.cursor/rules/integrations/database_workflow.mdc`, `.cursor/agents/database-query.md` |
 | 35 / 35a Test cases | **Gates:** `test_cases_structure.mdc` (TC-ENV, TC-FRONTEND, STANDALONE). **Procedure:** cross-dep → generator → quality | Gates: **`.cursor/rules/workspace/test_cases_structure.mdc`**. Steps: cross-dep / generator / quality **SKILL.md** files |
 | 36 EnergoTS run | `energo-ts-run`, `cursor` branch | `.cursor/skills/energo-ts-run/SKILL.md`, `.cursor/agents/energo-ts-run.md` |
-| 37 HandsOff | Full orchestration; reporting detail in SKILL | **`.cursor/commands/hands-off.md`**, **`.cursor/skills/hands-off-playwright-report/SKILL.md`**, **`.cursor/rules/workflows/handsoff_playwright_report.mdc`** (exit criteria only) |
 | 39 Non-bug Confluence | Linked pages only | `workflow_rules.mdc` (short); Confluence MCP read tools |
-| 40 beforeAll ban | Playwright preconditions | `.cursor/rules/workflows/handsoff_playwright_report.mdc` |
+| 40 beforeAll ban | Playwright preconditions | **`.cursor/rules/workflows/playwright_test_constraints.mdc`** |
 | 41 Swagger refresh | Before `.spec.ts` edits | `.cursor/rules/integrations/swagger_refresh_mandatory.mdc` |
 | 42 / JIRA.1 Jira read | MCP first, REST fallback; ticket completeness | `.cursor/skills/jira-evidence/SKILL.md`, `.cursor/rules/integrations/jira_rest_fallback.mdc` |
 | 43 / CONFLUENCE.1 Confluence read | MCP first, REST fallback | `.cursor/rules/integrations/confluence_rest_fallback.mdc`, `Cursor-Project/config/confluence/README.md` |

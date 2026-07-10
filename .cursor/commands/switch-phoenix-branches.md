@@ -126,7 +126,7 @@ they read Phoenix code for environment-sensitive answers, in the cases listed in
   reading code; this is **not** local merge-history archaeology, it is just aligning the working
   copy with the environment under analysis.
 - **Test case generation** (Rule 35) — same alignment as cross-dep step.
-- **HandsOff** (Rule 37) — applied as part of step (1) when the ticket binds an environment.
+- 
 - **Postman collection generation** (`/postman-collection`) — when the collection targets a
   specific environment's Phoenix endpoints.
 - **Test runner** (`/test-runner`) — when the run targets Phoenix unit/integration tests for a
@@ -140,7 +140,7 @@ default.
 
 If the parent agent has already aligned Phoenix to the same environment in this chat session
 (and no environment switch has happened since), child subagents (e.g. `cross-dependency-finder`
-and `test-case-generator` when invoked back-to-back by `hands-off`) MUST NOT re-run the
+and `test-case-generator` when invoked back-to-back in the same session) MUST NOT re-run the
 script. Re-alignment is needed only when:
 
 - the parent did not align yet, or

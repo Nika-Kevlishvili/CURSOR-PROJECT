@@ -34,7 +34,7 @@ From `EnergoTS/`: `npx playwright test --project=setup` (requires `.env` with PO
 
 ## Rule DPR.0 — detailed markdown
 
-- **HandsOff / path 3:** orchestrator runs `node ../config/playwright/generate-detailed-report.mjs` and Slack-uploads **`playwright-report-detailed.md`** — not this agent's default.
+- **Scoped Slack path 2:** orchestrator runs `node ../config/playwright/generate-detailed-report.mjs` and Slack-uploads **`playwright-report-detailed.md`** — not this agent's default.
 - **Ad-hoc:** generate + upload only when user **explicitly** asks. Smart report template: **`Playwright_run_detailed_report_template.md`**.
 
 ## Error handling

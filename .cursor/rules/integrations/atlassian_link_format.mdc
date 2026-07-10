@@ -1,6 +1,17 @@
 ---
 description: Canonical Atlassian URL format for Confluence and Jira in reports, test cases, and chat deliverables
-alwaysApply: true
+alwaysApply: false
+globs:
+  - "Cursor-Project/reports/**"
+  - "Cursor-Project/test_cases/**"
+  - ".cursor/agents/bug-validator.md"
+  - ".cursor/agents/test-case-generator.md"
+  - ".cursor/agents/report-generator.md"
+  - ".cursor/skills/phoenix-bug-validation/**"
+  - ".cursor/skills/test-case-generator/**"
+  - ".cursor/skills/phoenix-reporting/**"
+  - ".cursor/skills/jira-bug-template/**"
+  - ".cursor/rules/integrations/atlassian_link_format.mdc"
 ---
 
 # ATLASSIAN LINK FORMAT [MUST]
@@ -58,7 +69,7 @@ Use `oppa-support.atlassian.net/browse/{KEY}` for PDT and other tickets fetched 
 
 - Chat reports (`Cursor-Project/reports/**`)
 - Test cases (`Cursor-Project/test_cases/**`)
-- Bug validation, HandsOff, and PhoenixExpert deliverables that cite wiki or Jira
+- Bug validation, scoped Playwright Slack, and PhoenixExpert deliverables that cite wiki or Jira
 - Slack messages that include Confluence/Jira links
 
 Violation is a **MUST** when user-facing Confluence links use `oppa-support` wiki or omit the known full slug.
