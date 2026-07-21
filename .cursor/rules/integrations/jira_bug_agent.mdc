@@ -33,3 +33,22 @@ globs:
 - Agent and skill refuse and redirect to Experiments board if user mentions Phoenix delivery for bug creation.
 
 Violation is a **BLOCK**.
+
+---
+
+## Cross-reference: Phoenix Phase 2 Bug Reporting
+
+**Rule JIRA.0 governs Experiments board bugs only.**
+
+For bugs in **Phoenix Phase 2 boards (PHN and related boards)**, use the **`phoenix-bug-reporter`** agent instead:
+
+- Agent: `.cursor/agents/phoenix-bug-reporter.md`
+- Skill: `.cursor/skills/phoenix-bug-reporter/SKILL.md`
+- Rule: `.cursor/rules/integrations/phoenix_bug_reporter.mdc` (**Rule PHOENIX-BUG.0**)
+
+| Board | Agent to use |
+|-------|-------------|
+| Experiments | `jira-bug` (Rule JIRA.0 — this file) |
+| PHN / Phoenix Phase 2 | `phoenix-bug-reporter` (Rule PHOENIX-BUG.0) |
+
+If the user asks to file a bug on a Phoenix Phase 2 board, redirect immediately to `phoenix-bug-reporter`.
