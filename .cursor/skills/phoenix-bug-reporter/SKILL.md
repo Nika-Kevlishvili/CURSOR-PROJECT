@@ -52,7 +52,7 @@ Use exactly this structure. All output in English.
 - No Browser field anywhere in the template
 - Technical details section: omit only if the bug is purely UI/visual with no API involved; otherwise it is mandatory
 - Example section: omit only when no concrete data is available; always include when an API call is involved
-- Summary label prefix: `[Backend]` for backend/API bugs, `[Frontend]` for UI-only bugs
+- Summary label prefix: `[Backend]` for backend/API bugs, `[Frontend]` for UI bugs, `[DB]` for database/schema/data bugs
 
 ---
 
@@ -105,7 +105,7 @@ The agent determines priority from the bug description. Do not ask the user for 
 
 | Field | Behavior |
 |-------|----------|
-| **`customfield_10103`** | **Full** Key details ADF at **Step 5a** create — all review-file content mapped per **Key details ADF template** (steps, actual/expected, env line, API block, optional Example `codeBlock`, optional screenshot after 5b via conditional **5c**). **`strong` + `textColor`** on section/API labels (exact hex below). |
+| **`customfield_10103`** | **Full** Tier 1 Key details ADF at **Step 5a** create — all review-file content mapped per **Key details ADF template** (Description + TL;DR first, body marks, steps, Actual `bulletList`, expected, env line, API `codeBlock` evidence, optional screenshot embed after **5b** via conditional **5c** when image provided — any Backend/Frontend/DB label). **`strong` + `textColor`** on section/API labels (exact hex below). |
 | **`description`** | **Not** part of authoring: omit or empty at **5a**. If create validation requires standard Description, retry **once** with **minimal stub** only (see Step 5a). **MUST NOT** write the full bug body to standard `description` on split-ADF boards. |
 
 Inline marks (`strong`, `textColor`, `code`) on the **standard `description`** field corrupt rendering (literal `{color:…}` / `*bold*`). Colored marks belong **only** on **`customfield_10103`**.
@@ -120,10 +120,13 @@ Inline marks (`strong`, `textColor`, `code`) on the **standard `description`** f
 
 ### Key details — label colors (exact hex, always bold + color)
 
-Every label uses **both** `{ "type": "strong" }` and `{ "type": "textColor", "attrs": { "color": "<hex>" } }` on the **label text node only**. Body paragraphs under a header use **no marks**.
+Every **section/API label** uses **both** `{ "type": "strong" }` and `{ "type": "textColor", "attrs": { "color": "<hex>" } }` on the **label text node only** — the label word itself is bold + colored; the value after `:` stays plain.
+
+On **`customfield_10103` (split ADF)**, body content under headers **MAY** use `strong` and `code` marks per **Body text formatting rules (customfield_10103 — split ADF)** below. This replaces the old rule that all body paragraphs under headers use no marks — that restriction applies only to **legacy** non-split `description`.
 
 | Key details label (exact text) | Hex |
 |-------------------------------|-----|
+| **Description:** | `#403294` |
 | **Reproduce Steps:** | `#00B8D9` |
 | **Actual Result:** | `#FF5630` |
 | **Expected Result:** | `#36B37E` |
@@ -132,8 +135,7 @@ Every label uses **both** `{ "type": "strong" }` and `{ "type": "textColor", "at
 | **Status** | `#5E6C84` |
 | **Payload** | `#5E6C84` |
 | **Response** | `#5E6C84` |
-
-Optional **context paragraph** from the review file **Description:** section: one unmarked paragraph **after Reproduce Steps header and before the `orderedList`**, or folded into **Actual Result** body — do not duplicate full markdown in standard `description`.
+| **Example** | `#5E6C84` |
 
 ### External Bug (standalone — project-specific)
 
@@ -169,7 +171,7 @@ When **bug class = External** and Step 0 stored **`externalProjectKey`** (e.g. *
 ```
 
 - Omit top-level **`description`** when MCP allows. On validation error requiring standard Description, retry **once** with minimal stub (see Step 5a).
-- **`customfield_10103`:** full Key details ADF at create — same structure as **Key details ADF template** (screenshot nodes usually added in conditional **5c** after **5b**).
+- **`customfield_10103`:** full Tier 1 Key details ADF at create — same structure as **Key details ADF template** (Description first, TL;DR, body marks, Actual bullets, API `codeBlock`s; screenshot `mediaSingle` nodes usually added in conditional **5c** after **5b** when user provided image(s) — Backend, Frontend, or DB).
 - Resolve required fields via `getJiraIssueTypeMetaWithFields` for **`externalProjectKey`** when create fails; never guess Epic or Fix version — ask the user. Field ids may differ by project (GB uses `customfield_10008`, `customfield_10095`, etc.).
 - **`reporter`:** same optional `additional_fields.reporter` rule as PHN; omit if Jira rejects.
 
@@ -280,20 +282,26 @@ Check what bug information the user has already provided. Required fields:
 | Field | Check |
 |-------|-------|
 | Summary (short description of problem) | Present? |
-| Description (short context paragraph) | Present? |
+| Description context (1–2 paragraphs for Key details) | Present? |
 | Steps to reproduce (numbered steps) | Present? |
 | Expected result | Present? |
-| Actual result | Present? |
-| Environment (Dev/Test/PreProd/Prod) | Present? |
+| Actual result — symptom (≥1 bullet candidate) | Present? |
+| Actual result — proof (payload/response/SQL excerpt) | Present when API/DB/backend bug? |
+| Actual result — scope (frequency, compare case) | Present when known? |
+| Environment (Dev/Dev2/Test/PreProd/Prod) | Present? |
 | Endpoint + Method | Present? (skip if UI-only bug) |
 | Payload | Present? (skip if UI-only bug) |
 | Response / error | Present? (skip if UI-only bug) |
 | Status code | Present? (skip if UI-only bug) |
 | Example | Present? (skip if no concrete data) |
-| Label (Backend / Frontend) | Infer from context or ask |
+| Label (Backend / Frontend / DB) | Infer from context or ask |
+| Screenshot(s) for visual evidence | Present? (UI, network tab, Postman, logs, SQL/DB grid — optional but collect when reporter has images) |
+
+**Tier 1 authoring (Option A):** Derive **Description TL;DR** from **Summary** automatically when drafting the review file — same technical problem statement; strip redundant `[Backend/Frontend/DB]` prefix in the body if Summary already carries the label.
 
 **If any required fields are missing:**
 - Ask up to 4 targeted questions covering all missing fields in one message
+- Prioritize missing proof/scope for API/DB/backend bugs; confirm screenshot(s) when reporter mentions visual evidence
 - Wait for user's answer before proceeding
 - Do not proceed to Step 2 with missing required fields
 
@@ -340,7 +348,7 @@ Where:
 | **Priority**  | <Highest / High / Medium / Low / Lowest> |
 | **Assignee**  | <display name, or — if not set> |
 | **Tester**    | <display name (from parent reporter), or — if not set> |
-| **Label**     | <Backend / Frontend> |
+| **Label**     | <Backend / Frontend / DB> |
 
 > Priority rationale: <one sentence explaining priority choice>
 
@@ -348,17 +356,22 @@ Where:
 
 ## Bug Content
 
-**Summary:** [Backend/Frontend] - <Component> - <Short problem>
+**Summary:** [Backend/Frontend/DB] - <Component> - <Short problem>
 
-**Description:**
-<paragraph>
+**Description TL;DR:**
+<one sentence — mirrors Summary, Option A>
+
+**Description context:**
+<1-2 paragraphs>
 
 **Steps to reproduce:**
 1. ...
 2. ...
 
 **Actual result:**
-<actual>
+- <symptom — required>
+- <proof — if available>
+- <scope — if available>
 
 **Expected result:**
 <expected>
@@ -368,34 +381,58 @@ Where:
 
 **Technical details:**
 - Endpoint: <METHOD /api/path>
+- Method: <METHOD>
+- Status: <status code>
 - Payload: <payload>
 - Response: <response>
-- Status: <status code>
 
 **Example:**
-<example>
+<JSON or compare block — renders as codeBlock in 10103>
+
+**Screenshots:**
+- Actual: <filename or —> (UI, API response, logs, SQL/DB result, etc.)
+- Expected: <filename or —>
+
+> When the user attached an image: write `Actual: —` on first save; set the filename **only after** the screenshot handoff gate verifies the destination file on disk.
 
 ---
 
 *Awaiting your response: **Agree** to submit to Jira, **Disagree** to request changes.*
 ```
 
-**Screenshot handling — copy to review folder (MANDATORY if user provided an image):**
+**Screenshot handoff gate (Step 3 — MANDATORY when user provided an image):**
 
-If the user attached an image in the current chat session, its path is shown in the `image_files` context block. Copy it to the same folder as the review file immediately after writing the review file:
+Run **immediately after** writing the review file and **before** displaying the clickable link or Step 4 Agree. Chat images live under Cursor `assets/` and may be ephemeral — the review-folder copy is the **durable** file Step **5b** uploads.
 
-1. Identify the full source path from `image_files` (e.g. `C:\Users\...\assets\..._image.png`)
-2. Define the destination: `<review-file-dir>\<review-basename>_screenshot.png`
-   - Example: review file = `BugReview_sp-contract_1430.md` → destination = `BugReview_sp-contract_1430_screenshot.png`
-3. Copy via Shell:
+**When `image_files` is present in the user message (user attached at least one image):**
+
+1. Identify the full source path from `image_files` (e.g. `C:\Users\...\assets\..._image.png`).
+2. **Actual** destination: `<review-file-dir>\<review-basename>_screenshot.png`
+3. **Expected** (only when a second image was attached): `<review-file-dir>\<review-basename>_screenshot_expected.png`
+4. Copy via Shell — **no** `-ErrorAction SilentlyContinue`; then **verify**:
 
 ```powershell
-Copy-Item "<source path>" -Destination "<review-dir>\<review-basename>_screenshot.png" -ErrorAction SilentlyContinue
+$src = "<source path from image_files — first image>"
+$dest = "<review-dir>\<review-basename>_screenshot.png"
+Copy-Item -LiteralPath $src -Destination $dest -Force
+if (-not (Test-Path -LiteralPath $dest) -or (Get-Item -LiteralPath $dest).Length -eq 0) {
+  Write-Error "Screenshot handoff failed: destination missing or empty."
+  exit 1
+}
 ```
 
-4. Note the destination path — Step 5b looks for it automatically by this naming convention.
+5. **On verify success:** Update the review file **Screenshots:** section — `Actual: <review-basename>_screenshot.png`. If second image copied and verified, set `Expected: <review-basename>_screenshot_expected.png`.
+6. **On verify failure:** **STOP** — do **not** display the Agree link or proceed to Step 4. Tell the user the copy failed and ask them to **re-attach the image in chat** or provide a local file path, then retry Step 3 copy. **MUST NOT** list a screenshot filename in the review file when the destination file does not exist on disk.
 
-If no image was provided in chat: skip this sub-step.
+**Gate rules (BLOCK):**
+
+- **MUST NOT** use `-ErrorAction SilentlyContinue` on screenshot copy.
+- **MUST NOT** write `Screenshots: Actual: <filename>` unless `Test-Path` on that destination succeeds and file size &gt; 0.
+- **MUST NOT** proceed to Step 4 Agree while user provided an image but Actual screenshot handoff failed.
+
+**When no image was provided in chat:** Set `Screenshots: Actual: —` and `Expected: —`; skip copy; proceed to Step 4.
+
+**Screenshot scope:** Not Frontend/UI-only. Valid evidence includes UI captures, browser network tab, Postman/Swagger response, application logs, SQL/query result grids, DB client views — embed under **Actual Result** (and **Expected Result** for second image) when upload succeeds at Step **5b** / embed at **5c**, for **any** Backend/Frontend/DB label.
 
 Write this file to disk using the file write tool. After writing:
 1. Display the review file as a **clickable markdown link** using the full absolute path so the user can open it directly in the IDE:
@@ -411,7 +448,7 @@ Review file: [BugReview_<slug>_<HHMM>.md](c:\Users\g.gamjashvili\new_cursor\CURS
 ### Step 4 — Agree / Disagree gate
 
 > **CRITICAL — APPROVAL AskQuestion (Step 4 only):**
-> This question may ONLY be asked after the review file has been written to disk (Step 3 complete) and the clickable link has been displayed. Use a standalone **AskQuestion** call for Agree/Disagree — do not batch it with unrelated questions in the same call.
+> This question may ONLY be asked after the review file has been written to disk (Step 3 complete), the **screenshot handoff gate** has passed when the user provided an image, and the clickable link has been displayed. Use a standalone **AskQuestion** call for Agree/Disagree — do not batch it with unrelated questions in the same call.
 
 After the review file link is shown, ask using **AskQuestion** with exactly **one question** and exactly **two options**:
 
@@ -460,7 +497,7 @@ This is a **mandatory sequence** executed in this exact order. Do NOT skip parts
 
 **Split ADF (Internal Bug or External Bug with `customfield_10103`):**
 
-Call `createJiraIssue` with **full colored Key details ADF** in **`additional_fields.customfield_10103`** (see **Key details ADF template**). Build ADF from **every** review-file section (steps, actual, expected, environment, technical details, example when present). Do NOT condense or summarize.
+Call `createJiraIssue` with **full Tier 1 colored Key details ADF** in **`additional_fields.customfield_10103`** (see **Key details ADF template**). Build ADF from **every** review-file section (Description TL;DR, context, steps, Actual bullets, expected, environment, technical details, example when present). Do NOT condense or summarize.
 
 - **`description`:** Omit or leave empty when MCP allows.
 - **Create validation fails** because standard Description is required: retry **once** with this **minimal stub** only (markdown or plain ADF per MCP):
@@ -561,13 +598,16 @@ Note the returned `key` (e.g. `PHN-3718`). Proceed immediately to Step 5b.
 
 > **Why before 5d / conditional 5c:** First create usually cannot include inline screenshot `mediaSingle` (no attachment yet). After **5b**, **5d** checks embed or fallback line; failure triggers **5c** patch on **`customfield_10103` only**.
 
+> **Screenshot scope:** Applies to **Backend**, **Frontend**, and **DB** bugs when the reporter provided image evidence (UI, network tab, Postman, logs, SQL/DB result, etc.). Not required when no image was provided.
+
 Check if a screenshot file exists at:
 
 ```
 <same directory as the review file>\<review-file-basename>_screenshot.png
+<same directory as the review file>\<review-file-basename>_screenshot_expected.png
 ```
 
-Also check common alternative extensions: `_screenshot.jpg`, `_screenshot.jpeg`, `_screenshot.webp`.
+Also check common alternative extensions: `_screenshot.jpg`, `_screenshot.jpeg`, `_screenshot.webp` (and `_screenshot_expected.*` for Expected).
 
 **If a screenshot file EXISTS:**
 
@@ -606,32 +646,68 @@ After a successful upload (exit **0**), call `getJiraIssue` on the same key with
 
 ---
 
-#### Key details ADF template (`customfield_10103`)
+#### Key details ADF template (`customfield_10103`) — Tier 1
 
 Used for **Internal Bug** and **External Bug** when split ADF applies. Build at **Step 5a** create and reuse for conditional **Step 5c** patches. Source: approved bug review file.
 
 **ADF structure rules (MUST — prevents GB-1772-style corruption):**
 
-- Each section is a **top-level** node in `content[]`: colored **header paragraph** first, then body (`orderedList` or plain `paragraph` nodes). **Never** start `content` with `orderedList` without the **Reproduce Steps:** header paragraph above it.
-- **Close the reproduce `orderedList` before** the **Actual Result:** header. Actual, Expected, screenshot, separator, and API lines are **siblings** after the list — **never** inside the last `listItem`.
-- API block lines are separate **paragraph** nodes after the `_________________` paragraph.
+- Each section is a **top-level** node in `content[]`: colored **header paragraph** first, then body (`paragraph`, `orderedList`, `bulletList`, `codeBlock`, or `mediaSingle` nodes). **Never** start `content` with `orderedList` without the **Description:** and **Reproduce Steps:** header paragraphs above them in order.
+- **Description:** block comes **first** — header → bold TL;DR paragraph → context paragraph(s). **Do not** fold Description into Reproduce Steps or Actual Result.
+- **Close the reproduce `orderedList` before** the **Actual Result:** header. Actual bullets, screenshot, Expected, Environment, separator, and API lines are **siblings** after the list — **never** inside the last `listItem`.
+- **Actual Result** uses ADF `bulletList` (Option B) — not a single paragraph for all actual content.
+- **Payload**, **Response**, and **Example** values use **`codeBlock`** nodes (not inline paragraphs with hard breaks).
+- API label lines (Endpoint, Method, Status) are separate **paragraph** nodes after the `_________________` paragraph; Payload/Response/Example label paragraphs precede their `codeBlock`.
 - On Step **5d** failure, conditional **5c** patches **`customfield_10103` only** (do not send `description`).
 
-Section order:
+**Mandatory section order for `customfield_10103`:**
 
-1. **Reproduce Steps:** — header (`#00B8D9`, strong + textColor) → optional unmarked context paragraph from review **Description:** → `orderedList` of all steps (unmarked step text).
-2. **Actual Result:** — header (`#FF5630`) → one or more unmarked paragraphs with full actual result text.
-3. **Screenshot (when Step 5b exit 0):** Prefer `mediaSingle` → `media` with `attrs.type: "file"`, `id: "<media-uuid-if-known>"`, `alt: "<ATTACHMENT_FILENAME>"`. If UUID unknown, unmarked paragraph: `Screenshot: <ATTACHMENT_FILENAME> (attached)`.
-4. **Expected Result:** — header (`#36B37E`) → unmarked paragraph(s).
-5. **Environment:** — unmarked paragraph(s) from review **Environment:** (e.g. `Environment: Dev2`). No separate colored header required unless team adds one later.
+1. **Description:** — header (`#403294`, strong + textColor) → **bold TL;DR** paragraph (entire paragraph `strong`, Option A — mirrors Summary) → context paragraph(s) with `strong`/`code` marks as needed.
+2. **Reproduce Steps:** — header (`#00B8D9`) → `orderedList` of all steps (step text may use `code` for technical values). **No** Description fold-in.
+3. **Actual Result:** — header (`#FF5630`) → `bulletList` (≥1 symptom bullet; optional proof/scope bullets) → optional `mediaSingle` **when Step 5b exit 0** (any label — UI, API, logs, SQL/DB evidence).
+4. **Expected Result:** — header (`#36B37E`) → paragraph(s) → optional `mediaSingle` when second screenshot uploaded (`*_screenshot_expected.png`).
+5. **Environment:** — unmarked paragraph(s) from review **Environment:** (e.g. `Environment: Dev2`).
 6. Plain paragraph: `_________________`
-7. API lines — each a single paragraph; label word with `#5E6C84` strong + textColor, value plain:
-   - `Endpoint: <METHOD /path>` — derive METHOD from Technical details (e.g. GET).
+7. API label lines — each a single paragraph; label word with `#5E6C84` strong + textColor, value plain:
+   - `Endpoint: <METHOD /path>`
    - `Method: <METHOD>`
    - `Status: <code and text>`
-   - `Payload: <payload>`
-   - `Response: <response>`
-8. **Example (when review file has Example):** unmarked paragraph `Example:` then `codeBlock` with `language: "json"` when JSON; plain `codeBlock` otherwise.
+8. **Payload** — label paragraph (`Payload` colored) → **`codeBlock`** (`language: "json"` when JSON).
+9. **Response** — label paragraph → **`codeBlock`**
+10. **Example** (when review file has Example): label paragraph → **`codeBlock`** (support `// FAILS` / `// WORKS` compare blocks).
+
+**Example header node (Description):**
+
+```json
+{
+  "type": "paragraph",
+  "content": [
+    {
+      "type": "text",
+      "text": "Description:",
+      "marks": [
+        { "type": "strong" },
+        { "type": "textColor", "attrs": { "color": "#403294" } }
+      ]
+    }
+  ]
+}
+```
+
+**Example TL;DR paragraph (Option A — entire sentence bold):**
+
+```json
+{
+  "type": "paragraph",
+  "content": [
+    {
+      "type": "text",
+      "text": "Reminder list returns empty when customer has active objection withdrawal.",
+      "marks": [ { "type": "strong" } ]
+    }
+  ]
+}
+```
 
 **Example header node (Reproduce Steps):**
 
@@ -648,6 +724,67 @@ Section order:
       ]
     }
   ]
+}
+```
+
+**Example Actual Result bulletList (Option B):**
+
+```json
+{
+  "type": "bulletList",
+  "content": [
+    {
+      "type": "listItem",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            { "type": "text", "text": "API returns " },
+            { "type": "text", "text": "200 OK", "marks": [ { "type": "code" } ] },
+            { "type": "text", "text": " with empty " },
+            { "type": "text", "text": "content[]", "marks": [ { "type": "code" } ] },
+            { "type": "text", "text": "." }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "listItem",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            { "type": "text", "text": "Proof: response body " },
+            { "type": "text", "text": "{\"totalElements\":0}", "marks": [ { "type": "code" } ] },
+            { "type": "text", "text": "." }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Example Payload label + codeBlock:**
+
+```json
+{
+  "type": "paragraph",
+  "content": [
+    {
+      "type": "text",
+      "text": "Payload",
+      "marks": [
+        { "type": "strong" },
+        { "type": "textColor", "attrs": { "color": "#5E6C84" } }
+      ]
+    }
+  ]
+},
+{
+  "type": "codeBlock",
+  "attrs": { "language": "json" },
+  "content": [ { "type": "text", "text": "{\n  \"customerId\": 12345\n}" } ]
 }
 ```
 
@@ -670,7 +807,7 @@ Section order:
 }
 ```
 
-**Example `mediaSingle` (when media UUID resolved after Step 5b):**
+**Example `mediaSingle` under Actual Result (when media UUID resolved after Step 5b — any Backend/Frontend/DB label):**
 
 ```json
 {
@@ -689,6 +826,20 @@ Section order:
   ]
 }
 ```
+
+Place **Actual** `mediaSingle` immediately after the Actual `bulletList`. Place **Expected** `mediaSingle` after Expected paragraph(s). If UUID unknown after **5b** exit 0, use unmarked fallback paragraph: `Screenshot: <ATTACHMENT_FILENAME> (attached)` — **5d** should fail embed criterion and trigger **5c** with full ADF including `mediaSingle` when UUID becomes available.
+
+**Body text formatting rules (customfield_10103 — split ADF):**
+
+1. **TL;DR (Option A):** Standalone paragraph immediately after **Description:** header; **entire paragraph** uses `{ "type": "strong" }` on all text nodes; text derived from Summary (strip `[Backend/Frontend/DB]` prefix if redundant in body).
+2. **Context:** 1–2 paragraphs after TL;DR; `strong` for feature/screen/component names (max ~3 terms per paragraph), `code` for Jira keys, IDs, formulas, endpoints, errors, field names.
+3. **Actual bullets (Option B):** After **Actual Result:** header, use ADF `bulletList`:
+   - **Required:** ≥1 bullet (symptom)
+   - **Optional:** proof bullet (exact payload/response/SQL with inline `code`)
+   - **Optional:** scope bullet (frequency, all cases, compare case)
+   - **Forbidden:** empty or invented filler bullets
+4. **Charset:** Use `→` in step/bullet text; never `?` as arrow substitute.
+5. **Screenshots:** When user provided image(s) and Step **5b** exit **0**, embed `mediaSingle` under **Actual Result** (and under **Expected Result** for second image) — **not** gated on Frontend label only.
 
 All review-file sections map into **`customfield_10103` only** on split-ADF boards — not into standard `description`.
 
@@ -711,13 +862,17 @@ Immediately after Step **5b** (before any **5c**), call:
 
 **Pass criteria for `renderedFields.customfield_10103`:**
 
-- HTML contains color markup for section headers (e.g. `color="#00B8D9"`, `color="#FF5630"`, or `<font color=` equivalents).
+- HTML contains color markup for section headers (e.g. `color="#403294"` for Description, `color="#00B8D9"`, `color="#FF5630"`, or `<font color=` equivalents).
+- **Description:** header appears **before** **Reproduce Steps:** (Tier 1 order).
+- Bold TL;DR visible under Description section (HTML `<strong>` immediately after Description header).
 - **Reproduce Steps:** header appears **before** the `<ol>` (not missing).
 - Reproduce steps present (`<ol>` or numbered content).
-- Actual and expected content present **outside** the last list item (no nested actual/expected inside `<li>`).
+- **Actual Result** uses `<ul>` (`bulletList`) — not only a single `<p>` for all actual content.
+- Actual and expected content present **outside** the last reproduce list item (no nested actual/expected inside `<li>`).
 - API block includes **Endpoint** and **Method** after the separator (not inside the list).
+- When review file had Payload/Response/Example: rendered HTML includes `<pre>` / code-block markup for those sections.
 - **Content coverage** vs approved review file (no dropped sections).
-- When Step **5b** exit **0**: screenshot **media** embed **or** fallback line naming `ATTACHMENT_FILENAME` appears in rendered Key details.
+- When Step **5b** exit **0** (any Backend/Frontend/DB label): screenshot **media** embed **or** fallback line naming `ATTACHMENT_FILENAME` appears under **Actual Result**; when second image uploaded, embed or fallback under **Expected Result**.
 
 **Standard `description` (split ADF):** Must be empty or stub-only (e.g. *Full details in Description formatted.*). If full duplicate markdown/HTML appears, treat as workflow violation — do not claim success until corrected manually or via a one-time stub trim (never add full body to `description` in **5c**).
 
@@ -735,7 +890,7 @@ Run **only when Step 5d verification fails** (or after second **5d** following f
 
 > **Forbidden:** formatting via Shell Jira REST `PUT`/`POST` — use **`editJiraIssue`** only. **`fields` must contain only `customfield_10103`** — no `description` key.
 
-Call `editJiraIssue` with full Key details ADF from the review file (include screenshot `mediaSingle` or fallback when **5b** succeeded):
+Call `editJiraIssue` with full Tier 1 Key details ADF from the review file (include screenshot `mediaSingle` or fallback under Actual/Expected when **5b** succeeded — any label):
 
 ```json
 {
@@ -1048,7 +1203,7 @@ The description must be formatted as Atlassian Document Format (ADF). Every sect
 ```
 
 **Rules:**
-- **Split ADF (Internal, External with 10103):** Colored Key details template → **`customfield_10103` only** at **5a** and conditional **5c**. **MUST NOT** write full bug body to standard **`description`**. Do not use the legacy colored template on split-ADF `description`.
+- **Split ADF (Internal, External with 10103):** Tier 1 colored Key details template → **`customfield_10103` only** at **5a** and conditional **5c** (Description first, Option A TL;DR, body marks, Option B Actual bullets, API `codeBlock`s, screenshot embed when **5b** succeeds). **MUST NOT** write full bug body to standard **`description`**. Do not use the legacy colored template on split-ADF `description`.
 - **Legacy Ph2 (no `customfield_10103`):** Colored-marks template applies to **`description` only** at **5c**.
 - Every section label paragraph contains ONLY the label text (bold + colored) — content follows in a separate node
 - Steps to reproduce → `orderedList`
@@ -1056,7 +1211,9 @@ The description must be formatted as Atlassian Document Format (ADF). Every sect
 - Example → `codeBlock` with `language: "json"` when the example is JSON; use plain `codeBlock` (no language) otherwise
 - Omit Technical details and Example nodes entirely when not applicable (UI-only bugs with no API)
 
-**Body text formatting rules (legacy colored `description` only — apply to all content paragraphs):**
+**Body text formatting rules (legacy colored `description` only — non-split boards; do NOT apply to `customfield_10103`):**
+
+Split-ADF **`customfield_10103`** uses **Body text formatting rules (customfield_10103 — split ADF)** in the Key details ADF template section above. The rules below apply **only** to legacy **`description`** ADF at Step **5c** on boards without `customfield_10103`.
 
 1. **Bold summary sentence** — insert a standalone bold paragraph immediately after the `Description:` header and immediately after the `Actual result:` header. One sentence that captures the core problem. Use `{ "type": "strong" }` mark on the entire sentence text node.
 
@@ -1114,6 +1271,7 @@ Reason: <1-2 sentences>
 | `createJiraIssue` fails — standard Description required | Retry **once** with minimal stub: summary line + `Full details in Description formatted.` — do not add full body |
 | `createJiraIssue` fails — empty/rejected `customfield_10103` | Retry once with minimal 10103 stub paragraph; then **5b** → **5d** → conditional **5c** with full ADF |
 | `createJiraIssue` MCP fails (other) | Show error to user; do not retry silently; ask user how to proceed |
+| Step 3 screenshot handoff fails (copy or verify — destination missing/empty) | **STOP** before Step 4; ask user to re-attach image or provide path; **MUST NOT** list screenshot filename in review file or proceed to Jira create until handoff passes |
 | Screenshot upload (Step 5b) script exits with code 1 (auth error) | **Notify user at end of workflow:** `⚠️ Screenshot upload failed: Jira API token authentication error. Check JIRA_EMAIL and JIRA_API_TOKEN in Cursor-Project/.env.` Proceed to **5d** without screenshot |
 | Screenshot upload (Step 5b) script exits with code 2 | Warn user to attach manually; include the file path and Jira ticket URL; proceed to **5d** without screenshot |
 | `editJiraIssue` (Step 5c legacy or conditional split) fails | Warn user that ADF formatting was not applied; do not skip silently |

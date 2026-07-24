@@ -1,218 +1,311 @@
----
-alwaysApply: false
-description: "Phoenix Bug Reporter — Phoenix Phase 2 Internal and External Bug reporting with mandatory approval gate. Rule PHOENIX-BUG.0."
-globs:
-  - ".cursor/agents/phoenix-bug-reporter.md"
-  - ".cursor/skills/phoenix-bug-reporter/**"
----
-
-# PHOENIX BUG REPORTER RULE [CRITICAL]
-
-## Rule PHOENIX-BUG.0: Phoenix Phase 2 Bug Reporting [CRITICAL]
-
-**Scope:** The `phoenix-bug-reporter` agent creates **Internal Bug** sub-tasks on Phoenix Phase 2 Jira boards and **External** standalone **Bug** issues on user-selected **allowed external** projects.
-
----
-
-### Bug class and allowed targets
-
-| Class | Issue type | Parent on create | Project |
-|-------|------------|------------------|---------|
-| **Internal (Ph2)** | Internal Bug | When parent provided | PHN or parent’s Ph2 `project.key` |
-| **External** | Bug | No | User-selected key from **external allowlist** (Step 0) |
-
-**Allowed internal:** PHN and other Ph2 delivery project keys (from parent or user when Internal, no parent).
-
-**Allowed external project keys (allowlist):** **`GB`** (GELA BARKALAIAS BOARD, board 86). Extend this list only by updating this rule and the SKILL together. GB is **not** auto-selected.
-
-**Board resolution:**
-- **External** intent → class External → **External project selection** (MCP `getVisibleJiraProjects` ∩ allowlist → **AskQuestion**). **MUST NOT** create on GB or any external project without user selection unless user already named that allowed key or board URL.
-- Parent on Ph2 without External intent → **Internal** with `parent`
-- Internal, no parent → ask Ph2 board
-- PDT, **Experiments**, or unlisted projects → **refuse; redirect**
-
----
-
-### Workflow entry — no pre-registration question
-
-The agent MUST begin at **Step 0** (class, board/project, sprint, tester, parent) without asking whether the bug is “valid for registration.” User consent for Jira is collected only in the **approval gate** below, after the review file exists. Hook `block-bugreview-unapproved-jira.ps1` enforces `# Bug Review — APPROVED` before `createJiraIssue` for Internal Bug.
-
----
-
-### Approval gate — ABSOLUTE REQUIREMENT
-
-**No Jira ticket may be created without explicit user approval.**
-
-The required sequence is:
-
-1. Draft the bug using the template from `.cursor/skills/phoenix-bug-reporter/SKILL.md`
-2. Save a **bug review file** to `Cursor-Project/reports/Bug Reports/YYYY/<month>/<DD>/BugReview_<slug>_<HHMM>.md`
-3. Display the file as a **clickable markdown link** — do NOT dump full content into chat
-4. Immediately ask using **AskQuestion**: "Is this bug ready to be reported on Jira?" → **Agree** / **Disagree**
-5. **On Agree** → call `createJiraIssue`
-
-**On Disagree:**
-- Do NOT delete the review file
-- Do NOT create a Jira ticket
-- Ask what needs to change
-- Edit the existing review file based on feedback
-- Show the updated clickable link
-- Re-ask the same Agree/Disagree question (loop until Agree or explicit cancel)
-
-Skipping the approval gate is a **BLOCK**.
-Displaying the full review file content in chat instead of the clickable link is a **MUST** violation.
-
----
-
-### Issue type
-
-- **Internal (Ph2):** **Internal Bug** (subtask, `hierarchyLevel: -1`). PHN issue type id: `10504`. Set `parent` when a parent ticket exists.
-- **External:** **Bug** (on selected `externalProjectKey`; GB issue type id `10004` when project is GB). No `parent`. Required create fields from **`getJiraIssueTypeMetaWithFields`** for that project — see SKILL **External Bug (standalone)**. **Full Key details ADF** in **`customfield_10103` at create (Step 5a)** when split ADF applies; standard **`description`** omitted or minimal stub only.
-
-If no parent ticket on Ph2 Internal: create standalone Internal Bug under the selected board.
-
----
-
-### Tester, reporter, and assignee
-
-#### Tester and reporter — always the current user (Option B, mandatory)
-
-**Regardless of whether a parent ticket is provided**, the tester and the Jira reporter are ALWAYS the current user running the bug reporter agent — never taken from the parent ticket's `fields.reporter`.
-
-**Resolution (MUST execute at the start of Step 0):**
-
-1. Read `JIRA_REPORTER_EMAIL` from `Cursor-Project/.env` (the reporter/tester's email — must exist; see `.env`)
-2. Call Jira user search: `GET .../rest/api/3/user/search?query=<JIRA_REPORTER_EMAIL>` with Basic auth using `JIRA_EMAIL:JIRA_API_TOKEN` (the token owner's credentials authenticate the search)
-3. Use returned `accountId` and `displayName` for:
-   - **Tester** field in the bug review file
-   - **Reporter** field in the `createJiraIssue` call (passed via `additional_fields.reporter.accountId`)
-4. If lookup fails → set tester = empty; omit reporter from `additional_fields`
-
-Setting reporter via `additional_fields` requires the API token owner to have "Modify Reporter" permission. If Jira returns a field-validation error for reporter, log it and continue — the ticket is still created under the token owner.
-
-Never use `fields.reporter` from the parent ticket as the tester. Violation is a **MUST**.
-
-#### Assignee — resolved from the matching chapter subtask
-
-When a parent ticket is provided **and bug class is Internal**, the assignee for the Internal Bug must be taken from the **chapter subtask** under the parent ticket that matches the bug's label — NOT from the parent ticket's own assignee field.
-
-**Matching rule:**
-
-| Bug label | Chapter subtask to look for |
-|-----------|----------------------------|
-| Frontend | Subtask whose `summary` contains `Frontend` |
-| Backend | Subtask whose `summary` contains `Backend` |
-| DB | Subtask whose `summary` contains `DB` or `Database` |
-
-**Resolution steps:**
-1. Read `fields.subtasks` from the parent ticket (each entry includes `key` and `fields.summary`)
-2. Match by label keyword in the subtask summary
-3. Call `getJiraIssue` on the matched subtask; use its `fields.assignee` as the bug's assignee
-4. If no matching subtask exists, or the matched subtask has no assignee → fall back to `fields.assignee` from the parent ticket itself
-5. If no parent ticket → assignee = empty
-
-The assignee must never be guessed or invented. If the chapter subtask exists but is unassigned, leave the Jira assignee field unset.
-
----
-
-### Priority
-
-Priority is **AI-determined** using the priority matrix. Never ask the user for priority.
-
-| Condition | Priority |
-|-----------|----------|
-| User says "blocker" | Highest |
-| Functional failure (feature broken, wrong result) | Highest |
-| Processual failure (wrong flow, incorrect status) | Highest |
-| Data integrity or security issue | Highest |
-| Feature partially broken — workaround exists | High |
-| Non-critical edge case, minor wrong behavior | Medium |
-| Cosmetic / label / text / alignment | Low |
-| No functional impact | Lowest |
-
----
-
-### Bug template rules
-
-- **Summary format:** `[Backend/Frontend] - <Component> - <Short problem>`
-- **Section order (mandatory):**
-  1. Summary
-  2. Description (short context paragraph)
-  3. Steps to reproduce
-  4. Actual result
-  5. Expected result
-  6. **Environment** (BEFORE Technical details)
-  7. Technical details (with Endpoint, Payload, Response, Status)
-  8. Example
-- **No Browser field** anywhere in the template
-- **Environment section** always appears before Technical details — violation is a **MUST**
-- **Technical details** section is mandatory for all API bugs; may be omitted only for pure UI/visual bugs with no API call
-- All content in English (Rule 0.7)
-
----
-
-### Jira MCP — cloudId
-
-```
-cloudId: ad451d5c-7331-46f8-9a47-f51dc8e6bbde
-host: https://oppa-support.atlassian.net
-```
-
----
-
-### Routing
-
-| User intent | Action |
-|-------------|--------|
-| Internal bug on PHN or Ph2 board | Use `phoenix-bug-reporter` — class Internal |
-| External bug (standalone) | Use `phoenix-bug-reporter` — class External; **AskQuestion** for allowed project after `getVisibleJiraProjects` |
-| Bug on Experiments board | Use `jira-bug` agent (Rule JIRA.0) |
-| Bug validation (is this a real bug?) | Use `bug-validator` agent (Rule 32) |
-| Phoenix Q&A | Use `phoenix-qa` agent (Rule 0.2) |
-
----
-
-### Relation to Rule JIRA.0
-
-Rule JIRA.0 (`jira_bug_agent.mdc`) governs the **Experiments board** workflow only. Rule PHOENIX-BUG.0 is a **separate, additional rule** for Phoenix Phase 2 board bugs. The two rules do not conflict — they cover different boards.
-
----
-
-### Ticket creation — mandatory sequence (order is critical)
-
-After user Agree, the agent MUST execute all steps in this exact order:
-
-1. **Step 5a** — `createJiraIssue` (obtain issue key).
-   - **Split ADF (Internal, External with 10103):** **full colored Key details ADF** in **`customfield_10103`**; standard **`description`** omitted or empty; **one** minimal stub retry if create requires Description. **MUST NOT** put full bug body in standard `description`.
-   - **Legacy Ph2 (no `customfield_10103`):** full markdown **`description`** only.
-2. **Step 5b** — upload screenshot **before verification**: run `attach-screenshot-to-jira.ps1` via Shell; capture `ATTACHMENT_FILENAME`, `ATTACHMENT_ID`, and related stdout lines; re-fetch issue attachments if needed for media embed; the script auto-converts WebP/BMP/TIFF to PNG
-3. **Step 5d (split ADF boards)** — `getJiraIssue` with `expand=renderedFields`; verify **`customfield_10103`** (colors, structure, content, screenshot when 5b succeeded). **Pass → skip 5c.**
-4. **Step 5c** — **Split ADF:** **conditional only** when **5d** fails — `editJiraIssue` with **`customfield_10103` only** (no `description` in payload); max two attempts; MCP only — no Shell REST issue update. **Legacy Ph2:** **mandatory** colored ADF on **`description`** after **5b**.
-
-**Why Step 5b before 5d:** Screenshot metadata must exist before verification and before optional **5c** embed.
-
-**Rationale:** Split ADF authoritative body is **Description formatted** (`customfield_10103`). Colored marks on standard **`description`** corrupt that panel. **5c** is not automatic on split ADF — only when **5d** fails (often once after **5b** for screenshot embed).
-
-**Screenshot format:** `attach-screenshot-to-jira.ps1` automatically converts non-PNG/JPG formats (WebP, BMP, TIFF, etc.) to PNG using `System.Drawing`. If conversion fails, the original file is uploaded as-is.
-
----
-
-### Compliance tiers
-
-- Skipping the approval gate before `createJiraIssue` → **BLOCK**
-- Creating a bug on an unlisted board/project → **BLOCK**
-- **External class:** skipping **External project selection** AskQuestion when user did not name an allowed key/URL → **MUST**
-- **External class:** auto-selecting GB without user choice → **MUST NOT**
-- Skipping screenshot upload (Step 5b) when the file exists → **MUST**
-- Skipping Step **5d** verification on split ADF boards → **MUST**
-- Running split-ADF **5c** when **5d** already passed → **MUST NOT** (avoid duplicate edits)
-- Skipping **legacy** `editJiraIssue` with `contentFormat: "adf"` (Step 5c) → **MUST**
-- Using Shell Jira REST to apply Step 5c formatting instead of `editJiraIssue` → **MUST**
-- Applying ADF (Step 5c legacy) before uploading screenshot (Step 5b) — wrong order → **MUST**
-- **Split ADF:** putting colored ADF marks on standard `description` → **MUST NOT** (corrupt or wrong panel)
-- **Split ADF:** writing full bug body to standard `description` at create or in **5c** → **MUST NOT**
-- **Split ADF:** including `description` in Step **5c** `editJiraIssue` payload → **MUST NOT**
-- Deleting the review file on rejection (instead of editing) → **MUST**
-- Missing Environment section before Technical details → **MUST**
-- Including Browser field in Environment → **MUST**
-- Asking user for priority instead of AI-determining it → **MUST**
+---
+
+alwaysApply: false
+
+description: "Phoenix Bug Reporter — Phoenix Phase 2 Internal and External Bug reporting with mandatory approval gate. Rule PHOENIX-BUG.0."
+
+globs:
+
+  - ".cursor/agents/phoenix-bug-reporter.md"
+
+  - ".cursor/skills/phoenix-bug-reporter/**"
+
+---
+
+# PHOENIX BUG REPORTER RULE [CRITICAL]
+
+## Rule PHOENIX-BUG.0: Phoenix Phase 2 Bug Reporting [CRITICAL]
+
+**Scope:** The `phoenix-bug-reporter` agent creates **Internal Bug** sub-tasks on Phoenix Phase 2 Jira boards and **External** standalone **Bug** issues on user-selected **allowed external** projects.
+
+---
+
+### Bug class and allowed targets
+
+| Class | Issue type | Parent on create | Project |
+
+|-------|------------|------------------|---------|
+
+| **Internal (Ph2)** | Internal Bug | When parent provided | PHN or parent’s Ph2 `project.key` |
+
+| **External** | Bug | No | User-selected key from **external allowlist** (Step 0) |
+
+**Allowed internal:** PHN and other Ph2 delivery project keys (from parent or user when Internal, no parent).
+
+**Allowed external project keys (allowlist):** **`GB`** (GELA BARKALAIAS BOARD, board 86). Extend this list only by updating this rule and the SKILL together. GB is **not** auto-selected.
+
+**Board resolution:**
+
+- **External** intent → class External → **External project selection** (MCP `getVisibleJiraProjects` ∩ allowlist → **AskQuestion**). **MUST NOT** create on GB or any external project without user selection unless user already named that allowed key or board URL.
+
+- Parent on Ph2 without External intent → **Internal** with `parent`
+
+- Internal, no parent → ask Ph2 board
+
+- PDT, **Experiments**, or unlisted projects → **refuse; redirect**
+
+---
+
+### Workflow entry — no pre-registration question
+
+The agent MUST begin at **Step 0** (class, board/project, sprint, tester, parent) without asking whether the bug is “valid for registration.” User consent for Jira is collected only in the **approval gate** below, after the review file exists. Hook `block-bugreview-unapproved-jira.ps1` enforces `# Bug Review — APPROVED` before `createJiraIssue` for Internal Bug.
+
+---
+
+### Approval gate — ABSOLUTE REQUIREMENT
+
+**No Jira ticket may be created without explicit user approval.**
+
+The required sequence is:
+
+1. Draft the bug using the template from `.cursor/skills/phoenix-bug-reporter/SKILL.md`
+
+2. Save a **bug review file** to `Cursor-Project/reports/Bug Reports/YYYY/<month>/<DD>/BugReview_<slug>_<HHMM>.md`
+
+3. Display the file as a **clickable markdown link** — do NOT dump full content into chat
+
+4. Immediately ask using **AskQuestion**: "Is this bug ready to be reported on Jira?" → **Agree** / **Disagree**
+
+5. **On Agree** → call `createJiraIssue`
+
+**On Disagree:**
+
+- Do NOT delete the review file
+
+- Do NOT create a Jira ticket
+
+- Ask what needs to change
+
+- Edit the existing review file based on feedback
+
+- Show the updated clickable link
+
+- Re-ask the same Agree/Disagree question (loop until Agree or explicit cancel)
+
+Skipping the approval gate is a **BLOCK**.
+
+Displaying the full review file content in chat instead of the clickable link is a **MUST** violation.
+
+---
+
+### Issue type
+
+- **Internal (Ph2):** **Internal Bug** (subtask, `hierarchyLevel: -1`). PHN issue type id: `10504`. Set `parent` when a parent ticket exists.
+
+- **External:** **Bug** (on selected `externalProjectKey`; GB issue type id `10004` when project is GB). No `parent`. Required create fields from **`getJiraIssueTypeMetaWithFields`** for that project — see SKILL **External Bug (standalone)**. **Full Key details ADF** in **`customfield_10103` at create (Step 5a)** when split ADF applies; standard **`description`** omitted or minimal stub only.
+
+If no parent ticket on Ph2 Internal: create standalone Internal Bug under the selected board.
+
+---
+
+### Tester, reporter, and assignee
+
+#### Tester and reporter — always the current user (Option B, mandatory)
+
+**Regardless of whether a parent ticket is provided**, the tester and the Jira reporter are ALWAYS the current user running the bug reporter agent — never taken from the parent ticket's `fields.reporter`.
+
+**Resolution (MUST execute at the start of Step 0):**
+
+1. Read `JIRA_REPORTER_EMAIL` from `Cursor-Project/.env` (the reporter/tester's email — must exist; see `.env`)
+
+2. Call Jira user search: `GET .../rest/api/3/user/search?query=<JIRA_REPORTER_EMAIL>` with Basic auth using `JIRA_EMAIL:JIRA_API_TOKEN` (the token owner's credentials authenticate the search)
+
+3. Use returned `accountId` and `displayName` for:
+
+   - **Tester** field in the bug review file
+
+   - **Reporter** field in the `createJiraIssue` call (passed via `additional_fields.reporter.accountId`)
+
+4. If lookup fails → set tester = empty; omit reporter from `additional_fields`
+
+Setting reporter via `additional_fields` requires the API token owner to have "Modify Reporter" permission. If Jira returns a field-validation error for reporter, log it and continue — the ticket is still created under the token owner.
+
+Never use `fields.reporter` from the parent ticket as the tester. Violation is a **MUST**.
+
+#### Assignee — resolved from the matching chapter subtask
+
+When a parent ticket is provided **and bug class is Internal**, the assignee for the Internal Bug must be taken from the **chapter subtask** under the parent ticket that matches the bug's label — NOT from the parent ticket's own assignee field.
+
+**Matching rule:**
+
+| Bug label | Chapter subtask to look for |
+
+|-----------|----------------------------|
+
+| Frontend | Subtask whose `summary` contains `Frontend` |
+
+| Backend | Subtask whose `summary` contains `Backend` |
+
+| DB | Subtask whose `summary` contains `DB` or `Database` |
+
+**Resolution steps:**
+
+1. Read `fields.subtasks` from the parent ticket (each entry includes `key` and `fields.summary`)
+
+2. Match by label keyword in the subtask summary
+
+3. Call `getJiraIssue` on the matched subtask; use its `fields.assignee` as the bug's assignee
+
+4. If no matching subtask exists, or the matched subtask has no assignee → fall back to `fields.assignee` from the parent ticket itself
+
+5. If no parent ticket → assignee = empty
+
+The assignee must never be guessed or invented. If the chapter subtask exists but is unassigned, leave the Jira assignee field unset.
+
+---
+
+### Priority
+
+Priority is **AI-determined** using the priority matrix. Never ask the user for priority.
+
+| Condition | Priority |
+
+|-----------|----------|
+
+| User says "blocker" | Highest |
+
+| Functional failure (feature broken, wrong result) | Highest |
+
+| Processual failure (wrong flow, incorrect status) | Highest |
+
+| Data integrity or security issue | Highest |
+
+| Feature partially broken — workaround exists | High |
+
+| Non-critical edge case, minor wrong behavior | Medium |
+
+| Cosmetic / label / text / alignment | Low |
+
+| No functional impact | Lowest |
+
+---
+
+### Bug template rules
+
+- **Summary format:** `[Backend/Frontend] - <Component> - <Short problem>`
+
+- **Section order (mandatory):**
+
+  1. Summary
+
+  2. Description (short context paragraph)
+
+  3. Steps to reproduce
+
+  4. Actual result
+
+  5. Expected result
+
+  6. **Environment** (BEFORE Technical details)
+
+  7. Technical details (with Endpoint, Payload, Response, Status)
+
+  8. Example
+
+- **No Browser field** anywhere in the template
+
+- **Environment section** always appears before Technical details — violation is a **MUST**
+
+- **Technical details** section is mandatory for all API bugs; may be omitted only for pure UI/visual bugs with no API call
+
+- All content in English (Rule 0.7)
+
+---
+
+### Jira MCP — cloudId
+
+```
+
+cloudId: ad451d5c-7331-46f8-9a47-f51dc8e6bbde
+
+host: https://oppa-support.atlassian.net
+
+```
+
+---
+
+### Routing
+
+| User intent | Action |
+
+|-------------|--------|
+
+| Internal bug on PHN or Ph2 board | Use `phoenix-bug-reporter` — class Internal |
+
+| External bug (standalone) | Use `phoenix-bug-reporter` — class External; **AskQuestion** for allowed project after `getVisibleJiraProjects` |
+
+| Bug on Experiments board | Use `jira-bug` agent (Rule JIRA.0) |
+
+| Bug validation (is this a real bug?) | Use `bug-validator` agent (Rule 32) |
+
+| Phoenix Q&A | Use `phoenix-qa` agent (Rule 0.2) |
+
+---
+
+### Relation to Rule JIRA.0
+
+Rule JIRA.0 (`jira_bug_agent.mdc`) governs the **Experiments board** workflow only. Rule PHOENIX-BUG.0 is a **separate, additional rule** for Phoenix Phase 2 board bugs. The two rules do not conflict — they cover different boards.
+
+---
+
+### Ticket creation — mandatory sequence (order is critical)
+
+After user Agree, the agent MUST execute all steps in this exact order:
+
+1. **Step 5a** — `createJiraIssue` (obtain issue key).
+
+   - **Split ADF (Internal, External with 10103):** **full Tier 1 colored Key details ADF** in **`customfield_10103`** (Description first, Option A TL;DR, Option B Actual bullets, API `codeBlock` evidence, screenshot embed when **5b** succeeds — any Backend/Frontend/DB label); standard **`description`** omitted or empty; **one** minimal stub retry if create requires Description. **MUST NOT** put full bug body in standard `description`.
+
+   - **Legacy Ph2 (no `customfield_10103`):** full markdown **`description`** only.
+
+2. **Step 5b** — upload screenshot **before verification**: run `attach-screenshot-to-jira.ps1` via Shell; capture `ATTACHMENT_FILENAME`, `ATTACHMENT_ID`, and related stdout lines; re-fetch issue attachments if needed for media embed; the script auto-converts WebP/BMP/TIFF to PNG
+
+3. **Step 5d (split ADF boards)** — `getJiraIssue` with `expand=renderedFields`; verify **`customfield_10103`** Tier 1 structure (Description + TL;DR, Actual bullets, API codeBlocks, colors, content, screenshot when **5b** succeeded — any label). **Pass → skip 5c.**
+
+4. **Step 5c** — **Split ADF:** **conditional only** when **5d** fails — `editJiraIssue` with **`customfield_10103` only** (no `description` in payload); max two attempts; MCP only — no Shell REST issue update. **Legacy Ph2:** **mandatory** colored ADF on **`description`** after **5b**.
+
+**Why Step 5b before 5d:** Screenshot metadata must exist before verification and before optional **5c** embed.
+
+**Rationale:** Split ADF authoritative body is **Description formatted** (`customfield_10103`). **`customfield_10103` MUST follow Tier 1 Key details template** — Description first, Option A TL;DR, Option B Actual bullets, API `codeBlock` evidence, screenshot embed when **5b** succeeds (any Backend/Frontend/DB label; not UI-only). Colored marks on standard **`description`** corrupt that panel. **5c** is not automatic on split ADF — only when **5d** fails (often once after **5b** for screenshot embed).
+
+**Screenshot format:** `attach-screenshot-to-jira.ps1` automatically converts non-PNG/JPG formats (WebP, BMP, TIFF, etc.) to PNG using `System.Drawing`. If conversion fails, the original file is uploaded as-is.
+
+---
+
+### Compliance tiers
+
+- Skipping the approval gate before `createJiraIssue` → **BLOCK**
+
+- Creating a bug on an unlisted board/project → **BLOCK**
+
+- **External class:** skipping **External project selection** AskQuestion when user did not name an allowed key/URL → **MUST**
+
+- **External class:** auto-selecting GB without user choice → **MUST NOT**
+
+- Skipping screenshot upload (Step 5b) when the file exists → **MUST**
+
+- Skipping Step **5d** verification on split ADF boards → **MUST**
+
+- Running split-ADF **5c** when **5d** already passed → **MUST NOT** (avoid duplicate edits)
+
+- Skipping **legacy** `editJiraIssue` with `contentFormat: "adf"` (Step 5c) → **MUST**
+
+- Using Shell Jira REST to apply Step 5c formatting instead of `editJiraIssue` → **MUST**
+
+- Applying ADF (Step 5c legacy) before uploading screenshot (Step 5b) — wrong order → **MUST**
+
+- **Split ADF:** putting colored ADF marks on standard `description` → **MUST NOT** (corrupt or wrong panel)
+
+- **Split ADF:** writing full bug body to standard `description` at create or in **5c** → **MUST NOT**
+
+- **Split ADF:** including `description` in Step **5c** `editJiraIssue` payload → **MUST NOT**
+
+- Deleting the review file on rejection (instead of editing) → **MUST**
+
+- Missing Environment section before Technical details → **MUST**
+
+- Including Browser field in Environment → **MUST**
+
+- Asking user for priority instead of AI-determining it → **MUST**
+
+- Step 3 screenshot handoff: using `-ErrorAction SilentlyContinue` on copy, listing a screenshot filename without verified destination on disk, or proceeding to Step 4 Agree when user provided an image but handoff failed → **BLOCK**
