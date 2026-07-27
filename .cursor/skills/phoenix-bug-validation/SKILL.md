@@ -146,9 +146,60 @@ Gather DB evidence to strengthen or clarify conclusions. Use the **same environm
 
 **Report section:** Include `### Database Investigation` with environment, classification, queries executed, findings, evidence impact.
 
+### Step 4c: Elasticsearch Log Analysis [RECOMMENDED]
+
+Search application logs via Elasticsearch to find runtime evidence of the reported bug — stack traces, error patterns, relevant operations, and timing.
+
+**Environment → MCP mapping (Rule ES.0):**
+
+| Resolved env | Elasticsearch MCP server | `environment` param |
+|---|---|---|
+| dev | `ElasticsearchDev` | `dev` |
+| dev2 | `ElasticsearchDev` | `dev2` |
+| test | `ElasticsearchTest` | `test` |
+| preprod | `ElasticsearchTest` | `preprod` |
+| prod / experiments | Not configured — skip, document `elasticsearch_investigation=not_available` |
+
+Two clusters serve paired environments: **ElasticsearchDev** (Dev+Dev2, HTTPS with API key) and **ElasticsearchTest** (Test+PreProd, HTTP without auth). Both use the same `app_name` filtering: primary env = base names (`phoenix`, `phoenix-scheduler`, ...), secondary env = names with `2` suffix (`phoenix2`, `phoenix-scheduler2`, ...).
+
+**4c.1 — Error summary (broad scan):**
+- Call `es_error_summary(environment=<env>, search_text=<bug domain keywords>, days_back=7)` to get top ERROR groups by logger_name.
+- Identify error patterns related to the bug's scope (service, entity type, endpoint).
+
+**4c.2 — Targeted log search (specific evidence):**
+- Call `es_search_logs(environment=<env>, search_text=<specific terms>, level="ERROR")` to get detailed log entries.
+- Search terms to try (combine as needed):
+  - Entity identifiers from the ticket (invoice ID, contract ID, billing ID, etc.) — use `extra_filters` for exact field matches when IDs are known (e.g. `extra_filters='{"invoiceId": "123"}'`).
+  - Error messages or exception names from the bug report.
+  - Endpoint or operation names (`RequestURI`, `operation` fields).
+  - Service/logger names relevant to the bug's domain.
+- Expand search to WARN level if ERROR yields no results.
+- Adjust `days_back` if the bug report references a specific time window.
+
+**4c.3 — Stack trace analysis:**
+- When error logs contain `stack_trace`, analyze for root cause indicators: null pointers, constraint violations, timeout exceptions, authentication failures, etc.
+- Cross-reference with code findings from Step 4 — do the stack traces point to the same code paths?
+
+**4c.4 — Pattern and frequency analysis:**
+- Note error frequency and timing patterns (intermittent vs constant, correlated with specific operations).
+- Check if the errors started at a specific date (potential deployment correlation).
+- Look for related log entries around the same timestamp (preceding operations, subsequent effects).
+
+**Classification:** `supports_bug` | `contradicts_bug` | `reveals_root_cause` | `no_relevant_logs` | `investigation_failed` | `not_available`.
+
+**Failure handling:** Retry once on connection error. If Elasticsearch is unreachable or the MCP server is not configured for the target environment, document `elasticsearch_investigation=failed` or `elasticsearch_investigation=not_available` and continue to verdict. ES failure does **not** block verdict — it reduces confidence.
+
+**Report section:** Include **`### Elasticsearch Log Analysis`** with:
+- Environment and time range searched
+- Classification
+- Error summary (top error groups relevant to the bug)
+- Key log entries (timestamps, messages, stack traces — truncate large traces)
+- Log-based findings and their impact on the bug analysis
+- Correlation with code analysis (Step 4) and DB evidence (Step 4b)
+
 ### Step 5: Apply 5-Verdict Decision Matrix
 
-Use **Confluence classification + code analysis + database evidence**, with **Swagger** as supporting contract evidence when the bug is API-shaped. Allowed **after** Steps 0–4b are executed to the extent possible; if Step 2 ends in **`PROCESS BLOCKED`**, do **not** issue a business verdict.
+Use **Confluence classification + code analysis + database evidence + Elasticsearch logs**, with **Swagger** as supporting contract evidence when the bug is API-shaped. Allowed **after** Steps 0–4c are executed to the extent possible; if Step 2 ends in **`PROCESS BLOCKED`**, do **not** issue a business verdict.
 
 - **VALID**: Exact Confluence match + code confirms reported faulty behavior (Swagger may strengthen contract-level claims; DB may confirm faulty data state).
 - **NEEDS CLARIFICATION**: Contextual Confluence match + code confirms reported behavior (DB may reveal edge cases or data patterns).
@@ -162,7 +213,7 @@ Use **Confluence classification + code analysis + database evidence**, with **Sw
 - DB findings are **supporting evidence**, not overriding — code + Confluence remain primary for behavior rules.
 
 **Report section order (chat + Slack + optional disk):**  
-`### Reproduce steps` → `### Diagrams used in this validation` → `### Expected behavior` → **`### Confluence evidence (decision basis)`** → Swagger → Code → **Database Investigation** → **`### Quality Findings (Senior QA)`** (Rule QA.2 — mismatches, doc gaps, Swagger drift even when verdict is clear) → Verdict → Next steps → Evidence checklist → Confidence.
+`### Reproduce steps` → `### Diagrams used in this validation` → `### Expected behavior` → **`### Confluence evidence (decision basis)`** → Swagger → Code → **Database Investigation** → **`### Elasticsearch Log Analysis`** → **`### Quality Findings (Senior QA)`** (Rule QA.2 — mismatches, doc gaps, Swagger drift even when verdict is clear) → Verdict → Next steps → Evidence checklist → Confidence.
 
 ### Step 6: Results (chat + Slack; optional file)
 
