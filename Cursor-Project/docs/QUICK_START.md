@@ -1,160 +1,62 @@
-# სწრაფი დაწყება / Quick Start Guide
+# Quick Start — New Machine Setup
 
-ეს გზამკვლევი დაგეხმარებათ სწრაფად დააყენოთ პროექტი ახალ კომპიუტერზე.
+Onboard this workspace on a new Windows computer.
 
-This guide will help you quickly set up the project on a new computer.
+## Prerequisites (manual)
 
----
+1. **Clone** this repo from GitHub and open the folder in Cursor.
+2. Install **Node.js LTS + npm**.
+3. Install Cursor extensions manually:
+   - PowerShell (`ms-vscode.powershell`)
+   - Playwright Test for VSCode (Modified) (`custom.playwright-custom` VSIX)
+4. GitLab access / VPN for Phoenix repos (`git.domain.internal`).
 
-## ⚡ 3-ნაბიჯიანი Setup (მაქსიმალურად მარტივი)
+See [`Cursor Setup/extensions.json`](../Cursor%20Setup/extensions.json) for the full manual vs script-install lists.
 
-### 1. Clone პროექტი GitHub-დან
+## Run the setup script
+
+From the workspace root (folder that contains `Cursor-Project/` and `.gitmodules`):
+
 ```powershell
-git clone https://github.com/Nika-Kevlishvili/cursor-project.git
-cd cursor-project
+.\.cursor\commands\setup-new-machine.ps1
 ```
 
-### 2. გაუშვით Setup Script
+This will:
+
+- Clone / init all submodules (EnergoTS + Phoenix repos)
+- Create `Cursor-Project/.env` and `Cursor-Project/EnergoTS/.env` from `Cursor Setup/env.example`
+- Write MCP servers into `%USERPROFILE%\.cursor\mcp.json` from `Cursor Setup/mcp_content.txt`
+- Install marketplace extensions listed under `scriptInstall`
+- Verify layout, remotes, env, MCP, and extensions
+
+Full options: [`.cursor/commands/setup-new-machine.md`](../../.cursor/commands/setup-new-machine.md)
+
 ```powershell
-.\setup.ps1
+.\.cursor\commands\setup-new-machine.ps1 -VerifyOnly
+.\.cursor\commands\setup-new-machine.ps1 -GitLabToken <token>
 ```
 
-ეს ავტომატურად:
-- ✅ შექმნის .env ფაილს
-- ✅ დააინსტალირებს Python dependencies
-- ✅ შეამოწმებს Java
+## After setup
 
-### 3. Credentials და Verification
-```powershell
-# შეავსეთ .env ფაილი credentials-ით
-notepad .env
+1. Restart Cursor and confirm MCP (Confluence, Jira, PostgreSQL*).
+2. Review both `.env` files (portal, Jira, Slack, client credentials).
+3. Optional: `git config core.hooksPath Cursor-Project/scripts/git-hooks`
 
-# Load environment variables
-.\load_environment.ps1
+## Checklist
 
-# შემოწმება
-.\verify_setup.ps1
-```
+- [ ] Repo cloned and opened in Cursor
+- [ ] Node.js / npm installed
+- [ ] PowerShell + Playwright Modified extensions installed
+- [ ] `setup-new-machine.ps1` exit code `0` (or `2` reviewed)
+- [ ] MCP servers visible after Cursor restart
+- [ ] `.env` files reviewed
+- [ ] EnergoTS on `cursor` branch
+- [ ] Phoenix folders under `Cursor-Project/Phoenix/*`
 
-**მზადაა!** ✅
+## Related docs
 
----
+- [README.md](../README.md)
+- [ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md)
+- [Cursor Setup/](../Cursor%20Setup/) — `env.example`, `mcp_content.txt`, `extensions.json`
 
-## 📋 დეტალური Setup (თუ საჭიროა)
-
-### Requirements
-
-- **Python 3.8+** - [Download](https://www.python.org/downloads/)
-- **Java 17+** - [Download](https://adoptium.net/)
-- **PowerShell 5.1+** (Windows-ზე ჩვეულებრივ უკვე არის)
-
-### Step-by-Step
-
-#### 1. Python Environment
-```powershell
-# Create virtual environment
-python -m venv venv
-
-# Activate (Windows)
-venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-#### 2. Environment Variables
-```powershell
-# .env ფაილი უკვე შექმნილია setup.ps1-ით
-# შეავსეთ credentials-ით
-notepad .env
-
-# Load environment variables
-.\load_environment.ps1
-```
-
-**საჭირო Environment Variables:**
-- `GITLAB_URL`, `GITLAB_TOKEN`, `GITLAB_PROJECT_ID`
-- `JIRA_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_PROJECT_KEY`
-- `POSTMAN_API_KEY`, `POSTMAN_WORKSPACE_ID`
-- `CONFLUENCE_URL` (optional)
-
-#### 3. Java/Gradle
-```powershell
-cd phoenix-core-lib
-.\gradlew.bat build
-```
-
-#### 4. Verification
-```powershell
-# Run verification script
-.\verify_setup.ps1
-
-# Optional: confirm Cursor rules folder exists (repo root = folder that contains .cursor/)
-Test-Path .cursor\rules
-```
-
----
-
-## 🚨 Troubleshooting
-
-### Python არ მოიძებნება
-```powershell
-# შეამოწმეთ Python ინსტალირებულია თუ არა
-python --version
-
-# თუ არა, დააინსტალირეთ: https://www.python.org/downloads/
-```
-
-### Java არ მოიძებნება
-```powershell
-# შეამოწმეთ Java
-java -version
-
-# თუ არა, დააინსტალირეთ Java 17+: https://adoptium.net/
-```
-
-### Environment Variables არ მუშაობს
-```powershell
-# შეამოწმეთ .env ფაილი
-Test-Path .env
-
-# თუ არ არსებობს
-.\setup_environment.ps1
-
-# Load environment variables
-.\load_environment.ps1
-```
-
-### Cursor rules / workspace
-```powershell
-# This project uses .cursor/rules — not a Python agents package under Cursor-Project/agents/
-Get-ChildItem .cursor\rules -Recurse -Filter *.mdc -ErrorAction SilentlyContinue | Select-Object -First 5 FullName
-```
-If you maintain **separate** Python automation, use that project’s own venv and imports — see **`docs/HISTORICAL_PYTHON_AGENTS_PACKAGE.md`** for legacy doc list.
-
----
-
-## 📚 დამატებითი რესურსები
-
-- [README.md](README.md) - პროექტის აღწერა
-- [ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md) - Environment variables დეტალები
-
----
-
-## ✅ Setup Checklist
-
-- [ ] Python 3.8+ ინსტალირებულია
-- [ ] Java 17+ ინსტალირებულია
-- [ ] პროექტი clone/copy-ია
-- [ ] Virtual environment შექმნილია
-- [ ] Dependencies ინსტალირებულია
-- [ ] .env ფაილი შექმნილია
-- [ ] Environment variables დაყენებულია
-- [ ] `verify_setup.ps1` გაშვებულია და ყველაფერი OK-ია
-- [ ] Python agents მუშაობს
-- [ ] Gradle build მუშაობს
-
----
-
-**ბოლო განახლება / Last Updated:** 2025-01-14
-
+**Last Updated:** 2026-07-27

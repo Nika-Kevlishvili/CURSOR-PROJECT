@@ -1,17 +1,27 @@
 {
-  "recommendations": [
-    "vscjava.vscode-java-debug",
-    "vscjava.vscode-java-pack",
-    "vscjava.vscode-gradle",
+  "manualInstall": {
+    "runtime": ["Node.js LTS + npm"],
+    "extensions": [
+      "ms-vscode.powershell",
+      "custom.playwright-custom"
+    ],
+    "notes": [
+      "Install npm/Node before running the setup script (MCP PostgreSQL uses npx).",
+      "Playwright Test for VSCode (Modified) is a custom VSIX — install manually; not on Marketplace.",
+      "PowerShell extension: install manually before or after the script."
+    ]
+  },
+  "scriptInstall": [
     "redhat.java",
-    "vscjava.vscode-maven",
+    "vscjava.vscode-java-pack",
+    "vscjava.vscode-java-debug",
     "vscjava.vscode-java-dependency",
-    "ms-playwright.playwright",
-    "custom.playwright-custom",
-    "ms-vscode.powershell",
+    "vscjava.vscode-java-test",
+    "vscjava.vscode-maven",
+    "vscjava.vscode-gradle",
     "ms-python.python",
     "ms-python.debugpy",
-    "anysphere.cursorpyright"
+    "anysphere.cursorpyright",
+    "christian-kohler.npm-intellisense"
   ]
 }
-

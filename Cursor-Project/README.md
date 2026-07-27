@@ -23,9 +23,19 @@ Cursor-Project/
 
 ## Quick Start
 
-### Cursor IDE Setup
+### New machine (recommended)
 
-After cloning or transferring the project, see `Cursor Setup/` for MCP configuration and environment variables.
+1. Clone this repo from GitHub; open it in Cursor.
+2. Install **Node.js/npm**, **PowerShell** extension, and **Playwright Test (Modified)** manually.
+3. Run:
+
+```powershell
+.\.cursor\commands\setup-new-machine.ps1
+```
+
+The script clones all submodules, copies `.env` from `Cursor Setup/env.example`, writes MCP config to `%USERPROFILE%\.cursor\mcp.json`, installs marketplace extensions, and verifies layout.
+
+Details: [`docs/QUICK_START.md`](docs/QUICK_START.md) · [`.cursor/commands/setup-new-machine.md`](../.cursor/commands/setup-new-machine.md) · templates in `Cursor Setup/`.
 
 ### Git hooks (recommended)
 
@@ -37,12 +47,11 @@ This enables:
 - **commit-msg** — enforces conventional commit format (`feat:`, `fix:`, `docs:`, etc.)
 - **pre-commit** — runs `validate-cursor-rules.ps1` when `.cursor/rules/**/*.mdc` files change
 
-### Phoenix submodule setup
+### Phoenix submodules
 
-Phoenix repos use placeholder URLs (`git.domain.internal`) in `.gitmodules`. Before initializing submodules, replace with your internal git host:
+URLs in `.gitmodules` use `git.domain.internal`. Prefer `setup-new-machine.ps1` (optional `-GitLabToken`). Manual alternative:
 
 ```bash
-git submodule foreach 'git remote set-url origin $(echo $url | sed s/git.domain.internal/YOUR_HOST/)'
 git submodule update --init --recursive
 ```
 
@@ -74,4 +83,4 @@ Requires Java 17+. Gradle wrapper included.
 
 ---
 
-**Last Updated**: 2026-05-13
+**Last Updated**: 2026-07-27
