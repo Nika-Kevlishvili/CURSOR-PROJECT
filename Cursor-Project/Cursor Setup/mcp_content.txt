@@ -1,33 +1,11 @@
 {
   "mcpServers": {
-    "ElasticsearchDev": {
-      "command": "python3",
-      "args": [
-        "/Users/lukachrikishvili/Desktop/CURSOR-PROJECT/Cursor-Project/scripts/elasticsearch_mcp_server.py"
-      ],
-      "env": {
-        "ES_HOST": "https://10.236.20.13:9200",
-        "ES_API_KEY": "bUk0c281OEJHc0FWd3pIRUdVOTg6NjFrTTJ1T1ZnckFvNVZvWDk5aTJuZw==",
-        "ES_VERIFY_SSL": "false",
-        "ES_SERVER_NAME": "ElasticsearchDev",
-        "ES_ENVIRONMENTS": "dev,dev2"
-      }
-    },
-    "ElasticsearchTest": {
-      "command": "python3",
-      "args": [
-        "/Users/lukachrikishvili/Desktop/CURSOR-PROJECT/Cursor-Project/scripts/elasticsearch_mcp_server.py"
-      ],
-      "env": {
-        "ES_HOST": "http://10.236.20.27:9200",
-        "ES_API_KEY": "",
-        "ES_VERIFY_SSL": "false",
-        "ES_SERVER_NAME": "ElasticsearchTest",
-        "ES_ENVIRONMENTS": "test,preprod",
-        "ES_READ_ONLY": "true"
-      }
-    },
     "Confluence": {
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/sse"
+    },
+    "Jira": {
+      "type": "http",
       "url": "https://mcp.atlassian.com/v1/sse"
     },
     "PostgreSQLTest": {
@@ -109,22 +87,8 @@
         "POSTGRES_USER": "readonly_user",
         "POSTGRES_PASSWORD": "U$CM)*qr&Zb4JfU@"
       }
-    },
-    "PostgreSQLexperiments": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "mcp-postgres-server"
-      ],
-      "env": {
-        "POSTGRES_CONNECTION_STRING": "postgres://postgres:uj6MfFgUkV1R@10.236.20.85:5432/phoenix",
-        "MCP_SERVER_NAME": "experiments",
-        "POSTGRES_HOST": "10.236.20.85",
-        "POSTGRES_PORT": "5432",
-        "POSTGRES_DB": "experiments",
-        "POSTGRES_USER": "postgres",
-        "POSTGRES_PASSWORD": "rakX5thB2qO3"
-      }
     }
   }
 }
+
+
