@@ -1,0 +1,19 @@
+---
+description: "File organization — docs, reports, test_cases, config, codeRoot."
+alwaysApply: true
+---
+
+# FILE ORGANIZATION
+
+Place new files as follows (paths relative to project root):
+
+| Kind | Path |
+|---|---|
+| Subagent specs | `.cursor/agents/` |
+| Config / scripts | `config/` |
+| Documentation | `docs/` |
+| Reports | `reports/Chat reports/` or `reports/Feedback/` + date layout |
+| Test cases | `test_cases/Backend/` and optionally `test_cases/Frontend/` |
+| Application repos | `<codeRoot>/` from `.cursor/project-config.json` |
+
+Reports layout: `config/templates/reports/README.md` and Rule 0.6.

@@ -1,0 +1,46 @@
+---
+description: "Evidence-based confidence scoring factors (generic)."
+alwaysApply: false
+---
+
+# CONFIDENCE SCORING MATRIX
+
+Base score: **40**. Add/subtract evidence factors. Cap 0–100. Route via Three-Zone (CONF.1).
+
+## Bug validation (typical)
+
+| Factor | Points |
+|-----|-----|
+| Code read + cited | +20 |
+| Confluence evidence found | +15 |
+| OpenAPI aligned (if present) | +10 |
+| DB evidence (same env) | +10 |
+| Environment confirmed | +5 |
+| Requirements clear | +5 |
+| Single evidence source only | -15 |
+| Finding documented on conflict | +10 |
+| Conflict present but hidden | -15 |
+| Per assumption | -5 |
+
+## Test case generation (typical)
+
+| Factor | Points |
+|-----|-----|
+| Cross-dependency data provided | +15 |
+| Code searched + cited | +15 |
+| OpenAPI checked when endpoints used | +10 |
+| Confluence found | +10 |
+| Requirements clear | +10 |
+| Quality validator ≥ 80 | +5 |
+| No cross-dep data | -20 |
+| Single source only | -15 |
+
+## Database query
+
+| Factor | Points |
+|-----|-----|
+| User named environment explicitly | +20 |
+| Query returned results | +15 |
+| Schema verified | +10 |
+
+Production-like environments (`isProduction: true` in project-config) + CAUTION: warn and ask before irreversible actions.

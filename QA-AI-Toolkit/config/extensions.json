@@ -1,0 +1,15 @@
+{
+  "manualInstall": {
+    "runtime": ["Node.js LTS + npm"],
+    "extensions": [
+      "ms-vscode.powershell"
+    ],
+    "notes": [
+      "Install Node.js LTS before PostgreSQL MCP (uses npx).",
+      "Install the PowerShell extension manually if the Cursor CLI cannot install it."
+    ]
+  },
+  "scriptInstall": [
+    "ms-vscode.powershell"
+  ]
+}

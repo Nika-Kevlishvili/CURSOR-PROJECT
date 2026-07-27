@@ -1,0 +1,20 @@
+---
+description: "Database workflow — ask environment from project-config before PostgreSQL MCP."
+alwaysApply: false
+---
+
+# DATABASE WORKFLOW [CRITICAL]
+
+## Rule DB.0a: Ask environment first
+
+Before any PostgreSQL MCP call, the user must name an environment that exists in `.cursor/project-config.json` → `environments[]`. If missing, ask and STOP. Do not infer from tickets or habit.
+
+Map environment `mcpServerName` (e.g. `PostgreSQLStaging`) to the matching MCP server.
+
+## Rule DB.1: Read-only by default
+
+Prefer SELECT. Writes require explicit user approval (hook may ask).
+
+## Rule DB.2: Cite evidence
+
+When DB backs a claim, include schema/object and summarized query result (no secrets).

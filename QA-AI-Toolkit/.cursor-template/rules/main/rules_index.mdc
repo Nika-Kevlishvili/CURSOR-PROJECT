@@ -1,0 +1,20 @@
+---
+description: "Workspace rules index — thematic layout and quick reminders."
+alwaysApply: true
+---
+
+# QA AI TOOLKIT — RULES INDEX
+
+| Folder | Contents |
+|-----|----|
+| `main/` | core, Senior QA, confidence, evidence-only |
+| `safety/` | GitLab/Confluence read-only; secrets |
+| `agents/` | consultation patterns |
+| `workflows/` | bug validation, test cases, reporting obligations |
+| `workspace/` | file organization, test case layout |
+| `integrations/` | DB, Jira/Confluence REST fallback |
+| `scoring/` | confidence factor matrix |
+
+Project identity and environments: **`.cursor/project-config.json`**.
+
+Canonical map: **`docs/RULES_CANONICAL_INDEX.md`**.

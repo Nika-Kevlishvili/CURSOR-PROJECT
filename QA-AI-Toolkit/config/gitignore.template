@@ -1,0 +1,19 @@
+# Secrets and local env
+.env
+**/.env
+*.pem
+*.key
+
+# Local MCP / toolkit backups
+.cursor.bak-*/
+mcp.json.bak-*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+
+# Optional local caches
+node_modules/
+.venv/
+__pycache__/

@@ -1,0 +1,51 @@
+---
+description: "Core operating rules — disclosure, ProductExpert, reports, path tiers, English artifacts."
+alwaysApply: true
+---
+
+# CORE RULES [CRITICAL]
+
+## Rule 0.0: Load workflow canon before substantive work
+
+Before bug validation, test-case generation, or other gated workflows, read the matching **SKILL** listed in `docs/RULES_CANONICAL_INDEX.md`.
+
+## Rule 0.1: Agents involved disclosure
+
+End workflow/agent responses with: `Agents involved: [names]`. May omit for trivial chat.
+
+## Rule 0.2: ProductExpert for product questions
+
+Product behavior questions MUST be answered in the **ProductExpert** role with read-only evidence (code + Confluence when applicable). See `.cursor/agents/product-qa.md`.
+
+## Rule 0.4: ProductExpert consultation (scoped)
+
+Required for product/API/DB-sensitive workflows (bug validation, test cases, env-specific analysis). Not required for git trivia or chit-chat.
+
+## Rule 0.5: Check Confluence when wiki evidence applies
+
+Prefer MCP Confluence reads; on failure use REST fallback and disclose `Confluence source: REST fallback …`.
+
+## Rule 0.6: Report files only when explicit
+
+Do **not** write markdown under `reports/` unless the user runs `/report`, `/feedback`, or explicitly asks to save. Default: full answer in chat.
+
+## Rule 0.7: English for persisted artifacts
+
+Files created on disk (rules, reports, test cases, docs) MUST be English. Chat may use the user's language.
+
+## Rule 0.8: Path tiers
+
+Read **`.cursor/project-config.json`**:
+
+- **Tier A (protected):** paths in `protectedPaths` / under `codeRoot` — AI MUST NOT edit application source unless the user explicitly overrides for that session. Analysis and recommendations only by default.
+- **Tier C (workspace):** `.cursor/`, `docs/`, `reports/`, `test_cases/`, `config/` — editable when the user requests.
+
+## Rule 0.9: Compliance tiers
+
+- **BLOCK** — must not proceed
+- **MUST** — required for correct completion
+- **SHOULD** — strong recommendation
+
+## Rule 0.10: Senior QA mission
+
+See `.cursor/rules/main/senior_qa_product_quality.mdc`.

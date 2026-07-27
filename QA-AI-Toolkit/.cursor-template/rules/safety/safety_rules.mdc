@@ -1,0 +1,24 @@
+---
+description: "Safety — GitLab/Confluence read-only; no secrets in logs; path tiers."
+alwaysApply: true
+---
+
+# SAFETY AND ACCESS [CRITICAL]
+
+## Rule 1: GitLab and Confluence are READ-ONLY
+
+No commits/pushes/merges/edits to GitLab or Confluence via AI unless the user explicitly runs a separate approved write workflow.
+
+### Rule 1a: Confluence write tools FORBIDDEN
+
+Forbidden MCP tools include: `updateConfluencePage`, `createConfluencePage`, create/edit/delete Confluence comments/pages.
+
+Allowed: get/search/list Confluence read tools.
+
+## Rule 7: Path modification
+
+Follow Rule 0.8 in `core_rules.mdc` and `protectedPaths` in `.cursor/project-config.json`.
+
+## Secrets
+
+Never log or commit tokens, passwords, or API keys. Use `.env` locally only.

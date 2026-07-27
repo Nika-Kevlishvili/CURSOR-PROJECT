@@ -1,0 +1,36 @@
+---
+description: "Workflow obligations — bug validation (32), test cases (35), Jira/Confluence reads (42-44)."
+alwaysApply: false
+---
+
+# WORKFLOW RULES [CRITICAL]
+
+Canonical procedures live in skills. This file states obligations only.
+
+## Rule 32 — Bug validation
+
+- Agent/skill: `bug-validator` / `.cursor/skills/bug-validation/SKILL.md`
+- READ-ONLY validation; no automatic test-case or UI-automation pipeline
+- Resolve environment via `environment-resolver` + `project-config.json` first
+- Evidence: Confluence + optional OpenAPI under `config/swagger/` + code under `codeRoot` + optional DB
+- Chat-first; disk report only if user asks
+
+## Rule 35 — Test cases
+
+Order:
+
+1. Ask environment (from project-config) if not named
+2. Ask Backend vs Backend+Frontend
+3. `cross-dependency-finder`
+4. `test-case-generator` → `test_cases/Backend/` (and Frontend if chosen)
+5. `test-case-quality-validator` (≥ 80/100)
+
+Template: `config/templates/Test_Case_Template.md`
+
+## Rule 42 / 43 — Jira / Confluence REST fallback
+
+MCP first; after retries use `config/scripts/*-rest.ps1` and disclose source line.
+
+## Rule 44 — Linked Confluence on ticket analysis
+
+Read linked wiki pages in the same pass as the Jira ticket.

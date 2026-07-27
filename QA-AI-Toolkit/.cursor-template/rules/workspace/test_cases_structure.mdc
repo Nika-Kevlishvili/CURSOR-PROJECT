@@ -1,0 +1,21 @@
+---
+description: "Test case folder structure and environment ask gates."
+alwaysApply: false
+---
+
+# TEST CASES STRUCTURE
+
+## Layout
+
+- Always: `test_cases/Backend/<Topic>.md`
+- Only if user chose Backend+Frontend: `test_cases/Frontend/<Topic>.md`
+- Same topic file name in both folders when both exist
+
+## Gates (before generation)
+
+1. **TC-ENV-ASK.0** — environment named from `.cursor/project-config.json` (or ask)
+2. **TC-FRONTEND-ASK.0** — Backend only vs Backend+Frontend
+3. Cross-dependency finder before generator
+4. Quality validator after generator (≥ 80)
+
+Expected results follow **documented** behavior; if code differs, add a Finding.

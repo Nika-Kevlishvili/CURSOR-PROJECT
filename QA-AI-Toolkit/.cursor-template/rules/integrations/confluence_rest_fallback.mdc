@@ -1,0 +1,17 @@
+---
+description: "Confluence MCP primary; REST read fallback after retries."
+alwaysApply: false
+---
+
+# CONFLUENCE READ — MCP THEN REST [CRITICAL]
+
+## Rule CONFLUENCE.1
+
+Prefer Confluence MCP. After retries, use:
+
+- `config/scripts/get-confluence-page-rest.ps1`
+- `config/scripts/search-confluence-rest.ps1`
+- Credentials: `CONFLUENCE_URL` / `CONFLUENCE_WIKI_BASE` plus email/token (or Jira email/token)
+- Disclose: `Confluence source: REST fallback …`
+
+Confluence writes remain forbidden (Rule 1a).

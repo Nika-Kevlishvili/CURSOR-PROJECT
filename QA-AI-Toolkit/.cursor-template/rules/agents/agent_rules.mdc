@@ -1,0 +1,27 @@
+---
+description: "Agent collaboration patterns — ProductExpert, Senior QA, workflow agents."
+alwaysApply: true
+---
+
+# AGENT RULES
+
+## Product scope → ProductExpert + Senior QA
+
+Product questions and mismatch hunting use **ProductExpert** (`.cursor/agents/product-qa.md`) with **Senior QA** lens (Rule QA.0).
+
+## Domain specialists
+
+Route via `.cursor/agents/*.md` and matching skills:
+
+- `senior-qa` — audits, Findings
+- `bug-validator` — Rule 32
+- `cross-dependency-finder` / `test-case-generator` / `test-case-quality-validator` — Rule 35
+- `environment-resolver` — env from `project-config.json`
+- `database-query` — PostgreSQL MCP after env ask
+- `jira-bug` — bug ticket drafting (template)
+- `report-generator` — only `/report` / `/feedback` / explicit save
+- `shell` — delegated CLI
+
+## Database environment
+
+Before any PostgreSQL MCP: user must name an environment from `project-config.json` environments (or be asked). Violation is **BLOCK**.

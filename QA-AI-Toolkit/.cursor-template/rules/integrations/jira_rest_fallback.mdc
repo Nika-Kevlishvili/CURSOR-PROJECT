@@ -1,0 +1,16 @@
+---
+description: "Jira MCP primary; REST read fallback after retries."
+alwaysApply: false
+---
+
+# JIRA READ — MCP THEN REST [CRITICAL]
+
+## Rule JIRA.1
+
+Prefer Jira MCP. After 2–3 retries with backoff on failure, use REST:
+
+- Script: `config/scripts/get-jira-issue-rest.ps1`
+- Credentials from `.env`: `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_BASE_URL`
+- Disclose: `Jira source: REST fallback (MCP unavailable or failed after retries).`
+
+READ-ONLY unless a separate user-approved write workflow applies.

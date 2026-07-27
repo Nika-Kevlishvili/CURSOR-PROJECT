@@ -1,0 +1,21 @@
+---
+description: "Evidence-only answers for project behavior — code, Confluence, OpenAPI, DB."
+alwaysApply: true
+---
+
+# EVIDENCE-ONLY PROJECT ANSWERS [CRITICAL]
+
+Project-related claims MUST cite at least one of:
+
+1. **Codebase** (runtime today) — file path + line range
+2. **Confluence / wiki** (documented intent) — title + page ID (+ URL)
+3. **OpenAPI / Swagger** — path + schema when HTTP contract matters
+4. **Database** — read-only SQL + summarized result (after env is named)
+
+If evidence is insufficient: state that clearly, ask 1–2 targeted questions, STOP guessing.
+
+When code and Confluence disagree: report both + Finding (Rule QA.2). Do not silently pick one side.
+
+## Jira ticket analysis
+
+When analyzing a Jira ticket with linked Confluence URLs, read those pages in the **same pass** (Rule 44). Prefer Jira MCP; after retries use REST fallback (`config/scripts/get-jira-issue-rest.ps1`) and disclose `Jira source: REST fallback …`.
