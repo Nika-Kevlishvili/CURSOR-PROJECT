@@ -12,6 +12,7 @@ description: Validates bug reports using BugFinderAgent workflow (Rule 32). Envi
 
 - **Senior QA (Rule QA.0):** Include **`### Quality Findings (Senior QA)`** in every completed validation — mismatches and doc gaps even when verdict is NOT VALID.
 - **Exclusive Confluence scope:** only this agent performs **broad, proactive** wiki discovery (Step 2). Other workflows keep Rule 39 limits; cross-dependency-finder uses **deep Confluence exploration** per Rule 35a.
+- **Elasticsearch log analysis:** search application logs via **ElasticsearchDev** MCP (Dev/Dev2) or **ElasticsearchTest** MCP (Test, when configured) — see Step 4c in SKILL. Include **`### Elasticsearch Log Analysis`** section in every completed validation.
 - **Out of scope:** cross-dependency-finder, test-case-generator, energo-ts-test, playwright-test-validator, energo-ts-run (Rules 35–37 unless user explicitly requests those workflows).
 
 ## Inputs
@@ -47,12 +48,14 @@ description: Validates bug reports using BugFinderAgent workflow (Rule 32). Envi
 | 2 | Confluence (broad; Phase 2 exclusion for Prod/PreProd/Test default) |
 | 3 | Swagger refresh (mandatory) + OpenAPI evidence |
 | 4–4b | Code analysis + DB investigation (supporting) |
+| 4c | Elasticsearch log analysis (env-filtered; supporting) — Rule ES.0 |
 | 5–6 | 5-verdict matrix + delivery + Evidence Checklist |
 
 ## Constraints
 
 - No Python `agents.*` imports. Phoenix READ-ONLY (Rule 0.8 Tier A).
 - DB failure does **not** block verdict; Confluence search/read failure after MCP + REST **does** → `PROCESS BLOCKED`.
+- Elasticsearch failure does **not** block verdict — it is supporting evidence that reduces confidence (like DB). Document `elasticsearch_investigation=failed` and continue.
 
 ## Footer
 

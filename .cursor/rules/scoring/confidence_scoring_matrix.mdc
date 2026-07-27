@@ -71,8 +71,12 @@ Base: **40**
 | Mismatch documented as Finding (Rule QA.2; both sides cited) | **+10** | Code↔Doc or Swagger↔Code conflict surfaced | Product-quality deliverable |
 | Conflict present but not reported as Finding | **-15** | Violates Rule QA.0 |
 | Environment alignment partial (exit code 2) | **-5** | Mixed-state repos | Some repos may be on wrong branch |
+| Elasticsearch logs analyzed (relevant results) | **+10** | Step 4c completed with ≥1 relevant log entry | Runtime log evidence — errors, stack traces, timing |
+| Elasticsearch logs reveal root cause | **+5** | Bonus on top of +10 above: stack trace or error directly explains bug | Strongest log evidence |
+| Elasticsearch logs searched, no relevant results | **+2** | Step 4c completed but no matching logs | Absence noted; still ran the search |
+| Elasticsearch investigation failed/unavailable | **-3** | ES MCP unreachable or not configured for env | Supporting evidence missing, not primary |
 
-**Max achievable:** 40 + 75 = 115 → capped at **100**
+**Max achievable:** 40 + 90 = 130 → capped at **100**
 
 ---
 
