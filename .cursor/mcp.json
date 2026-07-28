@@ -1,0 +1,45 @@
+{
+  "mcpServers": {
+    "ElasticsearchDev": {
+      "command": "python3",
+      "args": [
+        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+      ],
+      "env": {
+        "ES_HOST": "https://10.236.20.13:9200",
+        "ES_API_KEY": "bUk0c281OEJHc0FWd3pIRUdVOTg6NjFrTTJ1T1ZnckFvNVZvWDk5aTJuZw==",
+        "ES_VERIFY_SSL": "false",
+        "ES_SERVER_NAME": "ElasticsearchDev",
+        "ES_ENVIRONMENTS": "dev,dev2"
+      }
+    },
+    "ElasticsearchProd": {
+      "command": "python3",
+      "args": [
+        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+      ],
+      "env": {
+        "ES_HOST": "https://10.236.20.69:9200",
+        "ES_API_KEY": "YkhGNnA1OEJtc0dJd2JJT3Y5eF86eFllZ0hJakZ2cHVHQmljZUJPT19FQQ==",
+        "ES_VERIFY_SSL": "false",
+        "ES_SERVER_NAME": "ElasticsearchProd",
+        "ES_ENVIRONMENTS": "prod",
+        "ES_READ_ONLY": "true"
+      }
+    },
+    "ElasticsearchTest": {
+      "command": "python3",
+      "args": [
+        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+      ],
+      "env": {
+        "ES_HOST": "http://10.236.20.27:9200",
+        "ES_API_KEY": "",
+        "ES_VERIFY_SSL": "false",
+        "ES_SERVER_NAME": "ElasticsearchTest",
+        "ES_ENVIRONMENTS": "test,preprod",
+        "ES_READ_ONLY": "true"
+      }
+    }
+  }
+}
