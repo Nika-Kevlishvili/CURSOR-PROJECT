@@ -158,9 +158,10 @@ Search application logs via Elasticsearch to find runtime evidence of the report
 | dev2 | `ElasticsearchDev` | `dev2` |
 | test | `ElasticsearchTest` | `test` |
 | preprod | `ElasticsearchTest` | `preprod` |
-| prod / experiments | Not configured — skip, document `elasticsearch_investigation=not_available` |
+| prod | `ElasticsearchProd` | `prod` |
+| experiments | Not configured — skip, document `elasticsearch_investigation=not_available` |
 
-Two clusters serve paired environments: **ElasticsearchDev** (Dev+Dev2, HTTPS with API key) and **ElasticsearchTest** (Test+PreProd, HTTP without auth). Both use the same `app_name` filtering: primary env = base names (`phoenix`, `phoenix-scheduler`, ...), secondary env = names with `2` suffix (`phoenix2`, `phoenix-scheduler2`, ...).
+Three clusters: **ElasticsearchDev** (Dev+Dev2, paired, HTTPS+API key), **ElasticsearchTest** (Test+PreProd, paired, HTTP, no auth), **ElasticsearchProd** (Prod only, single, HTTPS+API key). Paired clusters filter by `app_name` (primary = base names, secondary = `2` suffix). Prod has no filtering — all logs belong to Prod. **Prod limitation:** `es_cluster_health` and `es_list_indices` return 403 — use search tools only.
 
 **4c.1 — Error summary (broad scan):**
 - Call `es_error_summary(environment=<env>, search_text=<bug domain keywords>, days_back=7)` to get top ERROR groups by logger_name.

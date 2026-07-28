@@ -113,10 +113,14 @@ def _request(method: str, path: str, body: dict | None = None, params: dict | No
 def _build_env_filter(environment: str) -> list[dict]:
     """Build Elasticsearch bool filter clauses for app_name based on environment.
 
-    Primary env (dev, test) uses base app names.
-    Secondary env (dev2, preprod) uses base app names with '2' suffix.
+    Paired mode (dev+dev2, test+preprod):
+      Primary env uses base app names, secondary uses base + '2' suffix.
+    Single mode (prod):
+      No app_name filtering — all logs belong to that environment.
     """
     env = environment.strip().lower()
+    if not ES_SECONDARY_ENV:
+        return []
     if env == ES_SECONDARY_ENV:
         names = [f"{base}2" for base in BASE_APP_NAMES]
     elif env == ES_PRIMARY_ENV:

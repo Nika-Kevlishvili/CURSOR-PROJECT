@@ -10,15 +10,18 @@
 | Dev2 | `ElasticsearchDev` | `dev2` | API key |
 | Test | `ElasticsearchTest` | `test` | None (no auth) |
 | PreProd | `ElasticsearchTest` | `preprod` | None (no auth) |
-| Prod | Not configured | — | Skip ES, document `elasticsearch_investigation=not_available` |
+| Prod | `ElasticsearchProd` | `prod` | API key (read-only) |
 | Experiments | Not configured | — | Skip ES, document `elasticsearch_investigation=not_available` |
 
-**Two clusters, each serving two environments:**
+**Three clusters:**
 
-| Cluster | URL | Environments | Auth | Write protection |
-|---|---|---|---|---|
-| **ElasticsearchDev** | `https://10.236.20.13:9200` | Dev + Dev2 | API key (read-only key) | API key is read-only |
-| **ElasticsearchTest** | `http://10.236.20.27:9200` | Test + PreProd | None (open) | `ES_READ_ONLY=true` — script blocks writes (Rule ES.4a) |
+| Cluster | URL | Environments | Auth | Write protection | Mode |
+|---|---|---|---|---|---|
+| **ElasticsearchDev** | `https://10.236.20.13:9200` | Dev + Dev2 | API key (read-only) | API key is read-only | Paired — filter by `app_name` |
+| **ElasticsearchTest** | `http://10.236.20.27:9200` | Test + PreProd | None (open) | `ES_READ_ONLY=true` (Rule ES.4a) | Paired — filter by `app_name` |
+| **ElasticsearchProd** | `https://10.236.20.69:9200` | Prod | API key (read-only) | API key is read-only + `ES_READ_ONLY=true` | Single — no `app_name` filter (all logs = Prod) |
+
+**Prod limitations:** The read-only API key cannot access `_cluster/health` or `_cat/indices` (403). Use `es_search_logs`, `es_error_summary`, `es_sql_query`, `es_search`, `es_count`, and `es_field_values` — these work. Skip `es_cluster_health` and `es_list_indices` on Prod.
 
 Both clusters use the **same** `logstash-*` index pattern and the **same** `app_name` filtering convention:
 
@@ -79,6 +82,7 @@ Never commit or log Elasticsearch API keys. Credentials stay in Cursor MCP serve
 
 - **BLOCKED at the script level:** `PUT`, `DELETE`, `PATCH` methods and write-path endpoints (`_bulk`, `_delete_by_query`, `_update_by_query`, `_reindex`, `_aliases`, `_template`, `_ingest`, `_snapshot`, etc.) are rejected before any HTTP request is sent.
 - **ElasticsearchDev** (`dev`, `dev2`) uses a **read-only API key** — write protection is enforced by Elasticsearch itself.
+- **ElasticsearchProd** (`prod`) uses a **read-only API key** AND `ES_READ_ONLY=true` — double protection.
 - Agents MUST NOT attempt to create, modify, or delete indices, documents, templates, or pipelines on any Elasticsearch cluster. All ES interactions are **search and read only**.
 - Violation is a **BLOCK** (security — unauthenticated write to shared infrastructure).
 
