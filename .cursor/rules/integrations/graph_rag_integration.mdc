@@ -1,0 +1,51 @@
+---
+description: Graph RAG integration — auto-query knowledge graph before Phoenix/project questions
+globs:
+alwaysApply: true
+---
+
+# GRAPH RAG INTEGRATION [SHOULD]
+
+## Rule GRAPH.0: Auto-query Graph RAG for project questions
+
+**Intent:** When the Graph RAG MCP server is available, Cursor agents SHOULD check the knowledge graph before answering Phoenix/project questions. This provides pre-indexed context from Swagger, test cases, Confluence, and Playwright sources.
+
+**When to use `graph_query`:**
+- Before answering Phoenix domain questions (business logic, endpoints, validations)
+- When looking up API endpoints, DTOs, or enum values
+- When checking test case coverage for a feature
+- When looking for Playwright patterns or fixtures
+
+**When NOT to use `graph_query`:**
+- General programming questions unrelated to Phoenix
+- Git/status operations
+- Trivial Q&A, chit-chat
+- When the user explicitly says to skip graph lookup
+
+## Workflow
+
+1. **Check graph first:** Call `graph_query` with the user's question
+2. **Use graph context:** If graph returns relevant nodes, include them as additional context alongside live evidence (code, Confluence, Swagger per existing rules)
+3. **Live evidence still required:** Graph RAG is supplementary — it does NOT replace the evidence gate (Rule QA.0). Always verify critical facts against live sources
+4. **Staleness handled automatically:** The graph_query tool checks source_hash and auto-refreshes stale nodes
+
+## Available tools (GraphRAG MCP server)
+
+| Tool | Purpose |
+|------|---------|
+| `graph_query` | Ask a question, get graph-enriched answer with citations |
+| `graph_update` | After chat work, save new knowledge back to graph |
+| `graph_index_topic` | Index a specific topic across all sources on demand |
+| `graph_status` | Show zone stats, node counts, system health |
+
+## After resolution
+
+When the agent has answered a Phoenix/project question using live evidence and the answer contains new insights not yet in the graph, offer to call `graph_update` to save the knowledge for future queries.
+
+## Graph visualization
+
+Users can explore the knowledge graph visually at `http://localhost:7474` (Neo4j Browser) — spider-web view of all nodes, edges, and zones.
+
+## Compliance tier
+
+**SHOULD** — Graph RAG is supplementary. Failure to query the graph is not a BLOCK; but using it improves answer quality and speed. The evidence gate (Rules QA.0, 0.5) remains MUST.

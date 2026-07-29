@@ -1,0 +1,110 @@
+zones:
+  phoenix_domain:
+    label: "phoenix_domain"
+    description: "Phoenix logic, object links, business processes"
+    node_types:
+      - Domain
+      - BusinessProcess
+      - Entity
+      - Validation
+      - Scheduler
+      - Service
+    sources:
+      - type: confluence
+        description: "Confluence pages about Phoenix domain"
+      - type: codebase
+        path: "Cursor-Project/Phoenix"
+        description: "Phoenix Java source code"
+    color: "#2196F3"
+
+  api_and_repo_layout:
+    label: "api_and_repo_layout"
+    description: "Swagger contracts, where code lives in repos"
+    node_types:
+      - Endpoint
+      - DTO
+      - EnumType
+      - Repository
+      - Module
+    sources:
+      - type: swagger
+        paths:
+          - "Cursor-Project/config/swagger/dev"
+          - "Cursor-Project/config/swagger/dev2"
+          - "Cursor-Project/config/swagger/test"
+          - "Cursor-Project/config/swagger/preprod"
+        description: "OpenAPI/Swagger spec files"
+    color: "#4CAF50"
+
+  test_cases:
+    label: "test_cases"
+    description: "TC examples, templates, what each TC covers"
+    node_types:
+      - TestCase
+      - TestStep
+      - Precondition
+      - ExpectedResult
+      - CoveredEndpoint
+    sources:
+      - type: markdown
+        paths:
+          - "Cursor-Project/test_cases/Backend"
+          - "Cursor-Project/test_cases/Frontend"
+        description: "Test case markdown files"
+    color: "#FF9800"
+
+  playwright_automation:
+    label: "playwright_automation"
+    description: "Spec writing rules, fixtures, patterns"
+    node_types:
+      - Spec
+      - Fixture
+      - WritingRule
+      - Pattern
+      - Helper
+    sources:
+      - type: playwright
+        paths:
+          - "Cursor-Project/config/playwright_generation/playwright instructions"
+          - "Cursor-Project/EnergoTS/tests"
+        description: "Playwright instructions and test files"
+    color: "#9C27B0"
+
+bridges:
+  - from_zone: test_cases
+    to_zone: api_and_repo_layout
+    edge_type: COVERS
+    description: "Test case covers an API endpoint"
+
+  - from_zone: playwright_automation
+    to_zone: test_cases
+    edge_type: IMPLEMENTS
+    description: "Playwright spec implements a test case"
+
+  - from_zone: phoenix_domain
+    to_zone: api_and_repo_layout
+    edge_type: HAS_ENDPOINT
+    description: "Domain concept has an API endpoint"
+
+  - from_zone: playwright_automation
+    to_zone: playwright_automation
+    edge_type: GUIDED_BY
+    description: "Spec follows a writing rule"
+
+staleness:
+  check_on_query: true
+  max_age_hours: 24
+  hash_algorithm: "sha256"
+
+llm:
+  base_url: "http://localhost:1234/v1"
+  model: "qwen2.5-3b-instruct"
+  embed_model: "text-embedding-nomic-embed-text-v1.5"
+  temperature: 0.1
+  max_tokens: 2048
+
+neo4j:
+  uri: "bolt://localhost:7687"
+  user: "neo4j"
+  password: "paroli123"
+  database: "neo4j"
