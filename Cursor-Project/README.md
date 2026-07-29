@@ -33,7 +33,7 @@ Cursor-Project/
 .\.cursor\commands\setup-new-machine.ps1
 ```
 
-The script clones all submodules, copies `.env` from `Cursor Setup/env.example`, writes MCP config to `%USERPROFILE%\.cursor\mcp.json`, installs marketplace extensions, and verifies layout.
+The script clones all submodules, copies `.env` from `Cursor Setup/env.example`, writes MCP config to **workspace** `.cursor/mcp.json`, installs marketplace extensions, and verifies layout.
 
 Details: [`docs/QUICK_START.md`](docs/QUICK_START.md) · [`.cursor/commands/setup-new-machine.md`](../.cursor/commands/setup-new-machine.md) · templates in `Cursor Setup/`.
 

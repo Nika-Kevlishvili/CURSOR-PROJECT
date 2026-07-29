@@ -36,12 +36,13 @@ Optional:
 
 | Phase | Action |
 |-------|--------|
-| 0 | Preconditions (workspace, `.gitmodules`, templates, npm warning) |
+| 0 | Preconditions (workspace, `.gitmodules`, templates, npm + Python check) |
 | 1 | Clone/init all submodules from `.gitmodules` (skip if already valid) |
 | 2 | Copy `Cursor Setup/env.example` → `Cursor-Project/.env` and `EnergoTS/.env` |
-| 3 | Merge `Cursor Setup/mcp_content.txt` into `%USERPROFILE%\.cursor\mcp.json` (backup first) |
+| 3a | Detect Python with `mcp`/`requests` deps; install via `pip` if needed |
+| 3 | Merge `Cursor Setup/mcp_content.txt` into **workspace** `.cursor/mcp.json` (backup first); patch Elasticsearch `command` + relative `args`; clear user-level `%USERPROFILE%\.cursor\mcp.json` if it contains duplicate MCP servers |
 | 4 | Install `scriptInstall` extensions via `cursor --install-extension` |
-| 5 | Verify repos, remotes, EnergoTS `cursor` branch, env, MCP, extensions, npm |
+| 5 | Verify repos, remotes, EnergoTS `cursor` branch, env, MCP (incl. Elasticsearch), extensions, npm |
 
 ## Exit codes
 
@@ -54,6 +55,6 @@ Optional:
 ## After the script
 
 1. Restart Cursor (or reload MCP servers).
-2. Confirm Confluence / Jira / PostgreSQL* MCP servers.
+2. Confirm workspace MCP in `.cursor/mcp.json` (not user-level `mcp.json`).
 3. Review `.env` files and adjust credentials if needed.
 4. Re-run `.\.cursor\commands\setup-new-machine.ps1 -VerifyOnly` anytime.

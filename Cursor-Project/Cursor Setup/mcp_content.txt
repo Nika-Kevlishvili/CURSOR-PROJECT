@@ -1,9 +1,9 @@
 {
   "mcpServers": {
     "ElasticsearchDev": {
-      "command": "python3",
+      "command": "__ELASTICSEARCH_PYTHON__",
       "args": [
-        "/Users/lukachrikishvili/Desktop/CURSOR-PROJECT/Cursor-Project/scripts/elasticsearch_mcp_server.py"
+        "__ELASTICSEARCH_SCRIPT__"
       ],
       "env": {
         "ES_HOST": "https://10.236.20.13:9200",
@@ -14,9 +14,9 @@
       }
     },
     "ElasticsearchProd": {
-      "command": "python3",
+      "command": "__ELASTICSEARCH_PYTHON__",
       "args": [
-        "/Users/lukachrikishvili/Desktop/CURSOR-PROJECT/Cursor-Project/scripts/elasticsearch_mcp_server.py"
+        "__ELASTICSEARCH_SCRIPT__"
       ],
       "env": {
         "ES_HOST": "https://10.236.20.69:9200",
@@ -28,9 +28,9 @@
       }
     },
     "ElasticsearchTest": {
-      "command": "python3",
+      "command": "__ELASTICSEARCH_PYTHON__",
       "args": [
-        "/Users/lukachrikishvili/Desktop/CURSOR-PROJECT/Cursor-Project/scripts/elasticsearch_mcp_server.py"
+        "__ELASTICSEARCH_SCRIPT__"
       ],
       "env": {
         "ES_HOST": "http://10.236.20.27:9200",
