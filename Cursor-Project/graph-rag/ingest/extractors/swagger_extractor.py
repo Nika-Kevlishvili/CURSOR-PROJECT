@@ -1,14 +1,70 @@
 """
 Swagger/OpenAPI extractor — parse spec JSON into Endpoint, DTO, and EnumType nodes.
+Assigns each node to a business domain zone based on its API path prefix.
 """
 
 import json
 import os
 import re
 
+import yaml
+
 from core.staleness import compute_file_hash
 
-ZONE = "api_and_repo_layout"
+_ZONES_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "config", "zones.yaml")
+
+FALLBACK_ZONE = "reference_data"
+
+
+def _build_prefix_to_zone() -> dict[str, str]:
+    """Build a mapping from API path prefix to zone using zones.yaml."""
+    try:
+        with open(_ZONES_PATH, encoding="utf-8") as f:
+            cfg = yaml.safe_load(f)
+    except FileNotFoundError:
+        return {}
+
+    mapping: dict[str, str] = {}
+    for zone_name, zone_def in cfg.get("zones", {}).items():
+        for prefix in zone_def.get("prefixes", []):
+            mapping[prefix.lower()] = zone_name
+    return mapping
+
+
+PREFIX_TO_ZONE = _build_prefix_to_zone()
+
+
+def _resolve_zone_for_path(api_path: str) -> str:
+    """Determine the zone for an API path based on its first path segment."""
+    clean = api_path.strip("/")
+    first_segment = clean.split("/")[0] if clean else ""
+
+    if not first_segment:
+        return FALLBACK_ZONE
+
+    first_lower = first_segment.lower()
+    if first_lower in PREFIX_TO_ZONE:
+        return PREFIX_TO_ZONE[first_lower]
+
+    for prefix, zone in PREFIX_TO_ZONE.items():
+        if first_lower.startswith(prefix) or prefix.startswith(first_lower):
+            return zone
+
+    return FALLBACK_ZONE
+
+
+def _resolve_zone_for_dto(schema_name: str, endpoint_dto_zones: dict[str, str]) -> str:
+    """Determine zone for a DTO based on which endpoints reference it."""
+    if schema_name in endpoint_dto_zones:
+        return endpoint_dto_zones[schema_name]
+
+    name_lower = schema_name.lower()
+    for prefix, zone in PREFIX_TO_ZONE.items():
+        prefix_camel = prefix.replace("-", "")
+        if prefix_camel in name_lower:
+            return zone
+
+    return FALLBACK_ZONE
 
 
 def extract_swagger(swagger_path: str, workspace_root: str) -> list[dict]:
@@ -31,12 +87,15 @@ def extract_swagger(swagger_path: str, workspace_root: str) -> list[dict]:
 
     env_name = _extract_env_from_path(swagger_path)
 
+    endpoint_dto_zones: dict[str, str] = {}
+
     # --- Endpoints ---
     for path, methods in spec.get("paths", {}).items():
         for method, details in methods.items():
             if method in ("parameters", "servers", "summary", "description", "$ref"):
                 continue
 
+            zone = _resolve_zone_for_path(path)
             op_id = details.get("operationId", f"{method}_{path}")
             summary = details.get("summary", "")
             description = details.get("description", summary)
@@ -46,7 +105,7 @@ def extract_swagger(swagger_path: str, workspace_root: str) -> list[dict]:
             nodes.append({
                 "uid": uid,
                 "node_type": "Endpoint",
-                "zone": ZONE,
+                "zone": zone,
                 "name": f"{method.upper()} {path}",
                 "description": _truncate(f"{summary}. {description}".strip(". "), 500),
                 "source_path": rel_path,
@@ -60,7 +119,6 @@ def extract_swagger(swagger_path: str, workspace_root: str) -> list[dict]:
                 },
             })
 
-            # Link request/response DTOs
             req_ref = _extract_request_schema_ref(details)
             if req_ref:
                 dto_uid = f"dto:{env_name}:{req_ref}"
@@ -69,6 +127,7 @@ def extract_swagger(swagger_path: str, workspace_root: str) -> list[dict]:
                     "to_uid": dto_uid,
                     "edge_type": "ACCEPTS",
                 })
+                endpoint_dto_zones[req_ref] = zone
 
             resp_refs = _extract_response_schema_refs(details)
             for ref_name in resp_refs:
@@ -78,6 +137,8 @@ def extract_swagger(swagger_path: str, workspace_root: str) -> list[dict]:
                     "to_uid": dto_uid,
                     "edge_type": "RETURNS",
                 })
+                if ref_name not in endpoint_dto_zones:
+                    endpoint_dto_zones[ref_name] = zone
 
     # --- DTOs (schemas/components) ---
     schemas = spec.get("components", {}).get("schemas", {})
@@ -88,6 +149,8 @@ def extract_swagger(swagger_path: str, workspace_root: str) -> list[dict]:
 
         is_enum = "enum" in schema_def
         node_type = "EnumType" if is_enum else "DTO"
+
+        zone = _resolve_zone_for_dto(schema_name, endpoint_dto_zones)
 
         uid = f"{'enum' if is_enum else 'dto'}:{env_name}:{schema_name}"
         desc_parts = []
@@ -103,7 +166,7 @@ def extract_swagger(swagger_path: str, workspace_root: str) -> list[dict]:
         nodes.append({
             "uid": uid,
             "node_type": node_type,
-            "zone": ZONE,
+            "zone": zone,
             "name": schema_name,
             "description": _truncate(". ".join(desc_parts), 500),
             "source_path": rel_path,
@@ -115,7 +178,6 @@ def extract_swagger(swagger_path: str, workspace_root: str) -> list[dict]:
             },
         })
 
-        # DTO -> Enum edges
         for field_name, field_def in props.items():
             if "enum" in field_def:
                 enum_uid = f"enum:{env_name}:{schema_name}_{field_name}"
@@ -123,7 +185,7 @@ def extract_swagger(swagger_path: str, workspace_root: str) -> list[dict]:
                 nodes.append({
                     "uid": enum_uid,
                     "node_type": "EnumType",
-                    "zone": ZONE,
+                    "zone": zone,
                     "name": f"{schema_name}.{field_name}",
                     "description": f"Enum values: {', '.join(str(v) for v in enum_values[:20])}",
                     "source_path": rel_path,

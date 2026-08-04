@@ -1,31 +1,20 @@
 zones:
-  phoenix_domain:
-    label: "phoenix_domain"
-    description: "Phoenix logic, object links, business processes"
-    node_types:
-      - Domain
-      - BusinessProcess
-      - Entity
-      - Validation
-      - Scheduler
-      - Service
-    sources:
-      - type: confluence
-        description: "Confluence pages about Phoenix domain"
-      - type: codebase
-        path: "Cursor-Project/Phoenix"
-        description: "Phoenix Java source code"
-    color: "#2196F3"
-
-  api_and_repo_layout:
-    label: "api_and_repo_layout"
-    description: "Swagger contracts, where code lives in repos"
+  contracts:
+    label: "contracts"
+    description: "Contract management — product contracts, service contracts, express contracts, terms, terminations"
     node_types:
       - Endpoint
       - DTO
       - EnumType
-      - Repository
-      - Module
+    prefixes:
+      - "product-contract"
+      - "service-contract"
+      - "express-contract"
+      - "terms"
+      - "terms-group"
+      - "terminations"
+      - "termination-groups"
+      - "test-service-contract-termination"
     sources:
       - type: swagger
         paths:
@@ -33,63 +22,221 @@ zones:
           - "Cursor-Project/config/swagger/dev2"
           - "Cursor-Project/config/swagger/test"
           - "Cursor-Project/config/swagger/preprod"
-        description: "OpenAPI/Swagger spec files"
+    color: "#2196F3"
+
+  billing:
+    label: "billing"
+    description: "Billing process — billing runs, billing groups, billing profiles, scales, accounting periods, IAP"
+    node_types:
+      - Endpoint
+      - DTO
+      - EnumType
+    prefixes:
+      - "billing-run"
+      - "billing-group"
+      - "billing-by-profile"
+      - "billing-by-scales"
+      - "accounting-period"
+      - "iap"
+      - "advanced-payment-group"
+    sources:
+      - type: swagger
+    color: "#FF5722"
+
+  invoicing:
+    label: "invoicing"
+    description: "Invoice management — invoices, invoice cancellation, credit notes"
+    node_types:
+      - Endpoint
+      - DTO
+      - EnumType
+    prefixes:
+      - "invoice"
+      - "invoice-cancellation"
+    sources:
+      - type: swagger
+    color: "#E91E63"
+
+  payments:
+    label: "payments"
+    description: "Financial operations — payments, deposits, liabilities, receivables, fines, penalties, collections"
+    node_types:
+      - Endpoint
+      - DTO
+      - EnumType
+    prefixes:
+      - "payment"
+      - "payment-package"
+      - "deposit"
+      - "customer-liability"
+      - "customer-receivable"
+      - "latePaymentFine"
+      - "interest-rate"
+      - "penalties"
+      - "penalty-groups"
+      - "manual-liability-offsetting"
+      - "collection-channel"
+    sources:
+      - type: swagger
     color: "#4CAF50"
 
-  test_cases:
-    label: "test_cases"
-    description: "TC examples, templates, what each TC covers"
+  customers:
+    label: "customers"
+    description: "Customer management — customers, assessment, unwanted customers, connected groups"
     node_types:
-      - TestCase
-      - TestStep
-      - Precondition
-      - ExpectedResult
-      - CoveredEndpoint
+      - Endpoint
+      - DTO
+      - EnumType
+    prefixes:
+      - "customer"
+      - "customer-assessment"
+      - "customer-assessment-criteria"
+      - "unwanted-customer"
+      - "unwanted-customer-reason"
+      - "connected-group"
+      - "missing-customer"
     sources:
-      - type: markdown
-        paths:
-          - "Cursor-Project/test_cases/Backend"
-          - "Cursor-Project/test_cases/Frontend"
-        description: "Test case markdown files"
-    color: "#FF9800"
-
-  playwright_automation:
-    label: "playwright_automation"
-    description: "Spec writing rules, fixtures, patterns"
-    node_types:
-      - Spec
-      - Fixture
-      - WritingRule
-      - Pattern
-      - Helper
-    sources:
-      - type: playwright
-        paths:
-          - "Cursor-Project/config/playwright_generation/playwright instructions"
-          - "Cursor-Project/EnergoTS/tests"
-        description: "Playwright instructions and test files"
+      - type: swagger
     color: "#9C27B0"
 
+  products:
+    label: "products"
+    description: "Product catalog & pricing — products, price components, prices, discounts, compensations"
+    node_types:
+      - Endpoint
+      - DTO
+      - EnumType
+    prefixes:
+      - "products"
+      - "price-components"
+      - "price-component-groups"
+      - "prices"
+      - "discounts"
+      - "government-compensations"
+      - "nomenclature"
+    sources:
+      - type: swagger
+    color: "#FF9800"
+
+  service_operations:
+    label: "service_operations"
+    description: "Service delivery & operations — service orders, actions, processes, tasks, disconnection, reconnection, rescheduling"
+    node_types:
+      - Endpoint
+      - DTO
+      - EnumType
+    prefixes:
+      - "service-order"
+      - "services"
+      - "actions"
+      - "process"
+      - "process-periodicity"
+      - "task"
+      - "task-types"
+      - "disconnection-of-power-supply"
+      - "disconnection-of-power-supply-requests"
+      - "reconnection-of-the-power-supply"
+      - "cancellation-of-disconnection-of-the-power-supply"
+      - "power-supply-disconnection-reminder"
+      - "rescheduling"
+      - "reminder"
+      - "locks"
+      - "mass-operation-for-blocking"
+      - "mass-import"
+    sources:
+      - type: swagger
+    color: "#00BCD4"
+
+  communications:
+    label: "communications"
+    description: "Communication channels — email, SMS, system messages, templates, documents"
+    node_types:
+      - Endpoint
+      - DTO
+      - EnumType
+    prefixes:
+      - "email-communication"
+      - "sms-communication"
+      - "system-message"
+      - "system-activities"
+      - "template"
+      - "documents"
+      - "resource-file"
+    sources:
+      - type: swagger
+    color: "#795548"
+
+  reference_data:
+    label: "reference_data"
+    description: "Master/reference data — geography, currencies, grid operators, portal, xEnergie, balancing groups, goods"
+    node_types:
+      - Endpoint
+      - DTO
+      - EnumType
+    prefixes:
+      - "zip-codes"
+      - "streets"
+      - "districts"
+      - "municipalities"
+      - "regions"
+      - "populated-places"
+      - "residential-areas"
+      - "currencies"
+      - "company-details"
+      - "pod"
+      - "profiles"
+      - "preferences"
+      - "grid-operators"
+      - "xEnergie"
+      - "portal"
+      - "portal-beta"
+      - "qes"
+      - "balancingGroupCoordinatorObjection"
+      - "objection-withdrawal-to-change-of-a-balancing-group-coordinator"
+      - "goods-order"
+      - "goods"
+      - "vat-rates"
+      - "user-types"
+      - "socket"
+    sources:
+      - type: swagger
+    color: "#607D8B"
+
 bridges:
-  - from_zone: test_cases
-    to_zone: api_and_repo_layout
-    edge_type: COVERS
-    description: "Test case covers an API endpoint"
+  - from_zone: contracts
+    to_zone: billing
+    edge_type: TRIGGERS
+    description: "Contract triggers billing process"
 
-  - from_zone: playwright_automation
-    to_zone: test_cases
-    edge_type: IMPLEMENTS
-    description: "Playwright spec implements a test case"
+  - from_zone: billing
+    to_zone: invoicing
+    edge_type: GENERATES
+    description: "Billing run generates invoices"
 
-  - from_zone: phoenix_domain
-    to_zone: api_and_repo_layout
-    edge_type: HAS_ENDPOINT
-    description: "Domain concept has an API endpoint"
+  - from_zone: invoicing
+    to_zone: payments
+    edge_type: CREATES_LIABILITY
+    description: "Invoice creates payment liability"
 
-  - from_zone: playwright_automation
-    to_zone: playwright_automation
-    edge_type: GUIDED_BY
-    description: "Spec follows a writing rule"
+  - from_zone: contracts
+    to_zone: customers
+    edge_type: BELONGS_TO
+    description: "Contract belongs to a customer"
+
+  - from_zone: contracts
+    to_zone: products
+    edge_type: USES_PRODUCT
+    description: "Contract uses a product"
+
+  - from_zone: service_operations
+    to_zone: contracts
+    edge_type: AFFECTS
+    description: "Service operation affects contract"
+
+  - from_zone: communications
+    to_zone: customers
+    edge_type: SENT_TO
+    description: "Communication sent to customer"
 
 staleness:
   check_on_query: true

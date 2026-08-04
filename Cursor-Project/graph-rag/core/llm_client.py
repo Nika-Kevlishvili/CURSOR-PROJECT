@@ -72,15 +72,23 @@ class LLMClient:
             "You classify questions into one or more knowledge zones. "
             "Return ONLY zone names, comma-separated, no explanation.\n"
             "Zones:\n"
-            "- phoenix_domain: Phoenix business logic, processes, entities, validations, schedulers\n"
-            "- api_and_repo_layout: API endpoints, DTOs, Swagger, HTTP methods, repo structure\n"
-            "- test_cases: test case examples, coverage, test steps, expected results\n"
-            "- playwright_automation: Playwright specs, fixtures, writing rules, patterns\n"
+            "- contracts: product contracts, service contracts, express contracts, terms, terminations\n"
+            "- billing: billing runs, billing groups, billing profiles, accounting periods, IAP\n"
+            "- invoicing: invoices, invoice cancellation, credit notes\n"
+            "- payments: payments, deposits, liabilities, receivables, fines, penalties, collections\n"
+            "- customers: customers, customer assessment, unwanted customers\n"
+            "- products: products catalog, pricing, price components, discounts, nomenclature\n"
+            "- service_operations: service orders, actions, processes, tasks, disconnection, reconnection\n"
+            "- communications: email, SMS, system messages, templates, documents\n"
+            "- reference_data: geography, currencies, grid operators, portal, xEnergie, goods\n"
         )
         result = self.generate(question, system_prompt=system, temperature=0.0, max_tokens=100)
         zones = [z.strip().lower() for z in result.split(",")]
-        valid_zones = ["phoenix_domain", "api_and_repo_layout", "test_cases", "playwright_automation"]
-        return [z for z in zones if z in valid_zones] or ["phoenix_domain"]
+        valid_zones = [
+            "contracts", "billing", "invoicing", "payments", "customers",
+            "products", "service_operations", "communications", "reference_data",
+        ]
+        return [z for z in zones if z in valid_zones] or ["contracts"]
 
     def synthesize_answer(self, question: str, graph_context: str,
                           live_evidence: str | None = None) -> str:

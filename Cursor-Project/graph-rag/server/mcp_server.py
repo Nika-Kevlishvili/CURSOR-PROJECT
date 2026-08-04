@@ -78,16 +78,28 @@ def graph_query(question: str, zone: str = "", top_k: int = 10,
         question_embedding = llm.embed(question)
         all_nodes = []
 
-        for z in target_zones:
-            vector_results = graph.vector_search(question_embedding, zone=z, top_k=top_k)
-            keyword_results = graph.keyword_search(question, zone=z, limit=top_k)
-            seen = {n["uid"] for n in vector_results}
-            combined = list(vector_results)
-            for kr in keyword_results:
-                if kr["uid"] not in seen:
-                    combined.append(kr)
-                    seen.add(kr["uid"])
-            all_nodes.extend(combined)
+        def _search_zones(zones, emb, q, k):
+            nodes = []
+            for z in zones:
+                vector_results = graph.vector_search(emb, zone=z, top_k=k)
+                keyword_results = graph.keyword_search(q, zone=z, limit=k)
+                seen = {n["uid"] for n in vector_results}
+                combined = list(vector_results)
+                for kr in keyword_results:
+                    if kr["uid"] not in seen:
+                        combined.append(kr)
+                        seen.add(kr["uid"])
+                nodes.extend(combined)
+            return nodes
+
+        all_nodes = _search_zones(target_zones, question_embedding, question, top_k)
+
+        if not all_nodes:
+            all_nodes = _search_zones(
+                [None], question_embedding, question, top_k
+            )
+            if all_nodes:
+                target_zones = ["all (fallback)"]
 
         if not all_nodes:
             return f"No relevant information found in the graph for: {question}"
