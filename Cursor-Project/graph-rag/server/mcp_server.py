@@ -31,23 +31,17 @@ sys.path.insert(0, _graph_rag_root)
 
 os.environ.setdefault("GRAPH_RAG_WORKSPACE", _workspace_root)
 
+print("GraphRAG: preloading embedding model...", file=sys.stderr, flush=True)
+from core.llm_client import preload_embed_model
+try:
+    preload_embed_model()
+    print("GraphRAG: embedding model ready", file=sys.stderr, flush=True)
+except Exception as e:
+    print(f"GraphRAG: embedding preload failed: {e}", file=sys.stderr, flush=True)
+
 from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("GraphRAG")
-
-import sys
-import threading
-
-def _preload_embedding_model():
-    try:
-        print("GraphRAG: loading embedding model...", file=sys.stderr)
-        from core.llm_client import preload_embed_model
-        preload_embed_model()
-        print("GraphRAG: embedding model ready", file=sys.stderr)
-    except Exception as e:
-        print(f"GraphRAG: embedding preload failed: {e}", file=sys.stderr)
-
-threading.Thread(target=_preload_embedding_model, daemon=True).start()
 
 
 def _get_graph():
