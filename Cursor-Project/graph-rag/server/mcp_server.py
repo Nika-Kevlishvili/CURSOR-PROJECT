@@ -35,14 +35,17 @@ from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("GraphRAG")
 
+import sys
 import threading
+
 def _preload_embedding_model():
-    """Load sentence-transformers model in background so first query is fast."""
     try:
+        print("GraphRAG: loading embedding model...", file=sys.stderr)
         from core.llm_client import preload_embed_model
         preload_embed_model()
-    except Exception:
-        pass
+        print("GraphRAG: embedding model ready", file=sys.stderr)
+    except Exception as e:
+        print(f"GraphRAG: embedding preload failed: {e}", file=sys.stderr)
 
 threading.Thread(target=_preload_embedding_model, daemon=True).start()
 

@@ -6,6 +6,7 @@ Embeddings: sentence-transformers (all-MiniLM-L6-v2, runs on CPU, 384 dimensions
 """
 
 import os
+import threading
 
 import yaml
 from openai import OpenAI
@@ -13,7 +14,8 @@ from openai import OpenAI
 _CONFIG_PATH = os.path.join(os.path.dirname(__file__), "..", "config", "zones.yaml")
 
 _embed_model = None
-_embed_loading = False
+_embed_ready = threading.Event()
+_embed_lock = threading.Lock()
 
 
 def _load_llm_config() -> dict:
@@ -22,18 +24,24 @@ def _load_llm_config() -> dict:
 
 
 def _get_embed_model():
-    global _embed_model, _embed_loading
-    if _embed_model is None and not _embed_loading:
-        _embed_loading = True
-        from sentence_transformers import SentenceTransformer
-        _embed_model = SentenceTransformer("all-MiniLM-L6-v2")
-        _embed_loading = False
+    global _embed_model
+    with _embed_lock:
+        if _embed_model is None:
+            from sentence_transformers import SentenceTransformer
+            _embed_model = SentenceTransformer("all-MiniLM-L6-v2")
+            _embed_ready.set()
     return _embed_model
 
 
 def preload_embed_model():
-    """Call at server startup to avoid cold-start timeout on first query."""
+    """Load in background thread; callers wait via _embed_ready event."""
     _get_embed_model()
+
+
+def wait_for_embed_model(timeout: float = 60.0):
+    """Block until the embedding model is loaded (max timeout seconds)."""
+    _embed_ready.wait(timeout=timeout)
+    return _embed_model
 
 
 class LLMClient:
@@ -66,11 +74,13 @@ class LLMClient:
         return response.choices[0].message.content or ""
 
     def embed(self, text: str) -> list[float]:
+        _embed_ready.wait(timeout=60.0)
         model = _get_embed_model()
         embedding = model.encode(text, normalize_embeddings=True)
         return embedding.tolist()
 
     def embed_batch(self, texts: list[str], batch_size: int = 64) -> list[list[float]]:
+        _embed_ready.wait(timeout=60.0)
         model = _get_embed_model()
         embeddings = model.encode(texts, batch_size=batch_size, normalize_embeddings=True)
         return [e.tolist() for e in embeddings]
