@@ -13,6 +13,7 @@ from openai import OpenAI
 _CONFIG_PATH = os.path.join(os.path.dirname(__file__), "..", "config", "zones.yaml")
 
 _embed_model = None
+_embed_loading = False
 
 
 def _load_llm_config() -> dict:
@@ -21,11 +22,18 @@ def _load_llm_config() -> dict:
 
 
 def _get_embed_model():
-    global _embed_model
-    if _embed_model is None:
+    global _embed_model, _embed_loading
+    if _embed_model is None and not _embed_loading:
+        _embed_loading = True
         from sentence_transformers import SentenceTransformer
         _embed_model = SentenceTransformer("all-MiniLM-L6-v2")
+        _embed_loading = False
     return _embed_model
+
+
+def preload_embed_model():
+    """Call at server startup to avoid cold-start timeout on first query."""
+    _get_embed_model()
 
 
 class LLMClient:

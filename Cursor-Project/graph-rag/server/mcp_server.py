@@ -35,6 +35,17 @@ from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("GraphRAG")
 
+import threading
+def _preload_embedding_model():
+    """Load sentence-transformers model in background so first query is fast."""
+    try:
+        from core.llm_client import preload_embed_model
+        preload_embed_model()
+    except Exception:
+        pass
+
+threading.Thread(target=_preload_embedding_model, daemon=True).start()
+
 
 def _get_graph():
     from core.graph_client import GraphClient
@@ -58,7 +69,7 @@ def graph_query(question: str, zone: str = "", top_k: int = 10,
 
     Args:
         question: The question to answer
-        zone: Optional specific zone (phoenix_domain, api_and_repo_layout, test_cases, playwright_automation)
+        zone: Optional specific zone (contracts, billing, invoicing, payments, customers, products, service_operations, communications, reference_data)
         top_k: Number of results to retrieve per zone (default 10)
         use_llm_synthesis: Whether to use LLM to synthesize answer (default True)
     """
@@ -160,7 +171,7 @@ def graph_update(context_summary: str, zone: str = "",
             "Extract knowledge entities from the following context.\n"
             "Return a JSON array of objects, each with:\n"
             '  {"name": "...", "type": "Domain|Entity|BusinessProcess|Validation|Endpoint|DTO", '
-            '"description": "...", "zone": "phoenix_domain|api_and_repo_layout|test_cases|playwright_automation"}\n\n'
+            '"description": "...", "zone": "contracts|billing|invoicing|payments|customers|products|service_operations|communications|reference_data"}\n\n'
             f"Context:\n{context_summary}\n\nJSON array:"
         )
         raw = llm.generate(extraction_prompt, temperature=0.0, max_tokens=1500)
@@ -179,7 +190,7 @@ def graph_update(context_summary: str, zone: str = "",
 
         nodes_added = 0
         for entity in entities:
-            entity_zone = zone or entity.get("zone", "phoenix_domain")
+            entity_zone = zone or entity.get("zone", "contracts")
             uid = f"chat:{entity_zone}:{entity['name'].lower().replace(' ', '_')}"
             embedding = llm.embed(f"{entity['name']}: {entity['description']}")
             graph.upsert_node(
