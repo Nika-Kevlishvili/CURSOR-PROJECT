@@ -143,7 +143,7 @@ When **bug class = External** and Step 0 stored **`externalProjectKey`** (e.g. *
 
 **Review file:** Record **Bug class** = External; **Issue Type** = Bug; **Board** = `externalProjectKey`; **Parent** = —; include **Epic Link**, **Fix version** when known (ask user or resolve via createmeta before Step 5a).
 
-**Step 0:** Tester/reporter from `.env` (same as Internal). No chapter-subtask assignee for External. A parent key in the user message for **context only** does **not** set Jira `parent` on External creates.
+**Step 0:** **Reporter** from `.env` (current user). **Tester** from `.env` (`JIRA_REPORTER_EMAIL` lookup). No chapter-subtask assignee for External. A parent key in the user message for **context only** does **not** set Jira `parent` on External creates.
 
 **Step 5a — `createJiraIssue` example (External Bug — GB shown as reference):**
 
@@ -159,7 +159,7 @@ When **bug class = External** and Step 0 stored **`externalProjectKey`** (e.g. *
     "labels": ["Frontend"],
     "fixVersions": [{ "name": "<fix version name>" }],
     "customfield_10008": "<Epic issue key, e.g. GB-1501>",
-    "customfield_10095": { "accountId": "<tester accountId from Step 0>" },
+    "customfield_10095": { "accountId": "<testerAccountId from Step 0 — current user for External>" },
     "environment": {
       "type": "doc",
       "version": 1,
@@ -177,31 +177,45 @@ When **bug class = External** and Step 0 stored **`externalProjectKey`** (e.g. *
 
 **Steps 5b–5d:** Same as Internal split ADF — **5b** screenshot, **5d** verify `customfield_10103`, **5c** patch **`customfield_10103` only** when **5d** fails.
 
-**Hook note:** `block-bugreview-unapproved-jira.ps1` guards **`Internal Bug`** only. External **Bug** still requires Step 4 Agree and `# Bug Review — APPROVED` before create; approval is workflow **MUST**, not hook-enforced for External.
+**Hook note:** `block-bugreview-unapproved-jira.ps1` guards **`Internal Bug`** and External **`Bug`**. Requires `# Bug Review — APPROVED` and `.active-bugreview` sidecar (Step 4 On Agree). Resolves review file via sidecar → single APPROVED scan → latest mtime fallback.
 
 ---
 
 ## Step-by-Step Workflow
 
-**Entry:** Start at **Step 0** as soon as the user invokes the bug reporter. There is **no** pre-registration validity question. Jira consent is **Step 4 only** (after the review file is on disk). The `beforeMCPExecution` hook `block-bugreview-unapproved-jira.ps1` blocks `createJiraIssue` for Internal Bug unless the review file first line is `# Bug Review — APPROVED`.
+**Entry:** Start at **Step 0** as soon as the user invokes the bug reporter. There is **no** pre-registration validity question. **Step 3.5** (MUST offer Validate/Skip/Cancel) may run **bug-validator** (Rule 32) against the review file before Jira consent. Jira consent is **Step 4 only** (after Step 3 and Step 3.5 resolved). The `beforeMCPExecution` hook `block-bugreview-unapproved-jira.ps1` blocks `createJiraIssue` for **Internal Bug** and **Bug** unless the review file first line is `# Bug Review — APPROVED` and `.active-bugreview` sidecar points to that file.
 
 ---
 
-### Step 0 — Resolve board, sprint, tester, and assignee
+### Step 0 — Resolve board, sprint, reporter, tester, and assignee
 
-#### Tester — ALWAYS from `.env` (Option B, mandatory)
+#### Reporter — ALWAYS current user from `.env` (mandatory)
 
-**Regardless of whether a parent ticket is provided or not**, the tester is always the current user (the person running the bug reporter), never taken from the parent ticket's reporter field.
+**Regardless of bug class or parent ticket**, the Jira **reporter** is always the person running the bug reporter (`JIRA_REPORTER_EMAIL` in `.env`) — never taken from the parent ticket's `fields.reporter`.
 
 Do this first, before any other Step 0 logic:
 
-1. Run via Shell: read `Cursor-Project/.env`, parse `JIRA_REPORTER_EMAIL` (the reporter/tester's email), `JIRA_EMAIL` (the API token owner's email), and `JIRA_API_TOKEN`
+1. Run via Shell: read `Cursor-Project/.env`, parse `JIRA_REPORTER_EMAIL`, `JIRA_EMAIL`, and `JIRA_API_TOKEN`
 2. Call the Jira REST API to find the reporter user:
-   `GET https://api.atlassian.com/ex/jira/ad451d5c-7331-46f8-9a47-f51dc8e6bbde/rest/api/3/user/search?query=<JIRA_REPORTER_EMAIL>` with Basic auth using `JIRA_EMAIL:JIRA_API_TOKEN` (the token owner's credentials are used for auth; we are only searching for the reporter user by their email)
-3. If the lookup succeeds: store `accountId` and `displayName` as **tester** — also store as **currentUserAccountId** (used for reporter in Step 5a)
-4. If the lookup fails: set tester = empty, currentUserAccountId = empty
+   `GET https://api.atlassian.com/ex/jira/ad451d5c-7331-46f8-9a47-f51dc8e6bbde/rest/api/3/user/search?query=<JIRA_REPORTER_EMAIL>` with Basic auth using `JIRA_EMAIL:JIRA_API_TOKEN`
+3. If the lookup succeeds: store `accountId` as **`currentUserAccountId`** and `displayName` as **`reporterDisplayName`** (used for reporter in Step 5a)
+4. If the lookup fails: set `currentUserAccountId` = empty, `reporterDisplayName` = empty
 
 ---
+
+#### Tester — by bug class
+
+| Bug class | Parent | Tester source |
+|-----------|--------|---------------|
+| **Internal** | Yes | **QA chapter subtask** assignee on parent (see below) |
+| **Internal** | No | **Current user** — same `.env` lookup as reporter (`JIRA_REPORTER_EMAIL`) |
+| **External** | — | **Current user** — same `.env` lookup as reporter (`JIRA_REPORTER_EMAIL`) |
+
+**External / Internal without parent:** After reporter lookup above, set **tester** = `reporterDisplayName` and **testerAccountId** = `currentUserAccountId` (same person as reporter).
+
+**Internal with parent:** Resolve tester from the parent's **QA chapter subtask** (same pattern as dev assignee from Frontend/Backend/DB subtasks) — see **When `bugClass` = Internal and a parent Jira ticket key is provided** below. Do **not** use `.env` or parent `fields.reporter` for Internal tester when a parent exists.
+
+Never use `fields.reporter` from the parent ticket as tester or reporter.
 
 #### Bug class (Step 0)
 
@@ -247,7 +261,7 @@ Store **`bugClass`** for the review file and Step 5a.
    - `project.key` → board for the new bug
    - `fields.sprint` or `fields.customfield_10020` → sprint name/id; check both if needed
    - `fields.subtasks` → list of all chapter subtasks (each entry contains `key` and `fields.summary`)
-3. **Resolve assignee from chapter subtasks** (do this after Step 1 determines the bug label if not already known from context):
+3. **Resolve assignee from dev chapter subtasks** (after Step 1 determines the bug label if not already known):
    - Inspect each subtask summary for keywords that match the bug label:
      - Bug label **Frontend** → subtask whose summary contains `Frontend`
      - Bug label **Backend** → subtask whose summary contains `Backend`
@@ -255,13 +269,20 @@ Store **`bugClass`** for the review file and Step 5a.
    - Call `getJiraIssue` for the matched subtask to get its full details
    - Extract `fields.assignee.displayName` + `fields.assignee.accountId` from that subtask → **assignee**
    - If no matching chapter subtask is found, or the matched subtask has no assignee → fall back to `fields.assignee` from the parent ticket itself
-   - If the bug label is not yet known at Step 0 time (because details come in Step 1): store the full `fields.subtasks` list and resolve the assignee at the end of Step 1 using the same matching rule above
+   - If the bug label is not yet known at Step 0 time: store the full `fields.subtasks` list and resolve assignee at the end of Step 1 using the same matching rule
+4. **Resolve tester from QA chapter subtask** (can run at Step 0 — does not depend on bug label):
+   - Find a subtask whose `fields.summary` contains **`QA`** or **`Test`** (case-insensitive)
+   - If multiple match, prefer a summary containing **`QA`** over **`Test`** only
+   - Call `getJiraIssue` for the matched subtask
+   - Extract `fields.assignee.displayName` + `fields.assignee.accountId` → **tester** / **testerAccountId**
+   - If no matching QA/Test subtask exists, or the matched subtask has no assignee → **tester** = empty (do not fall back to parent reporter or `.env`)
 
 **When `bugClass` = Internal and no parent ticket is provided:**
 
 1. Ask the user: "Which Phoenix Phase 2 board should this bug be reported on? (e.g. PHN)"
 2. Ask: "Which sprint should this be added to?"
-3. **Assignee** = empty (no chapter subtask to resolve from)
+3. **Assignee** = empty (no dev chapter subtask to resolve from)
+4. **Tester** = current user from `.env` reporter lookup (`testerAccountId` = `currentUserAccountId`, or empty if lookup failed)
 
 **When `bugClass` = External:**
 
@@ -347,7 +368,7 @@ Where:
 | **Sprint**    | <sprint name or — if unknown> |
 | **Priority**  | <Highest / High / Medium / Low / Lowest> |
 | **Assignee**  | <display name, or — if not set> |
-| **Tester**    | <display name (from parent reporter), or — if not set> |
+| **Tester**    | Internal + parent: QA/Test chapter subtask assignee; Internal no parent / External: current user from `.env`; or — if unresolved |
 | **Label**     | <Backend / Frontend / DB> |
 
 > Priority rationale: <one sentence explaining priority choice>
@@ -397,12 +418,33 @@ Where:
 
 ---
 
+## Pre-create validation
+
+| Field | Value |
+|-------|-------|
+| **Status** | Not run / Skipped / Completed / Stopped |
+| **Verdict** | — (VALID / NOT VALID / NEEDS CLARIFICATION / NEEDS APPROVAL / INSUFFICIENT EVIDENCE / PROCESS BLOCKED) |
+| **Confidence** | — |
+| **Validated at** | — |
+
+> Populated by Step 3.5 when user chooses **Validate**. Leave **Status** = **Not run** on first save.
+
+### Validation summary
+
+<One short paragraph — verdict + key evidence, or "Skipped by user">
+
+### Quality Findings (from validator)
+
+- <Finding or "None">
+
+---
+
 *Awaiting your response: **Agree** to submit to Jira, **Disagree** to request changes.*
 ```
 
 **Screenshot handoff gate (Step 3 — MANDATORY when user provided an image):**
 
-Run **immediately after** writing the review file and **before** displaying the clickable link or Step 4 Agree. Chat images live under Cursor `assets/` and may be ephemeral — the review-folder copy is the **durable** file Step **5b** uploads.
+Run **immediately after** writing the review file and **before** displaying the clickable link or Step 3.5. Chat images live under Cursor `assets/` and may be ephemeral — the review-folder copy is the **durable** file Step **5b** uploads.
 
 **When `image_files` is present in the user message (user attached at least one image):**
 
@@ -422,15 +464,15 @@ if (-not (Test-Path -LiteralPath $dest) -or (Get-Item -LiteralPath $dest).Length
 ```
 
 5. **On verify success:** Update the review file **Screenshots:** section — `Actual: <review-basename>_screenshot.png`. If second image copied and verified, set `Expected: <review-basename>_screenshot_expected.png`.
-6. **On verify failure:** **STOP** — do **not** display the Agree link or proceed to Step 4. Tell the user the copy failed and ask them to **re-attach the image in chat** or provide a local file path, then retry Step 3 copy. **MUST NOT** list a screenshot filename in the review file when the destination file does not exist on disk.
+6. **On verify failure:** **STOP** — do **not** display the review link for Step 3.5 or proceed to Step 3.5. Tell the user the copy failed and ask them to **re-attach the image in chat** or provide a local file path, then retry Step 3 copy. **MUST NOT** list a screenshot filename in the review file when the destination file does not exist on disk.
 
 **Gate rules (BLOCK):**
 
 - **MUST NOT** use `-ErrorAction SilentlyContinue` on screenshot copy.
 - **MUST NOT** write `Screenshots: Actual: <filename>` unless `Test-Path` on that destination succeeds and file size &gt; 0.
-- **MUST NOT** proceed to Step 4 Agree while user provided an image but Actual screenshot handoff failed.
+- **MUST NOT** proceed to Step 3.5 while user provided an image but Actual screenshot handoff failed.
 
-**When no image was provided in chat:** Set `Screenshots: Actual: —` and `Expected: —`; skip copy; proceed to Step 4.
+**When no image was provided in chat:** Set `Screenshots: Actual: —` and `Expected: —`; skip copy; proceed to Step 3.5.
 
 **Screenshot scope:** Not Frontend/UI-only. Valid evidence includes UI captures, browser network tab, Postman/Swagger response, application logs, SQL/query result grids, DB client views — embed under **Actual Result** (and **Expected Result** for second image) when upload succeeds at Step **5b** / embed at **5c**, for **any** Backend/Frontend/DB label.
 
@@ -441,14 +483,149 @@ Write this file to disk using the file write tool. After writing:
 Review file: [BugReview_<slug>_<HHMM>.md](c:\Users\g.gamjashvili\new_cursor\CURSOR-PROJECT\Cursor-Project\reports\Bug Reports\YYYY\<month>\<DD>\BugReview_<slug>_<HHMM>.md)
 ```
 
-2. Immediately ask the Agree/Disagree question (Step 4) — do NOT display the full file content in chat; the clickable link is sufficient for the user to review it.
+2. Proceed to **Step 3.5** — do NOT display the full file content in chat; the clickable link is sufficient for the user to review it.
+
+---
+
+### Step 3.5 — Pre-create validation (bug-validator)
+
+**Purpose:** Before Jira consent, optionally run **Rule 32** validation against the draft review file to confirm the bug is real and the report aligns with Confluence, code, and Swagger. **No changes to bug-validator** — the reporter delegates via **Task** (`subagent_type: bug-validator`) and passes the review file as the bug description.
+
+**When:** Immediately after Step 3 (review file on disk, screenshot handoff passed if applicable, clickable link shown). **MUST** offer the AskQuestion below — user may choose Skip.
+
+**AskQuestion — standalone, exactly one question, three options:**
+
+```
+Validate this bug before reporting to Jira?
+  ● Validate (recommended)
+  ● Skip validation
+  ● Cancel
+```
+
+**On Cancel (#8, #12):**
+- Set review header to `# Bug Review — CANCELLED`
+- Replace the Agree/Disagree footer line with: `*Report cancelled — do not submit to Jira.*`
+- **Clear sidecar** (see **Active review sidecar** below)
+- Stop workflow. Do not call Step 4 or create Jira ticket.
+
+**On Skip validation:**
+- Update review file **Pre-create validation** section: **Status** = `Skipped`, **Verdict** = `—`, summary = `Skipped by user at Step 3.5.`
+- Proceed to **Step 4**.
+
+**On Validate:**
+
+1. **Resolve environment** from review file **Environment** line (e.g. `Dev2`). If missing or ambiguous → **AskQuestion** with six envs (`dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`) before delegating. Do not silently default to `test`.
+
+2. **Parent prefetch (#9 — Internal + parent key):** Before Task delegation, when `bugClass = Internal` and parent ticket key exists:
+   - Call `getJiraIssue` on the **parent** (delivery ticket, e.g. `PHN-3795`) with fields for summary, description, and links
+   - Extract **parent summary** and **linked Confluence URLs** from parent description, comments, or remote links when available
+   - Pass into the Task prompt as **Parent delivery context** (below)
+
+3. **Delegate to bug-validator** via **Task** tool:
+
+```
+subagent_type: bug-validator
+description: Pre-create bug validation for BugReview
+prompt: |
+  Pre-create validation for a Phoenix bug **review file** (no Jira bug ticket exists yet).
+
+  **Review file path:** <full absolute path to BugReview_*.md>
+  **Environment:** <env from review file or user answer — user must have confirmed>
+  **Bug class:** Internal / External
+
+  **Parent delivery context (when Internal + parent):**
+  **Parent delivery ticket:** <parent key>
+  **Parent summary:** <from getJiraIssue parent>
+  **Linked Confluence from parent:** <urls or none>
+  **Phase 2 pre-create context:** Apply bug-validation SKILL Step 2c user override:
+    Phase 2 excluded: no (pre-create Ph2 delivery — parent <key>).
+  Validate expected behavior against parent + linked Confluence + review file — not Phase 1 wiki alone.
+
+  **Instructions:**
+  - There is **no Jira bug key** — treat the **Bug Content** and **Code evidence** sections of the review file as the bug report (Steps to reproduce, Expected, Actual, Technical details, Example).
+  - Run full Rule 32 workflow per `.cursor/skills/phoenix-bug-validation/SKILL.md`.
+  - If screenshots exist next to the review file (`*_screenshot.png`), note their paths as visual evidence.
+  - Return: **verdict** (one of VALID / NOT VALID / NEEDS CLARIFICATION / NEEDS APPROVAL / INSUFFICIENT EVIDENCE / PROCESS BLOCKED), **confidence score + zone**, **Validation summary** (2–4 sentences), **Quality Findings** bullets (Rule QA.2), and for NEEDS CLARIFICATION / NEEDS APPROVAL a **What needs clarification** list.
+  - Do NOT create Jira tickets or edit Phoenix code.
+```
+
+4. **If bug-validator Task fails or times out (#10):** **AskQuestion:** Retry validation / **Cancel** only — **do not** offer Skip (Skip is only on the initial Step 3.5 ask).
+
+5. **Append results** to the review file **Pre-create validation** section (edit in place, same path):
+   - **Status** = `Completed` on VALID; `Stopped` on all stop verdicts
+   - **Verdict**, **Confidence**, **Validated at** (timestamp)
+   - **Validation summary** and **Quality Findings** from subagent output
+
+6. **Show validation outcome in chat** (short — verdict + confidence + link to updated review file). Do not dump the full validator report unless the user asks.
+
+7. **Gate Step 4** by verdict — **strict; no "proceed anyway":**
+
+| Verdict | Action |
+|---------|--------|
+| **VALID** | Proceed to **Step 4** Agree/Disagree |
+| **NOT VALID** | **Stop**. Set header `# Bug Review — VALIDATION STOPPED`. Replace footer with `*Validation stopped — do not submit to Jira.*`. **Clear sidecar**. Explain **why**. **Do not** offer Agree |
+| **NEEDS CLARIFICATION** | **Stop**. Same header/footer/sidecar as NOT VALID. List **what needs clarification**. **Do not** offer Agree |
+| **NEEDS APPROVAL** | **Stop** (same as NEEDS CLARIFICATION) |
+| **INSUFFICIENT EVIDENCE** | **Stop**. Same header/footer/sidecar. Explain missing evidence. **Do not** offer Agree |
+| **PROCESS BLOCKED** | **Stop**. Same header/footer/sidecar. Explain blocker. **Do not** offer Agree |
+
+**Footer patch (#12):** On stop or cancel only — replace the line `*Awaiting your response: **Agree** to submit to Jira, **Disagree** to request changes.*` Do **not** change Step 3 initial template on first save; patch footer only when stopping or cancelling.
+
+**Chat template on stop:**
+
+```
+Validation: <VERDICT> (<confidence> <zone>)
+
+Why: <2–4 sentences with Confluence/code evidence — for NOT VALID>
+
+What needs clarification: <bullets — for NEEDS CLARIFICATION / NEEDS APPROVAL only>
+
+Quality Findings:
+- <Finding bullets>
+
+Bug report stopped. Review file updated. No Jira ticket will be created.
+```
+
+**After Step 4 Disagree loop:** When the user edits the review file, reset header to `# Bug Review — PENDING APPROVAL`, clear stale validation (Status = `Not run`), **clear sidecar**, and return to **Step 3.5** (re-offer Validate / Skip / Cancel) before Step 4.
+
+**Footer when validation ran:** append `bug-validator` to agents involved line.
+
+---
+
+### Active review sidecar (hook file resolution)
+
+**Path:** `Cursor-Project/reports/Bug Reports/.active-bugreview`  
+**Content:** Single line — absolute path to the review file for the current bug-report session.
+
+| When | Action |
+|------|--------|
+| **Step 4 On Agree** | **Write** sidecar with full path to current review file (after APPROVED header) |
+| **Step 5 post-create** | **Delete** sidecar |
+| **VALIDATION STOPPED / CANCELLED** | **Delete** sidecar |
+| **Step 4 Disagree** (before re-validate) | **Delete** sidecar if present |
+
+**Write (Step 4 On Agree — after APPROVED header):**
+
+```powershell
+$sidecar = Join-Path $workspaceRoot "Cursor-Project\reports\Bug Reports\.active-bugreview"
+Set-Content -LiteralPath $sidecar -Value "<reviewFileAbsolutePath>" -NoNewline -Encoding utf8
+```
+
+**Clear:**
+
+```powershell
+$sidecar = Join-Path $workspaceRoot "Cursor-Project\reports\Bug Reports\.active-bugreview"
+if (Test-Path -LiteralPath $sidecar) { Remove-Item -LiteralPath $sidecar -Force }
+```
+
+Hook resolution order: sidecar path (must be APPROVED) → exactly one APPROVED scan → latest mtime fallback. Multiple APPROVED files without valid sidecar → **deny**.
 
 ---
 
 ### Step 4 — Agree / Disagree gate
 
 > **CRITICAL — APPROVAL AskQuestion (Step 4 only):**
-> This question may ONLY be asked after the review file has been written to disk (Step 3 complete), the **screenshot handoff gate** has passed when the user provided an image, and the clickable link has been displayed. Use a standalone **AskQuestion** call for Agree/Disagree — do not batch it with unrelated questions in the same call.
+> This question may ONLY be asked after Step 3 complete, Step 3.5 resolved (**VALID** path or **Skip validation**), the **screenshot handoff gate** has passed when the user provided an image, the clickable link has been displayed, and the review file header is **not** `# Bug Review — VALIDATION STOPPED`. Use a standalone **AskQuestion** call for Agree/Disagree — do not batch it with unrelated questions in the same call.
 
 After the review file link is shown, ask using **AskQuestion** with exactly **one question** and exactly **two options**:
 
@@ -462,7 +639,8 @@ Is this bug ready to be reported on Jira?
 
 **On Agree:**
 - **FIRST** update the review file's first line from `# Bug Review — PENDING APPROVAL` to `# Bug Review — APPROVED` (edit in place, same file, same path)
-- This write is required before `createJiraIssue` — the `beforeMCPExecution` hook reads this line to verify consent and will block ticket creation if the file still says `PENDING APPROVAL`
+- **SECOND** write **`.active-bugreview`** sidecar with the full absolute path to this review file (see **Active review sidecar**)
+- This write is required before `createJiraIssue` — the hook reads APPROVED header and sidecar path; will block if PENDING or sidecar missing when multiple APPROVED reviews exist
 - Then proceed to Step 5
 
 **On Disagree:**
@@ -475,7 +653,9 @@ Is this bug ready to be reported on Jira?
 Updated review file: [BugReview_<slug>_<HHMM>.md](<full path>)
 ```
 
-- Immediately ask the same Agree/Disagree question again (loop back to the top of Step 4)
+- Reset review header to `# Bug Review — PENDING APPROVAL` and clear **Pre-create validation** (Status = `Not run`) if previously set
+- **Clear sidecar** if present
+- Return to **Step 3.5** (re-offer Validate / Skip / Cancel) before Step 4 Agree
 - This loop repeats until the user selects Agree or explicitly cancels
 
 **On explicit cancel / "don't report" / "abort":**
@@ -523,6 +703,7 @@ Do **not** expand the stub in later steps. **MUST NOT** put the full bug body in
     "priority": { "name": "<priority name>" },
     "labels": ["<Backend or Frontend>"],
     "reporter": { "accountId": "<currentUserAccountId from Step 0, or omit if empty>" },
+    "customfield_10095": { "accountId": "<testerAccountId from Step 0, or omit if empty>" },
     "customfield_10103": { "type": "doc", "version": 1, "content": [ /* Key details colored ADF — full template */ ] }
   }
 }
@@ -578,7 +759,8 @@ Build the `description` as a markdown string with this structure:
   "additional_fields": {
     "priority": { "name": "<priority name>" },
     "labels": ["<Backend or Frontend>"],
-    "reporter": { "accountId": "<currentUserAccountId from Step 0, or omit if empty>" }
+    "reporter": { "accountId": "<currentUserAccountId from Step 0, or omit if empty>" },
+    "customfield_10095": { "accountId": "<testerAccountId from Step 0, or omit if empty>" }
   }
 }
 ```
@@ -1226,8 +1408,9 @@ Split-ADF **`customfield_10103`** uses **Body text formatting rules (customfield
 **After Steps 5a–5b–5d (and conditional 5c when split ADF; legacy 5c) complete:**
 1. Return the Jira URL: `https://oppa-support.atlassian.net/browse/<ISSUE_KEY>`
 2. If a screenshot was uploaded in Step 5b: confirm "Screenshot attached: `<ATTACHMENT_FILENAME>`" and whether Key details embed succeeded (`customfield_10103`)
-3. Update the review file header from `PENDING APPROVAL` to `CREATED — <ISSUE_KEY>` (edit in place)
-4. Display the confidence block and agents footer
+3. Update the review file header from `# Bug Review — APPROVED` to `# Bug Review — CREATED — <ISSUE_KEY>` (edit in place)
+4. **Delete** `.active-bugreview` sidecar
+5. Display the confidence block and agents footer
 
 ---
 
@@ -1242,6 +1425,8 @@ Include a confidence score in the final response. Base: 40. Evidence factors:
 | Board/sprint confirmed | +10 |
 | Priority determined from clear description | +10 |
 | User explicitly APPROVED | +10 |
+| Pre-create validation VALID (Step 3.5) | +10 |
+| Pre-create validation skipped | -5 |
 | Missing bug fields (per missing field) | -5 each |
 | Board inferred (no parent ticket) | -5 |
 | Assumption made (per assumption) | -5 |
@@ -1268,10 +1453,13 @@ Reason: <1-2 sentences>
 | Error | Action |
 |-------|--------|
 | `getJiraIssue` MCP fails | Retry once; if still fails, ask user to provide board/sprint/assignee/tester manually |
+| Internal + parent: no QA/Test subtask or QA subtask unassigned | Leave Jira **Tester** unset; show **Tester: —** in review file; proceed if user Agrees |
 | `createJiraIssue` fails — standard Description required | Retry **once** with minimal stub: summary line + `Full details in Description formatted.` — do not add full body |
 | `createJiraIssue` fails — empty/rejected `customfield_10103` | Retry once with minimal 10103 stub paragraph; then **5b** → **5d** → conditional **5c** with full ADF |
 | `createJiraIssue` MCP fails (other) | Show error to user; do not retry silently; ask user how to proceed |
-| Step 3 screenshot handoff fails (copy or verify — destination missing/empty) | **STOP** before Step 4; ask user to re-attach image or provide path; **MUST NOT** list screenshot filename in review file or proceed to Jira create until handoff passes |
+| Step 3 screenshot handoff fails (copy or verify — destination missing/empty) | **STOP** before Step 3.5 / Step 4; ask user to re-attach image or provide path; **MUST NOT** list screenshot filename in review file or proceed to Jira create until handoff passes |
+| Step 3.5 validation NOT VALID / NEEDS CLARIFICATION / NEEDS APPROVAL / INSUFFICIENT EVIDENCE / PROCESS BLOCKED | **Stop**; set `# Bug Review — VALIDATION STOPPED`; patch footer; **clear sidecar**; **MUST NOT** offer Step 4 Agree |
+| bug-validator Task fails or times out | **AskQuestion:** Retry validation / **Cancel** only (no Skip) |
 | Screenshot upload (Step 5b) script exits with code 1 (auth error) | **Notify user at end of workflow:** `⚠️ Screenshot upload failed: Jira API token authentication error. Check JIRA_EMAIL and JIRA_API_TOKEN in Cursor-Project/.env.` Proceed to **5d** without screenshot |
 | Screenshot upload (Step 5b) script exits with code 2 | Warn user to attach manually; include the file path and Jira ticket URL; proceed to **5d** without screenshot |
 | `editJiraIssue` (Step 5c legacy or conditional split) fails | Warn user that ADF formatting was not applied; do not skip silently |
@@ -1287,4 +1475,4 @@ Reason: <1-2 sentences>
 
 ## Agents involved footer
 
-Always end with: `Agents involved: phoenix-bug-reporter`
+Always end with: `Agents involved: phoenix-bug-reporter` (+ `bug-validator` when Step 3.5 Validate ran)

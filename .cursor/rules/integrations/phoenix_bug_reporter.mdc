@@ -48,7 +48,30 @@ globs:
 
 ### Workflow entry — no pre-registration question
 
-The agent MUST begin at **Step 0** (class, board/project, sprint, tester, parent) without asking whether the bug is “valid for registration.” User consent for Jira is collected only in the **approval gate** below, after the review file exists. Hook `block-bugreview-unapproved-jira.ps1` enforces `# Bug Review — APPROVED` before `createJiraIssue` for Internal Bug.
+The agent MUST begin at **Step 0** (class, board/project, sprint, tester, parent) without asking whether the bug is “valid for registration.” **Step 3.5** **MUST** offer **Validate / Skip / Cancel** before Jira consent. User consent for Jira is collected only in the **approval gate** below, after Step 3 and Step 3.5 (VALID or Skip). Hook `block-bugreview-unapproved-jira.ps1` enforces `# Bug Review — APPROVED` and `.active-bugreview` sidecar before `createJiraIssue` for **Internal Bug** and **Bug**.
+
+---
+
+### Pre-create validation (Step 3.5)
+
+After the review file is saved and the clickable link is shown, the agent **MUST** offer **Validate / Skip validation / Cancel** via AskQuestion.
+
+- **Validate:** when Internal + parent key, **prefetch parent** via `getJiraIssue` before delegating to **bug-validator** (Rule 32); pass parent summary + linked Confluence in Task prompt with Phase 2 override (see SKILL).
+- **VALID** or **Skip validation** → proceed to Step 4 Agree/Disagree.
+- **NOT VALID**, **NEEDS CLARIFICATION**, **NEEDS APPROVAL**, **INSUFFICIENT EVIDENCE**, or **PROCESS BLOCKED** → **stop**; header `# Bug Review — VALIDATION STOPPED`; patch footer; **clear sidecar**; **MUST NOT** offer Agree.
+- **Cancel** → header `# Bug Review — CANCELLED`; patch footer; **clear sidecar**; stop workflow.
+- **bug-validator Task failure:** Retry / **Cancel** only — no Skip on failure path.
+- Pre-create validation content is **optional** (Skip allowed on initial ask); post-validation stop is **mandatory** (no override to Jira).
+
+---
+
+### Active review sidecar
+
+**Path:** `Cursor-Project/reports/Bug Reports/.active-bugreview` (single line = absolute path to active review file)
+
+- **Written:** Step 4 On Agree (after APPROVED header)
+- **Cleared:** Step 5 CREATED, VALIDATION STOPPED, CANCELLED, Step 4 Disagree before re-validation
+- **Hook resolution:** sidecar → single APPROVED file scan → latest mtime fallback; multiple APPROVED without sidecar → **deny**
 
 ---
 
@@ -64,9 +87,11 @@ The required sequence is:
 
 3. Display the file as a **clickable markdown link** — do NOT dump full content into chat
 
-4. Immediately ask using **AskQuestion**: "Is this bug ready to be reported on Jira?" → **Agree** / **Disagree**
+4. **Step 3.5:** Ask Validate / Skip / Cancel; on Validate run **bug-validator**; on stop verdicts end workflow with explanation
 
-5. **On Agree** → call `createJiraIssue`
+5. Ask using **AskQuestion**: "Is this bug ready to be reported on Jira?" → **Agree** / **Disagree** (only after Step 3.5 VALID or Skip; header must not be `VALIDATION STOPPED` or `CANCELLED`)
+
+6. **On Agree** → write `.active-bugreview` sidecar → call `createJiraIssue`
 
 **On Disagree:**
 
@@ -80,9 +105,13 @@ The required sequence is:
 
 - Show the updated clickable link
 
-- Re-ask the same Agree/Disagree question (loop until Agree or explicit cancel)
+- **Clear sidecar**; reset validation section
+
+- **Return to Step 3.5** (Validate / Skip / Cancel) — then Step 4 when VALID or Skip (loop until Agree or explicit cancel)
 
 Skipping the approval gate is a **BLOCK**.
+
+Offering Step 4 Agree after Step 3.5 stop verdicts (NOT VALID, NEEDS CLARIFICATION, etc.) is a **BLOCK**.
 
 Displaying the full review file content in chat instead of the clickable link is a **MUST** violation.
 
@@ -100,29 +129,39 @@ If no parent ticket on Ph2 Internal: create standalone Internal Bug under the se
 
 ### Tester, reporter, and assignee
 
-#### Tester and reporter — always the current user (Option B, mandatory)
+#### Reporter — always the current user from `.env` (mandatory)
 
-**Regardless of whether a parent ticket is provided**, the tester and the Jira reporter are ALWAYS the current user running the bug reporter agent — never taken from the parent ticket's `fields.reporter`.
+**Regardless of bug class or parent ticket**, the Jira **reporter** is ALWAYS the current user running the bug reporter agent (`JIRA_REPORTER_EMAIL` in `.env`) — never taken from the parent ticket's `fields.reporter`.
 
 **Resolution (MUST execute at the start of Step 0):**
 
-1. Read `JIRA_REPORTER_EMAIL` from `Cursor-Project/.env` (the reporter/tester's email — must exist; see `.env`)
+1. Read `JIRA_REPORTER_EMAIL` from `Cursor-Project/.env`
 
-2. Call Jira user search: `GET .../rest/api/3/user/search?query=<JIRA_REPORTER_EMAIL>` with Basic auth using `JIRA_EMAIL:JIRA_API_TOKEN` (the token owner's credentials authenticate the search)
+2. Call Jira user search: `GET .../rest/api/3/user/search?query=<JIRA_REPORTER_EMAIL>` with Basic auth using `JIRA_EMAIL:JIRA_API_TOKEN`
 
-3. Use returned `accountId` and `displayName` for:
+3. Use returned `accountId` for **Reporter** in the `createJiraIssue` call (`additional_fields.reporter.accountId`)
 
-   - **Tester** field in the bug review file
-
-   - **Reporter** field in the `createJiraIssue` call (passed via `additional_fields.reporter.accountId`)
-
-4. If lookup fails → set tester = empty; omit reporter from `additional_fields`
+4. If lookup fails → omit reporter from `additional_fields`
 
 Setting reporter via `additional_fields` requires the API token owner to have "Modify Reporter" permission. If Jira returns a field-validation error for reporter, log it and continue — the ticket is still created under the token owner.
 
-Never use `fields.reporter` from the parent ticket as the tester. Violation is a **MUST**.
+Never use `fields.reporter` from the parent ticket as reporter. Violation is a **MUST**.
 
-#### Assignee — resolved from the matching chapter subtask
+#### Tester — by bug class
+
+| Bug class | Parent | Tester source |
+|-----------|--------|---------------|
+| **Internal** | Yes | **QA chapter subtask** assignee on parent (summary contains `QA` or `Test`, case-insensitive; prefer `QA`) |
+| **Internal** | No | **Current user** — same `.env` lookup as reporter |
+| **External** | — | **Current user** — same `.env` lookup as reporter |
+
+**Internal + parent:** Match subtask under parent whose summary contains **`QA`** or **`Test`**; use that subtask's **`fields.assignee`** as tester (`customfield_10095` at create). If no match or subtask unassigned → leave tester unset — do **not** fall back to parent reporter or `.env`.
+
+**External / Internal without parent:** Tester = same person as reporter from `.env` lookup.
+
+Never use `fields.reporter` from the parent ticket as tester. Violation is a **MUST**.
+
+#### Assignee — resolved from the matching dev chapter subtask
 
 When a parent ticket is provided **and bug class is Internal**, the assignee for the Internal Bug must be taken from the **chapter subtask** under the parent ticket that matches the bug's label — NOT from the parent ticket's own assignee field.
 
@@ -236,7 +275,7 @@ host: https://oppa-support.atlassian.net
 
 | Bug on Experiments board | Use `jira-bug` agent (Rule JIRA.0) |
 
-| Bug validation (is this a real bug?) | Use `bug-validator` agent (Rule 32) |
+| Bug validation (is this a real bug?) | Use `bug-validator` agent (Rule 32) — also optional **Step 3.5** inside phoenix-bug-reporter before Jira create |
 
 | Phoenix Q&A | Use `phoenix-qa` agent (Rule 0.2) |
 
@@ -275,6 +314,14 @@ After user Agree, the agent MUST execute all steps in this exact order:
 ### Compliance tiers
 
 - Skipping the approval gate before `createJiraIssue` → **BLOCK**
+
+- Skipping Step 3.5 AskQuestion (Validate / Skip / Cancel) → **MUST**
+
+- Skipping Step 3.5 stop on NOT VALID / NEEDS CLARIFICATION and proceeding to Jira → **BLOCK**
+
+- Creating Jira bug when multiple APPROVED review files exist and no valid `.active-bugreview` sidecar → hook **deny** (expected)
+
+- Offering Step 4 Agree after Step 3.5 stop verdicts (NOT VALID, NEEDS CLARIFICATION, NEEDS APPROVAL, INSUFFICIENT EVIDENCE, PROCESS BLOCKED) → **BLOCK**
 
 - Creating a bug on an unlisted board/project → **BLOCK**
 
