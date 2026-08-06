@@ -155,7 +155,7 @@ Never use `fields.reporter` from the parent ticket as reporter. Violation is a *
 | **Internal** | No | **Current user** — same `.env` lookup as reporter |
 | **External** | — | **Current user** — same `.env` lookup as reporter |
 
-**Internal + parent:** Match subtask under parent whose summary contains **`QA`** or **`Test`**; use that subtask's **`fields.assignee`** as tester (`customfield_10095` at create). If no match or subtask unassigned → leave tester unset — do **not** fall back to parent reporter or `.env`.
+**Internal + parent:** Match subtask under parent whose summary contains **`QA`** or **`Test`**; use that subtask's **`fields.assignee`** as tester (`customfield_10095` at create). If no match or subtask unassigned → **Step 1b AskQuestion** (Tester + **Leave unset** option); do **not** fall back to parent reporter or `.env`.
 
 **External / Internal without parent:** Tester = same person as reporter from `.env` lookup.
 
@@ -189,7 +189,28 @@ When a parent ticket is provided **and bug class is Internal**, the assignee for
 
 5. If no parent ticket → assignee = empty
 
-The assignee must never be guessed or invented. If the chapter subtask exists but is unassigned, leave the Jira assignee field unset.
+The assignee must never be guessed or invented. If the chapter subtask exists but is unassigned, or no matching subtask after parent fallback → **Step 1b AskQuestion** (Assignee + **Leave unset** option) unless user already named assignee in chat.
+
+---
+
+## Rule PHOENIX-BUG.1: Environment and Assignee/Tester gates [CRITICAL]
+
+**Scope:** Mandatory **AskQuestion** gates when auto-resolution leaves fields empty and the user did not specify them. Full procedure: **`.cursor/skills/phoenix-bug-reporter/SKILL.md`** Step **0b** and Step **1b**.
+
+### Environment gate (Step 0b)
+
+- Resolve env from: (1) explicit user message, (2) parent Jira `environment` field, (3) **AskQuestion** (Dev / Dev2 / Test / PreProd / Prod / Experiments).
+- **Forbidden inference (MUST NOT):** fix version names, PHN/Ph2 board or project key, parent sprint, prior session without "same as before", silent default to `Test`.
+- **Gate:** Do **not** write the Step 3 review file until **`resolvedEnvironment`** is set. Review file must show canonical env name, never bare `—`.
+
+### Assignee / Tester gate (Step 1b)
+
+- After Step 0 auto-resolution, if **Assignee** or **Tester** accountId is still empty and user did not name them → **AskQuestion** with candidate users + **Leave unset**.
+- **Leave unset:** review file shows `— (Leave unset — user confirmed)`; Step 5a **omits** that Jira field.
+- **Named user:** Step 5a **MUST** include `assignee_account_id` and/or `customfield_10095.accountId`.
+- **Gate:** Do **not** write review file or offer Step 4 Agree with bare `—` for assignee/tester without Step 1b ask or user naming them in chat.
+
+Skipping Step 0b or Step 1b AskQuestion when fields are unresolved is a **MUST** violation.
 
 ---
 
@@ -356,3 +377,13 @@ After user Agree, the agent MUST execute all steps in this exact order:
 - Asking user for priority instead of AI-determining it → **MUST**
 
 - Step 3 screenshot handoff: using `-ErrorAction SilentlyContinue` on copy, listing a screenshot filename without verified destination on disk, or proceeding to Step 4 Agree when user provided an image but handoff failed → **BLOCK**
+
+- Skipping Step **0b** environment AskQuestion when env unresolved → **MUST**
+
+- Inferring environment from fix version, Ph2 board, or sprint → **MUST NOT**
+
+- Skipping Step **1b** assignee/tester AskQuestion when fields unresolved → **MUST**
+
+- Offering Step 4 Agree with bare `—` for Environment, Assignee, or Tester (without Step 0b/1b resolution) → **BLOCK**
+
+- Creating Jira ticket without assignee/tester when user picked named users in Step 1b → **MUST NOT** (omit fields only after confirmed Leave unset)

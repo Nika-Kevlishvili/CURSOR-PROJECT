@@ -275,7 +275,7 @@ Store **`bugClass`** for the review file and Step 5a.
    - If multiple match, prefer a summary containing **`QA`** over **`Test`** only
    - Call `getJiraIssue` for the matched subtask
    - Extract `fields.assignee.displayName` + `fields.assignee.accountId` → **tester** / **testerAccountId**
-   - If no matching QA/Test subtask exists, or the matched subtask has no assignee → **tester** = empty (do not fall back to parent reporter or `.env`)
+   - If no matching QA/Test subtask exists, or the matched subtask has no assignee → **tester** = empty (do not fall back to parent reporter or `.env`); **Step 1b** must AskQuestion unless user already named tester in chat
 
 **When `bugClass` = Internal and no parent ticket is provided:**
 
@@ -290,11 +290,44 @@ Store **`bugClass`** for the review file and Step 5a.
 - **Assignee** = empty unless user specifies one for the external project.
 - Optional parent key in the message is **context only** — do **not** set Jira `parent` on create.
 
-Proceed to Step 1 when board/project (`board` or **`externalProjectKey`**) and class are resolved.
+Proceed to **Step 0b** when board/project (`board` or **`externalProjectKey`**) and class are resolved.
 
 ---
 
 **Deprecated — do not use:** treating “no parent” as Internal-only without asking class; auto-routing External requests to GB without **External project selection**.
+
+### Step 0b — Environment gate (MANDATORY)
+
+Resolve **`resolvedEnvironment`** before Step 1. Canonical procedure aligns with **`.cursor/skills/environment-resolver/SKILL.md`** (six envs only; no silent Test default).
+
+**Resolution order (strict):**
+
+1. **Explicit env in the current user message** — normalize to one of: `Dev`, `Dev2`, `Test`, `PreProd`, `Prod`, `Experiments` (aliases: dev2/dev-2, preprod/pre-prod, etc.).
+2. **Parent Jira `environment` field** — when Internal + parent and `fields.environment` is non-null/non-empty after fetch; normalize to canonical name.
+3. **Otherwise** → **AskQuestion** (standalone, exactly one question, six options):
+
+   **Prompt:** *Which environment was this bug reproduced on?*
+
+   - Dev
+   - Dev2
+   - Test
+   - PreProd
+   - Prod
+   - Experiments
+
+**Forbidden inference (MUST — violation if used as env source):**
+
+- Fix version names (`Test 2 Release …`, `Release 4`, hotfix labels, etc.)
+- PHN / Phase 2 board or parent `project.key`
+- Parent sprint name
+- Prior chat session unless user explicitly says "same as before" / "same env"
+- Silent default to `Test` or any env without AskQuestion
+
+**Gate:** Do **not** write the Step 3 review file until **`resolvedEnvironment`** is set. Review file **Environment** line must show the canonical name (e.g. `Dev2`), never bare `—`.
+
+Store **`resolvedEnvironment`** for the review file, Step 3.5 bug-validator delegation, and Bug Content **Environment** section.
+
+---
 
 ### Step 1 — Gather bug details
 
@@ -309,7 +342,7 @@ Check what bug information the user has already provided. Required fields:
 | Actual result — symptom (≥1 bullet candidate) | Present? |
 | Actual result — proof (payload/response/SQL excerpt) | Present when API/DB/backend bug? |
 | Actual result — scope (frequency, compare case) | Present when known? |
-| Environment (Dev/Dev2/Test/PreProd/Prod) | Present? |
+| Environment (Dev/Dev2/Test/PreProd/Prod/Experiments) | **Resolved via Step 0b** (never inferred from fix version or Ph2 board) |
 | Endpoint + Method | Present? (skip if UI-only bug) |
 | Payload | Present? (skip if UI-only bug) |
 | Response / error | Present? (skip if UI-only bug) |
@@ -326,7 +359,45 @@ Check what bug information the user has already provided. Required fields:
 - Wait for user's answer before proceeding
 - Do not proceed to Step 2 with missing required fields
 
-**If all fields are present:** proceed directly to Step 2.
+**If all fields are present:** proceed to **Step 1b**, then Step 2.
+
+**Environment is not gathered in Step 1** — it must already be set by Step 0b.
+
+---
+
+### Step 1b — Assignee and Tester gate (MANDATORY)
+
+Run **after Step 1** when the bug label (Backend / Frontend / DB) is known (resolve deferred assignee from Step 0 subtasks here if label was unknown at Step 0).
+
+**Auto-resolution (unchanged from Step 0):**
+
+- **Internal + parent:** assignee from label chapter subtask → parent `fields.assignee` fallback; tester from QA/Test chapter subtask.
+- **Internal no parent / External:** tester = reporter from `.env` (`testerAccountId` = `currentUserAccountId`); assignee empty unless user named assignee in chat.
+
+**Escalation — AskQuestion when still empty and user did not name them in the current message:**
+
+| Field | Ask when |
+|-------|----------|
+| **Assignee** | `assigneeAccountId` empty after auto-resolution **and** user did not name assignee |
+| **Tester** | `testerAccountId` empty after auto-resolution **and** user did not name tester |
+
+**AskQuestion design** (one or two standalone questions; max two turns):
+
+- **Assignee prompt:** *Who should be Assignee on this bug?*
+- **Tester prompt:** *Who should be Tester on this bug?*
+
+**Options per question:** build from Jira `user/search` candidates when useful (parent assignee, chapter subtask assignees, reporter, names user mentioned) **plus** **Leave unset**.
+
+| User choice | Store | Review file | Step 5a |
+|-------------|-------|-------------|---------|
+| Named user | `assigneeAccountId` / `testerAccountId` + display name via user search | `<display name> (<accountId or source>)` | Include `assignee_account_id` / `customfield_10095` |
+| **Leave unset** | empty accountId; flag `assigneeLeaveUnset` / `testerLeaveUnset` | `— (Leave unset — user confirmed)` | **Omit** that Jira field |
+
+**Gate:** Do **not** write Step 3 review file while Assignee or Tester show bare `—` without Step 1b AskQuestion (or user naming them in chat). After Step 1b, bare `—` is **forbidden** — only `— (Leave unset — user confirmed)` or a resolved display name.
+
+**Step 5a payload (MUST):** When `assigneeAccountId` / `testerAccountId` are set, include them in `createJiraIssue` / REST create (`assignee_account_id` or `assignee.accountId`, `customfield_10095.accountId`). When **Leave unset** was confirmed, omit the corresponding field.
+
+Proceed to Step 2 when Step 1b is satisfied.
 
 ---
 
@@ -367,8 +438,8 @@ Where:
 | **Parent**    | <parent ticket key, or — if External or none> |
 | **Sprint**    | <sprint name or — if unknown> |
 | **Priority**  | <Highest / High / Medium / Low / Lowest> |
-| **Assignee**  | <display name, or — if not set> |
-| **Tester**    | Internal + parent: QA/Test chapter subtask assignee; Internal no parent / External: current user from `.env`; or — if unresolved |
+| **Assignee**  | <display name + accountId/source, or `— (Leave unset — user confirmed)`> |
+| **Tester**    | <display name + accountId/source, or `— (Leave unset — user confirmed)`> |
 | **Label**     | <Backend / Frontend / DB> |
 
 > Priority rationale: <one sentence explaining priority choice>
@@ -398,7 +469,7 @@ Where:
 <expected>
 
 **Environment:**
-- Environment: <env>
+- Environment: <canonical env from Step 0b — e.g. Dev2>
 
 **Technical details:**
 - Endpoint: <METHOD /api/path>
@@ -627,6 +698,11 @@ Hook resolution order: sidecar path (must be APPROVED) → exactly one APPROVED 
 > **CRITICAL — APPROVAL AskQuestion (Step 4 only):**
 > This question may ONLY be asked after Step 3 complete, Step 3.5 resolved (**VALID** path or **Skip validation**), the **screenshot handoff gate** has passed when the user provided an image, the clickable link has been displayed, and the review file header is **not** `# Bug Review — VALIDATION STOPPED`. Use a standalone **AskQuestion** call for Agree/Disagree — do not batch it with unrelated questions in the same call.
 
+**Preconditions (BLOCK — do not offer Agree if any fail):**
+
+- **Environment** is set in the review file (canonical name from Step 0b; not bare `—`).
+- **Assignee** and **Tester** are either resolved display names **or** `— (Leave unset — user confirmed)` after Step 1b (or user named them in chat). Bare `—` without Step 1b confirmation is **forbidden**.
+
 After the review file link is shown, ask using **AskQuestion** with exactly **one question** and exactly **two options**:
 
 ```
@@ -655,6 +731,8 @@ Updated review file: [BugReview_<slug>_<HHMM>.md](<full path>)
 
 - Reset review header to `# Bug Review — PENDING APPROVAL` and clear **Pre-create validation** (Status = `Not run`) if previously set
 - **Clear sidecar** if present
+- If user changes **Environment** on Disagree → re-run **Step 0b** resolution for the new value
+- If user changes **Assignee** or **Tester** on Disagree → re-run **Step 1b** for changed fields only
 - Return to **Step 3.5** (re-offer Validate / Skip / Cancel) before Step 4 Agree
 - This loop repeats until the user selects Agree or explicitly cancels
 
@@ -698,18 +776,20 @@ Do **not** expand the stub in later steps. **MUST NOT** put the full bug body in
   "summary": "<summary from review file>",
   "contentFormat": "adf",
   "parent": "<parent ticket key, or omit if none>",
-  "assignee_account_id": "<assignee accountId from Step 0, or omit if empty>",
+  "assignee_account_id": "<assigneeAccountId from Step 0/1b — omit if empty or Leave unset>",
   "additional_fields": {
     "priority": { "name": "<priority name>" },
     "labels": ["<Backend or Frontend>"],
     "reporter": { "accountId": "<currentUserAccountId from Step 0, or omit if empty>" },
-    "customfield_10095": { "accountId": "<testerAccountId from Step 0, or omit if empty>" },
+    "customfield_10095": { "accountId": "<testerAccountId from Step 0/1b — omit if empty or Leave unset>" },
     "customfield_10103": { "type": "doc", "version": 1, "content": [ /* Key details colored ADF — full template */ ] }
   }
 }
 ```
 
 If create fails because **`customfield_10103`** is empty/rejected: retry once with a minimal 10103 stub (single paragraph: *Details pending — see review file*), then rely on conditional **5c** for the full ADF after **5b**/**5d**.
+
+**Assignee / Tester payload (MUST):** When `assigneeAccountId` / `testerAccountId` are set (user picked or auto-resolved), **MUST** include `assignee_account_id` and `customfield_10095.accountId` in create payload. When user confirmed **Leave unset** in Step 1b, **omit** the corresponding field — do not send empty accountId objects.
 
 **Legacy Ph2 (no `customfield_10103`):**
 
@@ -1453,7 +1533,9 @@ Reason: <1-2 sentences>
 | Error | Action |
 |-------|--------|
 | `getJiraIssue` MCP fails | Retry once; if still fails, ask user to provide board/sprint/assignee/tester manually |
-| Internal + parent: no QA/Test subtask or QA subtask unassigned | Leave Jira **Tester** unset; show **Tester: —** in review file; proceed if user Agrees |
+| Internal + parent: no QA/Test subtask or QA subtask unassigned | **Step 1b AskQuestion** for Tester (+ **Leave unset** option); **MUST NOT** proceed to Step 3 with bare `—` without ask |
+| Assignee unresolved after chapter subtask + parent fallback | **Step 1b AskQuestion** for Assignee (+ **Leave unset**); **MUST NOT** create Jira without user pick or confirmed Leave unset |
+| Environment missing after Step 0 (no user message, no parent field) | **Step 0b AskQuestion** (six envs); **MUST NOT** infer from fix version or Ph2 board; **MUST NOT** write review file until resolved |
 | `createJiraIssue` fails — standard Description required | Retry **once** with minimal stub: summary line + `Full details in Description formatted.` — do not add full body |
 | `createJiraIssue` fails — empty/rejected `customfield_10103` | Retry once with minimal 10103 stub paragraph; then **5b** → **5d** → conditional **5c** with full ADF |
 | `createJiraIssue` MCP fails (other) | Show error to user; do not retry silently; ask user how to proceed |
