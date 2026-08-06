@@ -1,0 +1,59 @@
+﻿{
+  "testTitle": "[PDT-3171] TC-BE-7: confirm-pay succeeds after successful init when TOTAL matches AMOUNT",
+  "jiraKey": "PDT-3171",
+  "apiBase": "http://10.236.20.11:8091/",
+  "payloads": {
+    "customer": {
+      "id": 6082896,
+      "customerNumber": 6000148524,
+      "identifier": "17854145743883478",
+      "customerType": "LEGAL_ENTITY",
+      "lastCustomerDetailId": 84965,
+      "isDeleted": "ACTIVE",
+      "version": 1
+    }
+  },
+  "outcomes": [
+    {
+      "check": "TC-BE-7 confirm match happy path",
+      "expectedResult": "Init VALIDTO real yyyyMMdd; confirm STATUS=00; payment created",
+      "actualResult": "As expected — init VALIDTO=20260901, confirm STATUS=00, paymentId=26781",
+      "passed": true
+    }
+  ],
+  "portalLinks": {
+    "customer": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082896"
+    ],
+    "customerLiability": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87929",
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87930"
+    ],
+    "payment": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//payments/preview?id=26781"
+    ]
+  },
+  "snapshot": {
+    "initAmount": 20000,
+    "initValidTo": "20260901",
+    "confirmStatus": "00"
+  },
+  "allResponseLinks": {
+    "customer": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082896"
+    ],
+    "customerLiability": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87929",
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87930"
+    ],
+    "payment": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//payments/preview?id=26781"
+    ],
+    "paymentPackage": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//payment-package/preview?id=6328"
+    ],
+    "collectionChannel": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//collection-channel/preview?id=5500"
+    ]
+  }
+}

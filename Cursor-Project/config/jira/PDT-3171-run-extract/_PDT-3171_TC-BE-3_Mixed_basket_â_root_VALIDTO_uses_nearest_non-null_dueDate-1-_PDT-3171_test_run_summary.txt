@@ -1,0 +1,46 @@
+﻿================================================================================
+TEST: [PDT-3171] TC-BE-3: Mixed basket — root VALIDTO uses nearest non-null dueDate
+JIRA: PDT-3171
+API:  http://10.236.20.11:8091/
+================================================================================
+
+--- Relevant payloads ---
+
+[customer]
+{
+  "id": 6082891,
+  "customerNumber": 6000148519,
+  "identifier": "17854145654112521",
+  "customerType": "LEGAL_ENTITY",
+  "lastCustomerDetailId": 84960,
+  "isDeleted": "ACTIVE",
+  "version": 1
+}
+
+--- Expected result vs Actual result ---
+
+1. [PASSED] TC-BE-3 mixed basket nearest VALIDTO
+   Expected result: Root VALIDTO=20260820; proforma entry 20260829
+   Actual result:   As expected — root=20260820, INVOICES=[{"IDN":"6000148519.87926","SHORTDESC":"Клиентски номер: 6000148519;","LONGDESC":"Клиентски номер: 6000148519; Клиент: AUTOMATION (17854145654112521); Фактура: ;","AMOUNT":5000,"VALIDTO":"20260820"},{"IDN":"6000148519.87925","SHORTDESC":"Клиентски номер: 6000148519;","LONGDESC":"Клиентски номер: 6000148519; Клиент: AUTOMATION (17854145654112521); Фактура: 3000000845/30.07.2026;","AMOUNT":228600,"VALIDTO":"20260829"}]
+
+--- Portal links (relevant entities) ---
+
+[customer]
+https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082891
+
+[customerLiability]
+https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87925
+https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87926
+
+[goodsOrder]
+https://devapps.energo-pro.bg/app/phoenix1-dev//goods-order/preview?id=1424
+
+--- Context snapshot ---
+{
+  "proformaLiabilityId": 87925,
+  "expectedRootValidTo": "20260820",
+  "expectedProformaValidTo": "20260829",
+  "initValidTo": "20260820"
+}
+
+================================================================================

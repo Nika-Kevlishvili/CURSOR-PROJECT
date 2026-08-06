@@ -1,0 +1,2196 @@
+Create Product Contract
+As a system user
+I want to be able to create a contract for a product
+So that I have possibility to effectively manage the automated processes, tasks and customer communication
+
+Acceptance criteria
+Creating a contract for a product is possible from Product Contract's listing page by clicking on a 'Plus' button
+
+Clicking on a Plus button will open product contract's creation page
+
+Check system user permissions to be able to create a new contract for a product
+Permission - Create a Product Contract
+
+Enable Plus button when user has permission
+
+Disable Plus button when user doesn't have permission
+
+Clicking on Create contract button will check frontend validations and if some error happens display that field in red
+Tab should be displayed in red as well if an error happens in another tab
+
+Default state of a Product Contract's creation page contains four individual tabs:
+
+1st - Basic Parameters tab contains fields:
+Product
+Mandatory
+Single select dropdown
+
+Should display only products available for Sales channels of the user. If user is not connected to any sales channel, he/she should be able to see all products (Login Portal integration is not included in next bundles) - Filter is applicable in bundle 7
+
+If customer is not selected:
+Should load all active products' versions which are marked as 'active for sale' and current date is in validity range for that product's version
+If product is inactive and marked as 'active for sale' will not be displayed such product
+
+Order should be alphabetical
+
+All products' versions will be displayed in dropdown separately - to display in dropdown product name and version number in, e.g. FIX Product (Version 2)
+
+To search in dropdown by product name
+
+If customer is selected:
+To check additionally customer’s segment to be matched to product’s segment
+it is possible customer to have more than one segment selected; in this case if product contains at least one segment it means that product is available to customer and display such product
+
+if in product All is selected there it means that product is available for all customers and no need to have additional checks
+
+To check additionally customer’s preferences to be matched to product’s preferences (1)
+If the customer has no preferences selected, the system should only allow assignment of products that also have no preferences selected.
+
+If both the product and customer have preferences selected, the product can be assigned to the customer if there is at least one matching preference between the two (partial match is allowed).
+options should be filtered based on compatibility during creation, if customer is not added, then all options should be visible
+
+if user selects product, then adds customer which is not compatible with product, product field should be emptied
+
+during product contract creation when customer and product is already added, if user changes customer preferences and it is not compatible with selected product anymore, product field should return error
+
+To check if individual products is created for this customer
+Should match individual product by Customer identifier (UIC/Personal number)
+
+If individual product is already used in some contract shouldn't be displayed in dropdown
+
+If individual product is not connected to any contract, it should be possible to display it in dropdown and add it to the contract
+
+Individual products should be listed first and then standard products
+
+Preview the Product
+Optional button
+Disabled if product is not selected 
+
+Enabled if product is selected
+
+After selecting the product, user can open in a new browser tab the selected product version’s  page in preview mode
+
+Show description 
+Optional button
+
+Button should be enable in preview/creation/edit mode
+
+When this button is clicked, a modal window(title of this window , if product “Product description” , service ( Service description) should open displaying the Short Description and Long Description of the product or service.
+Button should be enable in preview/creation/edit mode
+In this modal window:
+Firstly display short description, after short should be long description
+
+A separator line should be placed between the two descriptions for better readability.
+
+Create an Individual Product
+Optional button
+On Product Contract create/edit mode Create an Individual Product button should be enable
+
+When user clicks on this button, in new browser window Product’s creation page should be opened and Individual Product checkbox should be preselected
+
+After user creates an individual product for defined customer (which is also added in the Product Contract), newly created individual product should be displayed in the Product dropdown in the first tab of the Product Contract
+
+Contract number
+Always disabled and empty on the creation page if the user doesn’t have permission to create contract by manually entered number (2)
+Text field
+
+Contract number should be unique
+
+Automatically generated by the system after creating contract; Contracts in the system are  automatically numbered with a prefix and a unique 10-digit number representing YYMMXXXXXX, where XXXXXX is the serial number of the contract for the month. e.g if first contract is generated in 1st May 2023 contract number will look like this: 2305000001
+
+‘EPES’ Prefix value is hardcoded in the system.
+
+For contracts and orders counter should each month should counter must be reset in each month
+Counter in contracts (product contract, service contract) should be the same
+
+Counter in orders (service order, goods order) should be the same
+
+If user has a permission to create contract by manually entered number: (2)
+The number must have the same format as the system-generated one
+
+The number should be unique
+
+User should be able to mass import created contracts
+
+the field must be optional
+
+If the user leaves this field empty, the system (Phoenix) will create a unique contract number automatically, following the usual format.
+
+after creating contract number can not be edited and should be disabled
+
+ 
+Additional suffix
+Always empty and disabled on creation
+
+Contract's Creation Date
+Always disabled and empty on the creation page
+Is automatically generated by the system after creating the contract
+
+Date picker
+
+Format: DD.MM.YYYY
+
+Contract status
+Contract statuses and sub-statuses are always connected to its ID, not version
+
+Mandatory
+Single select dropdown with hardcoded values:
+Draft
+
+Ready
+
+Signed
+
+Entered into force
+
+Contract Sub-status
+Mandatory
+Single select dropdown with hardcoded values:
+
+Should be filtered after selecting the status
+If Draft status is selected in sub-status should be displayed:
+Draft
+
+In process – during in process sub-status every field/sub-object/radio button(if there is more than one option)/checkbox/fields within sub object should become optional, except for modify date (3)
+
+If Ready status is selected in sub-status should be displayed 
+Ready
+
+If Signed status is selected, in sub-status should be displayed:
+Signed by customer
+
+Signed by EPRES
+
+Signed by both sides
+
+Special processes
+
+If Entered into force status is selected, in sub-status should display
+ Awaiting activation
+
+Contract's status Modify Date
+Mandatory
+After changing contract's status, date should be automatically filled based on the time of the contract's Creation
+
+Manual entering the date should be also saved with following conditions: 
+Date picker
+
+Always enabled
+
+Format: DD.MM.YYYY
+
+Type
+Mandatory
+Single select dropdown with hardcoded values:
+Contract
+
+Additional Agreement
+
+Ex officio Agreement
+
+When creating/editing Contract with Type 'Additional Agreement' OR Ex officio agreement to generate additional contract suffix number. Counting will start from #1 and should be unique under one contract
+Contract suffix number should be displayed next to contract number in preview/edit:
+
+if Contract has more than one version with type 'Additional Agreement' OR Ex officio agreement' should have unique numbers: #1, #2, #3 and etc
+
+If in contract V1 the type was 'Additional Agreement' and additional number was #1 and then I changed type as Contract
+Should hide #1 in contract 1st tab
+
+When create a new version V2 should take next available number, #2 in this case.
+
+If contract V1 is changed again and set again type 'Additional Agreement' in this case should be visible #1 which was previously saved.
+
+In Contracts listing if contract’s version which is visible in the list has type additional agreement and has suffix should display in Contract number field with following format:
+EPES2310001974#1 will be visible in the list
+
+If filters /search shouldn’t consider suffix
+
+Contract version status
+Mandatory
+Single select dropdown with hardcoded values: 
+Draft (By default selected)
+
+Ready
+
+Signed
+
+Cancelled 
+
+all statuses is dropdown should be always visible
+
+If some error happens in backend should display error in field
+
+Backend logic
+In backend should be validated according this logic and if some error happens should display error in frontend:
+When contract version status is Draft it can be changed as:
+Ready (manually)
+
+Signed (manually)
+
+Cancelled (manually)
+
+When contract version status is Ready it can be changed as:
+Draft (manually)
+
+Signed (manually)
+
+Cancelled (manually)
+
+When contract version status is Signed it can be changed as:
+Draft (manually)
+
+Ready (manually)
+
+Cancelled (manually)
+
+When contract version status is Cancelled it can be changed as:
+Draft (manually)
+
+Ready (manually)
+
+Signed (manually)
+
+In new contract version creation should not have any restrictions for the contract version status
+
+Contract version type
+Mandatory
+Multi select dropdown
+List is manageable from nomenclature
+
+Active values will be returned from nomenclature
+
+Order should be considered
+
+Display default if returned from nomenclature
+
+Signing date
+Date picker
+
+Format: DD.MM.YYYY
+
+First tab
+Empty, disabled when contract status is:
+Draft, ready, signed (by EPES, by customer) 
+
+Always mandatory when contract status is:
+signed (both side, special process) , entry into force
+
+Should be in the past or current day
+In all other statuses should be also mandatory : active in term, active perpetuity, terminated)
+
+Third tab
+Not applicable
+
+Less- Contract Term End date , Perpetuity date , Termination date,
+
+Less or equal - Entry into force date, Contract term start , Date of activation, Supply activation date
+
+in product/service contract creation
+if signing date is filled in past should set version start date as signing date
+
+if signing date is empty - version start date should be same as creation date In
+
+product/service contract first version editing
+if signing date is changed in past should be able to change version start date as signing date
+
+if the signing date is not filled , the validity start date in the “pop-up for updating the creation version” should default to the create date.
+
+If signing date is current date, contract version start date should be current date.
+
+Entry into force date
+Date picker
+
+Format: DD.MM.YYYY
+
+First tab
+Empty, disabled when contract status is:
+Draft
+
+Optional when contract status is 
+Ready, signed
+
+Date should be in the future
+
+Mandatory when contract status is:
+Entry into force, active in term, active in perpetuity, terminated
+
+Should be in the past or current day
+
+Third tab
+Applicable (details are described in 3rd tab functionality)
+
+Less or equal - Contract Term End date , Date of activation, Perpetuity date , Termination date
+
+More or equal - Signing date
+
+Contract term start date
+Date picker
+
+Format: DD.MM.YYYY
+
+First tab
+Empty, disabled when contract status is:
+Draft  
+
+Active and optional in all other statuses 
+Can be in the past and also in the future 
+
+Third tab
+Applicable (details are described in 3rd tab functionality)
+
+Less- Perpetuity date , Termination date
+
+Less/Equal Contract Term End date 
+
+Less or equal - Date of activation
+
+More or equal - Signing date , Entry into force date
+
+When contract status is Signed (Both side OR Special Processes)
+After saving if not filled manually, always should fill value in Contract term start date field according following logic:
+
+if From first day of the month after signing (from terms) is more or equal to Signing date it should be = 1st Day of Next month
+
+if From first day of the month after signing (from terms) is less than Signing date should be = 1st day of after 2 months (0 counts)
+
+Contract term End date
+Date picker
+
+Format: DD.MM.YYYY
+
+First tab
+Always disable
+
+Third tab
+Applicable (details are described in 3rd tab functionality)
+
+Termination date
+Always Disabled and empty on creation page
+
+Date of activation
+Always Disabled and empty on creation page
+
+Perpetuity date
+Always disabled and empty on creation page
+
+Contract term until the amount is reached
+Optional
+Checkbox- Optional
+
+Text field - disabled and empty if checkbox Contract term until the amount is reached is not selected, mandatory and enabled if checkbox Contract term until the amount is reached is selected
+
+Allowed symbols: only digits and decimal points can be added 0-9
+
+Length: 0.01 - 99999999.99
+
+When the sum of the customer liabilities for this contract reaches the filled amount in selected currency than a task should be automatically created
+
+Currency
+Mandatory if checkbox Contract term until the amount is reached is selected
+Disabled and empty if Contract term until the amount is reached is not selected
+
+Single select dropdown
+List is manageable from nomenclature
+
+Active values will be returned from nomenclature
+
+Order should be considered
+
+Display default if returned from nomenclature
+
+Contract term until the volume in MWh is reached
+Optional
+Checkbox – optional
+
+Text field – disabled and empty if checkbox Contract term until the volume is reached is not selected, mandatory if checkbox Contract term until the volume is reached is selected
+
+Allowed symbols: only digits and decimal point can be added  0-9
+
+Length: 0.00001 - 99999999.99999
+
+When the entered quantities for this contract reaches the filled volume then a task should be automatically created
+
+Public procurement law
+Checkbox
+Optional
+
+Unselected by default
+
+Checkbox is used to define if the contract has any regulations from the government
+
+1st - Basic Parameters tab contains sub-objects:
+Customer
+Customer760Mandatory
+
+Customer is added manually
+
+Adding Customer is possible by clicking on a Plus button
+When clicking on the “Plus” button modal window should be displayed with fields:
+Search Bar – to search a customer and add it to the contract
+Search bar should have search button
+
+Text field – it is possible to type an UIC/Personal number and search for all customers in the system. It is possible to return a customer which is already connected to the contract
+
+Name - Filled automatically based on latest customer’s version after clicking on Search button. if version is changed in version’s dropdown name will be updated according the version. 
+
+Version - by default customer’s latest version is displayed. will be possible to select customers other version
+
+If customer is unwanted and checkbox 'Restricted to create contract' is selected should display an error and it is not possible to create a contract
+
+If customer’s status is Potential should display an error and can’t add to contract
+
+Add Customer to Contract – when user finds needed customer and clicks on this button, modal window should be closed, and the customer is added to the contract’s creation page
+
+Cancel button – modal window is closed and user stays on the contract’s creation page
+
+It is possible to remove customer when clicking on remove icon
+
+It is possible to go to the customer’s detailed page when clicking on its name or an arrow
+
+After adding customer to the contract, it should be displayed with following format:
+
+For Private customer display in the list:
+Personal number
+
+Name 
+
+Middle name (if exists)
+
+Surname
+
+e,g 1234567890 ( ivan ivan ivanov)
+
+For Legal entity display in the list:
+UIC
+
+Legal entity name + legal form 
+
+e.g 123456789 ( Energopro Georgia)
+
+Communication data for billing
+Communication data for billing760Mandatory
+
+Communication data for billing is added automatically after selecting the customer
+
+Purpose of communication value should be hardcoded in system:
+‘Billing’ should be hardcoded and shouldn’t be able to remove
+
+The communication data will be filtered by hardcoded value and only relevant communication data will be visible
+
+Communication data should be filtered:
+If email and phone number is not added than such communication data should not be visible in the list
+
+It is possible to go to the Communication Data for Billing’s detailed page when clicking on its name or an arrow
+
+Added communication data for billing should be displayed with following format:
+Name and Purpose of communication  - Billing in brackets
+
+e.g. Manager (Billing)
+
+Should be visible all communication purpose. If more than 3 lines - display tooltip
+
+Displayed data can be more than one and in that case it is mandatory to choose one record via the Radio button
+
+Communication data for contract
+Communication data for contract760Mandatory
+Communication data for contract is added automatically after selecting the customer
+
+Purpose of communication value should be hardcoded in system:
+‘Contract’ should be hardcoded and shouldn’t be able to remove
+
+The communication data will be filtered by hardcoded value and only relevant communication data will be visible
+
+Communication data should be filtered:
+If email and phone number is not added than such communication data should not be visible in the list
+
+It is possible to go to the Communication Data for contract’s detailed page when clicking on its name or an arrow
+
+Added communication data for contract should be displayed with following format:
+Name and Purpose of communication  - Contract in brackets
+
+Manager (Contract)
+
+Commercial director (Contract)
+
+Should be visible all communication purpose. If more than 3 lines - display tooltip
+
+Displayed data can be more than one and in that case it is mandatory to choose one record via the Radio button
+
+Proxy
+Proxy details760Design: https://xd.adobe.com/view/1e28f2ed-9572-45b0-97d2-6e0d80caaef8-4b7b/grid 
+Proxy's creation is possible form Product Contract's page on Basic Parameter's tab
+User should click a Plus button on the sub-object - Proxy
+
+Optional
+
+Proxy is created manually
+
+Adding Proxy to the contract is possible if the customer is already added to the contract
+Plus button should be disabled if the customer is not added and after adding the customer it should become enable
+
+If added customer is Private, it is not possible to add more than one proxy
+On Proxy creation page managers will be listed from this customer
+
+If one manager already has proxy added then it shouldn't be able to add another proxy for this manager
+
+All fields should be enabled in Proxy creation Modal window
+Fields in the left side (Proxy fields) should be Mandatory by default
+
+Fields in the right side (Proxy authorized by proxy) should be optional by default
+
+So creation proxy will be possible only with Proxy fields filled. (it’s not mandatory to fill fields in the right side)
+
+If at least one field is filled in right side (Proxy authorized by proxy) then should be mandatory to fill all fields in order to create
+
+When filling the fields, validations should be checked while writing them
+
+Clicking on Save button will check all validations and display an error with proper field
+
+ 
+Fields' validations in details:
+On the left side Proxy fields:
+Unrecognised UIC/PN (turn off validation)
+Optional
+
+Checkbox
+
+Unselected by default
+
+Selecting checkbox changes validation for UIC/Personal number
+
+Proxy name
+Mandatory
+
+Text field
+
+Allowed symbols: A-Z a-z 0-9 А-Я а-я – @ # $ & * ( ) + - : . , ‘ € № = space. Should not be only spaces. Spaces at the beginning and at the end should be trimmed
+
+Length: 1-512 characters
+
+UIC/Personal number/Personal number of a foreigner
+Mandatory
+
+Text field
+
+Allowed symbols: 0-9 A-Z
+
+Length: 1-32 characters
+
+When Unrecognised UIC/PN (turn off validation) is not selected:
+Allowed symbols: 0-9
+
+Length: 9,10, 13 symbols
+
+9 and 13 digits are enabled for legal customer's UIC
+
+10 digits are required for private customer
+
+Value should be checked by the algorithm: https://docs.google.com/document/d/1lILNbnD0RK6MV_Ugf48KwX12BqsDvmIZ/edit#heading=h.gjdgxs
+
+No need for APIS api check
+
+When Unrecognised UIC/PN (turn off validation) is selected
+Allowed symbols: 0-9 A-Z
+
+Length: min - 1, max - 32
+
+For foreign entity it is not possible to determine who belongs added value - is it UIC or personal number
+
+Email
+Mandatory
+Optional if Proxy authorized by proxy is added
+
+Text field
+
+Allowed symbols: A-Z a-z 0-9 ! # $ % &' * + - / = ? ^ _ ` | { } ~ . @ Should not be only spaces. Spaces at the beginning and at the end should be trimmed
+
+Standard email validation
+
+Length: 1-512 characters
+
+Mobile phone
+Mandatory
+Optional if Proxy authorized by proxy is added
+
+Text field
+
+Allowed symbols: 0-9 – + - *
+
+Should not be only spaces. Spaces at the beginning and at the end should be trimmed
+
+Length: 1-32 characters
+
+Power of Attorney Number
+Mandatory
+
+Text field
+
+Allowed symbols: 0-9 A-Z a-z А-Я а-я – -
+
+Length: 1-32 characters
+
+Date
+Mandatory
+
+Date picker
+
+Format: MM.DD.YYYY
+
+Date < Valid till
+
+Date <= current date
+
+Date should be displayed between 01.01.1990 to 31.12.2090
+
+Valid till
+Optional
+
+Date picker
+
+Format: DD.MM.YYYY
+
+Date should be displayed between 01.01.1990 to 31.12 2090
+
+Valid till > Date
+
+Valid till > current date
+
+Notary Public
+Mandatory
+
+Text field
+
+Allowed symbols: A-Z a-z 0-9 А-Я а-я – @ # $ & * ( ) + - : . , ‘ € № = space. Should not be only spaces. Spaces at the beginning and at the end should be trimmed
+
+Length: 1-512 characters
+
+Registration number
+Optional
+
+Text field
+
+Allowed symbols: 0-9 A-Z a-z А-Я а-я – -
+
+Length: 1-32 characters
+
+Area of Operation
+Mandatory
+
+Text field
+
+Allowed symbols: A-Z a-z 0-9 А-Я а-я – @ # $ & * ( ) + - : . , ‘ € № = space Should not be only spaces. Spaces at the beginning and at the end should be trimmed
+
+Length: 1-512 character
+
+Managers
+If selected customer’s type is legal customer
+Checkbox
+
+Mandatory to select at least one manager
+
+It is possible to select ALL checkbox and it will check all listed managers
+
+List of managers will be displayed in following format: name, middle name, surname and position in brackets e.g. IVAN PETROV GOSPODINOV (Manager)z
+
+If selected customer’s type is private customer:
+Manager's checkbox is hidden
+
+ 
+On the right side Proxy authorized by proxy:
+ 
+Unrecognised UIC/PN (turn off validation)
+Optional
+
+Checkbox
+
+Unselected by default
+
+Selecting checkbox changes the validation for Personal Number
+
+Proxy authorized by proxy
+Optional
+Mandatory if at least one field is filled in right side
+
+Text field
+
+Allowed symbols: A-Z a-z 0-9 А-Я а-я – @ # $ & * ( ) + - : . , ‘ € № = space Should not be only spaces. Spaces at the beginning and at the end should be trimmed
+
+Length: 1-512 characters
+
+Personal number/Personal number of a foreigner
+Optional
+Mandatory if at least one field is filled in right side
+
+When Unrecognised UIC/PN (turn off validation) is not selected:
+Allowed symbols: 0-9
+
+Length: 10 characters
+
+Validation: Algorithm for checking personal number - https://docs.google.com/document/d/1lILNbnD0RK6MV_Ugf48KwX12BqsDvmIZ/edit#heading=h.gjdgxs
+
+When Unrecognised UIC/PN (turn off validation) is selected:
+Allowed symbols: 0-9 A-Z
+
+Length: 12 symbols
+
+Format: YYYYMMDDCCNN (Only to check first 8 characters should be valid date, last 4 characters are letters or digits)
+
+Email
+Optional
+Mandatory if at least one field is filled in right side
+
+Text field
+
+Allowed symbols: A-Z a-z 0-9 ! # $ % &' * + - / = ? ^ _ ` | { } ~ . @ 
+Should not be only spaces. Spaces at the beginning and at the end should be trimmed
+
+Standard email validation
+
+Length: 1-512 characters
+
+Mobile phone
+Optional
+Mandatory if at least one field is filled in right side
+
+Text field
+
+Allowed symbols: 0-9 – + - *
+
+Length: 1-32 characters
+
+Power of Attorney number
+Optional
+Mandatory if at least one field is filled in right side
+
+Text field
+
+Allowed symbols: 0-9 A-Z a-z А-Я а-я – -
+
+Length: 1-32 characters
+
+Date
+Optional
+Mandatory if at least one field is filled in right side
+
+Date picker
+
+Format: MM.DD.YYYY
+
+Date < Valid till
+
+Date <= current date
+
+Date should be displayed between 01.01.1990 to 31.12.2090
+
+Valid till
+Optional
+
+Date picker
+
+Format: MM.DD.YYYY
+
+Date should be displayed between 01.01.1990 to 31.12.2090
+
+Valid till > Date
+
+Valid till > current date
+
+Notary Public
+Optional
+Mandatory if at least one field is filled in right side
+
+Text field
+
+Allowed symbols: A-Z a-z 0-9 А-Я а-я – @ # $ & * ( ) + - : . , ‘ € № = space Should not be only spaces. Spaces at the beginning and at the end should be trimmed
+
+Length: 1-512 characters
+
+Registration number
+Optional
+
+Text field
+
+Allowed symbols: 0-9 A-Z a-z А-Я а-я – -
+
+Length: 1-32 characters
+
+Are of operation
+Optional
+Mandatory if at least one field is filled in right side
+
+Text field
+
+Allowed symbols: A-Z a-z 0-9 А-Я а-я – @ # $ & * ( ) + - : . , ‘ € № = space Should not be only spaces. Spaces at the beginning and at the end should be trimmed
+
+Length: 1-512 character
+
+Files
+By clicking on a Plus button it is possible to upload already signed documents
+
+Optional
+
+When user clicks on a Plus button, he/she have possibility to upload a file from the computer
+
+Display file name after uploading. Clicking on it will download file
+
+Allowed file formats: pdf, jpg, .jpeg, .png, .bmp
+
+Max file size: 50mb
+
+It is possible to upload more than one document
+
+ 
+ 
+ 
+Clicking on Save button will check all the validation
+If frontend validations are successful, Modal window should be closed and added proxy should be listed to order creation page
+
+List will be sorted by creation date; Newly added proxy will be recorded as the last item.
+
+Format to display:
+if proxy is added for more than one manager should display proxy's name and managers in brackets
+e.g. Tina (tina korinteli (Manager1), tina korinteli (manager 2))
+
+If proxy has its authorized proxy added to display authorized proxy and proxy separated by dash and managers in brackets
+Tina - Tina2 (tina korinteli (Manager1), tina korinteli (manager 2))
+
+If an error happens display with proper field
+
+If there is more than one error, system should display all the error in interface
+
+Actual proxy Create/Editing/Removing actions will be saved in database only when user confirms on main "Create Order" button on the bottom of the page, until that stage all data are managed only on frontend side
+
+Clicking on Cancel button or X button will close the modal window
+
+ 
+Edit
+Proxy's edit process can be started only from editing order process (it is not possible to edit Proxy without editing contract)
+
+All fields are editable
+
+Clicking on OK button in pop-up will check all validations (only frontend side validation)
+
+If validations are fine, Modal window will be closed and actual saving will happen on order "Edit" button click
+If some fields in Proxy are edited and try to close the main object without saving, the warning message should appear
+
+If a new version is created for the contract a new proxy will be created and linked to the new version and the old one will not be effected
+
+Preview
+Proxy preview can be opened from order creation page
+
+On the Preview mode all field are disabled and can't be edited
+
+Edit/Remove icon will be listed in order creation/edit page, not in Proxy preview
+
+Delete
+Proxy delete process can be started only from editing order process
+Delete icon will be active on order "Edit" mode
+
+By clicking on a delete icon system should display a warning message: "Are you sure you want to delete Proxy?"
+Yes - Proxy will be deleted after confirming changes to order
+
+Cancel - popup is closed and is not deleted
+
+Warning message should be managed via system messages configuration
+
+Related contracts/orders
+Related contracts/orders760Adding related contracts/orders to the product contract is optional
+
+Related contracts/orders is added manually
+Adding related contracts/orders is possible by clicking on a Plus button
+
+After clicking on a Plus button, modal window should open
+
+Modal window of adding related contracts/orders to contract contains fields:
+Radio button
+With two possible options: Contract , Order
+
+By default Contract is selected, so when user tries to search for contract by contract number search should run only in product contract, service contracts
+
+If Order is selected then search should run in service order, goods order
+
+Search bar - to search contract by contract number and add it to the product contract
+Search bar should have search button
+
+Search should be able in all product, service contracts in the system;
+
+System should not display deleted contracts
+
+Name summary and UIC/personal number - customer’s name for the searched contract should be displayed in this field. Search should have exact match so only one record will be returned after search
+name summary = name, middle name, surname if private customer
+
+name summary = name if legal entity
+
+Disabled
+
+Add related contract button - when user clicks on the button, modal window should be closed and the related contract should be added to the product contract's creation page. After adding related contracts/orders to the contract, it should be displayed with the following format:
+Contract number
+
+Cancel button - modal window is closed and user stays on the product contract's creation page
+
+When a Related contract is added to a contract the same connection should be displayed in the contract added as Related contract If a Related contract is removed from a contract , the connection should also be removed from the contract that was Related contract .
+Example:
+Contract 1 has related Contract 2. In Contract 2 preview should display Contract 1 as a related contract
+
+Connection between related contract is ID based (not version based)
+
+It is possible to add more than one related contracts/orders to the contract
+
+Clicking on 'Save' button will check all the validations for related contracts/orders object (only frontend validation is required here)
+If all validations are passed successfully then related contracts/orders adding pop-up will be closed and newly added object will be added
+
+Clicking on an arrow will open related contracts/orders Preview mode:
+Clicking on 'Save' button will recheck all validations and if validations are passed successfully, the updated related contracts/orders will be added to the contract
+
+Clicking related contract/order object system will open preview mode of related contracts in a new tab
+
+It is possible to delete the related contracts/orders when clicking on a remove icon
+When clicking on a remove icon, a warning message should appear' Are you sure you want to remove e.g. Албена Георгиева Лазарова (A26980)?' Yes/No
+No - will close pop-up
+
+Yes - will close pop-up and the value is removed
+
+The maximum amount of the added related contracts/orders is not restricted.
+
+Signed From/to760Signed from / Signed to -  sub objects
+Product contract resign is automatic process, which deactivates PODs in old contract and activates them in new contract.
+
+Process will be executed on product contract editing mode when sub-status changing to Signed by both side or Special processes.
+
+In product contract should add new sub-object “*Signed from*” and “*Signed to*”. On Edit and Preview modes (edit, preview) this sub-objects are disable and aren’t editable.
+
+Signed from should contains contract number list that are used to signed this contract. e.g Signed from : A,B,C.
+
+Signed to should contains only one contract number, which is signed from this contract. e.g Signed to : D.
+
+User can go directly to contract after clicking on contract number.
+
+After clicking save button following process should start
+
+https://app.diagrams.net/#G1R3xdqNGIk-U9ZWYyyyz1FJ2Z50PkcZ33
+
+Contract files
+Contract files760Optional
+Files are generated by the system or can be uploaded by the user
+
+Files are generated by the system
+separate story
+
+Files can be added manually by the user
+Adding file to the Product Contract is possible by clicking on a Plus icon
+
+It is possible by the user to upload more than one file
+
+It is possible to see files when clicking on its name or an arrow
+
+It is not possible to deleted files from the Product contract
+
+After adding the file to the product contract, it should be displayed with its name
+
+Max size: 50 mb
+
+Additional Documents
+Additional Documents760Optional
+Documents are added manually
+
+Adding documents is possible by clicking on a Plus button
+
+After clicking on a Plus button, user have a possibility to upload a document from the computer
+
+It is possible to upload more than one document
+
+It is possible to see uploaded file when clicking on its name or an arrow
+
+It is possible to delete uploaded document by clicking on a remove icon
+
+Allowed formats:
+
+Max size: 50 mb
+
+It is possible to download already imported file by clicking on it
+
+Contract Termination Template
+760This Area is for attaching template object from the system and user can delete it anytime but replace it with new one. This field is mandatory
+2nd - Additional Parameters tab contains fields:
+Customer Deal number
+Enabled
+
+Text field
+
+Only digits can be added
+
+Allowed symbols: 0-9
+
+Length: 1-32 characters
+
+Estimated yearly consumption under contract in Mwh
+Mandatory
+Text field
+
+Only digits can be added
+
+Allowed symbols: 0-9 and decimal point
+
+Length: 1-32 characters
+
+If PODs are not added to contract, field should be enabled and active . It will be possible to save estimated monthly consumption value without saving PODs in contract
+
+If POD is added to contract, manually added value should be replaced with PODs → Estimated monthly average consumption -value. if more then one POD is added, should be replaced by calculated ‘Estimated monthly average consumption' value; Calculated value shouldn’t be editable 
+Calculation Logic: sum of (Estimated monthly average consumption * 12 )/1000
+
+This Field should be calculated only for PODs which Type is “Consumer”
+
+Direct debit
+Checkbox
+
+Unselected
+
+Optional
+
+BANK
+Single select dropdown
+List of banks are manageable from nomenclature
+
+Display Search Bar if number of items are more than 10 items in dropdown list
+
+While typing search letter list in dropdown should be filtered by search letters
+
+If Direct debit is selected
+Mandatory
+
+Enabled
+
+If Direct Debit is not selected
+Optional
+
+Enabled
+
+BIC
+Always disabled
+
+Text field
+
+If Direct debit is selected
+Mandatory
+
+Automatically filled after selecting BANK
+
+If Direct Debit is not selected
+Optional
+
+Automatically filled after selecting BANK
+
+IBAN
+Text field
+
+If Direct debit is selected
+Mandatory
+
+Enabled
+
+If first 2 symbols of IBAN are BG should cover current validation - BG + 2 symbols (0-9) +4 symbols (A-Z) + 6 symbols (0-9) + 8 symbols ( A-Z 0-9), Example: BG21TBCA12345601234567
+
+If first 2 symbols of IBAN are not BG use next validation - length from 14 to 34 symbols, first 2 symbols A-Z, rest symbols A-Z 0-9, Example: AZ12345678
+
+If Direct Debit is not selected
+Optional
+
+Enabled
+
+If first 2 symbols of IBAN are BG should cover current validation - BG + 2 symbols (0-9) +4 symbols (A-Z) + 6 symbols (0-9) + 8 symbols ( A-Z 0-9), Example: BG21TBCA12345601234567
+
+If first 2 symbols of IBAN are not BG use next validation - length from 14 to 34 symbols, first 2 symbols A-Z, rest symbols A-Z 0-9, Example: AZ12345678
+
+Risk assessment
+Disabled
+
+Text field
+
+The value is received from the Risk Application which is an external integration https://oppa-support.atlassian.net/browse/PHX-18 
+
+Optional to click on button to get Risk assessment result
+
+Mandatory to check risk assessment on contract creation process. If risk status is Permit then contract can be concluded. if not - should display an error message and display additionally risk assessment additional conditions 
+
+Risk assessment additional condition
+Multi select dropdown  
+The values are received from the Risk Application which is an external integration
+
+It is possible to be empty 
+
+Applicable interest rate
+Mandatory
+
+Single select dropdown
+List of interest rates are retrieved
+
+Only Active values will be returned  (deleted should be excluded) 
+
+Order should be by creation date
+
+Should search in dropdown by name
+
+Campaign
+Optional
+
+Single select dropdown
+List is manageable from nomenclature
+
+Active values will be returned from nomenclature
+
+Order should be considered
+
+Display default if returned from nomenclature
+
+Additional information (4)
+Field label “Additional information"
+
+Any character should be allowed in the field (symbols, letters, digits etc.) New line should be allowed. Should not be only spaces. Spaces at the beginning and at the end should be trimmed
+
+character limit: 4096
+
+optional
+
+The information entered in the field should be saved using the “save” button on the product contract page
+
+Information entered in the field will not be searchable through the filters available on the product contract listing page
+
+The “Additional information” column will not be added to the existing columns on the product contract listing
+
+Additional information must be ID based
+
+2nd - Additional Parameters tab contains sub-objects:
+Tasks
+Empty in contract creation, only in contract editing/preview mode can be added new task to contract 
+
+Tasks displaying logic / format:
+In the task sub-object, a maximum of 10 tasks should be displayed. If the number of tasks exceeds 10, pagination should be shown. If there are 10 or fewer tasks, pagination should not be visible.
+
+Task list logic:
+The tasks ordering should be descending by time creation
+
+Also the task format should be changed, we need to have the next format:
+Id
+Take from task number field - This logic is already added
+
+Display task status
+Task status should be taken from task object
+
+In the system we have the next task statuses:
+Open
+
+In Progress
+
+Terminated
+
+Overdue
+
+Completed
+
+Date in format DD.MM.YYYY
+This logic is already added.
+
+Task type
+Task type should be taken from task type dropdown - this logic is already added
+
+Example:
+ 841 - in progress – 26.02.2025 - YOLS-TEST
+
+Activities
+Empty in contract creation, only in contract editing/preview mode can be added new activity to contract 
+
+Employee
+Always disabled
+
+The user which is logged in the system is added automatically by the system as an Employee
+
+It is not possible to display more than one employee to the contract
+
+Not clickable
+
+Assisting employee
+Assisting employee760Adding  assisting employee to the product contract is optional
+
+Assisting employee is added manually
+Adding assisting employee is possible by clicking on a Plus button
+
+After clicking on a Plus button, modal window should open
+
+Modal window of adding assisting employee to contract contains fields:
+Assisting employee
+Mandatory
+
+Enabled
+
+Single select dropdown
+Display name and username in brackets should be listed e.g. Албена Георгиева Лазарова (A26980)
+
+Alphabetical order
+
+To be able to search in a dropdown by display name or username for adding assisting employee. List of users will be the same what we have for account managers
+
+It is possible to add more than one assisting employee to the contract
+
+Clicking on 'Save' button will check all the validations for assisting employee object (only frontend validation is required here)
+If all validations are passed successfully then assisting employee adding pop-up will be closed and newly added object will be added
+
+After adding assisting employee to the contract, it should be displayed with the following format:
+Name
+
+Username in brackets
+
+e.g. e.g. Албена Георгиева Лазарова (A26980)
+
+Clicking on an arrow will open assisting employee editing mode:
+To be able to update data
+
+Clicking on 'Save' button will recheck all validations and if validations are passed successfully, the updated assisting employee will be added to the contract
+
+It is possible to delete the assisting employee when clicking on a remove icon
+When clicking on a remove icon, a warning message should appear' Are you sure you want to remove e.g. Албена Георгиева Лазарова (A26980)?' Yes/No
+No - will close pop-up
+
+Yes - will close pop-up and the value is removed
+
+The maximum amount of the added assisting employee is not restricted.
+
+Internal intermediary
+Internal intermediary760Adding  internal intermediary to the product contract is optional
+
+Internal intermediary is added manually
+Adding internal intermediary is possible by clicking on a Plus button
+
+After clicking on a Plus button, modal window should open
+
+Modal window of adding internal intermediary to contract contains fields:
+Internal intermediary
+Mandatory
+
+Enabled
+
+Single select dropdown
+Display name and username in brackets should be listed e.g. Албена Георгиева Лазарова (A26980)
+
+Alphabetical order
+
+To be able to search in a dropdown by display name or username for adding internal intermediary. List of users will be the same what we have for account managers
+
+It is possible to add more than one internal intermediary to the contract
+
+Clicking on 'Save' button will check all the validations for internal intermediary object (only frontend validation is required here)
+If all validations are passed successfully then internal intermediary adding pop-up will be closed and newly added object will be added
+
+After adding internal intermediary to the contract, it should be displayed with the following format:
+Name
+
+Username in brackets
+
+e.g. e.g. Албена Георгиева Лазарова (A26980)
+
+Clicking on an arrow will open Internal intermediary's editing mode:
+To be able to update data
+
+Clicking on 'Save' button will recheck all validations and if validations are passed successfully, the updated internal intermediary will be added to the contract
+
+It is possible to delete the internal intermediary when clicking on a remove icon
+When clicking on a remove icon, a warning message should appear' Are you sure you want to remove e.g. Албена Георгиева Лазарова (A26980)?' Yes/No
+No - will close pop-up
+
+Yes - will close pop-up and the value is removed
+
+The maximum amount of the added internal intermediary is not restricted.
+
+External intermediary
+External intermediary760Adding  external intermediary to the product contract is optional
+
+External intermediary is added manually
+Adding external intermediary is possible by clicking on a Plus button
+
+After clicking on a Plus button, modal window should open
+
+Modal window of adding external intermediary to contract contains fields:
+External Intermediary
+Mandatory
+
+Enabled
+
+Single select dropdown
+List is manageable from nomenclature (External intermediary)
+
+Order should be considered
+
+Display Search Bar if number of items are more than 10 items in dropdown list
+
+While typing search letter list in dropdown should be filtered by search letters
+
+It is possible to search in Name and Identifier
+
+Display default if returned from nomenclature
+
+It is possible to add more than one external intermediary to the contract
+
+Clicking on 'Save' button will check all the validations for external intermediary object (only frontend validation is required here)
+If all validations are passed successfully then external intermediary adding pop-up will be closed and newly added object will be added
+
+After adding external intermediary to the contract, it should be displayed with the following format:
+Name
+
+identifier in brackets
+
+e.g. e.g. Албена Георгиева Лазарова (A26980)
+
+Clicking on an arrow will open external intermediary's editing mode:
+To be able to update data
+
+Clicking on 'Save' button will recheck all validations and if validations are passed successfully, the updated external intermediary will be added to the contract
+
+It is possible to delete the external intermediary when clicking on a remove icon
+When clicking on a remove icon, a warning message should appear' Are you sure you want to remove e.g. Албена Георгиева Лазарова (A26980)?' Yes/No
+No - will close pop-up
+
+Yes - will close pop-up and the value is removed
+
+The maximum amount of the added external intermediary is not restricted.
+
+3rd - Products Parameters tab contains fields:
+Display order
+Left column:
+Contract type – always displayed
+
+Contract term – always displayed
+
+Invoice payment term – always displayed
+
+Payment guarantee – always displayed
+
+Price components values – displayed only if exists
+
+Right column:
+Entering into force of the contract – always displayed
+
+Start of the initial term of the contract – always displayed
+
+Supply activation after contract resigning – always displayed
+
+Interim and Advance payments – displayed only if exists
+
+Equal monthly installments – displayed only if exists
+
+Marginal price, Marginal price validity, Average hourly load profiles, Procurement price, Cost price, Set margin – always displayed
+
+Additional parameters
+
+After selecting Product in first tab in 3rd tab should load fields specific for selected product
+If selected product doesn’t have any fields which will be configured in contract display only one the field title and value should be selected
+
+If selected product is non-standard and values should be defined then will display such fields in contract page
+
+If the field itself doesn’t exist in product then should not be displayed such field
+
+Fields validations that could be defined in contract:
+
+Fields validations that could be defined in contract:760Contract type
+Mandatory
+Radio button
+
+If selected product contains more than one value they will be listed with possibility to select only one option
+
+If selected product contains only one option should be selected by default and can’t be unselected
+
+To display only available options which is set in product, all the possible options:
+Combined
+
+Supply and balancing
+
+Supply only
+
+Without supply
+
+Contract terms
+Mandatory
+Radio button
+
+If in product more than one contract term is added will display all of them
+
+If selected product contains only one contract term  display the field with as disabled with preselected option. 
+Periodical
+After saving if Contract term start date is filled should be calculated automatically end date and in first tab save (if calculated value is more than 31.12.2090 should set 31.12.2090
+
+Certain date
+Mandatory to fill date in 3rd tab
+
+Date should be more or equal than signing date and should be more than contract term start date
+
+Without term
+Automatically sets 31.12.2090
+
+Other
+Nothing happens automatically in first tab
+
+Validation
+Less or equal , Perpetuity date , Termination date
+
+More or equal -Signing date, Contract term start , Date of activation
+
+Invoice payment terms
+Mandatory
+Radio button
+
+If product is connected to group of terms or has directly added term with only one invoice payment term then ‘invoice payment term’ should be disabled with preselected
+
+If product contains term which has more than one invoice payment term then display all payment terms with text field to add the value
+If payment term contains value ranges should display text field to add value
+Value should be between value range added in product
+
+Display default added value if returned from payment term
+
+if Value from and value to is added in payment terms value should be equal or between them and in contract creation amount specified in value will be displayed by default and will be possible to update it considering value to - value from interval
+
+If only Value from is added it means that in contract creation value should be equal or more than defined in 'Value from'
+
+If only Value to is added it means that in contract creation value should be equal or less than defined in 'Value to '
+
+if Value, Value from, Value to are not specified in Payment Term it means and in contract creation any value corresponding with data validation can be added
+
+If Value, Value From, and Value To are added in the payment term, the contract field should automatically, by default, select the value from the Value field. The system user should then be able to change it within the Value From and Value To range.
+
+Payment guarantee
+Mandatory
+Radio button
+
+If selected product contains more than one value they will be listed with possibility to select only one option
+
+If selected product contains only one option should be selected by default and can’t be unselected
+
+To display only available options which is set in product, all the possible options:
+No guarantee
+
+Cash deposit
+
+Bank guarantee
+
+Cash deposit and Bank guarantee (This option also should be added in the product)
+Cash deposit amount
+
+Visible and mandatory if Cash deposit or Cash deposit and Bank guarantee is selected
+
+Text field
+
+Allowed symbols: only digits and decimal point can be added  0-9
+
+Length: 0.01 - 99999999.99
+
+Bank guarantee amount
+Visible and mandatory if Bank guarantee or Cash deposit and Bank guarantee is selected
+
+Text field
+
+Allowed symbols: only digits and decimal point can be added  0-9
+
+Length: 0.01 - 99999999.99
+
+Currency
+Visible and mandatory if Cash deposit or Bank guarantee or Cash deposit and Bank guarantee is selected
+
+Single select dropdown
+
+List is manageable from nomenclature
+
+Active values will be returned from nomenclature
+
+Order should be considered
+
+Display default if returned from nomenclature
+
+Guarantee contract
+Optional
+Checkbox
+
+Guarantee contract information
+Mandatory and visible if Guarantee contract checkbox is selected
+
+Text area
+
+Allowed symbols: A-Z a-z 0-9 А-Я а-я – @ # $ & * ( ) + - : . , ‘ € № = space
+
+Should not be only spaces. Spaces at the beginning and at the end should be trimmed
+
+Length: 1-1024 characters
+
+Price component values
+To display the text fields if in price component X1, X8 fields are used
+Also should be retrieved price components added in advance payments
+
+All values must be filled in order to save the contract
+
+Value for each should be in value range defined in price component
+if not defined do not limit max value
+
+Value should be be validated: 
+Range: 0.01 –9 999 999.99
+
+Digits and decimal point can be added
+
+In Product contract creation/editing/preview endpoints Price component values which are added to advance payment should be added and displayed with full list
+
+For each advance payment which is added to service directly or via group should be checked:
+If price component is added to advance payment and in this price component X1-X8 variables are used in the formula in this case should to display variable which is used in price formula
+
+For each advance payment should retrieve price component variable separately
+
+In contract creation/editing Each X1-X8 variable should match validations which is written in price component object (value, value from , value to fields)
+Value should be between value range added in price component
+
+Display default added value if returned from price component and can’t be changed this variable (this means that value from, value to is empty)
+
+If value from and value to is added in price component value should be equal or between them and in contract creation amount specified in value will be displayed by default and will be possible to update it considering value to - value from interval
+
+If only Value from is added it means that in contract creation value should be equal or more than defined in 'Value from'
+
+If only Value to is added it means that in contract creation value should be equal or less than defined in 'Value to'
+
+If Value, Value from, Value to are not specified in price component it means that it contract creation any value corresponding with data validation can be added
+
+Visualization of the names of the price component values : 
+If X1 in price component “TEST Component 1” is named “TEST VALUE“ in the 3rd tab of Product contract: it should be shown as TEST VALUE (X1 from TEST Component 1)
+
+if validation doesn’t match should return an error in creation/editing
+
+In preview should be able to see values which was filled
+
+ Start of the initial term of the contract
+Mandatory
+Radio button
+
+If selected product contains more than one value they will be listed with possibility to select only one option
+
+If selected product contains only one option should be selected by default and can’t be unselected
+
+To display only available options which is set in product, all the possible options:
+From signing
+When contract is saved as Draft, ready , signed (by EPES, by customer) 
+Nothing happens automatically in first tab
+
+When contract is saved as signed (both side, special process), entry into force
+Always should set automatically according signing date
+
+From exact day of the month (Value)
+Can be filled in the past and also in the future
+If contract status is saved as Draft
+Should save in third tab and nothing happens automatically in first tab
+
+If contract status is Ready, signed, entry into force
+Should save automatically 
+
+From date of change of CBG
+After saving nothing happens automatically in first tab
+
+From first delivery
+After saving nothing happens automatically in first tab
+
+Manual
+If contract status is Draft
+Save and disable in first tab
+
+If contract status is Ready, signed, Entry into force
+Contract term start date Should be active in first tab and should be optional
+
+Can be filled in past and also in future
+
+Validation
+Less- Contract Term End date , Perpetuity date , Termination date
+
+Less or equal - Date of activation
+
+More or equal - Signing date , Entry into force date
+
+Additional parameters
+    Labels
+Mandatory
+
+ All symbols are allowed, 
+
+max length 1024 symbols
+
+     Value
+Mandatory
+
+ All symbols are allowed, 
+
+max length 1024 symbols
+
+In Product Contract third tab (Product parameters) to display fields for Additional parameters from the product. Fields of one row should be displayed only if the checkbox is marked. If value is filled in the product it should be displayed as disabled. If value is empty in the product it should be mandatory to fill in the contract.
+
+Entering into force of the contract
+Mandatory
+Radio button
+
+If selected product contains more than one value they will be listed with possibility to select only one option
+
+If selected product contains only one option should be selected by default and can’t be unselected
+
+To display only available options which is set in product, all the possible options:
+From signing
+When contract status is Draft , Ready, signed (by EPES, by customer) - nothing happens automatically in first tab
+
+When contract status is Signed (both side, special processes) , entry into force
+After saving always should fill value in Entry into force date field according signing date
+
+Exact date
+Can be filled in the past and also in the future
+If contract status is saved as Draft
+Will save in 3rd tab and nothing happens automatically in first tab
+
+Date always should be in the future
+
+When contract status is Ready , signed
+Should be validated if value is filled in third tab should be in the future and after saving should fill Entry into force date in 1st tab
+
+If contract status is Entry into force
+in 3rd tab should have validation that should be in the past or current day and automatically fill Entry into force date in first tab
+
+From date of change of CBG
+While saving nothing happens automatically in first tab
+
+From first delivery
+While saving nothing happens automatically in first tab
+
+Manual
+if contract status is Draft
+Entry into force date in first tab should be disable
+
+if contract status is Ready, signed
+Entry into force date in first tab should be optional and should allow value only in future
+
+When contract status is Entry into force
+Entry into force date in first tab should be mandatory and should allow value only in past or current day
+
+Supply activation after contract resigning
+Mandatory
+Radio button
+
+If selected product contains more than one value they will be listed with possibility to select only one option
+
+If selected product contains only one option should be selected by default and can’t be unselected
+
+To display only available options which is set in product, all the possible options:
+From first day of the month following the date of signing of the contract
+
+From exact day of the month (value)
+Date is added 
+
+If value is returned from product it means that the day of the date should be equal to that value
+
+Manual
+
+Equal monthly installments
+To be able to define Number of installments
+If selected product contains value ranges then display text field to add exact value
+Value should be between value range added in product
+
+Display default added value if returned from product
+
+if Value from and value to is added in product value should be equal or between them and in contract creation amount specified in value will be displayed by default and will be possible to update it considering value to - value from interval
+
+If only Value from is added it means that in contract creation value should be equal or more than defined in 'Value from'
+
+If only Value to is added it means that in contract creation value should be equal or less than defined in 'Value to '
+
+if Value, Value from, Value to are not specified in product it means and in contract creation any value corresponding with data validation can be added
+
+To be able to define  Amount
+If selected product contains value ranges then display text field to add exact value
+Value should be between value range added in product
+
+Display default added value if returned from product
+
+if Value from and value to is added in product value should be equal or between them and in contract creation amount specified in value will be displayed by default and will be possible to update it considering value to - value from interval
+
+If only Value from is added it means that in contract creation value should be equal or more than defined in 'Value from'
+
+If only Value to is added it means that in contract creation value should be equal or less than defined in 'Value to '
+
+if Value, Value from, Value to are not specified in  product it means and in contract creation any value corresponding with data validation can be added
+
+Interim & advance payments
+List of Interim & advance payments will be taken from product
+If Interim & advance payment is mandatory to be added to contract then will be selected and can’t be unselected
+
+If Interim & advance payment has condition ‘at least one’ to be added to contract then will be mandatary to select one or more available options
+
+If Interim & advance payment doesn’t have any condition then will be possible to select or not
+
+After selecting each Interim & advance payments will be possible to define:
+Value type
+When in advance payment % from previous invoice, exact amount is selected Value field in contract 3rd tab should be enabled
+
+When in advance payment Price component is selected Value field should be disabled in contract 3rd tab
+
+Date of issue
+When in advance payment Match the invoice date , working days after invoice day, Periodical is selected Value field should be disabled in contract 3rd tab
+
+When in advance payment Date of the month is selected Value field in contract 3rd tab should be enabled
+
+For both the same logic works:
+Value should be between value range added in advance payment
+
+Display default added value if returned from advance payment
+
+if Value from and value to is added in advance payment value should be equal or between them and in contract creation amount specified in value will be displayed by default and will be possible to update it considering value to - value from interval
+
+If only Value from is added it means that in contract creation value should be equal or more than defined in 'Value from'
+
+If only Value to is added it means that in contract creation value should be equal or less than defined in 'Value to '
+
+if Value, Value from, Value to are not specified in advance payment  it means that in contract creation any value corresponding with data validation can be added
+
+Marginal price
+Optional
+
+Text field
+
+Allowed symbols: Only digits are allowed and decimal point e.g. 0.01 - 99999999999.99
+
+Length: 1 - 14  characters
+
+Marginal price validity
+Optional
+
+Text field
+
+Allowed symbols: Only digits are allowed and decimal point e.g. 0.01 - 99999999999.99
+
+Length: 1 - 14  characters
+
+Average hourly load profiles (pav)
+Optional
+
+Text field
+
+Allowed symbols: Only digits are allowed and decimal point e.g. 0 - 99999999.99999
+
+Length: 1 - 14  characters
+
+Procurement price
+Optional
+
+Text field
+
+Allowed symbols: Only digits are allowed and decimal point e.g. 0.01 - 99999999999.99
+
+Length: 1 - 14  characters
+
+Cost price increase from imbalances
+Optional
+
+Text field
+
+Allowed symbols: Only digits are allowed and decimal point e.g. 0.01 - 99999999999.99
+
+Length: 1 - 14  characters
+
+Set margin
+Optional
+
+Text field
+
+Allowed symbols: Only digits are allowed and decimal point e.g. 0.01 - 99999999999.99
+
+Length: 1 - 14  characters
+
+4h - PODs tab contains fields 
+
+Billing groups 
+Empty and disabled in contract creation
+
+Adding all Points of delivery button
+Adding all Points of delivery button760If customer is not selected in first tab will be disabled
+
+Will be possible to add all existing PODs for that customer (from all contracts will be extracted list of PODs)
+
+In the list only one version of POD should be displayed - always PODs latest version will be taken from contracts 
+e.g. if customer has contract 1 POD1 version1 in the list will be displayed latest version of POD, even if that version is not linked to any contract. 
+
+e.g. IF POD 1 has 3 versions. AND If customer has 2 contracts in which POD1 version 1 is added in contract 1 and POD1 version 2 is added in contract 2 in the PODs listing should be extracted version 3 (only latest version which is not connected to any contract)
+
+Adding active Points of delivery
+Adding active Points of delivery760If customer is not selected in first tab will be disabled
+
+Will be possible to add all existing PODs for that customer (from only active contracts will be extracted list of PODs which is active for that moment)
+
+In the list will be extracted the POD’s version which is linked to contract 
+
+Contracts statuses in which PODs should be checked: 
+Active in terms
+
+Active in perpetuity
+
+Import of Points of delivery
+Import of Points of delivery760Will be possible to import PODs identifiers
+
+Clicking on Import button will open Modal window for importing PODs. In modal window will be possible to:
+To upload excel file
+
+To download template
+
+Clicking on Save will upload file in backend and if an error happens display in Modal window 
+If Modal window will be closed and newly added PODs will be added in the list
+
+If POD is already added in the list shouldn’t be added in the list imported POD
+
+In the list only one version of POD should be displayed
+
+Columns in excel should be:
+POD identifier
+
+Version - 0 means to use latest version
+
+Billing group - in creation billing group will be empty; In editing will be possible to add billing group IDs and add PODs there
+
+To be able to add POD, PODs version and billing group number in excel
+
+If POD or its version doesn’t exist should return an error in import
+
+If billing group doesn’t exist should return an error
+
+if billing group is empty should set automatically default billing group.
+
+After importing all PODs should be displayed in POD listing with its billing group defined in excel
+After importing if in the PODs list POD is already added , shouldn’t add such POD in the POD listing.
+
+If POD is added in the list and after import user tries to add again that POD, imported record should be ignored and other PODs will be added in the list
+
+If POD which is in excel doesn’t exist in system, import should be cancelled and should be displayed an error in Modal window. ‘Added POD doesn’t exist in system'
+
+Max number of PODs added in contract is 3000, if more added in excel - should display an error  
+
+Display loader while uploading new file 
+
+Add Point of delivery
+Add Point of delivery760To be able to search existing POD in the system and to add to the contract in default billing group
+When clicking on a “Add Point of delivery” button modal window should be displayed with fields
+Identifier
+Will be possible to enter POD identifier and search POD in the system. (should not search in deleted PODs)
+
+Search
+If identifier is filled will be possible to click on it and run search
+
+If POD doesn’t exist should display error message ‘PDD doesn’t exist'
+
+If POD exist should display POD’s last version’s name in disabled field
+
+Name
+To display PODs last version’s name after searching POD, filled automatically
+
+If PODs version is changed, name should be also changed depending version. 
+
+Always disabled
+
+Version
+Disabled if POD does not exist
+
+Enabled after searching POD, should load all versions of PODs in the dropdown
+
+Order should be from latest to oldest
+
+Latest version will be automatically selected
+
+Display format: version number, version’s creation date (will display according to the time zone of the user's computer)
+e.g. 1/12.01.2023 12:34:45
+
+Billing group
+Always disabled in contract creation
+
+Automatically display default billing group’s name
+
+In Product Contract adding PODs should be restricted according to the settings in the new group of checkboxes Type of points of delivery.
+
+After creating the product contract, if the customer changes the type of delivery (in product, service, pod) the pod that was added previously should be able for this contract
+
+Save button – when user finds needed POD and selects version and clicks on this button, modal window should be closed and the POD should be added in the list. In this step POD will not be saved in DB, actual saving will happen after clicking on main save button
+If POD is already added in the list, no matter with the same version or with another version, should be displayed error message 'POD is already added in contract'.
+
+If user wants to add another version of added POD, first should remove it and then add again another version,
+
+Cancel button – modal window is closed and user stays on listing page
+If in modal window there is unsaved changes should display confirmation message 'Are you sure you want to close?' If yes then modal window will be closed. system message is configurable.
+
+Get customer pods (5)
+The button should be labeled: “Add customer PODs” („Добави точки на отчет на клиента“)
+
+Before adding customer, the button should be disabled
+
+On press, the system should list all Points of delivery for which the customer is associated with, as well as those PODs for which the customer was associated with in at least one pod version
+
+associated means that this customer is added as sub-object in POD object
+
+If in the latest version of a point of delivery the customer is different, the system should list this POD as well but should display a message that the current holder of the POD is different and ask for confirmation to add or not the POD to the contract.
+
+the system displays pop-up with two listings, one with pods who has different customers in their latest version (but list displays the pod’s version which has customer selected in contract) and the other one is empty and user can drag pods into the second listing and add it to contract.
+
+If there is more than one version of the POD, associated with the customer, add the latest one
+
+If there is no matching result, display an empty list
+
+To add pod in the “Product contract” , product and pod should have same purpose of consumption (ID: 6)
+If the “purpose of consumption” is Household only in the product :
+It should be possible to add only PODs of type consumer-  Household and PODs of type Generator.
+
+If the “purpose of consumption” is Non-household only in the product :
+It should be possible to add only PODs of type consumer - Non-household and PODs of type Generator. (Generator is without purpose of consumption so we take it fully)
+
+If the “purpose of consumption” is Household and Non-household:
+In this case, it should be possible to add PODs of all types (consumer- Household, Non-household, and Generator-with empty values).
+
+POD Listing
+POD Listing760To be able to display list of PODs which was added in contract
+
+Move to selected group/PODs action icon should be disabled in creation page
+
+To be able to search POD by its identifier 
+
+Max number of added PODs in the list is 3000 PODs, if user tries to add more PODs should be displayed error message
+X PODs out of Y were not added in the list 
+
+Clicking on POD in the list will open preview of POD in a new tab
+
+In the list should display PODs with following actions/information:
+Select all
+To be able to select PODs in which will be performed some operations (Remove selected, Move selected to billing group)
+
+Identifier
+
+Version
+
+Type of Point of Delivery
+
+Grid Operator
+
+Purpose of Consumption
+
+Measurement Type
+
+Billing group 
+
+Contract number
+Should be visible on contract creation mode
+
+Shouldn’t be displayed on edit/preview modes
+
+In this column system should display contract number from which POD is transferred (Add all PODs or ADD all active PODs button)
+
+Activation date
+
+Deactivation date
+
+Deactivation reason
+Check if > Action Execution Date = POD Deactivation Process Date
+If yes - Check Penalty Payer in action and:
+If it is EPRES - SET deactivation reason (In Product contract 4th tab)  ENERGO-PRO
+
+If it is customer - SET deactivation reason (In Product contract 4th tab) reason  by the customer
+
+If no - set Deactivation reason (In Product contract 4th tab) hardcoded value: Other
+
+ENERGO-PRO 
+hardcoded
+
+By The Customer
+hardcoded
+
+Other
+hardcoded
+
+Deal number
+For PODs with type Consumer this field should always be disabled and should display the deal number from the field Consumer Deal number. 
+
+For PODs with type Generator this field should be enabled.
+Text field
+
+Only digits can be added
+
+Allowed symbols: 0-9
+
+Length: 1-32 characters
+
+Actions
+To be able to add/remove activation/deactivation date when clicking on button
+
+in creation will be disabled
+
+Filter dropdown 
+Will display List of billing groups
+
+in creation will be disabled
+
+Up/down arrows next to column title for sorting full list
+ASC/DESC order
+
+All columns should be sortable
+
+Newly added POD will be listed as last record in the list
+
+Pagination
+To be able to navigate through next/previous page
+
+To be able to navigate to first/last page
+
+To be able to use arrow back/forward for navigation
+
+To be able to go to a certain page from dropdown with available pages
+
+To be able to type page number and after clicking on Enter will directly load that page
+
+Create a contract button
+Will check all validations
+At least one POD should be added to contract in order to create a contract
+
+List of PODs should be matched with configuration in products version. Product parameters which should be checked: 
+Purpose of consumption 
+
+Metering type of the points of delivery 
+
+Voltage level 
+
+Grid operator
+
+if POD’s parameters are different from Product parameters then do not allow to conclude contract and to return error 
+POD should be marked in red and for such errored PODs checkbox should be selected 
+
+In one contract shouldn’t be able to  include household and non-household PODs. all points of delivery in a contract must be of the same consumption type - household or non-household
+If in one contract both types are selected should display an error message in Modal window: ‘In one contract household and non-household products can’t be added'
+
+It is possible POD to be active under some contract while creating new contract
+
+related product check
+Product doesn’t contain related product/service 
+System should create a contract without additional checks
+
+Product contains related product/service  with ‘Obligatory condition' selected and 'Concluded contract’ 
+Signed (signed by customer, signed by both sides, special processes), entered into force, active in terms, active in perpetuity - should be checked
+
+System should check if customer has already concluded a contract with related product/service; if not display an error and doesn’t create new contract 
+
+e.g. product 1 has added related product 2. To create contract with product 1 system should check if customer already have contract with product 2
+
+Product contains related product/service with ‘Obligatory condition' selected and 'Activated contract’ 
+System should check if customer has already concluded a contract with related product and contract is Active in terms or Active in Perpetuity; if not display an error and doesn’t create new contract
+
+e.g. product 1 has added related product 2. To create contract with product 1 system should check if customer already has active contract with product 2
+
+Product contains related product/service with ‘At least one' condition selected and 'Concluded contract’ 
+Signed (signed by customer, signed by both sides, special processes), entered into force, active in terms, active in perpetuity - should be checked
+
+System should check if customer has already concluded a contract to at least one of related products; if not display an error and doesn’t create new contract
+
+e.g. If Product 1 has 10 related products from where 5 is marked to 'Obligatory condition' and 5 has selected 'at least one condition' customer should have concluded 6 contracts to related products (5 for the five products with “Obligatory condition” and 1 for any of the other five products with “at least one condition”) and only in this case will be able to conclude a contract with this product
+
+Product contains related product/service with ‘At least one' condition selected and 'Activated contract’ 
+System should check if customer has already activated contract to at least one of related products; if not display an error and doesn’t create new contract  (contract with Active in terms or Active in Perpetuity statuses)  
+
+In case of creating contract with individual product to check If individual product is connected to any other contract in the system or not
+if connected - do not allow to create a new contract 
+
+if not connected - allow to create a new contract
+
+During Product Contract creating/editing flow it is mandatory to check PODs according to its measurement type:
+If in the product only By settlement period is selected in the metering type of the point of delivery, it means that it is possible to add only those PODs to the contract which has the same measurement type selected (by settlement period)
+
+If in the product only SLP is selected in the metering type of the point of delivery, it means that it is possible to add only those PODs to the contract which has the nomenclature value selected from the measurement type nomenclature and it is different from By settlement periods options.
+
+If both options are selected in the product (By settlement period and SLP), it means that it is possible to add all the PODs to the product contract.
+
+Fields which are directly added to product contract should be saved in product contract object
+
+Fields which are added via group shouldn’t be saved in product contract object and always should be taken from product respective version
+
+For each group Should be checked if after saving settings are not saved in contract
+Remove group from product version
+
+Add new group to product version
+
+Edit group - add new version of group as group has time based versioning and check correct version is applied in contract preview /edit or not
+
+In all scenario updated values to be applied in contract in preview/edit mode
+
+List of groups:
+Group of Penalty
+
+Group of termination
+
+Group of advance payment
+
+Group of price component
+
+For Group of Terms, it is mandatory to save 4 fields' values in  the contract: 
+Supply activation after contract signing
+
+Start of the initial term of the contract
+
+Entry into force of the contract
+
+Wait for old contract term to expire (for resigning)
+
+If all validations are successful contract will be saved and all displayed PODs in the list will be linked to billing group (which should be automatically created) +contract’s version  
+
+Audit log must be added
+
+Cancel button
+When the system user clicks on the Cancel button a warning pop-up message comes out “Your changes are not saved, are you sure you want to cancel?” Yes/No
+
+Yes - will close the pop-up and user returns to the previous page (product’s contract listing)
+
+No - will close the pop-up and user stays on the current tab
+
+Warning message is managed via system settings
+
+Changes table
+#
+Phase 1
+ 
+Phase 2
+Objects that are linked with this change
+Associated changes links
+
+ 
+Story link - Product Contract Create 
+ 
+ 
+ 
+
+1
+There is no preferences field in product, therefore there is no check on matching product/service and customer based on preferences
+There is a preferences field in product, so in product contract there is a check if product is compatible with customer
+Change link - Matching logic during product contract creation 
+product
+
+customer
+
+2 
+There is no possibility to create product contract with manually entered number
+User with specific permission can create product contract with manually entered number
+Change link - Ability to create product contracts with manually entering contract number 
+
+3 
+There is no sub-status “In process” and there is no possibility to save contract without filling mandatory fields
+There is new sub-status “In process” which lets users save contract without filling any mandatory fields
+Change link - Energy product contract with "in process" sub-status - change in mandatory fields/sub-objects 
+
+4 
+There is no field “Additional information” 
+There is a field “Additional information”
+Change link - add new field 'additional information' in product contract 
+
+5 
+There is no possibility to add pods which are connected to customer through POD object
+There is new button “Get customer PODs” which lets users add pods which are connected to customer through POD object
+Change link - In contract "PODs" tab to have a button to retrieve all PODs connected to the customer through the POD 
+Pod
+
+Customer
+
+6
+
+Purpose of consumption to be disabled and empty for Generators
+Purpose of consumption to be disabled and empty for Generators 
+POD, Express contract, Product contract

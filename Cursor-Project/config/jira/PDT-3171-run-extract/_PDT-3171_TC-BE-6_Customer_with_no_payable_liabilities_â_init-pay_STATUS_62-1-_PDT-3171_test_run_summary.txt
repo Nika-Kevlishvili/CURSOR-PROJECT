@@ -1,0 +1,36 @@
+﻿================================================================================
+TEST: [PDT-3171] TC-BE-6: Customer with no payable liabilities — init-pay STATUS 62
+JIRA: PDT-3171
+API:  http://10.236.20.11:8091/
+================================================================================
+
+--- Relevant payloads ---
+
+[customer]
+{
+  "id": 6082895,
+  "customerNumber": 6000148523,
+  "identifier": "17854145738750859",
+  "customerType": "LEGAL_ENTITY",
+  "lastCustomerDetailId": 84964,
+  "isDeleted": "ACTIVE",
+  "version": 1
+}
+
+--- Expected result vs Actual result ---
+
+1. [PASSED] TC-BE-6 no obligation
+   Expected result: STATUS=62
+   Actual result:   As expected — STATUS=62
+
+--- Portal links (relevant entities) ---
+
+[customer]
+https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082895
+
+--- Context snapshot ---
+{
+  "status": "62"
+}
+
+================================================================================

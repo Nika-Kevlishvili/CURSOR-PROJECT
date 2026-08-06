@@ -1,0 +1,50 @@
+﻿================================================================================
+TEST: [PDT-3171] TC-BE-1: Proforma-only liability — init-pay VALIDTO is today+30 yyyyMMdd, not "0"
+JIRA: PDT-3171
+API:  http://10.236.20.11:8091/
+================================================================================
+
+--- Relevant payloads ---
+
+[customer]
+{
+  "id": 6082889,
+  "customerNumber": 6000148517,
+  "identifier": "17854145569736555",
+  "customerType": "LEGAL_ENTITY",
+  "lastCustomerDetailId": 84958,
+  "isDeleted": "ACTIVE",
+  "version": 1
+}
+
+--- Expected result vs Actual result ---
+
+1. [PASSED] TC-BE-1 proforma VALIDTO today+30
+   Expected result: STATUS=00, VALIDTO=20260829 (not "0"), AMOUNT=489720
+   Actual result:   As expected — STATUS=00, VALIDTO=20260829, AMOUNT=489720
+
+--- Portal links (relevant entities) ---
+
+[customer]
+https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082889
+
+[invoice]
+https://devapps.energo-pro.bg/app/phoenix1-dev//invoices/preview?id=102226
+
+[customerLiability]
+https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87923
+
+[goodsOrder]
+https://devapps.energo-pro.bg/app/phoenix1-dev//goods-order/preview?id=1423
+
+--- Context snapshot ---
+{
+  "goodsOrderId": 1423,
+  "proformaInvoiceId": 102226,
+  "liabilityId": 87923,
+  "expectedValidTo": "20260829",
+  "initValidTo": "20260829",
+  "initAmount": 489720
+}
+
+================================================================================

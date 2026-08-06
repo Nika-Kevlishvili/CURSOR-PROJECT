@@ -1,0 +1,45 @@
+﻿================================================================================
+TEST: [PDT-3171] TC-BE-7: confirm-pay succeeds after successful init when TOTAL matches AMOUNT
+JIRA: PDT-3171
+API:  http://10.236.20.11:8091/
+================================================================================
+
+--- Relevant payloads ---
+
+[customer]
+{
+  "id": 6082896,
+  "customerNumber": 6000148524,
+  "identifier": "17854145743883478",
+  "customerType": "LEGAL_ENTITY",
+  "lastCustomerDetailId": 84965,
+  "isDeleted": "ACTIVE",
+  "version": 1
+}
+
+--- Expected result vs Actual result ---
+
+1. [PASSED] TC-BE-7 confirm match happy path
+   Expected result: Init VALIDTO real yyyyMMdd; confirm STATUS=00; payment created
+   Actual result:   As expected — init VALIDTO=20260901, confirm STATUS=00, paymentId=26781
+
+--- Portal links (relevant entities) ---
+
+[customer]
+https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082896
+
+[payment]
+https://devapps.energo-pro.bg/app/phoenix1-dev//payments/preview?id=26781
+
+[customerLiability]
+https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87929
+https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87930
+
+--- Context snapshot ---
+{
+  "initAmount": 20000,
+  "initValidTo": "20260901",
+  "confirmStatus": "00"
+}
+
+================================================================================

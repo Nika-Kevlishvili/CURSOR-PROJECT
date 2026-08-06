@@ -1,0 +1,50 @@
+﻿{
+  "testTitle": "[PDT-3171] TC-BE-5: Unknown MERCHANTID on init-pay returns STATUS 96",
+  "jiraKey": "PDT-3171",
+  "apiBase": "http://10.236.20.11:8091/",
+  "payloads": {
+    "customer": {
+      "id": 6082893,
+      "customerNumber": 6000148521,
+      "identifier": "17854145729784855",
+      "customerType": "LEGAL_ENTITY",
+      "lastCustomerDetailId": 84962,
+      "isDeleted": "ACTIVE",
+      "version": 1
+    }
+  },
+  "outcomes": [
+    {
+      "check": "TC-BE-5 unknown merchant",
+      "expectedResult": "STATUS=96",
+      "actualResult": "As expected — STATUS=96",
+      "passed": true
+    }
+  ],
+  "portalLinks": {
+    "customer": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082893"
+    ],
+    "customerLiability": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87928"
+    ]
+  },
+  "snapshot": {
+    "status": "96",
+    "badMerchantId": "9999999"
+  },
+  "allResponseLinks": {
+    "customer": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082893"
+    ],
+    "customerLiability": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87928"
+    ],
+    "paymentPackage": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//payment-package/preview?id=6327"
+    ],
+    "collectionChannel": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//collection-channel/preview?id=5499"
+    ]
+  }
+}

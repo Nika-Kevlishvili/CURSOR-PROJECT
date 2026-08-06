@@ -1,0 +1,49 @@
+﻿{
+  "testTitle": "[PDT-3171] TC-BE-4: Invalid CHECKSUM on init-pay returns STATUS 93",
+  "jiraKey": "PDT-3171",
+  "apiBase": "http://10.236.20.11:8091/",
+  "payloads": {
+    "customer": {
+      "id": 6082892,
+      "customerNumber": 6000148520,
+      "identifier": "17854145723714306",
+      "customerType": "LEGAL_ENTITY",
+      "lastCustomerDetailId": 84961,
+      "isDeleted": "ACTIVE",
+      "version": 1
+    }
+  },
+  "outcomes": [
+    {
+      "check": "TC-BE-4 invalid checksum",
+      "expectedResult": "STATUS=93",
+      "actualResult": "As expected — STATUS=93",
+      "passed": true
+    }
+  ],
+  "portalLinks": {
+    "customer": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082892"
+    ],
+    "customerLiability": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87927"
+    ]
+  },
+  "snapshot": {
+    "status": "93"
+  },
+  "allResponseLinks": {
+    "customer": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082892"
+    ],
+    "customerLiability": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87927"
+    ],
+    "paymentPackage": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//payment-package/preview?id=6326"
+    ],
+    "collectionChannel": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//collection-channel/preview?id=5498"
+    ]
+  }
+}

@@ -1,0 +1,46 @@
+﻿================================================================================
+TEST: [PDT-3171] TC-BE-2: Liability with real dueDate — init-pay VALIDTO equals that date
+JIRA: PDT-3171
+API:  http://10.236.20.11:8091/
+================================================================================
+
+--- Relevant payloads ---
+
+[customer]
+{
+  "id": 6082890,
+  "customerNumber": 6000148518,
+  "identifier": "17854145643267184",
+  "customerType": "LEGAL_ENTITY",
+  "lastCustomerDetailId": 84959,
+  "isDeleted": "ACTIVE",
+  "version": 1
+}
+
+--- Expected result vs Actual result ---
+
+1. [PASSED] TC-BE-2 real dueDate VALIDTO
+   Expected result: STATUS=00, VALIDTO=20260915
+   Actual result:   As expected — STATUS=00, VALIDTO=20260915
+
+--- Portal links (relevant entities) ---
+
+[customer]
+https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082890
+
+[customerLiability]
+https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87924
+
+[collectionChannel]
+https://devapps.energo-pro.bg/app/phoenix1-dev//collection-channel/preview?id=5496
+
+[paymentPackage]
+https://devapps.energo-pro.bg/app/phoenix1-dev//payment-package/preview?id=6324
+
+--- Context snapshot ---
+{
+  "expectedValidTo": "20260915",
+  "initValidTo": "20260915"
+}
+
+================================================================================

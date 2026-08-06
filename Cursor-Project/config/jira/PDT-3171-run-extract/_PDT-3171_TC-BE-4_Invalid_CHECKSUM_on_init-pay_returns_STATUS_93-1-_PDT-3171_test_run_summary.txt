@@ -1,0 +1,39 @@
+﻿================================================================================
+TEST: [PDT-3171] TC-BE-4: Invalid CHECKSUM on init-pay returns STATUS 93
+JIRA: PDT-3171
+API:  http://10.236.20.11:8091/
+================================================================================
+
+--- Relevant payloads ---
+
+[customer]
+{
+  "id": 6082892,
+  "customerNumber": 6000148520,
+  "identifier": "17854145723714306",
+  "customerType": "LEGAL_ENTITY",
+  "lastCustomerDetailId": 84961,
+  "isDeleted": "ACTIVE",
+  "version": 1
+}
+
+--- Expected result vs Actual result ---
+
+1. [PASSED] TC-BE-4 invalid checksum
+   Expected result: STATUS=93
+   Actual result:   As expected — STATUS=93
+
+--- Portal links (relevant entities) ---
+
+[customer]
+https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082892
+
+[customerLiability]
+https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87927
+
+--- Context snapshot ---
+{
+  "status": "93"
+}
+
+================================================================================

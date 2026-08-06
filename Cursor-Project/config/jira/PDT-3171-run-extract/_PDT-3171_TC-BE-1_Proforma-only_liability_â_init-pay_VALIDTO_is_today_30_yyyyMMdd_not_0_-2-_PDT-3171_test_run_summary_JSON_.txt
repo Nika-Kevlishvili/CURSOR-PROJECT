@@ -1,0 +1,66 @@
+﻿{
+  "testTitle": "[PDT-3171] TC-BE-1: Proforma-only liability — init-pay VALIDTO is today+30 yyyyMMdd, not \"0\"",
+  "jiraKey": "PDT-3171",
+  "apiBase": "http://10.236.20.11:8091/",
+  "payloads": {
+    "customer": {
+      "id": 6082889,
+      "customerNumber": 6000148517,
+      "identifier": "17854145569736555",
+      "customerType": "LEGAL_ENTITY",
+      "lastCustomerDetailId": 84958,
+      "isDeleted": "ACTIVE",
+      "version": 1
+    }
+  },
+  "outcomes": [
+    {
+      "check": "TC-BE-1 proforma VALIDTO today+30",
+      "expectedResult": "STATUS=00, VALIDTO=20260829 (not \"0\"), AMOUNT=489720",
+      "actualResult": "As expected — STATUS=00, VALIDTO=20260829, AMOUNT=489720",
+      "passed": true
+    }
+  ],
+  "portalLinks": {
+    "customer": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082889"
+    ],
+    "goodsOrder": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//goods-order/preview?id=1423"
+    ],
+    "invoice": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//invoices/preview?id=102226"
+    ],
+    "customerLiability": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87923"
+    ]
+  },
+  "snapshot": {
+    "goodsOrderId": 1423,
+    "proformaInvoiceId": 102226,
+    "liabilityId": 87923,
+    "expectedValidTo": "20260829",
+    "initValidTo": "20260829",
+    "initAmount": 489720
+  },
+  "allResponseLinks": {
+    "customer": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082889"
+    ],
+    "goodsOrder": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//goods-order/preview?id=1423"
+    ],
+    "invoice": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//invoices/preview?id=102226"
+    ],
+    "customerLiability": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87923"
+    ],
+    "paymentPackage": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//payment-package/preview?id=6323"
+    ],
+    "collectionChannel": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//collection-channel/preview?id=5495"
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+﻿{
+  "testTitle": "[PDT-3171] TC-BE-3: Mixed basket — root VALIDTO uses nearest non-null dueDate",
+  "jiraKey": "PDT-3171",
+  "apiBase": "http://10.236.20.11:8091/",
+  "payloads": {
+    "customer": {
+      "id": 6082891,
+      "customerNumber": 6000148519,
+      "identifier": "17854145654112521",
+      "customerType": "LEGAL_ENTITY",
+      "lastCustomerDetailId": 84960,
+      "isDeleted": "ACTIVE",
+      "version": 1
+    }
+  },
+  "outcomes": [
+    {
+      "check": "TC-BE-3 mixed basket nearest VALIDTO",
+      "expectedResult": "Root VALIDTO=20260820; proforma entry 20260829",
+      "actualResult": "As expected — root=20260820, INVOICES=[{\"IDN\":\"6000148519.87926\",\"SHORTDESC\":\"Клиентски номер: 6000148519;\",\"LONGDESC\":\"Клиентски номер: 6000148519; Клиент: AUTOMATION (17854145654112521); Фактура: ;\",\"AMOUNT\":5000,\"VALIDTO\":\"20260820\"},{\"IDN\":\"6000148519.87925\",\"SHORTDESC\":\"Клиентски номер: 6000148519;\",\"LONGDESC\":\"Клиентски номер: 6000148519; Клиент: AUTOMATION (17854145654112521); Фактура: 3000000845/30.07.2026;\",\"AMOUNT\":228600,\"VALIDTO\":\"20260829\"}]",
+      "passed": true
+    }
+  ],
+  "portalLinks": {
+    "customer": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082891"
+    ],
+    "goodsOrder": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//goods-order/preview?id=1424"
+    ],
+    "customerLiability": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87925",
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87926"
+    ]
+  },
+  "snapshot": {
+    "proformaLiabilityId": 87925,
+    "expectedRootValidTo": "20260820",
+    "expectedProformaValidTo": "20260829",
+    "initValidTo": "20260820"
+  },
+  "allResponseLinks": {
+    "customer": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082891"
+    ],
+    "goodsOrder": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//goods-order/preview?id=1424"
+    ],
+    "invoice": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//invoices/preview?id=102227"
+    ],
+    "customerLiability": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87925",
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87926"
+    ],
+    "paymentPackage": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//payment-package/preview?id=6325"
+    ],
+    "collectionChannel": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//collection-channel/preview?id=5497"
+    ]
+  }
+}

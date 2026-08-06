@@ -1,0 +1,39 @@
+noneUser story
+As a system user with the right permissions,
+I want to be able to enter a contract number manually when creating a product contract,
+So that I can add contracts that were made outside the system or offline.
+
+Actors
+System user with right permission
+
+Story description
+Ability to create contracts by manually entering contract number.  
+
+Precondition
+Product contract listing page and plus button exists in the system
+
+Process
+navigating to the product contract page
+
+Entering the number (with required format)
+
+Filling all the necessary fields
+
+Creating contract
+
+Acceptance criteria 
+The number must have the same format as the system-generated one
+
+The number should be unique
+
+The new permission should be created specifically for this feature
+
+User should be able to mass import created contracts (Currently, importing contracts with manually specified numbers is only available when editing existing contract)
+
+the field must be optional for user with right permission
+
+If the user leaves this field empty, the system (Phoenix) will create a unique contract number automatically, following the usual format.
+
+the field must be disabled for user who doesn’t have right permission
+
+after creating contract number can not be edited and should be disabled

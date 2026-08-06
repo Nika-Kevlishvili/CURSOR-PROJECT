@@ -1,0 +1,216 @@
+{
+  "createdAt": "2026-07-30T12:55:04.729Z",
+  "environment": "dev",
+  "note": "Payment NOT confirmed — liability still open. Run confirm only if you want to complete payment.",
+  "entities": {
+    "customerId": 6082956,
+    "customerNumber": "6000148584",
+    "identifier": "17854161037587894",
+    "liabilityId": 88001,
+    "liabilityDueDate": "2026-09-15",
+    "liabilityCurrentAmount": 100,
+    "initialAmount": 100
+  },
+  "expected": {
+    "initPay": {
+      "STATUS": "00",
+      "VALIDTO": "20260915",
+      "VALIDTO_must_not_be": "0",
+      "AMOUNT": 10000
+    },
+    "confirmPay_correctTotal": {
+      "STATUS": "00"
+    },
+    "confirmPay_wrongTotal": {
+      "STATUS": "96"
+    },
+    "initPay_badChecksum": {
+      "STATUS": "93"
+    },
+    "initPay_badMerchant": {
+      "STATUS": "96"
+    }
+  },
+  "phoenixPayloads": {
+    "customer": {
+      "method": "POST",
+      "url": "http://10.236.20.11:8091/customer",
+      "body": {
+        "customerType": "LEGAL_ENTITY",
+        "customerIdentifier": "17854161037587894",
+        "foreign": true,
+        "marketingConsent": false,
+        "preferCommunicationInEnglish": false,
+        "oldCustomerNumber": null,
+        "vatNumber": null,
+        "customerDetailStatus": "NEW",
+        "businessCustomerDetails": {
+          "procurementLaw": false,
+          "name": "AUTOMATION",
+          "nameTranslated": "AUTOMATION",
+          "legalFormId": 1,
+          "legalFormTransId": 1
+        },
+        "ownershipFormId": 1006,
+        "economicBranchId": 1027,
+        "economicBranchNCEAId": null,
+        "mainSubjectOfActivity": "MainSubject",
+        "segmentIds": [
+          1013
+        ],
+        "address": {
+          "foreign": false,
+          "localAddressData": {
+            "countryId": 1198,
+            "regionId": 1031,
+            "municipalityId": 1270,
+            "populatedPlaceId": 6708,
+            "zipCodeId": 6719,
+            "districtId": 1245,
+            "residentialAreaId": 1671,
+            "streetId": 162498,
+            "streetType": "STREET",
+            "residentialAreaType": "QUARTER"
+          },
+          "number": "122",
+          "additionalInformation": null,
+          "block": null,
+          "entrance": null,
+          "floor": null,
+          "apartment": null,
+          "mailbox": null
+        },
+        "bankingDetails": {
+          "directDebit": false,
+          "bankId": 1000,
+          "bic": null,
+          "iban": null,
+          "declaredConsumption": null,
+          "preferenceIds": [
+            1000
+          ],
+          "creditRatingId": 1000
+        },
+        "managers": [
+          {
+            "id": null,
+            "titleId": 1000,
+            "name": "NAME",
+            "middleName": null,
+            "surname": "SURNAME",
+            "personalNumber": null,
+            "unrecognizedIdentifier": false,
+            "jobPosition": "QA",
+            "positionHeldFrom": null,
+            "positionHeldTo": null,
+            "birthDate": null,
+            "representationMethodId": 1000,
+            "additionalInformation": null,
+            "status": "ACTIVE"
+          }
+        ],
+        "relatedCustomers": null,
+        "owner": null,
+        "communicationData": [
+          {
+            "status": "ACTIVE",
+            "contactTypeName": "MAIL",
+            "contactPurposes": [
+              {
+                "contactPurposeId": 83,
+                "status": "ACTIVE"
+              },
+              {
+                "contactPurposeId": 84,
+                "status": "ACTIVE"
+              }
+            ],
+            "address": {
+              "foreign": false,
+              "localAddressData": {
+                "countryId": 1198,
+                "regionId": 1031,
+                "municipalityId": 1270,
+                "populatedPlaceId": 6708,
+                "zipCodeId": 6719,
+                "streetId": 162498,
+                "streetType": "STREET"
+              },
+              "number": "122",
+              "additionalInformation": null,
+              "block": null,
+              "entrance": null,
+              "floor": null,
+              "apartment": null,
+              "mailbox": null,
+              "latitude": 90,
+              "longitude": 180
+            },
+            "communicationContacts": [
+              {
+                "sendSms": true,
+                "platformId": 1000,
+                "status": "ACTIVE",
+                "contactType": "MOBILE_NUMBER",
+                "contactValue": "555125531"
+              },
+              {
+                "sendSms": true,
+                "platformId": 1000,
+                "status": "ACTIVE",
+                "contactType": "EMAIL",
+                "contactValue": "test@test.com"
+              }
+            ],
+            "contactPersons": []
+          }
+        ],
+        "accountManagers": null,
+        "customerEditContractRequests": []
+      }
+    },
+    "customerLiability": {
+      "method": "POST",
+      "url": "http://10.236.20.11:8091/customer-liability",
+      "body": {
+        "create": null,
+        "accountingPeriodId": 1043,
+        "dueDate": "15-09-2026",
+        "applicableInterestRateId": 3079,
+        "occurrenceDate": "30-07-2026",
+        "initialAmount": 100,
+        "currentAmount": null,
+        "currencyId": 1001,
+        "bankId": 1000,
+        "bic": "RP",
+        "customerId": 6082956,
+        "billingGroupId": null
+      }
+    }
+  },
+  "easyPayReadyUrls": {
+    "1_calculate_check_sum_init": "http://10.236.20.11:9091/epay/calculate-check-sum-init?IDN=6000148584&TID=20260730165504077118100020&MERCHANTID=7000005&TYPE=BILLING",
+    "1_checksum_value": "88dea78a935d2257d0035b4b8f64863a9d7021b2",
+    "2_init_pay": "http://10.236.20.11:9091/epay/init-pay?IDN=6000148584&TID=20260730165504077118100020&MERCHANTID=7000005&TYPE=BILLING&CHECKSUM=88dea78a935d2257d0035b4b8f64863a9d7021b2",
+    "2_init_pay_actual_response": {
+      "STATUS": "00",
+      "IDN": "6000148584",
+      "SHORTDESC": "Клиентски номер: 6000148584;",
+      "LONGDESC": "Клиентски номер: 6000148584; Клиент: AUTOMATION (17854161037587894); Фактури: ;",
+      "AMOUNT": 10000,
+      "VALIDTO": "20260915",
+      "INVOICES": null
+    },
+    "3_calculate_check_sum_confirm": "http://10.236.20.11:9091/epay/calculate-check-sum-confirm?DATE=20260730085504&TYPE=BILLING&MERCHANTID=7000005&IDN=6000148584&TOTAL=10000&TID=20260730165504077118100020",
+    "3_checksum_value": "f00c5075ddf293c06a55a0614103e8f03fdf2002",
+    "4_confirm_pay": "http://10.236.20.11:9091/epay/confirm-pay?DATE=20260730085504&TYPE=BILLING&MERCHANTID=7000005&IDN=6000148584&TOTAL=10000&TID=20260730165504077118100020&CHECKSUM=f00c5075ddf293c06a55a0614103e8f03fdf2002",
+    "neg_init_bad_checksum": "http://10.236.20.11:9091/epay/init-pay?IDN=6000148584&TID=20260730165504077118100020&MERCHANTID=7000005&TYPE=BILLING&CHECKSUM=DEADBEEF",
+    "neg_init_bad_merchant": "http://10.236.20.11:9091/epay/init-pay?IDN=6000148584&TID=20260730165504077118100020&MERCHANTID=9999999&TYPE=BILLING&CHECKSUM=88dea78a935d2257d0035b4b8f64863a9d7021b2",
+    "neg_confirm_wrong_total_needs_fresh_checksum": "Recompute checksum-confirm with TOTAL=AMOUNT+1, then call confirm-pay — expect STATUS 96"
+  },
+  "portalHints": {
+    "customerSearch": "17854161037587894",
+    "swagger_phoenix": "http://10.236.20.11:8091/swagger-ui/index.html#",
+    "swagger_epay": "http://10.236.20.11:9091/swagger-ui/index.html#"
+  }
+}

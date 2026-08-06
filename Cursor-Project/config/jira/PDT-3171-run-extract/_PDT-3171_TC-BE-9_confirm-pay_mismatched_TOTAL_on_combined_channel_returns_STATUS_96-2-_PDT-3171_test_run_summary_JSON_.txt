@@ -1,0 +1,51 @@
+﻿{
+  "testTitle": "[PDT-3171] TC-BE-9: confirm-pay mismatched TOTAL on combined channel returns STATUS 96",
+  "jiraKey": "PDT-3171",
+  "apiBase": "http://10.236.20.11:8091/",
+  "payloads": {
+    "customer": {
+      "id": 6082898,
+      "customerNumber": 6000148526,
+      "identifier": "17854145887379986",
+      "customerType": "LEGAL_ENTITY",
+      "lastCustomerDetailId": 84967,
+      "isDeleted": "ACTIVE",
+      "version": 1
+    }
+  },
+  "outcomes": [
+    {
+      "check": "TC-BE-9 combined confirm mismatch STATUS 96",
+      "expectedResult": "STATUS=96; payment not accepted for wrong TOTAL",
+      "actualResult": "As expected — STATUS=96, wrongTotal=9999, payments=0",
+      "passed": true
+    }
+  ],
+  "portalLinks": {
+    "customer": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082898"
+    ],
+    "customerLiability": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87932"
+    ]
+  },
+  "snapshot": {
+    "initAmount": 10000,
+    "wrongTotal": 9999,
+    "confirmStatus": "96"
+  },
+  "allResponseLinks": {
+    "customer": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082898"
+    ],
+    "customerLiability": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87932"
+    ],
+    "paymentPackage": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//payment-package/preview?id=6331"
+    ],
+    "collectionChannel": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//collection-channel/preview?id=5502"
+    ]
+  }
+}

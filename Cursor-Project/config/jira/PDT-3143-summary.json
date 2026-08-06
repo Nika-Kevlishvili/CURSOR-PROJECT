@@ -1,0 +1,49 @@
+{
+  "summary": "New optional dropdown field on POD",
+  "status": "Testing",
+  "issuetype": "Customer Feedback ",
+  "environment": null,
+  "description_text": "doc\nparagraph\nAs a System User,\ntext\nAs a System User,\n2834db0e17fc\nparagraph\nI want to set an optional Energy sharing model on a Point of Delivery (POD) version,\ntext\nI want to set an optional Energy sharing model on a Point of Delivery (POD) version,\ne37fd875344a\nparagraph\nSo that I can record whether the POD participates as an Energy group or an Energy community.\ntext\nSo that I can record whether the POD participates as an Energy group or an Energy community.\n4580e9fcfefa\nparagraph\n \ntext\n \nhttps://www.figma.com/design/rdEFquUpErpUGFXdQt7vmV/Energo-Pro?node-id=5535-5232&t=7lMzXqryoGFSm7E6-0\ninlineCard\nhttps://www.figma.com/design/rdEFquUpErpUGFXdQt7vmV/Energo-Pro?node-id=5535-5232&t=7lMzXqryoGFSm7E6-0\n16f4820b5dbf\n \ntext\n \ne46d5c4ce463\nparagraph\nhttps://www.figma.com/design/rdEFquUpErpUGFXdQt7vmV/Energo-Pro?node-id=5533-3105&t=EguqvDMfFAOPYpUD-0\ninlineCard\nhttps://www.figma.com/design/rdEFquUpErpUGFXdQt7vmV/Energo-Pro?node-id=5533-3105&t=EguqvDMfFAOPYpUD-0\nbddf5d1370f8\n \ntext\n \nffeea5bccdd9\nheading\n6ff5f8808ce2\nDescription\ntext\nDescription\nparagraph\nThis story adds one non-mandatory dropdown on the POD version named Energy sharing model (EN: Energy sharing model | BG: Модел на споделяне). Allowed values are Energy group (EN: Energy group | BG: Енергийна група) and Energy community (EN: Energy community | BG: Енергийна общност). The System User may leave the field empty.\ntext\nThis story adds one non-mandatory dropdown on the POD version named Energy sharing model (EN: Energy sharing model | BG: Модел на споделяне). Allowed values are Energy group (EN: Energy group | BG: Енергийна група) and Energy community (EN: Energy community | BG: Енергийна общност). The System User may leave the field empty.\nafd13fb4eb3e\nparagraph\n \ntext\n \n6118ea20a6ef\nheading\nbb66d5fc72c5\nPreconditions\ntext\nPreconditions\nbulletList\nlistItem\n976bc520c72c\nparagraph\nSystem User has permission to view, edit and create Point of Delivery (POD),including creating or editing a POD version and create Express contract(add Point of Delivery)\ntext\nSystem User has permission to view, edit and create Point of Delivery (POD),including creating or editing a POD version and create Express contract(add Point of Delivery)\ne4a3a9402323\nlistItem\n379cc4fc2ae3\nparagraph\nA POD exists and the System User can open it in create-version or edit-version mode as today.\ntext\nA POD exists and the System User can open it in create-version or edit-version mode as today.\n46bf8b51ebd8\nlistItem\n73b8f5172d63\nparagraph\nExisting POD version save and versioning behavior is available as today.\ntext\nExisting POD version save and versioning behavior is available as today.\necebae425fa2\n3f9bfe9736e1\nparagraph\n \ntext\n \nc34204cc8921\nheading\nf5809a3d3d4f\nAcceptance Criteria\ntext\nAcceptance Criteria\nparagraph\nField on POD version\ntext\nField on POD version\nstrong\n8f69522a4ebb\nbulletList\nlistItem\n68fe3b4c8827\nparagraph\n On POD version create and edit screens, System shows a dropdown labelled (EN: Energy sharing model | BG: Модел на споделяне).\ntext\n On POD version create and edit screens, System shows a dropdown labelled (EN: Energy sharing model | BG: Модел на споделяне).\n114b176ca028\nlistItem\n5e6556db27f9\nparagraph\nEnergy sharing model is not mandatory. System User can save a POD version with the field empty.\ntext\nEnergy sharing model is not mandatory. System User can save a POD version with the field empty.\nbdd65435b5b8\nlistItem\nddae07dc5d2d\nparagraph\nThe dropdown offers exactly these selectable values (plus empty / no selection):\ntext\nThe dropdown offers exactly these selectable values (plus empty / no selection):\n80ab219c7a4e\nbulletList\nlistItem\n142040a373bc\nparagraph\n(EN: Energy group | BG: Енергийна група)\ntext\n(EN: Energy group | BG: Енергийна група)\n6f7dca635b3c\nlistItem\n05a9a1458318\nparagraph\n(EN: Energy community | BG: Енергийна общност)\ntext\n(EN: Energy community | BG: Енергийна общност)\n316943c96b59\nc4ebcbeef61b\nlistItem\nf96ab063c77c\nparagraph\nSystem does not allow any other custom free-text value in Energy sharing model.\ntext\nSystem does not allow any other custom free-text value in Energy sharing model.\n2782c3543359\nlistItem\nf9cd31ff34e3\nparagraph\nField is editable when the System User is allowed to edit the POD version; when the POD version is view-only, the field is read-only / display-only as for other version fields today.\ntext\nField is editable when the System User is allowed to edit the POD version; when the POD version is view-only, the field is read-only / display-only as for other version fields today.\n6f572bbd6260\n72bb3436ce37\nparagraph\nPoint of Delivery - mass import\ntext\nPoint of Delivery - mass import\nstrong\nec31d3d394de\nbulletList\nlistItem\n0b04cb03fd98\nparagraph\nNew field must be added in POD mass import with same validations\ntext\nNew field must be added in POD mass import with same validations\nfcdb03635acd\n72bb3436ce37\nparagraph\nExpress Contract - Add Point of Delivery pop-up\ntext\nExpress Contract - Add Point of Delivery pop-up\nstrong\n665c829d8829\nbullet",
+  "cf10103_text": "doc\nparagraph\nReproduce Steps:\ntext\nReproduce Steps:\nstrong\nparagraph\nActual Result:\ntext\nActual Result:\nstrong\nparagraph\nExpected Result:\ntext\nExpected Result:\nstrong\nparagraph\n_________________\ntext\n_________________\nparagraph\nEndpoint:\ntext\nEndpoint:\nhardBreak\nMethod:\ntext\nMethod:\nhardBreak\nStatus:\ntext\nStatus:\nhardBreak\nPayload:\ntext\nPayload:\nhardBreak\nResponse:\ntext\nResponse:",
+  "ac_text": "",
+  "links": [],
+  "attachments": [],
+  "comments": [
+    {
+      "author": "Nini Tsatsanashvili",
+      "body": "doc\nparagraph\nNew optional dropdown field on POD\nhttps://oppa-support.atlassian.net/browse/PDT-3143\ntext\nNew optional dropdown field on POD\nlink\nhttps://oppa-support.atlassian.net/browse/PDT-3143"
+    },
+    {
+      "author": "Slack",
+      "body": "doc\nparagraph\nDobromir Atanasov\nhttps://oppa-support.atlassian.net/jira/people/712020:ac563b0a-1939-4989-ac36-9cd97db12020\ntext\nDobromir Atanasov\nlink\nhttps://oppa-support.atlassian.net/jira/people/712020:ac563b0a-1939-4989-ac36-9cd97db12020\n synced this conversation thread with the Slack thread \ntext\n synced this conversation thread with the Slack thread \nhttps://asterbit.slack.com/archives/C082ZJNHECF/p1784813223473829?thread_ts=1784813223.473829&cid=C082ZJNHECF\ninlineCard\nhttps://asterbit.slack.com/archives/C082ZJNHECF/p1784813223473829?thread_ts=1784813223.473829&cid=C082ZJNHECF\n. Replies in synced threads will automatically update across both Slack and Jira.\ntext\n. Replies in synced threads will automatically update across both Slack and Jira."
+    },
+    {
+      "author": "Nini Tsatsanashvili",
+      "body": "doc\nparagraph\n@Dobromir Atanasov\nhttps://oppa-support.atlassian.net/jira/people/712020:ac563b0a-1939-4989-ac36-9cd97db12020\ntext\n@Dobromir Atanasov\nlink\nhttps://oppa-support.atlassian.net/jira/people/712020:ac563b0a-1939-4989-ac36-9cd97db12020\n Hello,\nthis is the new task regarding the optional dropdown on pod. the user story is included in the description.\nPlease review it and let me know if you have any additional suggestions or comments\ntext\n Hello,\nthis is the new task regarding the optional dropdown on pod. the user story is included in the description.\nPlease review it and let me know if you have any additional suggestions or comments"
+    },
+    {
+      "author": "Dobromir Atanasov",
+      "body": "doc\nparagraph\n@Nini Tsatsanashvili\nhttps://oppa-support.atlassian.net/jira/people/712020:2c468db3-cc50-4aa5-ab44-6b352feb7c9b\ntext\n@Nini Tsatsanashvili\nlink\nhttps://oppa-support.atlassian.net/jira/people/712020:2c468db3-cc50-4aa5-ab44-6b352feb7c9b\n Hi, please consider the story confirmed and proceed with its development and testing.  If something else is needed just let me know.\ntext\n Hi, please consider the story confirmed and proceed with its development and testing.  If something else is needed just let me know."
+    },
+    {
+      "author": "Nini Tsatsanashvili",
+      "body": "doc\nparagraph\nokay, thank you\ntext\nokay, thank you"
+    }
+  ],
+  "urls": [
+    "https://www.figma.com/design/rdEFquUpErpUGFXdQt7vmV/Energo-Pro?node-id=5535-5232&t=7lMzXqryoGFSm7E6-0",
+    "https://www.figma.com/design/rdEFquUpErpUGFXdQt7vmV/Energo-Pro?node-id=5535-5232&t=7lMzXqryoGFSm7E6-0",
+    "https://www.figma.com/design/rdEFquUpErpUGFXdQt7vmV/Energo-Pro?node-id=5533-3105&t=EguqvDMfFAOPYpUD-0",
+    "https://www.figma.com/design/rdEFquUpErpUGFXdQt7vmV/Energo-Pro?node-id=5533-3105&t=EguqvDMfFAOPYpUD-0",
+    "https://oppa-support.atlassian.net/browse/PDT-3143",
+    "https://oppa-support.atlassian.net/browse/PDT-3143",
+    "https://oppa-support.atlassian.net/jira/people/712020:ac563b0a-1939-4989-ac36-9cd97db12020",
+    "https://oppa-support.atlassian.net/jira/people/712020:ac563b0a-1939-4989-ac36-9cd97db12020",
+    "https://asterbit.slack.com/archives/C082ZJNHECF/p1784813223473829?thread_ts=1784813223.473829&cid=C082ZJNHECF",
+    "https://asterbit.slack.com/archives/C082ZJNHECF/p1784813223473829?thread_ts=1784813223.473829&cid=C082ZJNHECF",
+    "https://oppa-support.atlassian.net/jira/people/712020:ac563b0a-1939-4989-ac36-9cd97db12020",
+    "https://oppa-support.atlassian.net/jira/people/712020:ac563b0a-1939-4989-ac36-9cd97db12020",
+    "https://oppa-support.atlassian.net/jira/people/712020:2c468db3-cc50-4aa5-ab44-6b352feb7c9b",
+    "https://oppa-support.atlassian.net/jira/people/712020:2c468db3-cc50-4aa5-ab44-6b352feb7c9b"
+  ]
+}

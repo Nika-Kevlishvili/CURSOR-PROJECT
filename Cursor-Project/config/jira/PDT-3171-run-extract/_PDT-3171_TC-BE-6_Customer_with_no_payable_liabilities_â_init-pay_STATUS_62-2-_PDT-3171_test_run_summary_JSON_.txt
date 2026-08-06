@@ -1,0 +1,37 @@
+﻿{
+  "testTitle": "[PDT-3171] TC-BE-6: Customer with no payable liabilities — init-pay STATUS 62",
+  "jiraKey": "PDT-3171",
+  "apiBase": "http://10.236.20.11:8091/",
+  "payloads": {
+    "customer": {
+      "id": 6082895,
+      "customerNumber": 6000148523,
+      "identifier": "17854145738750859",
+      "customerType": "LEGAL_ENTITY",
+      "lastCustomerDetailId": 84964,
+      "isDeleted": "ACTIVE",
+      "version": 1
+    }
+  },
+  "outcomes": [
+    {
+      "check": "TC-BE-6 no obligation",
+      "expectedResult": "STATUS=62",
+      "actualResult": "As expected — STATUS=62",
+      "passed": true
+    }
+  ],
+  "portalLinks": {
+    "customer": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082895"
+    ]
+  },
+  "snapshot": {
+    "status": "62"
+  },
+  "allResponseLinks": {
+    "customer": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082895"
+    ]
+  }
+}

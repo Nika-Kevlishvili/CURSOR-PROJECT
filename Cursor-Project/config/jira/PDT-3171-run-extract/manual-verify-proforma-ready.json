@@ -1,0 +1,59 @@
+{
+  "createdAt": "2026-07-30T13:04:45.671Z",
+  "environment": "dev",
+  "type": "PROFORMA_LIABILITY",
+  "note": "Real proforma (null dueDate). Payment NOT confirmed. VALIDTO must be today+30, not \"0\".",
+  "entities": {
+    "customerId": 6082963,
+    "customerNumber": "6000148591",
+    "identifier": "17854166781583337",
+    "goodsOrderId": 1426,
+    "proformaInvoiceId": 102255,
+    "liabilityId": 88008,
+    "liabilityDueDate": null,
+    "liabilityCurrentAmount": 4569.6,
+    "merchantId": "7000005",
+    "easyPayChannelId": 1001
+  },
+  "expected": {
+    "liabilityDueDate": null,
+    "initPay": {
+      "STATUS": "00",
+      "VALIDTO": "20260829",
+      "VALIDTO_must_not_be": "0",
+      "AMOUNT": 456960
+    },
+    "confirmPay_correctTotal": {
+      "STATUS": "00"
+    }
+  },
+  "easyPayReadyUrls": {
+    "1_calculate_check_sum_init": "http://10.236.20.11:9091/epay/calculate-check-sum-init?IDN=6000148591&TID=20260730170445077118100020&MERCHANTID=7000005&TYPE=BILLING",
+    "1_checksum_value": "c5d138e9165f96958f374ab4df53267fe8d9ed8b",
+    "2_init_pay": "http://10.236.20.11:9091/epay/init-pay?IDN=6000148591&TID=20260730170445077118100020&MERCHANTID=7000005&TYPE=BILLING&CHECKSUM=c5d138e9165f96958f374ab4df53267fe8d9ed8b",
+    "2_init_pay_actual_response": {
+      "STATUS": "00",
+      "IDN": "6000148591",
+      "SHORTDESC": "Клиентски номер: 6000148591;",
+      "LONGDESC": "Клиентски номер: 6000148591; Клиент: AUTOMATION (17854166781583337); Фактури: 3000000847/30.07.2026;",
+      "AMOUNT": 456960,
+      "VALIDTO": "20260829",
+      "INVOICES": [
+        {
+          "IDN": "6000148591.88008",
+          "SHORTDESC": "Клиентски номер: 6000148591;",
+          "LONGDESC": "Клиентски номер: 6000148591; Клиент: AUTOMATION (17854166781583337); Фактура: 3000000847/30.07.2026;",
+          "AMOUNT": 456960,
+          "VALIDTO": "20260829"
+        }
+      ]
+    },
+    "3_calculate_check_sum_confirm": "http://10.236.20.11:9091/epay/calculate-check-sum-confirm?DATE=20260730090445&TYPE=BILLING&MERCHANTID=7000005&IDN=6000148591&TOTAL=456960&TID=20260730170445077118100020",
+    "3_checksum_value": "21a17e773a2334899b83b9366bac81e7be1009e6",
+    "4_confirm_pay": "http://10.236.20.11:9091/epay/confirm-pay?DATE=20260730090445&TYPE=BILLING&MERCHANTID=7000005&IDN=6000148591&TOTAL=456960&TID=20260730170445077118100020&CHECKSUM=21a17e773a2334899b83b9366bac81e7be1009e6"
+  },
+  "portalHints": {
+    "customerSearch": "17854166781583337",
+    "swagger_epay": "http://10.236.20.11:9091/swagger-ui/index.html#"
+  }
+}

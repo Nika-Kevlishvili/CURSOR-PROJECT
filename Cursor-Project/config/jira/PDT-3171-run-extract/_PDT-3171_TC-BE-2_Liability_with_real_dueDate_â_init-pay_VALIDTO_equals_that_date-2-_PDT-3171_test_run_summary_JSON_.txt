@@ -1,0 +1,56 @@
+﻿{
+  "testTitle": "[PDT-3171] TC-BE-2: Liability with real dueDate — init-pay VALIDTO equals that date",
+  "jiraKey": "PDT-3171",
+  "apiBase": "http://10.236.20.11:8091/",
+  "payloads": {
+    "customer": {
+      "id": 6082890,
+      "customerNumber": 6000148518,
+      "identifier": "17854145643267184",
+      "customerType": "LEGAL_ENTITY",
+      "lastCustomerDetailId": 84959,
+      "isDeleted": "ACTIVE",
+      "version": 1
+    }
+  },
+  "outcomes": [
+    {
+      "check": "TC-BE-2 real dueDate VALIDTO",
+      "expectedResult": "STATUS=00, VALIDTO=20260915",
+      "actualResult": "As expected — STATUS=00, VALIDTO=20260915",
+      "passed": true
+    }
+  ],
+  "portalLinks": {
+    "customer": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082890"
+    ],
+    "customerLiability": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87924"
+    ],
+    "collectionChannel": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//collection-channel/preview?id=5496"
+    ],
+    "paymentPackage": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//payment-package/preview?id=6324"
+    ]
+  },
+  "snapshot": {
+    "expectedValidTo": "20260915",
+    "initValidTo": "20260915"
+  },
+  "allResponseLinks": {
+    "customer": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customers/preview/basic?id=6082890"
+    ],
+    "customerLiability": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//customer-liabilities/preview?id=87924"
+    ],
+    "paymentPackage": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//payment-package/preview?id=6324"
+    ],
+    "collectionChannel": [
+      "https://devapps.energo-pro.bg/app/phoenix1-dev//collection-channel/preview?id=5496"
+    ]
+  }
+}
