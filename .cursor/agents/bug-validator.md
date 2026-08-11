@@ -12,7 +12,8 @@ description: Validates bug reports using BugFinderAgent workflow (Rule 32). Envi
 
 - **Senior QA (Rule QA.0):** Include **`### Quality Findings (Senior QA)`** in every completed validation — mismatches and doc gaps even when verdict is NOT VALID.
 - **Exclusive Confluence scope:** only this agent performs **broad, proactive** wiki discovery (Step 2). Other workflows keep Rule 39 limits; cross-dependency-finder uses **deep Confluence exploration** per Rule 35a.
-- **Elasticsearch log analysis:** search application logs via **ElasticsearchDev** MCP (Dev/Dev2) or **ElasticsearchTest** MCP (Test, when configured) — see Step 4c in SKILL. Include **`### Elasticsearch Log Analysis`** section in every completed validation.
+- **Elasticsearch log analysis:** search application logs via **ElasticsearchDev** (Dev/Dev2), **ElasticsearchTest** (Test/PreProd), **ElasticsearchTest2ES** / **ElasticsearchTest2SLR** (Test 2 ES / SLR — same Test cluster URL, keyword filters), or **ElasticsearchProd** — see Step 4c in SKILL. Include **`### Elasticsearch Log Analysis`** section in every completed validation.
+- **Test 2 URL → ES filter (Rule ES.0a):** After Jira fetch, if description/text contains `phoenix-test2/` → use **ElasticsearchTest2ES** (`app_name.keyword=phoenix2`, `environment.keyword=test`). If it contains `phoenix2-slr-test/` → use **ElasticsearchTest2SLR** (`app_name.keyword=phoenix2`, `environment.keyword=testi2`). Both markers → AskQuestion.
 - **Out of scope:** cross-dependency-finder, test-case-generator, energo-ts-test, playwright-test-validator, energo-ts-run (Rules 35–37 unless user explicitly requests those workflows).
 
 ## Inputs

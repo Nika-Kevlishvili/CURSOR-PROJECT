@@ -35,6 +35,38 @@
         "ES_READ_ONLY": "true"
       }
     },
+    "ElasticsearchTest2ES": {
+      "command": "C:\\Users\\N.kevlishvili\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "args": [
+        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+      ],
+      "env": {
+        "ES_HOST": "http://10.236.20.27:9200",
+        "ES_API_KEY": "",
+        "ES_VERIFY_SSL": "false",
+        "ES_SERVER_NAME": "ElasticsearchTest2ES",
+        "ES_ENVIRONMENTS": "test2es",
+        "ES_FILTER_APP_NAME": "phoenix2",
+        "ES_FILTER_ENVIRONMENT_KEYWORD": "test",
+        "ES_READ_ONLY": "true"
+      }
+    },
+    "ElasticsearchTest2SLR": {
+      "command": "C:\\Users\\N.kevlishvili\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "args": [
+        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+      ],
+      "env": {
+        "ES_HOST": "http://10.236.20.27:9200",
+        "ES_API_KEY": "",
+        "ES_VERIFY_SSL": "false",
+        "ES_SERVER_NAME": "ElasticsearchTest2SLR",
+        "ES_ENVIRONMENTS": "test2slr",
+        "ES_FILTER_APP_NAME": "phoenix2",
+        "ES_FILTER_ENVIRONMENT_KEYWORD": "testi2",
+        "ES_READ_ONLY": "true"
+      }
+    },
     "ElasticsearchProd": {
       "command": "C:\\Users\\N.kevlishvili\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
       "args": [

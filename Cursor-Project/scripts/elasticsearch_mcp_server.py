@@ -5,21 +5,32 @@ Bridges Elasticsearch (via REST API) to Cursor agents using the MCP protocol.
 Supports environment-aware Phoenix log searching, SQL queries (like Kibana
 Dev Tools), native Query DSL, index discovery, and field mapping inspection.
 
-Each MCP server instance serves TWO environments that share a cluster:
-  ElasticsearchDev  → Dev + Dev2   (HTTPS, API key auth)
-  ElasticsearchTest → Test + PreProd (HTTP, no auth)
+Each MCP server instance serves one of these cluster roles:
+  ElasticsearchDev       → Dev + Dev2   (HTTPS, API key auth) — paired app_name filter
+  ElasticsearchTest      → Test + PreProd (HTTP, no auth) — paired app_name filter
+  ElasticsearchTest2ES   → Test 2 ES logs on Test cluster — fixed app_name + environment.keyword
+  ElasticsearchTest2SLR  → Test 2 SLR logs on Test cluster — fixed app_name + environment.keyword
+  ElasticsearchProd      → Prod only (HTTPS, API key) — no app_name filter
 
-Environment filtering uses the `app_name` field:
+Paired filtering uses the `app_name` field:
   Primary env (dev/test)     → phoenix, phoenix-scheduler, ...
   Secondary env (dev2/preprod) → phoenix2, phoenix-scheduler2, ...
 
+Keyword filtering (Test 2 ES / Test 2 SLR) uses:
+  app_name.keyword + environment.keyword (from ES_FILTER_* env vars)
+
 Environment variables (set in mcp.json env block):
-    ES_HOST          - Elasticsearch URL
-    ES_API_KEY       - Base64-encoded API key (empty = no auth)
-    ES_VERIFY_SSL    - "true" or "false" (default: false)
-    ES_SERVER_NAME   - MCP server display name (default: Elasticsearch)
-    ES_ENVIRONMENTS  - Comma-separated pair of env names this instance serves
-                       (default: "dev,dev2"). E.g. "test,preprod".
+    ES_HOST                          - Elasticsearch URL
+    ES_API_KEY                       - Base64-encoded API key (empty = no auth)
+    ES_VERIFY_SSL                    - "true" or "false" (default: false)
+    ES_SERVER_NAME                   - MCP server display name (default: Elasticsearch)
+    ES_ENVIRONMENTS                  - Comma-separated env names this instance serves
+                                       (default: "dev,dev2"). E.g. "test,preprod" or "test2es".
+    ES_FILTER_APP_NAME               - When set with ES_FILTER_ENVIRONMENT_KEYWORD, use
+                                       term filters on app_name.keyword + environment.keyword
+                                       instead of paired BASE_APP_NAMES logic.
+    ES_FILTER_ENVIRONMENT_KEYWORD    - Value for environment.keyword (e.g. "test", "testi2").
+    ES_READ_ONLY                     - "true" to block write operations at the script level.
 """
 
 import json
@@ -41,6 +52,10 @@ ES_PRIMARY_ENV = _env_pair[0].strip()
 ES_SECONDARY_ENV = _env_pair[1].strip() if len(_env_pair) > 1 else ""
 SUPPORTED_ENVS = {ES_PRIMARY_ENV, ES_SECONDARY_ENV} - {""}
 
+ES_FILTER_APP_NAME = os.environ.get("ES_FILTER_APP_NAME", "").strip()
+ES_FILTER_ENVIRONMENT_KEYWORD = os.environ.get("ES_FILTER_ENVIRONMENT_KEYWORD", "").strip()
+ES_KEYWORD_FILTER_MODE = bool(ES_FILTER_APP_NAME and ES_FILTER_ENVIRONMENT_KEYWORD)
+
 ES_READ_ONLY = os.environ.get("ES_READ_ONLY", "false").lower() == "true"
 
 HEADERS: dict[str, str] = {"Content-Type": "application/json"}
@@ -59,10 +74,19 @@ BASE_APP_NAMES = [
     "phoenix-mass-import", "phoenix-sales-portal", "phoenix-payment-api",
 ]
 
-mcp = FastMCP(
-    ES_SERVER_NAME,
-    instructions=(
-        f"Elasticsearch MCP server for Phoenix {'/'.join(SUPPORTED_ENVS)} environments. "
+if ES_KEYWORD_FILTER_MODE:
+    _instructions = (
+        f"Elasticsearch MCP server for Phoenix {ES_PRIMARY_ENV} environment. "
+        f"Filters logs with app_name.keyword={ES_FILTER_APP_NAME!r} and "
+        f"environment.keyword={ES_FILTER_ENVIRONMENT_KEYWORD!r}. "
+        "Use es_search_logs for environment-aware Phoenix log searching during bug validation. "
+        "Use es_sql_query for SQL-style queries (like Kibana). "
+        "Use es_list_indices to discover available indices. "
+        "Use es_index_mapping to see fields before querying."
+    )
+elif ES_SECONDARY_ENV:
+    _instructions = (
+        f"Elasticsearch MCP server for Phoenix {'/'.join(sorted(SUPPORTED_ENVS))} environments. "
         f"Two envs share this cluster — filter by environment using the app_name field "
         f"({ES_PRIMARY_ENV}: phoenix, phoenix-scheduler, ... | "
         f"{ES_SECONDARY_ENV}: phoenix2, phoenix-scheduler2, ...). "
@@ -70,7 +94,20 @@ mcp = FastMCP(
         "Use es_sql_query for SQL-style queries (like Kibana). "
         "Use es_list_indices to discover available indices. "
         "Use es_index_mapping to see fields before querying."
-    ),
+    )
+else:
+    _instructions = (
+        f"Elasticsearch MCP server for Phoenix {ES_PRIMARY_ENV} environment. "
+        "All logs on this cluster belong to this environment (no app_name pairing filter). "
+        "Use es_search_logs for environment-aware Phoenix log searching during bug validation. "
+        "Use es_sql_query for SQL-style queries (like Kibana). "
+        "Use es_list_indices to discover available indices. "
+        "Use es_index_mapping to see fields before querying."
+    )
+
+mcp = FastMCP(
+    ES_SERVER_NAME,
+    instructions=_instructions,
 )
 
 
@@ -111,14 +148,23 @@ def _request(method: str, path: str, body: dict | None = None, params: dict | No
 
 
 def _build_env_filter(environment: str) -> list[dict]:
-    """Build Elasticsearch bool filter clauses for app_name based on environment.
+    """Build Elasticsearch bool filter clauses for the requested environment.
 
+    Keyword mode (Test 2 ES / Test 2 SLR — ES_FILTER_APP_NAME + ES_FILTER_ENVIRONMENT_KEYWORD):
+      term filters on app_name.keyword and environment.keyword.
     Paired mode (dev+dev2, test+preprod):
       Primary env uses base app names, secondary uses base + '2' suffix.
     Single mode (prod):
       No app_name filtering — all logs belong to that environment.
     """
     env = environment.strip().lower()
+    if ES_KEYWORD_FILTER_MODE:
+        if env not in SUPPORTED_ENVS:
+            return []
+        return [
+            {"term": {"app_name.keyword": ES_FILTER_APP_NAME}},
+            {"term": {"environment.keyword": ES_FILTER_ENVIRONMENT_KEYWORD}},
+        ]
     if not ES_SECONDARY_ENV:
         return []
     if env == ES_SECONDARY_ENV:
@@ -150,14 +196,14 @@ def es_search_logs(
 ) -> str:
     """Search Phoenix application logs filtered by environment.
 
-    This is the primary tool for bug validation log analysis. Two environments
-    share each cluster — this tool filters by app_name automatically
-    (primary env: phoenix, phoenix-scheduler, ... vs secondary env: phoenix2,
-    phoenix-scheduler2, ...).
+    This is the primary tool for bug validation log analysis.
+    Paired clusters filter by app_name automatically (primary: phoenix, ... vs
+    secondary: phoenix2, ...). Keyword-mode servers (Test 2 ES / Test 2 SLR)
+    filter by fixed app_name.keyword + environment.keyword from server config.
 
     Args:
         environment: REQUIRED. One of the supported environments for this server
-                    (e.g. "dev"/"dev2" or "test"/"preprod").
+                    (e.g. "dev"/"dev2", "test"/"preprod", "test2es", "test2slr").
         search_text: Free-text search across message and stack_trace fields.
                     Supports wildcards. Example: "NullPointerException",
                     "invoice cancellation", "timeout".
@@ -166,6 +212,7 @@ def es_search_logs(
         app_name: Filter to a specific app. Example: "phoenix-scheduler".
                  For the secondary env, the "2" suffix is added automatically
                  if not present. Leave empty to search across all Phoenix apps.
+                 Ignored in keyword-filter mode (fixed app_name already applied).
         logger_name: Filter by Java logger/class name pattern.
                     Example: "ge.halcom.phoenix.billing".
         days_back: How many days of logs to search (1-30). Default 7.
@@ -195,7 +242,7 @@ def es_search_logs(
     if level:
         filter_clauses.append({"term": {"level.keyword": level.upper()}})
 
-    if app_name:
+    if app_name and not ES_KEYWORD_FILTER_MODE:
         resolved = app_name.strip()
         if env == ES_SECONDARY_ENV and not resolved.endswith("2"):
             resolved += "2"
@@ -241,12 +288,18 @@ def es_search_logs(
         doc["_index"] = hit.get("_index", "")
         docs.append(doc)
 
-    return json.dumps({
+    payload: dict = {
         "environment_filter": env,
         "total_matching": total.get("value", 0) if isinstance(total, dict) else total,
         "returned": len(docs),
         "logs": docs,
-    }, indent=2)
+    }
+    if ES_KEYWORD_FILTER_MODE:
+        payload["keyword_filters"] = {
+            "app_name.keyword": ES_FILTER_APP_NAME,
+            "environment.keyword": ES_FILTER_ENVIRONMENT_KEYWORD,
+        }
+    return json.dumps(payload, indent=2)
 
 
 @mcp.tool()

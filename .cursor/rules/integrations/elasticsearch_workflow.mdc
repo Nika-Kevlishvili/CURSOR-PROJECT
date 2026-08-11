@@ -10,27 +10,47 @@
 | Dev2 | `ElasticsearchDev` | `dev2` | API key |
 | Test | `ElasticsearchTest` | `test` | None (no auth) |
 | PreProd | `ElasticsearchTest` | `preprod` | None (no auth) |
+| Test 2 ES | `ElasticsearchTest2ES` | `test2es` | None (no auth) |
+| Test 2 SLR | `ElasticsearchTest2SLR` | `test2slr` | None (no auth) |
 | Prod | `ElasticsearchProd` | `prod` | API key (read-only) |
 | Experiments | Not configured | — | Skip ES, document `elasticsearch_investigation=not_available` |
 
-**Three clusters:**
+**Clusters / MCP servers:**
 
-| Cluster | URL | Environments | Auth | Write protection | Mode |
+| MCP server | URL | Environments | Auth | Write protection | Mode |
 |---|---|---|---|---|---|
 | **ElasticsearchDev** | `https://10.236.20.13:9200` | Dev + Dev2 | API key (read-only) | API key is read-only | Paired — filter by `app_name` |
 | **ElasticsearchTest** | `http://10.236.20.27:9200` | Test + PreProd | None (open) | `ES_READ_ONLY=true` (Rule ES.4a) | Paired — filter by `app_name` |
+| **ElasticsearchTest2ES** | `http://10.236.20.27:9200` (same as Test) | Test 2 ES | None (open) | `ES_READ_ONLY=true` (Rule ES.4a) | Keyword — `app_name.keyword=phoenix2` + `environment.keyword=test` |
+| **ElasticsearchTest2SLR** | `http://10.236.20.27:9200` (same as Test) | Test 2 SLR | None (open) | `ES_READ_ONLY=true` (Rule ES.4a) | Keyword — `app_name.keyword=phoenix2` + `environment.keyword=testi2` |
 | **ElasticsearchProd** | `https://10.236.20.69:9200` | Prod | API key (read-only) | API key is read-only + `ES_READ_ONLY=true` | Single — no `app_name` filter (all logs = Prod) |
 
 **Prod limitations:** The read-only API key cannot access `_cluster/health` or `_cat/indices` (403). Use `es_search_logs`, `es_error_summary`, `es_sql_query`, `es_search`, `es_count`, and `es_field_values` — these work. Skip `es_cluster_health` and `es_list_indices` on Prod.
 
-Both clusters use the **same** `logstash-*` index pattern and the **same** `app_name` filtering convention:
+Paired clusters use the **same** `logstash-*` index pattern and the **same** `app_name` filtering convention:
 
 | Environment role | `app_name` values |
 |---|---|
 | Primary env (dev, test) | `phoenix`, `phoenix-scheduler`, `phoenix-billing-run`, `phoenix-mass-import`, `phoenix-sales-portal`, `phoenix-payment-api` |
 | Secondary env (dev2, preprod) | `phoenix2`, `phoenix-scheduler2`, `phoenix-billing-run2`, `phoenix-mass-import2`, `phoenix-sales-portal2`, `phoenix-payment-api2` |
 
-The `es_search_logs` and `es_error_summary` tools handle this filtering automatically when you pass the `environment` parameter.
+Keyword-mode servers (Test 2 ES / Test 2 SLR) share the Test cluster URL but filter with fixed term clauses (configured via `ES_FILTER_APP_NAME` + `ES_FILTER_ENVIRONMENT_KEYWORD` in mcp.json).
+
+The `es_search_logs` and `es_error_summary` tools apply the configured filter automatically when you pass the `environment` parameter.
+
+## Rule ES.0a: Bug description portal URL → Test 2 ES log filter [MUST]
+
+When **bug-validator** retrieves a Jira ticket, scan the description (and other ticket text with portal URLs) for these path markers. If found, **override** the normal ES.0 MCP mapping **for Elasticsearch log search only** (Step 4c):
+
+| URL path marker in ticket | Portal example | ES MCP server | `environment` param | Keyword filters applied |
+|---|---|---|---|---|
+| `phoenix-test2/` | `https://testapps.energo-pro.bg/app/phoenix-test2/` | `ElasticsearchTest2ES` | `test2es` | `app_name.keyword=phoenix2`, `environment.keyword=test` |
+| `phoenix2-slr-test/` | `https://testapps.energo-pro.bg/app/phoenix2-slr-test/` | `ElasticsearchTest2SLR` | `test2slr` | `app_name.keyword=phoenix2`, `environment.keyword=testi2` |
+
+- Match is **substring** on the path (case-sensitive path segments as written above).
+- If **both** markers appear → AskQuestion which Test 2 log target to use (Rule CONF.0); do not guess.
+- If **neither** marker appears → use Rule ES.0 mapping from the resolved environment.
+- This override applies to **Elasticsearch logs only** — it does not silently change PostgreSQL MCP or Phoenix branch alignment unless the user also resolved that environment.
 
 ## Rule ES.1: Environment gate — reuse resolved environment
 
@@ -78,7 +98,7 @@ Never commit or log Elasticsearch API keys. Credentials stay in Cursor MCP serve
 
 ## Rule ES.4a: Read-Only Enforcement (Test / PreProd) [CRITICAL]
 
-**ElasticsearchTest** (`test`, `preprod`) has **no authentication** — the endpoint is open. The MCP server enforces **read-only** mode via `ES_READ_ONLY=true`:
+**ElasticsearchTest** (`test`, `preprod`), **ElasticsearchTest2ES** (`test2es`), and **ElasticsearchTest2SLR** (`test2slr`) share the same open Test cluster endpoint. The MCP server enforces **read-only** mode via `ES_READ_ONLY=true`:
 
 - **BLOCKED at the script level:** `PUT`, `DELETE`, `PATCH` methods and write-path endpoints (`_bulk`, `_delete_by_query`, `_update_by_query`, `_reindex`, `_aliases`, `_template`, `_ingest`, `_snapshot`, etc.) are rejected before any HTTP request is sent.
 - **ElasticsearchDev** (`dev`, `dev2`) uses a **read-only API key** — write protection is enforced by Elasticsearch itself.

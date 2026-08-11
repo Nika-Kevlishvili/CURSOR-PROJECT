@@ -158,10 +158,23 @@ Search application logs via Elasticsearch to find runtime evidence of the report
 | dev2 | `ElasticsearchDev` | `dev2` |
 | test | `ElasticsearchTest` | `test` |
 | preprod | `ElasticsearchTest` | `preprod` |
+| test2es (Test 2 ES) | `ElasticsearchTest2ES` | `test2es` |
+| test2slr (Test 2 SLR) | `ElasticsearchTest2SLR` | `test2slr` |
 | prod | `ElasticsearchProd` | `prod` |
 | experiments | Not configured — skip, document `elasticsearch_investigation=not_available` |
 
-Three clusters: **ElasticsearchDev** (Dev+Dev2, paired, HTTPS+API key), **ElasticsearchTest** (Test+PreProd, paired, HTTP, no auth), **ElasticsearchProd** (Prod only, single, HTTPS+API key). Paired clusters filter by `app_name` (primary = base names, secondary = `2` suffix). Prod has no filtering — all logs belong to Prod. **Prod limitation:** `es_cluster_health` and `es_list_indices` return 403 — use search tools only.
+Clusters: **ElasticsearchDev** (Dev+Dev2, paired, HTTPS+API key), **ElasticsearchTest** (Test+PreProd, paired, HTTP, no auth), **ElasticsearchTest2ES** / **ElasticsearchTest2SLR** (same Test cluster URL, keyword filters), **ElasticsearchProd** (Prod only, single, HTTPS+API key). Paired clusters filter by `app_name` (primary = base names, secondary = `2` suffix). Test 2 servers filter with `app_name.keyword=phoenix2` plus `environment.keyword=test` (ES) or `testi2` (SLR). Prod has no filtering — all logs belong to Prod. **Prod limitation:** `es_cluster_health` and `es_list_indices` return 403 — use search tools only.
+
+**4c.0 — Portal URL override for Test 2 ES / SLR logs (Rule ES.0a) [MUST]:**
+
+When the Jira ticket description (or other ticket text) contains a portal URL path marker, select the Elasticsearch MCP server **before** 4c.1/4c.2 — this overrides the resolved-env mapping for log search only:
+
+| URL contains | Meaning | MCP server | `environment` | Filters |
+|---|---|---|---|---|
+| `phoenix-test2/` | Test 2 ES | `ElasticsearchTest2ES` | `test2es` | `app_name.keyword=phoenix2`, `environment.keyword=test` |
+| `phoenix2-slr-test/` | Test 2 SLR | `ElasticsearchTest2SLR` | `test2slr` | `app_name.keyword=phoenix2`, `environment.keyword=testi2` |
+
+Examples: `https://testapps.energo-pro.bg/app/phoenix-test2/` → Test 2 ES; `https://testapps.energo-pro.bg/app/phoenix2-slr-test/` → Test 2 SLR. If both markers appear → AskQuestion. If neither → use Rule ES.0 from resolved env. Document which marker triggered the override in `### Elasticsearch Log Analysis`.
 
 **4c.1 — Error summary (broad scan):**
 - Call `es_error_summary(environment=<env>, search_text=<bug domain keywords>, days_back=7)` to get top ERROR groups by logger_name.
