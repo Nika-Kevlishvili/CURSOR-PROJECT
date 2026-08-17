@@ -1,0 +1,210 @@
+KEY: PDT-3066
+SUMMARY: Create product new version and apply it to existing contracts - Add a datepicker for selecting the validity date of the change
+TYPE: Customer Feedback 
+STATUS: ON HOLD
+--- DESCRIPTION ---
+
+--- CUSTOMFIELD_10103 ---
+
+--- ACCEPTANCE ---
+
+--- BUG DESC ---
+Link:
+A.R.(არსებული სიტუაცია):
+E.R.( სასურველი შედეგი):
+
+--- URLS IN FIELDS ---
+--- LINKS ---
+Relates: PDT-3104 - Product | Apply Bulgarian Translations to the Pop-up Window
+Relates: PDT-3125 - [Backend] Product Contract - Contract New version creation after Creating fixed product new version 
+Blocks: PDT-3136 - BACKEND | Auto-set contract status to Entered into Force
+Relates: PDT-3198 - Contract resignign - doesn't work
+--- ATTACHMENTS ---
+{432D422E-2947-4182-B5A1-9F309C1FE713}-20260707-114952.png | image/png | 64932
+Example for contracts updates based on new product version creation.docx | application/vnd.openxmlformats-officedocument.wordprocessingml.document | 18741
+image-20260715-152630.png | image/png | 113076
+image-20260803-112018.png | image/png | 89448
+PDT-3066 User Story.docx | application/vnd.openxmlformats-officedocument.wordprocessingml.document | 516183
+--- COMMENTS ---
+
+[2026-07-07T15:52:58.259+0400] Valeri.Valev:
+oppa-support.atlassian.net/browse/PDT-3066 [https://oppa-support.atlassian.net/browse/PDT-3066]
+
+
+[2026-07-07T15:52:59.327+0400] Slack:
+Valeri.Valev [https://oppa-support.atlassian.net/jira/people/63b7cf707cde7bff9d7adad8] synced this conversation thread with the Slack thread https://asterbit.slack.com/archives/C0A2YDXTJKU/p1783425168781519. Replies in synced threads will automatically update across both Slack and Jira.
+
+
+[2026-07-15T16:50:27.720+0400] Ani Giorganashvili:
+@@Valeri.Valev Hi, Valeri. 1-What should be the name of the Date picker field? + Bulgarian translation. 2-Where exactly do you prefer the field to be placed, on the right side, or on the left?
+
+
+[2026-07-15T19:33:08.509+0400] Yoana.Prodanova:
+@@Ani Giorganashvili Hi, Ani. Let it be on the left side something like this: 
+The name should be “New contracts versions start date”.
+While checking the current screen, I noticed some other missed from translation titles in this same pop-up, so I am giving you their translations also (one should be changed also in its English version):
+•Update – Актуализирай (the name of the pop-up)
+•Product versions – Продуктови версии (the name of the left box, currently in English is named “Active product version” but it is misleading and should be changed to simply “Product versions”)
+•Selected product version – Избрани продуктови версии (the name of the right box)
+•New contracts versions start date – Начална дата на новите версии на договорите (the new field)
+•Create – Създай (the button)
+
+
+[2026-07-16T13:51:06.910+0400] Ani Giorganashvili:
+@@Yoana.Prodanova Thank you  
+
+
+[2026-07-17T12:15:48.282+0400] Ani Giorganashvili:
+@@Yoana.Prodanova Hi, Yoana. Could you also translate this name: “New contracts versions start date”?
+
+
+[2026-07-17T14:38:20.792+0400] Yoana.Prodanova:
+@@Ani Giorganashvili hi, it is in the provided translations above, but here it is again: New contracts versions start date – Начална дата на новите версии на договорите
+
+
+[2026-07-17T14:42:58.193+0400] Ani Giorganashvili:
+@@Yoana.Prodanova two more questions: 1. By this part “The selected date should be set in the new product version” you mean “Available From” Date in the Product object, or Product Version Date itself? 2-When none of the products are selected in the window, system still creates a new version of the product - Do you need this new Date picker for this kind of cases as well?
+
+
+
+[2026-07-17T15:00:03.006+0400] Yoana.Prodanova:
+@@Ani Giorganashvili the most important purpose of this date it to specify the start date of the new versions of the existing contracts concluded under old versions that will be updated with the terms from the new product version (this is the main business need). Based on that, for the first question, it should change the product version itself (“available from” date is important for us to set when we can sell the product to new customers, but we can manage this field from the interface). Regarding the second question, these two options are acceptable for us: you can leave it active and applicable only for the product version because we will not have any concerned contracts; or, you can make this field disabled unless I move at least one product version from the left box to the right one for update - choose from these two whichever is more easy for you to do, just tell us your decision. 
+
+
+[2026-07-17T15:24:13.974+0400] Ani Giorganashvili:
+@@Yoana.Prodanova  Thank you for a prompt response. Per Description I thought we had to apply this date to the newly created product as well. Now I understand the change correctly. I will change the story now and ask you to review it. We will make the Date picker enabled only when the user selects the products in the modal window  
+
+
+[2026-07-17T16:56:22.777+0400] Yoana.Prodanova:
+@@Ani Giorganashvili ok, thx. I am sending one very simple example in case it helps  
+
+
+[2026-07-28T16:34:16.234+0400] Giorgi Kikriashvili:
+Steps.: 
+Create Contract with Product version 1 
+
+Create Product Version 2 for Version 1 - Contract Start Date should be in future e.g 29.07 
+
+Create Product Version 3 for Version 1 - Contract Start date should be 29.07 
+
+Contract: https://devapps.energo-pro.bg/app/phoenix1-dev/energy-product-contracts/preview/basic-parameters?id=85735 [https://devapps.energo-pro.bg/app/phoenix1-dev/energy-product-contracts/preview/basic-parameters?id=85735]
+Product: https://devapps.energo-pro.bg/app/phoenix1-dev/energy-products/preview/basic-settings?id=31935 [https://devapps.energo-pro.bg/app/phoenix1-dev/energy-products/preview/basic-settings?id=31935]
+In this case, nothing happens. I wonder whether this is the expected behavior or if any changes are required. If changes are required, what should be the expected result? @@MARIAM GOCHASHVILI @@Nini Tsatsanashvili  
+
+
+[2026-07-29T12:02:29.593+0400] Nini Tsatsanashvili:
+@@Yoana.Prodanova Hello, please let us know if this logic is acceptable
+
+
+[2026-08-03T12:04:37.650+0400] Yoana.Prodanova:
+@@Nini Tsatsanashvili Hi. No, it isn’t. If contracts under old version of the products are selected to be mass updated with the new product version creation - they should be. I am not sure that I understand the example above very well because Contract Start Date should not be concerned - only contract version validity start date. I can think of only one case where you'll probably need some additional logic  - if I want to update the product version more than once with the same selected date. In this case, the contracts should also be updated with the last product version even if it is in the same contract version because of impossibility to create new contract version with same start date as the previous one.
+
+
+[2026-08-03T15:20:27.798+0400] Ani Giorganashvili:
+@@Yoana.Prodanova Hi, Yoana. I would like to explain the case again and recommend a possible solution for it: 
+Contract V1 (Product V1) - Validity Start Date=02 August
+Contract V2 (Product V2) - Validity Start Date=Today
+The user goes to Product 1 and presses “Create New Version” button, and chooses to update Product V1 in Contract V1, and sets “New Contract Version Start Date” = Today.
+Since the Validity Start Date is in the past (02 august), according to the documentation the system must create a new Contract V3 (copied from V1) with a new Product V3.
+But, since it’s impossible to create two contract versions with the same start date, system skips creating it and only creates a new product version. 
+When I asked Valeri about this case, he told me this case wouldnot be a concern (See the screenshot), but it is. So, we have a suggestion to display a warning message: “The contract version with the exact same Validity Start Date already exists, please change the Contract’s new version’s start date” to a different date, and to not create a new version of anything until the date is changed by the user and saved accordingly.
+
+
+[2026-08-03T16:10:33.694+0400] Yoana.Prodanova:
+@@Ani Giorganashvili is it possible to replace the product version in the contract version with the same date and to add warning message “There are existing contracts versions with same validity start date that will be updated. Do you want to continue and save all changes?“ - if yes, for all contracts that is possible the system to create new versions and only for those like in your example Contract V2 (Product V2) to update the current contract version with the new product version?
+
+
+[2026-08-03T16:18:06.536+0400] Yoana.Prodanova:
+@@Yoana.Prodanova if my suggestion is not applicable, than lets stick to what Valeri said and keep them not updated - just add a notification message in this case: “Some of the affected contracts have versions with the same validity start date and will not be updated“
+
+
+[2026-08-03T17:47:57.767+0400] Ani Giorganashvili:
+@@Yoana.Prodanova It would be possible, but when we have multiple contract versions to create, there is another problem. Let’s say we have: 
+Contract V1 (Product V1) - Validity Start Date=August 2
+
+Contract V2 (Product V2) - Validity Start Date=August 4
+
+The user goes to Product 2 and presses “Create New Version” button, and chooses to update Product V2 in Contract V2 and Product V1 in Contract V1, and sets “New Contract Version Start Date” = August 6. 
+The system must create new versions, because one existing version start date is in the past, and another one is in the future: 
+Contract V3 (Product V3) - Validity Start Date=August 6
+
+Contract V4 (Product V3) - Validity Start Date=August 6
+
+Again, we get the same scenario, the same start dates for two versions, which is impossible to handle.
+So, this will happen every time when multiple versions are created. How should we handle this kind of cases? 
+
+
+[2026-08-03T17:59:08.684+0400] Yoana.Prodanova:
+@@Ani Giorganashvili is this only one contract with two versions (initially in your last given case)? If it is so, you should create only one new version with Product V3 and validity start date August 6; if these are two separate contracts - you do not have a conflict and both new versions will be created with this date.
+
+
+[2026-08-03T18:09:38.933+0400] Ani Giorganashvili:
+@@Yoana.Prodanova Yes, two versions of the same contract.
+
+
+[2026-08-03T18:10:57.135+0400] Yoana.Prodanova:
+@@Ani Giorganashvili in that case you should create only one new version with Product V3 and validity start date August 6. We are updating the contract itself only once. 
+
+
+[2026-08-03T18:29:05.155+0400] Ani Giorganashvili:
+@@Yoana.Prodanova But if we will create only one version, which existing version should we copy? which one should we prioritize?
+
+
+[2026-08-03T18:34:40.685+0400] Yoana.Prodanova:
+As I am afraid of some kind of misunderstanding, I want to provide one additional example:
+If I have only one contract A123 with the following two versions:
+Contract A123 Version 1 (valid from 01 Jan 2026 till 30 Apr 2026) - with Product X version 1
+
+Contract A123 Version 2 (valid from 01 May 2026 till open end) - with Product X version 2
+
+Then I decide to create a new version of my product X (third version). When the modal window will appear I have these possible cases:
+Case 1: if I select none of the previous versions of Product X (1 or 2), nothing will happen with my contract A123
+Case 2: if I select contracts with version 1 to be updated (no matter of the which validity start date I choose), nothing will happen with my contract A123
+Case 3: if I select contracts with version 2 to be updated with new version validity start date 01 Aug 2026, my contract A123 will receive one new version 3 (valid from 01 Aug 2026 till open end) - with Product X version 3
+Case 4: if I select contracts with versions 1 and 2 to be updated with new version validity start date 01 Aug 2026, my contract A123 will receive one new version 3 (valid from 01 Aug 2026 till open end) - with Product X version 3
+
+
+[2026-08-03T18:35:33.451+0400] Yoana.Prodanova:
+@@Ani Giorganashvili the active one (or most recent if there is no active currently)
+
+
+[2026-08-03T18:41:51.137+0400] Yoana.Prodanova:
+we should compare the selection in the modal window only with the contract version which is applicable for the moment of the date selection for update or after, but the past versions (with validity end date before the selected date) should be ignored.
+
+
+[2026-08-04T14:54:40.535+0400] Ani Giorganashvili:
+@@Yoana.Prodanova Thank you for explanation. I will create another customer feedback related to this one with its own story, cause we have to change multiple logics. FYI
+
+
+[2026-08-05T14:17:58.010+0400] Ani Giorganashvili:
+@@Ani Giorganashvili Yoana, one question - what should be logic of updating the contract? AS IS the logic works like this - the system looks at the Validity Start Date of th contract version and if it equals to the current day (today), this particular contract version gets updated (the product version is replaced by the newly created product version, and all parameters are also updated in the contract version according to the new product version). Are we changing this logic as well?
+
+
+[2026-08-05T15:13:31.236+0400] Yoana.Prodanova:
+@@Ani Giorganashvili The logic is partially ok - it will not be the today date anymore but the selected date (the new date in the modal window).
+
+
+[2026-08-05T17:44:51.253+0400] Ani Giorganashvili:
+@@Yoana.Prodanova In your example,  if I select contracts with version 2 to be updated with new version validity start date 01 Aug 2026 , AND we had the third version as well:
+Contract A123 Version 2 (valid from 01 May 2026 till 01 Aug) - with Product X version 2
+
+Contract A123 Version 3 (valid from 02 Aug 2026 till open End) - with Product X version 2
+
+What would happen to the contract? 
+
+
+[2026-08-05T19:13:31.279+0400] Yoana.Prodanova:
+@@Ani Giorganashvili in this case the system should:
+create new version of my contract Contract A123 Version 4 (valid from 01 Aug 2026 till 01 Aug 2026) with the new product version;
+
+update the validity end date of Contract A123 Version  2 (valid from 01 May 2026 till 31 Jul 2026) based on the current logic when I create a mid version without changing anything else;
+
+update the product in Contract A123 Version 3 (valid from 02 Aug 2026 till open End).
+
+
+--- ALL URLS ---
+https://oppa-support.atlassian.net/browse/PDT-3066
+https://oppa-support.atlassian.net/jira/people/63b7cf707cde7bff9d7adad8
+https://asterbit.slack.com/archives/C0A2YDXTJKU/p1783425168781519.
+https://devapps.energo-pro.bg/app/phoenix1-dev/energy-product-contracts/preview/basic-parameters?id=85735
+https://devapps.energo-pro.bg/app/phoenix1-dev/energy-products/preview/basic-settings?id=31935

@@ -1,0 +1,621 @@
+﻿{
+    "expand":  "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
+    "id":  "79360",
+    "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/79360",
+    "key":  "PDT-3316",
+    "names":  {
+                  "issuetype":  "Issue Type",
+                  "components":  "Components",
+                  "customfield_10095":  "Tester",
+                  "description":  "Description",
+                  "customfield_10104":  "Design",
+                  "customfield_10745":  "Test Case",
+                  "attachment":  "Attachment",
+                  "summary":  "Summary",
+                  "created":  "Created",
+                  "customfield_10283":  "Clarification Reason",
+                  "reporter":  "Reporter",
+                  "customfield_10483":  "DB Points",
+                  "customfield_10484":  "Dev Points",
+                  "priority":  "Priority",
+                  "customfield_10485":  "QA points",
+                  "customfield_10048":  "Acceptance Criteria",
+                  "labels":  "Labels",
+                  "customfield_10103":  "Description formatted",
+                  "environment":  "Environment",
+                  "customfield_10877":  "Approved for Prod",
+                  "customfield_10217":  "Bug Description",
+                  "issuelinks":  "Linked Issues",
+                  "comment":  "Comment",
+                  "assignee":  "Assignee",
+                  "updated":  "Updated",
+                  "status":  "Status"
+              },
+    "changelog":  {
+                      "startAt":  0,
+                      "maxResults":  4,
+                      "total":  4,
+                      "histories":  [
+                                        {
+                                            "id":  "710492",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ac4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                           "accountId":  "712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/48",
+                                                                              "24x24":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/24",
+                                                                              "16x16":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/16",
+                                                                              "32x32":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/32"
+                                                                          },
+                                                           "displayName":  "Ani Giorganashvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-08-12T10:24:25.111+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Link",
+                                                              "fieldtype":  "jira",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "PDT-3119",
+                                                              "toString":  "This work item blocks PDT-3119"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "710491",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ac4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                           "accountId":  "712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/48",
+                                                                              "24x24":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/24",
+                                                                              "16x16":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/16",
+                                                                              "32x32":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/32"
+                                                                          },
+                                                           "displayName":  "Ani Giorganashvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-08-12T10:24:09.591+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "priority",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "priority",
+                                                              "from":  "2",
+                                                              "fromString":  "High",
+                                                              "to":  "1",
+                                                              "toString":  "Highest"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "710149",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "accountId":  "712020:7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png"
+                                                                          },
+                                                           "displayName":  "Mariam Kvitsiani",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Tbilisi",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-08-11T14:54:13.830+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "BA ",
+                                                              "fieldtype":  "custom",
+                                                              "fieldId":  "customfield_11151",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                                              "toString":  "Ani Giorganashvili",
+                                                              "tmpFromAccountId":  null,
+                                                              "tmpToAccountId":  "712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "710147",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "accountId":  "712020:7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png"
+                                                                          },
+                                                           "displayName":  "Mariam Kvitsiani",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Tbilisi",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-08-11T14:53:54.615+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Link",
+                                                              "fieldtype":  "jira",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "PDT-3065",
+                                                              "toString":  "This work item blocks PDT-3065"
+                                                          }
+                                                      ]
+                                        }
+                                    ]
+                  },
+    "fields":  {
+                   "issuetype":  {
+                                     "self":  "https://oppa-support.atlassian.net/rest/api/3/issuetype/10004",
+                                     "id":  "10004",
+                                     "description":  "A problem which impairs or prevents the functions of the product.",
+                                     "iconUrl":  "https://oppa-support.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10303?size=medium",
+                                     "name":  "Bug",
+                                     "subtask":  false,
+                                     "avatarId":  10303,
+                                     "hierarchyLevel":  0
+                                 },
+                   "components":  [
+
+                                  ],
+                   "customfield_10095":  null,
+                   "description":  {
+                                       "type":  "doc",
+                                       "version":  1,
+                                       "content":  [
+                                                       {
+                                                           "type":  "paragraph",
+                                                           "content":  [
+                                                                           {
+                                                                               "type":  "text",
+                                                                               "text":  " it should be possible to open the communication data in preview with permission "
+                                                                           },
+                                                                           {
+                                                                               "type":  "text",
+                                                                               "text":  "Edit locked Customer in current version",
+                                                                               "marks":  [
+                                                                                             {
+                                                                                                 "type":  "strong"
+                                                                                             }
+                                                                                         ]
+                                                                           },
+                                                                           {
+                                                                               "type":  "text",
+                                                                               "text":  ". Now it is disabled and user cannot open it."
+                                                                           }
+                                                                       ],
+                                                           "attrs":  {
+                                                                         "localId":  "61b9cd8fdc15"
+                                                                     }
+                                                       }
+                                                   ]
+                                   },
+                   "customfield_10104":  null,
+                   "customfield_10745":  {
+                                             "type":  "doc",
+                                             "version":  1,
+                                             "content":  [
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "PASSED:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\tyes/no"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Title:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Description:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Test Type:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Test Steps:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Expected Result:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Notes:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 }
+                                                                             ]
+                                                             }
+                                                         ]
+                                         },
+                   "attachment":  [
+
+                                  ],
+                   "summary":  "Edit locked Customer in current version - not possible to open Communication data",
+                   "created":  "2026-08-11T14:50:40.457+0400",
+                   "customfield_10283":  null,
+                   "reporter":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=63b7cf707cde7bff9d7adad8",
+                                    "accountId":  "63b7cf707cde7bff9d7adad8",
+                                    "avatarUrls":  {
+                                                       "48x48":  "https://secure.gravatar.com/avatar/8d95627dafaff804d04215f7680e71ce?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FV-5.png",
+                                                       "24x24":  "https://secure.gravatar.com/avatar/8d95627dafaff804d04215f7680e71ce?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FV-5.png",
+                                                       "16x16":  "https://secure.gravatar.com/avatar/8d95627dafaff804d04215f7680e71ce?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FV-5.png",
+                                                       "32x32":  "https://secure.gravatar.com/avatar/8d95627dafaff804d04215f7680e71ce?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FV-5.png"
+                                                   },
+                                    "displayName":  "Valeri.Valev",
+                                    "active":  true,
+                                    "timeZone":  "Asia/Dubai",
+                                    "accountType":  "atlassian"
+                                },
+                   "customfield_10483":  null,
+                   "customfield_10484":  null,
+                   "priority":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/priority/1",
+                                    "iconUrl":  "https://oppa-support.atlassian.net/images/icons/priorities/highest_new.svg",
+                                    "name":  "Highest",
+                                    "id":  "1"
+                                },
+                   "customfield_10485":  null,
+                   "customfield_10048":  null,
+                   "labels":  [
+
+                              ],
+                   "customfield_10103":  {
+                                             "type":  "doc",
+                                             "version":  1,
+                                             "content":  [
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Reproduce Steps:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 }
+                                                                             ]
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Actual Result:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 }
+                                                                             ]
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Expected Result:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 }
+                                                                             ]
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "_________________"
+                                                                                 }
+                                                                             ]
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Endpoint:"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Method:"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Status:"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Payload:"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Response:"
+                                                                                 }
+                                                                             ]
+                                                             }
+                                                         ]
+                                         },
+                   "environment":  null,
+                   "customfield_10877":  {
+                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/customFieldOption/10249",
+                                             "value":  "Yes",
+                                             "id":  "10249"
+                                         },
+                   "customfield_10217":  {
+                                             "type":  "doc",
+                                             "version":  1,
+                                             "content":  [
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Link:"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "A.R.(არსებული სიტუაცია):"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "E.R.( სასურველი შედეგი):"
+                                                                                 }
+                                                                             ]
+                                                             }
+                                                         ]
+                                         },
+                   "issuelinks":  [
+                                      {
+                                          "id":  "48109",
+                                          "self":  "https://oppa-support.atlassian.net/rest/api/3/issueLink/48109",
+                                          "type":  {
+                                                       "id":  "10000",
+                                                       "name":  "Blocks",
+                                                       "inward":  "is blocked by",
+                                                       "outward":  "blocks",
+                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/issueLinkType/10000"
+                                                   },
+                                          "outwardIssue":  {
+                                                               "id":  "76314",
+                                                               "key":  "PDT-3065",
+                                                               "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/76314",
+                                                               "fields":  {
+                                                                              "summary":  "Frontend | Changes in edit permissions for Customer and POD",
+                                                                              "status":  {
+                                                                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/status/10627",
+                                                                                             "description":  "",
+                                                                                             "iconUrl":  "https://oppa-support.atlassian.net/",
+                                                                                             "name":  "Done on Dev",
+                                                                                             "id":  "10627",
+                                                                                             "statusCategory":  {
+                                                                                                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/statuscategory/3",
+                                                                                                                    "id":  3,
+                                                                                                                    "key":  "done",
+                                                                                                                    "colorName":  "green",
+                                                                                                                    "name":  "Done"
+                                                                                                                }
+                                                                                         },
+                                                                              "priority":  {
+                                                                                               "self":  "https://oppa-support.atlassian.net/rest/api/3/priority/1",
+                                                                                               "iconUrl":  "https://oppa-support.atlassian.net/images/icons/priorities/highest_new.svg",
+                                                                                               "name":  "Highest",
+                                                                                               "id":  "1"
+                                                                                           },
+                                                                              "issuetype":  {
+                                                                                                "self":  "https://oppa-support.atlassian.net/rest/api/3/issuetype/10143",
+                                                                                                "id":  "10143",
+                                                                                                "description":  "",
+                                                                                                "iconUrl":  "https://oppa-support.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10322?size=medium",
+                                                                                                "name":  "Customer Feedback ",
+                                                                                                "subtask":  false,
+                                                                                                "avatarId":  10322,
+                                                                                                "hierarchyLevel":  0
+                                                                                            }
+                                                                          }
+                                                           }
+                                      },
+                                      {
+                                          "id":  "48142",
+                                          "self":  "https://oppa-support.atlassian.net/rest/api/3/issueLink/48142",
+                                          "type":  {
+                                                       "id":  "10000",
+                                                       "name":  "Blocks",
+                                                       "inward":  "is blocked by",
+                                                       "outward":  "blocks",
+                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/issueLinkType/10000"
+                                                   },
+                                          "outwardIssue":  {
+                                                               "id":  "77494",
+                                                               "key":  "PDT-3119",
+                                                               "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/77494",
+                                                               "fields":  {
+                                                                              "summary":  "Backend - Create product new version and apply it to existing contracts - Add a datepicker for selecting the validity date of the change",
+                                                                              "status":  {
+                                                                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/status/10193",
+                                                                                             "description":  "This status is managed internally by Jira Software",
+                                                                                             "iconUrl":  "https://oppa-support.atlassian.net/",
+                                                                                             "name":  "QA Failed",
+                                                                                             "id":  "10193",
+                                                                                             "statusCategory":  {
+                                                                                                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/statuscategory/4",
+                                                                                                                    "id":  4,
+                                                                                                                    "key":  "indeterminate",
+                                                                                                                    "colorName":  "yellow",
+                                                                                                                    "name":  "In Progress"
+                                                                                                                }
+                                                                                         },
+                                                                              "priority":  {
+                                                                                               "self":  "https://oppa-support.atlassian.net/rest/api/3/priority/1",
+                                                                                               "iconUrl":  "https://oppa-support.atlassian.net/images/icons/priorities/highest_new.svg",
+                                                                                               "name":  "Highest",
+                                                                                               "id":  "1"
+                                                                                           },
+                                                                              "issuetype":  {
+                                                                                                "self":  "https://oppa-support.atlassian.net/rest/api/3/issuetype/10003",
+                                                                                                "id":  "10003",
+                                                                                                "description":  "The sub-task of the issue",
+                                                                                                "iconUrl":  "https://oppa-support.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10316?size=medium",
+                                                                                                "name":  "Sub-task",
+                                                                                                "subtask":  true,
+                                                                                                "avatarId":  10316,
+                                                                                                "hierarchyLevel":  -1
+                                                                                            }
+                                                                          }
+                                                           }
+                                      }
+                                  ],
+                   "comment":  {
+                                   "comments":  [
+
+                                                ],
+                                   "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/79360/comment",
+                                   "maxResults":  0,
+                                   "total":  0,
+                                   "startAt":  0
+                               },
+                   "assignee":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A7c05a673-6f87-448f-8721-f720854a6ba2",
+                                    "accountId":  "712020:7c05a673-6f87-448f-8721-f720854a6ba2",
+                                    "avatarUrls":  {
+                                                       "48x48":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                       "24x24":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                       "16x16":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                       "32x32":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png"
+                                                   },
+                                    "displayName":  "Mariam Kvitsiani",
+                                    "active":  true,
+                                    "timeZone":  "Asia/Tbilisi",
+                                    "accountType":  "atlassian"
+                                },
+                   "updated":  "2026-08-12T10:24:25.111+0400",
+                   "status":  {
+                                  "self":  "https://oppa-support.atlassian.net/rest/api/3/status/10020",
+                                  "description":  "",
+                                  "iconUrl":  "https://oppa-support.atlassian.net/",
+                                  "name":  "Backlog",
+                                  "id":  "10020",
+                                  "statusCategory":  {
+                                                         "self":  "https://oppa-support.atlassian.net/rest/api/3/statuscategory/2",
+                                                         "id":  2,
+                                                         "key":  "new",
+                                                         "colorName":  "blue-gray",
+                                                         "name":  "To Do"
+                                                     }
+                              }
+               }
+}

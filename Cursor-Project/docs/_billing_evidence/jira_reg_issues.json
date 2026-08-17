@@ -1,0 +1,2347 @@
+﻿[
+    {
+        "Key":  "REG-1006",
+        "Summary":  "For volumes - with compensation ",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1007",
+        "Summary":  "For volumes - With Discount 100%",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1008",
+        "Summary":  "For volumes - SLP regular flow ",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1009",
+        "Summary":  "For volumes - Price component with restriction Aplication Based on volume (with percentage)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1012",
+        "Summary":  "For volumes - Max data - Combined flow ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1013",
+        "Summary":  "For volumes - Scale with tariff - Splitting with \"Calculation for number of days\"",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1018",
+        "Summary":  "For volumes - Different time zones in Price Parameter and Price component",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1019",
+        "Summary":  "invoice slot splitting",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106"
+    },
+    {
+        "Key":  "REG-1020",
+        "Summary":  "invoice slot splitting - split by price component",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1021",
+        "Summary":  "invoice slot splitting - split by billing group",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1022",
+        "Summary":  "invoice slot splitting - split by separate invoice for each pod checkbox",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1023",
+        "Summary":  "invoice slot splitting - split by contract versions",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1024",
+        "Summary":  "invoice slot splitting - invoice slot fail",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1026",
+        "Summary":  "For volumes - SLP With 2 Tariff and 2 Scale code - 15 minute price parameter",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1028",
+        "Summary":  "Standard Billing run - For volumes with electricity - Contract level",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1029",
+        "Summary":  "For Volumes - Price Profile flow ",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1030",
+        "Summary":  "For volumes - SLP flow with Price Profile",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1031",
+        "Summary":  "Offline Payment create + automatic offsetting + receivable generation",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1033",
+        "Summary":  "Payment reverse - Reverse payment, without liability connection (without offsetting)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1034",
+        "Summary":  "Payment reverse - Reverse payment, which took part in offsetting process (direct + manual + overdue liability)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1035",
+        "Summary":  "Invoice Correction - Price Change flow | add new price with different invoice slot",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1037",
+        "Summary":  "For volumes - splitting when total amount of scale codes is zero and  \"Number or days\" checkbox does not selected",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1041",
+        "Summary":  "For volumes - tariff splitting when scale code total amount more then tariff amount",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1042",
+        "Summary":  "For volumes - tariff splitting when scale code total amount less then tariff amount",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1043",
+        "Summary":  "For volumes - tariff splitting when one of the scale code have total amount zero",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1046",
+        "Summary":  "Standard Billing run - Interim with \u0027From previous invoice\u0027 separate billing runs",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1047",
+        "Summary":  "Standard Billing run - Interim with \u0027From previous invoice\u0027 but previous invoice missing (service contract)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1050",
+        "Summary":  "Discount",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106"
+    },
+    {
+        "Key":  "REG-1051",
+        "Summary":  "Discount - for volumes (50%, whole month)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1053",
+        "Summary":  "Correct liability offset after single invoice correction",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1055",
+        "Summary":  "Verify invoice cancellation succeeds without errors (PDT-2437)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1056",
+        "Summary":  "Verify invoice cancellation with online payment reversal (PDT-2437)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1057",
+        "Summary":  "Feedback - Verify invoice cancellation with already-reversed receivable (PDT-2437)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1058",
+        "Summary":  "Verify invoice cancellation with locked payment package (PDT-2437)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1059",
+        "Summary":  "Invoice Cancellation Test Cases (PDT-2437)",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-109"
+    },
+    {
+        "Key":  "REG-106",
+        "Summary":  "Billing Run",
+        "Status":  "QA Failed",
+        "IssueType":  "Task",
+        "Parent":  "REG-55"
+    },
+    {
+        "Key":  "REG-1064",
+        "Summary":  "Price Conditions",
+        "Status":  "To Do",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106"
+    },
+    {
+        "Key":  "REG-1065",
+        "Summary":  "price conditions",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1068",
+        "Summary":  "Invoice cancellation - Manual invoice(credit note type) -\u003e All reverse process on receivable side (all possible object links)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-107",
+        "Summary":  "Periodic Billing run",
+        "Status":  "To Do",
+        "IssueType":  "Task",
+        "Parent":  "REG-55"
+    },
+    {
+        "Key":  "REG-1072",
+        "Summary":  "Contract price used for price component when contract value exists (regression PDT-2358)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1073",
+        "Summary":  "Price component for active energy included in billing invoice (regression PDT-2393)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1075",
+        "Summary":  "Invoice cancellation - no error when cancelling invoice (PDT-2437)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-108",
+        "Summary":  "Invoices",
+        "Status":  "To Do",
+        "IssueType":  "Task",
+        "Parent":  "REG-55"
+    },
+    {
+        "Key":  "REG-1081",
+        "Summary":  "Payments Mass Import – billing group must be added to payment (PDT-2374)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1082",
+        "Summary":  "Price component default vs contract value – correct value must be used (PDT-2358)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1084",
+        "Summary":  "[PDT-2345] POD with \"Block for billing\" must not be billed",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1085",
+        "Summary":  "[PDT-2345] Billing only unblocked PODs (multi-POD contract)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1086",
+        "Summary":  "[PDT-2345] Invalid \"Block for billing\" configuration is rejected",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1087",
+        "Summary":  "Invoice Reversal - issued proforma invoice (PDT-2321)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1088",
+        "Summary":  "Can not edit Billing data by scales (PDT-2310)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-109",
+        "Summary":  "Invoice Cancellation",
+        "Status":  "QA Failed",
+        "IssueType":  "Task",
+        "Parent":  "REG-55"
+    },
+    {
+        "Key":  "REG-1091",
+        "Summary":  "ZDISKA scale is not invoiced (PDT-2295)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1092",
+        "Summary":  "Payments Reverse - The negative payment is created with the current date (PDT-2283)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1094",
+        "Summary":  "Service Order - PROD Cancel Invoice functionality does not work (PDT-2269)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1097",
+        "Summary":  "Supply Deactivation - Error podIdentifier-deactivation unable due to restricted period (PDT-2246)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-110",
+        "Summary":  "Accounting Periods",
+        "Status":  "To Do",
+        "IssueType":  "Task",
+        "Parent":  "REG-55"
+    },
+    {
+        "Key":  "REG-1104",
+        "Summary":  "Billing - wrong profile generation and missing calculations for electricity (PDT-2162)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1106",
+        "Summary":  "Invoice - Credit and debit notes from interim deduction assigned to Interim invoice (PDT-2141)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1107",
+        "Summary":  "Invoice correction - Correct behavior when correcting Credit note (PDT-2140)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1109",
+        "Summary":  "PROD - Billing run In progress draft (PDT-2117)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1110",
+        "Summary":  "PROD - Billing run draft invoices - no dividing by zero (PDT-2120)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1114",
+        "Summary":  "Billing runs with October additional hour data (PDT-2094)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1115",
+        "Summary":  "PROD - Invoice correction volume change (PDT-2086)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1116",
+        "Summary":  "Credit note Cancellation - Correct Receivable and Liability offsetting (PDT-2075)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1117",
+        "Summary":  "Payment in EURO - leftovers and reverse leftovers correct (PDT-2072)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1118",
+        "Summary":  "Correct reversal of payment (PDT-1979)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1119",
+        "Summary":  "PODs in cancellation request listed in Disconnections and Cancellations (PDT-1962)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1120",
+        "Summary":  "Disconnection of power supply - EKI/EFU only for correct grid and supplier (PDT-1958)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1121",
+        "Summary":  "Invoice - Total amount including VAT in other currency correct (PDT-1929)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1122",
+        "Summary":  "Invoice reversal with compensation alternative recipient (PDT-1949)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1123",
+        "Summary":  "Price component not locked from cancelled billing run (PDT-1906)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1124",
+        "Summary":  "Invoice correction Price change works as expected (PHX-14442)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1125",
+        "Summary":  "Reverse Payment with LPF - email sent for reversed LPF (PDT-1903)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1126",
+        "Summary":  "Invoice correction - correct liability offsetting (PDT-1898)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1127",
+        "Summary":  "Invoice - correct volumes (PDT-1897)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1128",
+        "Summary":  "No Late Payment Fine for cancelled invoice (PDT-1890)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1129",
+        "Summary":  "Invoice cancellation possible when alternative recipient exists (PDT-1889)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1130",
+        "Summary":  "Cancelled billing run does not lock product (PDT-1876)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1131",
+        "Summary":  "Invoices for reconnection - correct accounting period (PDT-1873)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1133",
+        "Summary":  "Compensations Government and Alternative recipient with direct debit (PDT-1857)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1134",
+        "Summary":  "Invoice cancellation and pro-forma cancellation correct payment amount restore (PDT-1885)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1135",
+        "Summary":  "Request for disconnection - no fee charge for executed cancellation (PDT-1881)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1136",
+        "Summary":  "Invoice correction with compensation Do not include in VAT base alternative recipient (PDT-1925)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1139",
+        "Summary":  "Credit note basic data - values positive not negative (PDT-2327)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1140",
+        "Summary":  "Automatic offsetting works (PDT-2349)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1141",
+        "Summary":  "POD mass deactivation real deactivation works (PDT-2355)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1142",
+        "Summary":  "Invoices - no tax for deactivated POD with electricity invoice (PDT-2376)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1143",
+        "Summary":  "Zero invoice not sent to customer (PDT-2400)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1144",
+        "Summary":  "Billing run Manual credit or debit note - add Invoice number outside system (PDT-2480)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1145",
+        "Summary":  "CBG Objection change - correct Overdue amount for contract billing group POD (PDT-1780)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1146",
+        "Summary":  "Reversal Invoice - Automatic offsetting (PDT-1761)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1147",
+        "Summary":  "Liability for Alternative recipient Government - no customer billing group (PDT-1734)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1148",
+        "Summary":  "Customer receivable with offsetting - deletion not allowed (PDT-1726)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1149",
+        "Summary":  "Disconnection of power supply - Type of disconnection value correct (PDT-1724)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1152",
+        "Summary":  "Direct liability offsetting succeeds (PDT-1598)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1153",
+        "Summary":  "Late Payment Fine - correct Due date for rescheduling LPF (PDT-1456)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1154",
+        "Summary":  "Interim with From previous invoice but previous invoice found (product contract)",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1161",
+        "Summary":  "Cancelation of Request for disconnection - Happy pass ",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1163",
+        "Summary":  "For volumes - Billing with list of PODs ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1164",
+        "Summary":  "For volumes - Billing with list of customers ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1165",
+        "Summary":  "For volumes - Price component Restriction of volume with kWh ranges Less then range",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1166",
+        "Summary":  "For volumes - Price component restriction for values (Between ranges)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1167",
+        "Summary":  "For volumes - Price component restriction for values (More than ranges)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1168",
+        "Summary":  "For volumes - Price component Restriction of volume with kWh ranges More then range",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1169",
+        "Summary":  "For volumes - Price component Restriction of volume with kWh ranges Between the range",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1171",
+        "Summary":  "CLONE - For volumes - Price component restriction for values (Less than ranges)",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1172",
+        "Summary":  "Feedback - For volumes with electricity, electricity Deactivated POD should not be included invoice ",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1173",
+        "Summary":  "Feedback - Payment - Reverse - Add options to allocate the payment amount to multiple customers and liabilities",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1194",
+        "Summary":  "[Dev 2] Conditions for Price component in billing run  Purpose of consumption to be disabled and empty for Generators (In the process )",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1197",
+        "Summary":  "[Dev 2] Claimed penalty - Reversal",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1221",
+        "Summary":  "SLP flow with shifted hour price parameter",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1231",
+        "Summary":  "For volumes - Rounding - invoice 2dp HALF_UP round up (RND-01)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1232",
+        "Summary":  "For volumes - Rounding - invoice 2dp HALF_UP round down (RND-02)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1233",
+        "Summary":  "For volumes - Rounding - VAT calculated from rounded net (RND-03)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1234",
+        "Summary":  "For volumes - Rounding - group-then-round vs round-each-then-sum (RND-04)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1235",
+        "Summary":  "For volumes - Rounding - profile consumption scale 8 decimals (RND-05)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1236",
+        "Summary":  "For volumes - Rounding - SafeDivision formula 1/3 at 12dp (RND-06)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-1237",
+        "Summary":  "For volumes - Rounding - scales number-of-days day-split volume reconcile (RND-07)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-249",
+        "Summary":  "Create - Terms",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-250",
+        "Summary":  "Edit - Terms",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-276",
+        "Summary":  "Create - Price Component - Per piece | Happy path ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-277",
+        "Summary":  "Create - Price Component - Per piece | Full data",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-278",
+        "Summary":  "Create - Price Component - Per piece | Copy From",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-279",
+        "Summary":  "Create - Price Component - By settlement period | Happy path ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-280",
+        "Summary":  "Create - Price Component - By settlement period | Full data",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-281",
+        "Summary":  "Create - Price Component - By settlement period | Full data - Date of the month",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-282",
+        "Summary":  "Create - Price Component - By settlement period | Full data - RRule Formula",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-283",
+        "Summary":  "Create - Price Component - By settlement period | Copy From - Happy path",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-284",
+        "Summary":  "Create - Price Component - By settlement period | Copy From - \"Date of the month\"",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-285",
+        "Summary":  "Create - Price Component - By settlement period | Copy From - \"RRule Formula\"",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-289",
+        "Summary":  "Create - Price Component - Periodically | Happy path ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-290",
+        "Summary":  "Create - Price Component - Periodically | Full data ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-291",
+        "Summary":  "Create - Price Component - Periodically | Full data - \"Date of the month\"",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-292",
+        "Summary":  "Create - Price Component - Periodically | Full data - \"RRule formula\"",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-293",
+        "Summary":  "Create - Price Component - Periodically | Happy path - Contract level",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-296",
+        "Summary":  "Create - Price Component - With electricity invoice | Happy path ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-297",
+        "Summary":  "Create - Price Component - Periodically | Copy from",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-299",
+        "Summary":  "Create - Price Component - With electricity invoice | Copy From",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-300",
+        "Summary":  "Edit - Price Component - Periodically | Happy path ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-301",
+        "Summary":  "Edit - Price Component - Periodically | Full data ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-302",
+        "Summary":  "Edit - Price Component - Periodically | Full data - \"Date of the month\"",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-303",
+        "Summary":  "Edit - Price Component - Periodically | Full data - \"RRule formula\"",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-304",
+        "Summary":  "Edit - Price Component - Periodically | Happy path - Contract level",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-306",
+        "Summary":  "Edit - Price Component - With electricity invoice | Happy path ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-307",
+        "Summary":  "Edit - Price Component - Periodically | Copy from",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-309",
+        "Summary":  "Edit - Price Component - With electricity invoice | Copy From",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-310",
+        "Summary":  "Edit - Price Component - Per piece | Happy path ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-311",
+        "Summary":  "Edit - Price Component - Per piece | Full data",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-312",
+        "Summary":  "Edit - Price Component - Per piece | Copy From",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-313",
+        "Summary":  "Edit - Price Component - By settlement period | Happy path ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-314",
+        "Summary":  "Edit - Price Component - By settlement period | Full data",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-315",
+        "Summary":  "Edit - Price Component - By settlement period | Full data - Date of the month",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-316",
+        "Summary":  "Edit - Price Component - By settlement period | Full data - RRule Formula",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-317",
+        "Summary":  "Edit - Price Component - By settlement period | Copy From - Happy path",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-318",
+        "Summary":  "Edit - Price Component - By settlement period | Copy From - \"Date of the month\"",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-319",
+        "Summary":  "Edit - Price Component - By settlement period | Copy From - \"RRule Formula\"",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-335",
+        "Summary":  "Conditions - Price Component | Hardcoded conditions ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-348",
+        "Summary":  "Create - Price Parameter | Change \"Display period\" ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-373",
+        "Summary":  "Edit - Price Parameter | Change \"Display period\" ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-460",
+        "Summary":  "Create - Interim And Advance Payment - %From Previous Invoice Amount -Match the invoice date  | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-461",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - %From Previous Invoice Amount -Match the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-465",
+        "Summary":  "Listing Interim And Advance Payments - Filter | Search",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-466",
+        "Summary":  "Listing Interim And Advance Payments - Sorting",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-467",
+        "Summary":  "Listing Interim And Advance Payments - Paging",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-468",
+        "Summary":  "Listing Interim And Advance Payment - Search and \"X\" clear button",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-469",
+        "Summary":  "Permission Interim And Advance Payments| Create/Edit/View Basic/View Deleted/Delete",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-470",
+        "Summary":  "Translates - Interim and Advance Payments",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-472",
+        "Summary":  "Create Contract | Happy path - Only mandatory fields ",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-475",
+        "Summary":  "Create - Point of Delivery |  Happy path of Settlement period type POD - Mandatory fields ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-55",
+        "Summary":  "Billing",
+        "Status":  "QA Failed",
+        "IssueType":  "Epic",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-558",
+        "Summary":  "For volumes",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106"
+    },
+    {
+        "Key":  "REG-559",
+        "Summary":  "Over time periodical",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106"
+    },
+    {
+        "Key":  "REG-560",
+        "Summary":  "Over time one time",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106"
+    },
+    {
+        "Key":  "REG-561",
+        "Summary":  "Per piece",
+        "Status":  "Done",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106"
+    },
+    {
+        "Key":  "REG-562",
+        "Summary":  "Interim and advance payments",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106"
+    },
+    {
+        "Key":  "REG-563",
+        "Summary":  "With electricity invoice",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106"
+    },
+    {
+        "Key":  "REG-564",
+        "Summary":  "Manual billing run",
+        "Status":  "To Do",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106"
+    },
+    {
+        "Key":  "REG-565",
+        "Summary":  "Reversal",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106"
+    },
+    {
+        "Key":  "REG-566",
+        "Summary":  "Correction",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106"
+    },
+    {
+        "Key":  "REG-577",
+        "Summary":  "Create - Point of Delivery | Full data - All fields ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-579",
+        "Summary":  "Edit - Point of Delivery | Happy path - Only mandatory fields | Settlement period",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-582",
+        "Summary":  "Edit - Point of Delivery | Full data - all fields ",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-589",
+        "Summary":  "Create - Interim And Advance Payment - %From Previous Invoice Amount - Date of the month | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-591",
+        "Summary":  "Create - Interim And Advance Payment - %From Previous Invoice Amount - Working days after the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-593",
+        "Summary":  "Create - Interim And Advance Payment - %From Previous Invoice Amount - Periodical - Day of the week and period of the year - Year round | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-595",
+        "Summary":  "Create - Interim And Advance Payment - Exact Amount - Match the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-598",
+        "Summary":  "Create - Interim And Advance Payment - Exact Amount - Date of the month | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-600",
+        "Summary":  "Create - Interim And Advance Payment - Exact Amount - Working days after the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-604",
+        "Summary":  "Create - Interim And Advance Payment - Exact Amount - Periodical | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-608",
+        "Summary":  "Create - Interim And Advance Payment - Price Component - Match the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-610",
+        "Summary":  "Create - Interim And Advance Payment - Price Component - Date of the month | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-612",
+        "Summary":  "Create - Interim And Advance Payment - Price Component - Working days after the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-614",
+        "Summary":  "Create - Interim And Advance Payment - Price Component - Periodical | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-618",
+        "Summary":  "Create Correction billing run - price change flow",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-619",
+        "Summary":  "Create Correction billing run - volume change flow",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-621",
+        "Summary":  "Edit - Point of delivery | Block for billing",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-622",
+        "Summary":  "Create Correction billing run - mass import",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-626",
+        "Summary":  "Penalties - Delete Penalty – Cancel from Confirmation",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-631",
+        "Summary":  "Edit Correction billing run",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-632",
+        "Summary":  "Permissions - Correction billing run",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-633",
+        "Summary":  "Invoice Correction - price change flow",
+        "Status":  "QA Failed",
+        "IssueType":  "Task",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-635",
+        "Summary":  "Invoice Correction - volume change flow",
+        "Status":  "QA Failed",
+        "IssueType":  "Task",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-636",
+        "Summary":  "Invoice Correction - Price Change flow | case 1 (happy pass)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-637",
+        "Summary":  "Invoice Correction - Price Change flow | add new price with existing invoice slot",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-638",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - %From Previous Invoice Amount - Date of the month | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-639",
+        "Summary":  "Create | Copy From -Interim And Advance Payment - %From Previous Invoice Amount - Working days after the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-640",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - %From Previous Invoice Amount - Periodical | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-641",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - Exact Amount - Match the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-642",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - Exact Amount - Date of the month | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-643",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - Exact Amount - Working days after the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-644",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - Exact Amount - Periodical | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-645",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - Price Component - Match the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-646",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - Price Component - Date of the month | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-647",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - Price Component - Working days after the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-648",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - Price Component - Periodical | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-687",
+        "Summary":  "Create - Group of interim and advance payments | Happy Path | Only Mandatory Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-688",
+        "Summary":  "Create - Group of interim and advance payments | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-689",
+        "Summary":  "Create - Group of interim and advance payments | Copy From",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-690",
+        "Summary":  "Edit - Group of interim and advance payments | Happy Path | Only Mandatory Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-691",
+        "Summary":  "Edit - Group of interim and advance payments | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-692",
+        "Summary":  "Edit - Group of interim and advance payments | Copy From",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-693",
+        "Summary":  "Listing - Groups of Interim and Advance Payments | Search | Filter",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-694",
+        "Summary":  "Invoice Correction - Price + volume Change flow | case 1 (happy pass)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-695",
+        "Summary":  "Listing - Group of Interim and Advance Payments | Sorting",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-696",
+        "Summary":  "Listing - Group of Interim and Advance Payments | Paging",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-697",
+        "Summary":  "Listing Group of Interim and Advance Payments - Search and \"X\" clear button",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-698",
+        "Summary":  "Listing Group of Interim and Advance Payments - Exclude old versions",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-699",
+        "Summary":  "Listing Group of Interim and Advance Payments - Exclude Future versions",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-700",
+        "Summary":  "Translates - Group of Interim and Advance Payments",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-701",
+        "Summary":  "Permission Group of Interim and Advance Payments | Create/Edit/View Basic/View Deleted/Delete",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-703",
+        "Summary":  "Invoice Correction - volume Change flow | case 1 (happy pass)",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-704",
+        "Summary":  "Invoice Correction - volume Change flow | case 2 (full reversal)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-705",
+        "Summary":  "Invoice Correction - volume Change flow | case 3 (half + full reversal)",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-706",
+        "Summary":  "Reversal - Manual invoice reversal | happy pass",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-707",
+        "Summary":  "Reversal - Standard invoice reversal",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-708",
+        "Summary":  "Create - Interim And Advance Payment - Payment Terms - Working Days | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-709",
+        "Summary":  "Create - Interim And Advance Payment - Payment Terms - Working Days| Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-711",
+        "Summary":  "Create - Interim And Advance Payment - Payment Terms - Certain Days - Next working day | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-712",
+        "Summary":  "Create - Interim And Advance Payment - Payment Terms - Certain Days - Previous working day | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-713",
+        "Summary":  "For volumes - simple settlement flow | happy pass",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-714",
+        "Summary":  "Reversal - Standard invoice reversal with correction debit/credit notes",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-715",
+        "Summary":  "Reversal - deducted invoice reversal",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-716",
+        "Summary":  "Standard billing run - interim invoice simple case | happy pass",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-718",
+        "Summary":  "Standard billing run - interim deduction (from same period)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-728",
+        "Summary":  "Create - Interim And Advance Payment - Obligatory | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-729",
+        "Summary":  "Create - Interim And Advance Payment - At least one | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-737",
+        "Summary":  "Create - Interim And Advance Payment - Payment Terms - Calendar Day - Next working day | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-738",
+        "Summary":  "Create - Interim And Advance Payment - Payment Terms - Calendar Day - Previous working day | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-739",
+        "Summary":  "Edit - Interim And Advance Payment - Payment Terms - Working Days| Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-741",
+        "Summary":  "Edit - Interim And Advance Payment - Payment Terms - Certain Date - Next working day | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-742",
+        "Summary":  "Edit - Interim And Advance Payment - Payment Terms - Certain Days - Previous working day | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-745",
+        "Summary":  "Edit - Interim And Advance Payment - Payment Terms - Calendar Day - Next working day | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-746",
+        "Summary":  "Edit - Interim And Advance Payment - Payment Terms - Calendar Day - Previous working day | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-747",
+        "Summary":  "Edit - Interim And Advance Payment - %From Previous Invoice Amount - Working days after the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-748",
+        "Summary":  "Edit - Interim And Advance Payment - %From Previous Invoice Amount - Periodical | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-749",
+        "Summary":  "Edit | Copy From - Interim And Advance Payment - %From Previous Invoice Amount -Match the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-750",
+        "Summary":  "Edit | Copy From - Interim And Advance Payment - %From Previous Invoice Amount - Date of the month | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-751",
+        "Summary":  "Edit | Copy From -Interim And Advance Payment - %From Previous Invoice Amount - Working days after the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-752",
+        "Summary":  "Edit | Copy From - Interim And Advance Payment - %From Previous Invoice Amount - Periodical | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-753",
+        "Summary":  "Edit - Interim And Advance Payment - %From Previous Invoice Amount -Match the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-754",
+        "Summary":  "Edit - Interim And Advance Payment - %From Previous Invoice Amount - Date of the month | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-755",
+        "Summary":  "Edit - Interim And Advance Payment - Obligatory | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-756",
+        "Summary":  "Edit - Interim And Advance Payment - Obligatory | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-757",
+        "Summary":  "Edit - Interim And Advance Payment - Price Component - Match the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-758",
+        "Summary":  "Edit - Interim And Advance Payment - Price Component - Date of the month | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-759",
+        "Summary":  "Edit - Interim And Advance Payment - Price Component - Working days after the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-760",
+        "Summary":  "Edit - Interim And Advance Payment - Price Component - Periodical | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-761",
+        "Summary":  "Edit | Copy From - Interim And Advance Payment - Price Component - Match the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-762",
+        "Summary":  "Edit | Copy From - Interim And Advance Payment - Price Component - Date of the month | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-763",
+        "Summary":  "Edit | Copy From - Interim And Advance Payment - Price Component - Working days after the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-764",
+        "Summary":  "Edit | Copy From - Interim And Advance Payment - Price Component - Periodical | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-765",
+        "Summary":  "Edit - Interim And Advance Payment - Exact Amount - Match the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-766",
+        "Summary":  "Edit - Interim And Advance Payment - Exact Amount - Date of the month | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-767",
+        "Summary":  "Edit - Interim And Advance Payment - Exact Amount - Working days after the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-768",
+        "Summary":  "Edit - Interim And Advance Payment - Exact Amount - Periodical | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-769",
+        "Summary":  "Edit | Copy From - Interim And Advance Payment - Exact Amount - Match the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-770",
+        "Summary":  "Edit | Copy From - Interim And Advance Payment - Exact Amount - Date of the month | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-771",
+        "Summary":  "Edit | Copy From - Interim And Advance Payment - Exact Amount - Working days after the invoice date | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-772",
+        "Summary":  "Edit | Copy From - Interim And Advance Payment - Exact Amount - Periodical | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-779",
+        "Summary":  "Create - Interim And Advance Payment - Price Component - Price",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-780",
+        "Summary":  "Create - Interim And Advance Payment - Price Component - Price parameter",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-781",
+        "Summary":  "Create - Interim And Advance Payment - Price Component - Price Profile",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-782",
+        "Summary":  "Create - Interim And Advance Payment - Price Component - Price + Price parameter + Price profile",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-783",
+        "Summary":  "Create - Interim And Advance Payment - Price Component - Price Formula",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-784",
+        "Summary":  "Create - Interim And Advance Payment - %From Previous Invoice Amount - Periodical - Date of the month | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-785",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - Price Component - Price + Price parameter + Price profile",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-786",
+        "Summary":  "Create - Interim And Advance Payment - %From Previous Invoice Amount - Periodical - Day of the week and period of the year - Add Period of the Year | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-787",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - Payment Terms - Working Days| Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-788",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - Payment Terms - Certain Days - Next working day | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-789",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - Payment Terms - Certain Days - Previous working day | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-790",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - Payment Terms - Calendar Day - Next working day | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-791",
+        "Summary":  "Create | Copy From - Interim And Advance Payment - Payment Terms - Calendar Day - Previous working day | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-792",
+        "Summary":  "Edit | Copy From - Interim And Advance Payment - Payment Terms - Certain Days - Next working day | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-793",
+        "Summary":  "Edit | Copy From - Interim And Advance Payment - Payment Terms - Certain Days - Previous working day | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-794",
+        "Summary":  "Edit | Copy From - Interim And Advance Payment - Payment Terms - Calendar Day - Next working day | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-795",
+        "Summary":  "Edit | Copy From - Interim And Advance Payment - Payment Terms - Calendar Day - Previous working day | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-796",
+        "Summary":  "Edit - Interim And Advance Payment - %From Previous Invoice Amount - Periodical - Day of the week and period of the year - Add Period of the Year | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-797",
+        "Summary":  "Edit - Interim And Advance Payment - %From Previous Invoice Amount - Periodical - Date of the month | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-798",
+        "Summary":  "Edit - Interim And Advance Payment - Price Component - Price",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-799",
+        "Summary":  "Edit - Interim And Advance Payment - Price Component - Price parameter",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-800",
+        "Summary":  "Edit - Interim And Advance Payment - Price Component - Price Profile",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-801",
+        "Summary":  "Edit - Interim And Advance Payment - Price Component - Price + Price parameter + Price profile",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-802",
+        "Summary":  "Edit - Interim And Advance Payment - Price Component - Price Formula",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-803",
+        "Summary":  "Edit | Copy From - Interim And Advance Payment - Price Component - Price + Price parameter + Price profile",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-850",
+        "Summary":  "Create - Standard Energy Product -  Contract Terms - Period | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-851",
+        "Summary":  "Create - Individual Energy Product - Contract Terms - Period | Full Data | All Fields",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-873",
+        "Summary":  "For volumes - Scale with scale code | happy pass",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-929",
+        "Summary":  "MLO reverse - Negative case - reverse MLO, which used negative payment and receivable/deposit",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-953",
+        "Summary":  "Task Create - Create task on billing run",
+        "Status":  "To Do",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-960",
+        "Summary":  "Overtime Periodical (For Product contract) - Happy path",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-961",
+        "Summary":  "Overtime Periodical (For Service contract) - Happy path",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-962",
+        "Summary":  "For volumes - data by profile all type",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-963",
+        "Summary":  "For volumes - vat base case",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-964",
+        "Summary":  "Pulling",
+        "Status":  "Done",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106"
+    },
+    {
+        "Key":  "REG-965",
+        "Summary":  "Pulling - pod has no gaps ",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-966",
+        "Summary":  "Pulling - customer, contract, pod level",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-967",
+        "Summary":  "Pulling - pod has gaps",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-968",
+        "Summary":  "Pulling - one pod has gap, second one doesn\u0027t",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-969",
+        "Summary":  "Pulling - pod has different measurement types in 2 contracts",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-970",
+        "Summary":  "Pulling - one chain fails another chain",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-971",
+        "Summary":  "Pulling - pod has no gaps (data by scale flow)",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-972",
+        "Summary":  "Pulling - 3 contracts, 2 pulling chains",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-973",
+        "Summary":  "Per Piece - happy path ",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-974",
+        "Summary":  "For volumes - combined flow (profile and scale doesn\u0027t match)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-975",
+        "Summary":  "Standard Billing run - Interim with price component",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-976",
+        "Summary":  "Standard Billing run - Interim with \u0027From previous invoice\u0027",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-977",
+        "Summary":  "Billing run - Over time one time",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-978",
+        "Summary":  "Standard Billing run - Interim with \u0027From previous invoice\u0027 but previous invoice missing (product contract)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-980",
+        "Summary":  "Late Payment Fine create - Create LPF By using manual liability (without billing group)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-991",
+        "Summary":  "Standard Billing run - For volumes with electricity - POD level",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-992",
+        "Summary":  "For Volumes - Scale with tariff - Splitting with \"Scale for active electricity\"",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-993",
+        "Summary":  "Conditions",
+        "Status":  "Done",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106"
+    },
+    {
+        "Key":  "REG-994",
+        "Summary":  "Volume conditions for Product contract",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    },
+    {
+        "Key":  "REG-995",
+        "Summary":  "Invoice correction Volume change - deducted invoice correction ",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  ""
+    }
+]

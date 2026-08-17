@@ -1,0 +1,36 @@
+SUMMARY: EasyPay Payments - Liabilities/Receivables accounting period rules
+STATUS: Validating
+ENV: None
+==== DESC ====
+null
+==== CF10103 ====
+Reproduce Steps:
+For Liabilities (from LPF) and Receivables generated from EasyPay payments, the system should follow the same accounting period rules as for all other payments.
+If the payment date falls within a previous accounting period and that period is still open, the Liability/Receivable should be created in that accounting period. If the accounting period is closed, the Liability/Receivable should be created in the next currently open accounting period.
+Actual Result:
+Expected Result:
+_________________
+Endpoint:
+Method:
+Status:
+Payload:
+Response:
+
+==== CF10217 ====
+Link:
+A.R.(არსებული სიტუაცია):
+E.R.( სასურველი შედეგი):
+
+==== AC ====
+null
+==== COMMENTS ====
+count 2
+--- Kalina.Koleva ---
+oppa-support.atlassian.net/browse/PDT-3214
+
+--- Slack ---
+Kalina.Koleva synced this conversation thread with the Slack thread . Replies in synced threads will automatically update across both Slack and Jira.
+
+==== ATTACHMENTS ====
+==== LABELS ====
+[]

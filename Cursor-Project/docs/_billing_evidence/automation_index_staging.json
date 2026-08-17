@@ -1,0 +1,946 @@
+[
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-01 [POD][POD_WITH_RPS=YES]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 320,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-02 [POD][POD_WITH_RPS=NO]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 359,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-03 [CONTRACT][POD_WITH_RPS=YES]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 398,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-04 [CUSTOMER][POD_WITH_RPS=YES]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 437,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-05 [POD][VOLTAGE_LEVEL=LOW]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 477,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-06 [CONTRACT][VOLTAGE_LEVEL=LOW]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 516,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-07 [CUSTOMER][VOLTAGE_LEVEL=LOW]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 555,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-08 [POD][PURPOSE_OF_CONSUMPTION=NON_HOUSEHOLD]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 595,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-09 [CONTRACT][PURPOSE_OF_CONSUMPTION=NON_HOUSEHOLD]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 634,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-10 [POD][POD_TYPE=CONSUMER]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 673,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-11 [CONTRACT][POD_TYPE=CONSUMER]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 712,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-12 [POD][POD_MEASUREMENT_TYPE=SETTLEMENT_PERIOD]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 751,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-13 [POD][POD_GRID_OP]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 786,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-14 [POD][POD_RPS_NUMBER=1047]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 824,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-15 [CONTRACT][CONTRACT=PRODUCT_CONTRACT]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 865,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-16 [CONTRACT][PRODUCT]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 903,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-17 [CONTRACT][PRODUCT_TYPE]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 942,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-18 [CONTRACT][CONTRACT_TYPE]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 996,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-19 [CONTRACT][INTERIM_ADVANCE_PAYMENT=NO]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 1045,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-20 [CUSTOMER][CONTRACT=PRODUCT_CONTRACT]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 1089,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-21 [CUSTOMER][PRODUCT]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 1126,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-22 [CUSTOMER][CUSTOMER_TYPE=LEGAL_ENTITY]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 1166,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COND-23 [CUSTOMER][CUSTOMER_SEGMENT]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 1203,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COMB-01 [CONTRACT][AND same-POD RPS+VOLTAGE]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 1245,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COMB-02 [CONTRACT][AND split-POD no match]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 1284,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COMB-03 [CONTRACT][OR one-true]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 1321,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COMB-04 [CONTRACT][POD_WITH_RPS<>YES]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 1364,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "billingConditions.spec",
+    "AllIds": "",
+    "AutomationName": "COMB-05 [CONTRACT][RPS=YES AND RPS_NUMBER=1047]",
+    "AutomationFile": "src/tests/billing/billingConditions.spec.ts",
+    "Line": 1403,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-558",
+    "AllIds": "REG-558,REG-1231,REG-1237",
+    "AutomationName": "[REG-558]: Billing run rounding (REG-1231..REG-1237)",
+    "AutomationFile": "src/tests/billing/billingRounding.spec.ts",
+    "Line": 405,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1231",
+    "AllIds": "REG-1231",
+    "AutomationName": "[REG-1231]: For volumes - Rounding - invoice 2dp HALF_UP round up (RND-01)",
+    "AutomationFile": "src/tests/billing/billingRounding.spec.ts",
+    "Line": 406,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1232",
+    "AllIds": "REG-1232",
+    "AutomationName": "[REG-1232]: For volumes - Rounding - invoice 2dp HALF_UP round down (RND-02)",
+    "AutomationFile": "src/tests/billing/billingRounding.spec.ts",
+    "Line": 447,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1233",
+    "AllIds": "REG-1233",
+    "AutomationName": "[REG-1233]: For volumes - Rounding - VAT calculated from rounded net (RND-03)",
+    "AutomationFile": "src/tests/billing/billingRounding.spec.ts",
+    "Line": 488,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1234",
+    "AllIds": "REG-1234",
+    "AutomationName": "[REG-1234]: For volumes - Rounding - group-then-round vs round-each-then-sum (RND-04)",
+    "AutomationFile": "src/tests/billing/billingRounding.spec.ts",
+    "Line": 531,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1235",
+    "AllIds": "REG-1235",
+    "AutomationName": "[REG-1235]: For volumes - Rounding - profile consumption scale 8 decimals (RND-05)",
+    "AutomationFile": "src/tests/billing/billingRounding.spec.ts",
+    "Line": 580,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1236",
+    "AllIds": "REG-1236",
+    "AutomationName": "[REG-1236]: For volumes - Rounding - SafeDivision formula 1/3 at 12dp (RND-06)",
+    "AutomationFile": "src/tests/billing/billingRounding.spec.ts",
+    "Line": 624,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1237",
+    "AllIds": "REG-1237",
+    "AutomationName": "[REG-1237]: For volumes - Rounding - scales number-of-days day-split volume reconcile (RND-07)",
+    "AutomationFile": "src/tests/billing/billingRounding.spec.ts",
+    "Line": 670,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1006",
+    "AllIds": "REG-1006",
+    "AutomationName": "[REG-1006]: Compensation",
+    "AutomationFile": "src/tests/billing/Compensation/compensation.spec.ts",
+    "Line": 8,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1170",
+    "AllIds": "REG-1170",
+    "AutomationName": "[REG-1170]: Compensation Regeneration",
+    "AutomationFile": "src/tests/billing/Compensation/compensation.spec.ts",
+    "Line": 94,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-636",
+    "AllIds": "REG-636",
+    "AutomationName": "[REG-636]: Price change flow happy pass",
+    "AutomationFile": "src/tests/billing/correction/correctionCases.spec.ts",
+    "Line": 45,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-637",
+    "AllIds": "REG-637",
+    "AutomationName": "[REG-637]: Price change flow | add new price with existing slot",
+    "AutomationFile": "src/tests/billing/correction/correctionCases.spec.ts",
+    "Line": 61,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1035",
+    "AllIds": "REG-1035",
+    "AutomationName": "[REG-1035]: Price change flow | add new price with different slot",
+    "AutomationFile": "src/tests/billing/correction/correctionCases.spec.ts",
+    "Line": 77,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "correctionCases.spec",
+    "AllIds": "",
+    "AutomationName": "clean responses",
+    "AutomationFile": "src/tests/billing/correction/correctionCases.spec.ts",
+    "Line": 94,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-703",
+    "AllIds": "REG-703",
+    "AutomationName": "[REG-703]: Volume change flow happy pass",
+    "AutomationFile": "src/tests/billing/correction/correctionCases.spec.ts",
+    "Line": 115,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1051",
+    "AllIds": "REG-1051",
+    "AutomationName": "[REG-1051]: Discount - For volumes",
+    "AutomationFile": "src/tests/billing/discount/discount.spec.ts",
+    "Line": 8,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1007",
+    "AllIds": "REG-1007",
+    "AutomationName": "[REG-1007]: Discount - For volumes 100%",
+    "AutomationFile": "src/tests/billing/discount/discount.spec.ts",
+    "Line": 92,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-991",
+    "AllIds": "REG-991",
+    "AutomationName": "[REG-991]: with electricity POD level - happy pass",
+    "AutomationFile": "src/tests/billing/electricity/withElectricity(Product).spec.ts",
+    "Line": 8,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1172",
+    "AllIds": "REG-1172",
+    "AutomationName": "[REG-1172]: with electricity POD level - deactivated pod before meter reading date should not be included ",
+    "AutomationFile": "src/tests/billing/electricity/withElectricity(Product).spec.ts",
+    "Line": 95,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-974",
+    "AllIds": "REG-974",
+    "AutomationName": "[REG-974]: For volumes - Combined flow (scale and profile does not match)",
+    "AutomationFile": "src/tests/billing/forVolumes/combined.spec.ts",
+    "Line": 26,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-718",
+    "AllIds": "REG-718",
+    "AutomationName": "[REG-718]: Interim deduction (from same period)",
+    "AutomationFile": "src/tests/billing/forVolumes/deduction.spec.ts",
+    "Line": 23,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-713",
+    "AllIds": "REG-713",
+    "AutomationName": "[REG-713]: For volumes - simple settlement | happy pass",
+    "AutomationFile": "src/tests/billing/forVolumes/forVolumes.spec.ts",
+    "Line": 37,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-873",
+    "AllIds": "REG-873",
+    "AutomationName": "[REG-873]: For volumes - Scale with scale code | Happy pass",
+    "AutomationFile": "src/tests/billing/forVolumes/forVolumes.spec.ts",
+    "Line": 49,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-963",
+    "AllIds": "REG-963",
+    "AutomationName": "[REG-963]: profile flow with vat base",
+    "AutomationFile": "src/tests/billing/forVolumes/forVolumes.spec.ts",
+    "Line": 61,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-962",
+    "AllIds": "REG-962",
+    "AutomationName": "[REG-962]: data by profile all types",
+    "AutomationFile": "src/tests/billing/forVolumes/forVolumes.spec.ts",
+    "Line": 74,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-992",
+    "AllIds": "REG-992",
+    "AutomationName": "[REG-992]: Scale with Tariff - splitting | Happy pass",
+    "AutomationFile": "src/tests/billing/forVolumes/forVolumes.spec.ts",
+    "Line": 86,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1013",
+    "AllIds": "REG-1013",
+    "AutomationName": "[REG-1013]: scale with tariff - splitting | calculation for number of days",
+    "AutomationFile": "src/tests/billing/forVolumes/forVolumes.spec.ts",
+    "Line": 98,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1029",
+    "AllIds": "REG-1029",
+    "AutomationName": "[REG-1029]: Price Profile flow",
+    "AutomationFile": "src/tests/billing/forVolumes/forVolumes.spec.ts",
+    "Line": 110,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1037",
+    "AllIds": "REG-1037",
+    "AutomationName": "[REG-1037]: splitting when total amount of scale codes is zero and \"Number or days\" checkbox does not selected",
+    "AutomationFile": "src/tests/billing/forVolumes/forVolumes.spec.ts",
+    "Line": 122,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1008",
+    "AllIds": "REG-1008",
+    "AutomationName": "[REG-1008]: For volumes - Scale with scale code | Happy pass",
+    "AutomationFile": "src/tests/billing/forVolumes/SLP.spec.ts",
+    "Line": 30,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1030",
+    "AllIds": "REG-1030",
+    "AutomationName": "[REG-1030]: SLP with price profile",
+    "AutomationFile": "src/tests/billing/forVolumes/SLP.spec.ts",
+    "Line": 52,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1221",
+    "AllIds": "REG-1221",
+    "AutomationName": "[REG-1221]: shifted hour case",
+    "AutomationFile": "src/tests/billing/forVolumes/SLP.spec.ts",
+    "Line": 74,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-978",
+    "AllIds": "REG-978",
+    "AutomationName": "[REG-978]: Interim with From previous invoice but previous invoice missing (product contract)",
+    "AutomationFile": "src/tests/billing/Interim/interimCases.spec.ts",
+    "Line": 49,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1047",
+    "AllIds": "REG-1047",
+    "AutomationName": "[REG-1047]: Interim with From previous invoice but previous invoice missing (service contract)",
+    "AutomationFile": "src/tests/billing/Interim/interimCases.spec.ts",
+    "Line": 58,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-716",
+    "AllIds": "REG-716",
+    "AutomationName": "[REG-716]: Interim invoice exact amount | happy pass",
+    "AutomationFile": "src/tests/billing/Interim/interimCases.spec.ts",
+    "Line": 67,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-975",
+    "AllIds": "REG-975",
+    "AutomationName": "[REG-975]: interim with price component | happy pass",
+    "AutomationFile": "src/tests/billing/Interim/interimCases.spec.ts",
+    "Line": 76,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1046",
+    "AllIds": "REG-1046",
+    "AutomationName": "[REG-1046]: From previous invoice - separate billing runs",
+    "AutomationFile": "src/tests/billing/Interim/interimCases.spec.ts",
+    "Line": 85,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1154",
+    "AllIds": "REG-1154",
+    "AutomationName": "[REG-1154]: Interim with From previous invoice but previous invoice found (product contract)",
+    "AutomationFile": "src/tests/billing/Interim/interimCases.spec.ts",
+    "Line": 94,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1068",
+    "AllIds": "REG-1068",
+    "AutomationName": "[REG-1068]: Invoice cancellation - Manual invoice(credit note type) -> All reverse process on receivable side (all possible object links)",
+    "AutomationFile": "src/tests/billing/InvoiceCancelation/manualInvoiceCancellation.spec.ts",
+    "Line": 12,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-977",
+    "AllIds": "REG-977",
+    "AutomationName": "[REG-977]: Over time one time  - happy pass",
+    "AutomationFile": "src/tests/billing/overTimeOneTime/overTimeOneTime.spec.ts",
+    "Line": 8,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-960",
+    "AllIds": "REG-960",
+    "AutomationName": "[REG-960]: Periodical for Product Contract - happy pass",
+    "AutomationFile": "src/tests/billing/overTimePeriodical/overTimePeriodical.spec.ts",
+    "Line": 143,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-961",
+    "AllIds": "REG-961",
+    "AutomationName": "[REG-961]: Periodical for Service Contract - happy pass",
+    "AutomationFile": "src/tests/billing/overTimePeriodical/overTimePeriodical.spec.ts",
+    "Line": 155,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-973",
+    "AllIds": "REG-973",
+    "AutomationName": "[REG-973]: Per Piece - happy pass",
+    "AutomationFile": "src/tests/billing/perPiece/perPiece.spec.ts",
+    "Line": 7,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "priceComponentConditions.spec",
+    "AllIds": "",
+    "AutomationName": "[REG-PC]: Price component conditions",
+    "AutomationFile": "src/tests/billing/priceComponentConditions.spec.ts",
+    "Line": 335,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "priceComponentConditions.spec",
+    "AllIds": "",
+    "AutomationName": "PCC-01 [POD_VOLTAGE_LEVEL=LOW]",
+    "AutomationFile": "src/tests/billing/priceComponentConditions.spec.ts",
+    "Line": 336,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "priceComponentConditions.spec",
+    "AllIds": "",
+    "AutomationName": "PCC-02 [POD_VOLTAGE_LEVEL<>HIGH]",
+    "AutomationFile": "src/tests/billing/priceComponentConditions.spec.ts",
+    "Line": 383,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "priceComponentConditions.spec",
+    "AllIds": "",
+    "AutomationName": "PCC-03 [PURPOSE_OF_CONSUMPTION=NON_HOUSEHOLD]",
+    "AutomationFile": "src/tests/billing/priceComponentConditions.spec.ts",
+    "Line": 430,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "priceComponentConditions.spec",
+    "AllIds": "",
+    "AutomationName": "PCC-04 [POD_MEASUREMENT_TYPE=SETTLEMENT_PERIOD]",
+    "AutomationFile": "src/tests/billing/priceComponentConditions.spec.ts",
+    "Line": 486,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "priceComponentConditions.spec",
+    "AllIds": "",
+    "AutomationName": "PCC-05 [POD_GRID_OP]",
+    "AutomationFile": "src/tests/billing/priceComponentConditions.spec.ts",
+    "Line": 546,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "priceComponentConditions.spec",
+    "AllIds": "",
+    "AutomationName": "PCC-06 [CONTRACT_TYPE=COMBINED]",
+    "AutomationFile": "src/tests/billing/priceComponentConditions.spec.ts",
+    "Line": 599,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "priceComponentConditions.spec",
+    "AllIds": "",
+    "AutomationName": "PCC-07 [CUSTOMER_TYPE=LEGAL_ENTITY]",
+    "AutomationFile": "src/tests/billing/priceComponentConditions.spec.ts",
+    "Line": 649,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "priceComponentConditions.spec",
+    "AllIds": "",
+    "AutomationName": "PCC-08 [CONTRACT_TYPE=COMBINED AND POD_VOLTAGE_LEVEL<>HIGH]",
+    "AutomationFile": "src/tests/billing/priceComponentConditions.spec.ts",
+    "Line": 699,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-965",
+    "AllIds": "REG-965",
+    "AutomationName": "[REG-965]: pod has no gaps",
+    "AutomationFile": "src/tests/billing/pulling/pulling.spec.ts",
+    "Line": 36,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-966",
+    "AllIds": "REG-966",
+    "AutomationName": "[REG-966]: customer, contract, pod level",
+    "AutomationFile": "src/tests/billing/pulling/pulling.spec.ts",
+    "Line": 45,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-967",
+    "AllIds": "REG-967",
+    "AutomationName": "[REG-967]: pod has gaps",
+    "AutomationFile": "src/tests/billing/pulling/pulling.spec.ts",
+    "Line": 54,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-968",
+    "AllIds": "REG-968",
+    "AutomationName": "[REG-968]: one pod has gap, second pod does not",
+    "AutomationFile": "src/tests/billing/pulling/pulling.spec.ts",
+    "Line": 63,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-969",
+    "AllIds": "REG-969",
+    "AutomationName": "[REG-969]: pods have different measurement type",
+    "AutomationFile": "src/tests/billing/pulling/pulling.spec.ts",
+    "Line": 72,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-970",
+    "AllIds": "REG-970",
+    "AutomationName": "[REG-970]: one chain fails another chain",
+    "AutomationFile": "src/tests/billing/pulling/pulling.spec.ts",
+    "Line": 81,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-971",
+    "AllIds": "REG-971",
+    "AutomationName": "[REG-971]: pod has no gap (scale flow)",
+    "AutomationFile": "src/tests/billing/pulling/pulling.spec.ts",
+    "Line": 90,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-972",
+    "AllIds": "REG-972",
+    "AutomationName": "[REG-972]: 3 contracts, 2 pulling chains",
+    "AutomationFile": "src/tests/billing/pulling/pulling.spec.ts",
+    "Line": 99,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1166",
+    "AllIds": "REG-1166",
+    "AutomationName": "[REG-1166]: Restriction for value valid between ranges",
+    "AutomationFile": "src/tests/billing/Restriction/restrictionForValeu.spec.ts",
+    "Line": 32,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1167",
+    "AllIds": "REG-1167",
+    "AutomationName": "[REG-1167]: Restriction for value more than ranges",
+    "AutomationFile": "src/tests/billing/Restriction/restrictionForValeu.spec.ts",
+    "Line": 45,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1171",
+    "AllIds": "REG-1171",
+    "AutomationName": "[REG-1171]: Restriction for value NOT valid less than ranges",
+    "AutomationFile": "src/tests/billing/Restriction/restrictionForValeu.spec.ts",
+    "Line": 57,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1009",
+    "AllIds": "REG-1009",
+    "AutomationName": "[REG-1009]: Restriction of volume with %",
+    "AutomationFile": "src/tests/billing/Restriction/restrictionForVolume.spec.ts",
+    "Line": 34,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1165",
+    "AllIds": "REG-1165",
+    "AutomationName": "[REG-1165]: Restriction of volume with kWh ranges less than ranges",
+    "AutomationFile": "src/tests/billing/Restriction/restrictionForVolume.spec.ts",
+    "Line": 47,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1168",
+    "AllIds": "REG-1168",
+    "AutomationName": "[REG-1168]: Restriction of volume with kWh ranges more than ranges",
+    "AutomationFile": "src/tests/billing/Restriction/restrictionForVolume.spec.ts",
+    "Line": 60,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1169",
+    "AllIds": "REG-1169",
+    "AutomationName": "[REG-1169]: Restriction of volume with kWh ranges between the ranges",
+    "AutomationFile": "src/tests/billing/Restriction/restrictionForVolume.spec.ts",
+    "Line": 73,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-706",
+    "AllIds": "REG-706",
+    "AutomationName": "[REG-706]: Reversal - Manual invoice reversal | happy pass",
+    "AutomationFile": "src/tests/billing/reversal/reversal.spec.ts",
+    "Line": 9,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-707",
+    "AllIds": "REG-707",
+    "AutomationName": "[REG-707]: Reversal - Standard invoice reversal",
+    "AutomationFile": "src/tests/billing/reversal/reversal.spec.ts",
+    "Line": 121,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-714",
+    "AllIds": "REG-714",
+    "AutomationName": "[REG-714]: Reversal - Standard invoice reversal with correction debit/credit notes",
+    "AutomationFile": "src/tests/billing/reversal/reversal.spec.ts",
+    "Line": 137,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-715",
+    "AllIds": "REG-715",
+    "AutomationName": "[REG-715]: deducted invoice reversal",
+    "AutomationFile": "src/tests/billing/reversal/reversal.spec.ts",
+    "Line": 147,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "reversal.spec",
+    "AllIds": "",
+    "AutomationName": "clean third part responses",
+    "AutomationFile": "src/tests/billing/reversal/reversal.spec.ts",
+    "Line": 157,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-55",
+    "AllIds": "REG-55",
+    "AutomationName": "[REG-55]: Billing ",
+    "AutomationFile": "src/tests/billing/RPS.spec.ts",
+    "Line": 5,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "TC-BE-1",
+    "AllIds": "TC-BE-1",
+    "AutomationName": "TC-BE-1",
+    "AutomationFile": "src/tests/billing/RPS.spec.ts",
+    "Line": 8,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "TC-BE-3",
+    "AllIds": "TC-BE-3",
+    "AutomationName": "TC-BE-3",
+    "AutomationFile": "src/tests/billing/RPS.spec.ts",
+    "Line": 98,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "TC-BE-5",
+    "AllIds": "TC-BE-5",
+    "AutomationName": "TC-BE-5",
+    "AutomationFile": "src/tests/billing/RPS.spec.ts",
+    "Line": 188,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "TC-BE-7",
+    "AllIds": "TC-BE-7",
+    "AutomationName": "TC-BE-7",
+    "AutomationFile": "src/tests/billing/RPS.spec.ts",
+    "Line": 280,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "TC-BE-12",
+    "AllIds": "TC-BE-12",
+    "AutomationName": "TC-BE-12 (over time periodical)",
+    "AutomationFile": "src/tests/billing/RPS.spec.ts",
+    "Line": 397,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "TC-BE-14",
+    "AllIds": "TC-BE-14",
+    "AutomationName": "TC-BE-14",
+    "AutomationFile": "src/tests/billing/RPS.spec.ts",
+    "Line": 462,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "TC-BE-25",
+    "AllIds": "TC-BE-25",
+    "AutomationName": "TC-BE-25",
+    "AutomationFile": "src/tests/billing/RPS.spec.ts",
+    "Line": 561,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "TC-BE-26",
+    "AllIds": "TC-BE-26",
+    "AutomationName": "TC-BE-26",
+    "AutomationFile": "src/tests/billing/RPS.spec.ts",
+    "Line": 679,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-106",
+    "AllIds": "REG-106",
+    "AutomationName": "[REG-106]: Billing run",
+    "AutomationFile": "src/tests/billing/RPSCondition.spec.ts",
+    "Line": 8,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "TC-BE-1",
+    "AllIds": "TC-BE-1",
+    "AutomationName": "TC-BE-1",
+    "AutomationFile": "src/tests/billing/RPSCondition.spec.ts",
+    "Line": 9,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "TC-BE-7",
+    "AllIds": "TC-BE-7",
+    "AutomationName": "TC-BE-7",
+    "AutomationFile": "src/tests/billing/RPSCondition.spec.ts",
+    "Line": 96,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "TC-BE-12",
+    "AllIds": "TC-BE-12",
+    "AutomationName": "TC-BE-12 (over time periodical)",
+    "AutomationFile": "src/tests/billing/RPSCondition.spec.ts",
+    "Line": 217,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "RPSCondition.spec",
+    "AllIds": "",
+    "AutomationName": "over time periodical (service contract)",
+    "AutomationFile": "src/tests/billing/RPSCondition.spec.ts",
+    "Line": 297,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-991",
+    "AllIds": "REG-991",
+    "AutomationName": "[REG-991]: with electricity POD level - happy pass",
+    "AutomationFile": "src/tests/billing/RPSCondition.spec.ts",
+    "Line": 353,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1020",
+    "AllIds": "REG-1020",
+    "AutomationName": "[REG-1020]: invoice slot splitting - split by price component",
+    "AutomationFile": "src/tests/billing/slotSplitting/invoiceSlotSplitting.spec.ts",
+    "Line": 31,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1021",
+    "AllIds": "REG-1021",
+    "AutomationName": "[REG-1021]: invoice slot splitting - split by billing group",
+    "AutomationFile": "src/tests/billing/slotSplitting/invoiceSlotSplitting.spec.ts",
+    "Line": 41,
+    "SourceBranch": "staging (working tree)"
+  },
+  {
+    "AutomationId": "REG-1022",
+    "AllIds": "REG-1022",
+    "AutomationName": "[REG-1022]: invoice slot splitting - split by seperate checkbox",
+    "AutomationFile": "src/tests/billing/slotSplitting/invoiceSlotSplitting.spec.ts",
+    "Line": 51,
+    "SourceBranch": "staging (working tree)"
+  }
+]

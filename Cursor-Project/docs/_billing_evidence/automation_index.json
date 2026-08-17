@@ -1,0 +1,926 @@
+﻿[
+    {
+        "AutomationId":  "REG-636",
+        "AllIds":  "REG-636",
+        "AutomationName":  "[REG-636]: Price change flow happy pass",
+        "AutomationFile":  "EnergoTS/tests/billing/correction/correctionCases.spec.ts",
+        "Line":  263
+    },
+    {
+        "AutomationId":  "REG-637",
+        "AllIds":  "REG-637",
+        "AutomationName":  "[REG-637]: Price change flow | add new price with existing slot",
+        "AutomationFile":  "EnergoTS/tests/billing/correction/correctionCases.spec.ts",
+        "Line":  280
+    },
+    {
+        "AutomationId":  "REG-703",
+        "AllIds":  "REG-703",
+        "AutomationName":  "[REG-703]: Volume change flow happy pass",
+        "AutomationFile":  "EnergoTS/tests/billing/correction/correctionCases.spec.ts",
+        "Line":  423
+    },
+    {
+        "AutomationId":  "REG-1051",
+        "AllIds":  "REG-1051",
+        "AutomationName":  "[REG-1051]: Discount - For volumes",
+        "AutomationFile":  "EnergoTS/tests/billing/discount/discount.spec.ts",
+        "Line":  8
+    },
+    {
+        "AutomationId":  "REG-991",
+        "AllIds":  "REG-991",
+        "AutomationName":  "[REG-991]: with electricity POD level - happy pass",
+        "AutomationFile":  "EnergoTS/tests/billing/electricity/withElectricity(Product).spec.ts",
+        "Line":  7
+    },
+    {
+        "AutomationId":  "REG-974",
+        "AllIds":  "REG-974",
+        "AutomationName":  "[REG-974]: For volumes - Combined flow (scale and profile does not match)",
+        "AutomationFile":  "EnergoTS/tests/billing/forVolumes/combined.spec.ts",
+        "Line":  8
+    },
+    {
+        "AutomationId":  "REG-718",
+        "AllIds":  "REG-718",
+        "AutomationName":  "[REG-718]: Interim deduction (from same period)",
+        "AutomationFile":  "EnergoTS/tests/billing/forVolumes/deduction.spec.ts",
+        "Line":  8
+    },
+    {
+        "AutomationId":  "REG-713",
+        "AllIds":  "REG-713",
+        "AutomationName":  "[REG-713]: For volumes - simple settlement | happy pass",
+        "AutomationFile":  "EnergoTS/tests/billing/forVolumes/forVolumes.spec.ts",
+        "Line":  941
+    },
+    {
+        "AutomationId":  "REG-873",
+        "AllIds":  "REG-873",
+        "AutomationName":  "[REG-873]: For volumes - Scale with scale code | Happy pass",
+        "AutomationFile":  "EnergoTS/tests/billing/forVolumes/forVolumes.spec.ts",
+        "Line":  950
+    },
+    {
+        "AutomationId":  "REG-963",
+        "AllIds":  "REG-963",
+        "AutomationName":  "[REG-963]: profile flow with vat base",
+        "AutomationFile":  "EnergoTS/tests/billing/forVolumes/forVolumes.spec.ts",
+        "Line":  958
+    },
+    {
+        "AutomationId":  "REG-962",
+        "AllIds":  "REG-962",
+        "AutomationName":  "[REG-962]: data by profile all types",
+        "AutomationFile":  "EnergoTS/tests/billing/forVolumes/forVolumes.spec.ts",
+        "Line":  966
+    },
+    {
+        "AutomationId":  "REG-992",
+        "AllIds":  "REG-992",
+        "AutomationName":  "[REG-992]: Scale with Tariff - splitting | Happy pass",
+        "AutomationFile":  "EnergoTS/tests/billing/forVolumes/forVolumes.spec.ts",
+        "Line":  974
+    },
+    {
+        "AutomationId":  "REG-1013",
+        "AllIds":  "REG-1013",
+        "AutomationName":  "[REG-1013]: scale with tariff - splitting | calculation for number of days",
+        "AutomationFile":  "EnergoTS/tests/billing/forVolumes/forVolumes.spec.ts",
+        "Line":  982
+    },
+    {
+        "AutomationId":  "REG-1029",
+        "AllIds":  "REG-1029",
+        "AutomationName":  "[REG-1029]: Price Profile flow",
+        "AutomationFile":  "EnergoTS/tests/billing/forVolumes/forVolumes.spec.ts",
+        "Line":  990
+    },
+    {
+        "AutomationId":  "REG-1037",
+        "AllIds":  "REG-1037",
+        "AutomationName":  "[REG-1037]: splitting when total amount of scale codes is zero and ",
+        "AutomationFile":  "EnergoTS/tests/billing/forVolumes/forVolumes.spec.ts",
+        "Line":  998
+    },
+    {
+        "AutomationId":  "REG-1008",
+        "AllIds":  "REG-1008",
+        "AutomationName":  "[REG-1008]: For volumes - Scale with scale code | Happy pass",
+        "AutomationFile":  "EnergoTS/tests/billing/forVolumes/SLP.spec.ts",
+        "Line":  299
+    },
+    {
+        "AutomationId":  "REG-1030",
+        "AllIds":  "REG-1030",
+        "AutomationName":  "[REG-1030]: SLP with price profile",
+        "AutomationFile":  "EnergoTS/tests/billing/forVolumes/SLP.spec.ts",
+        "Line":  321
+    },
+    {
+        "AutomationId":  "REG-1154",
+        "AllIds":  "REG-1154",
+        "AutomationName":  "[REG-1154]: Interim with From previous invoice but previous invoice found (product contract)",
+        "AutomationFile":  "EnergoTS/tests/billing/Interim/interimCases.spec.ts",
+        "Line":  12
+    },
+    {
+        "AutomationId":  "REG-1046",
+        "AllIds":  "REG-1046",
+        "AutomationName":  "[REG-1046]: From previous invoice - separate billing runs",
+        "AutomationFile":  "EnergoTS/tests/billing/Interim/interimCases.spec.ts",
+        "Line":  120
+    },
+    {
+        "AutomationId":  "REG-978",
+        "AllIds":  "REG-978",
+        "AutomationName":  "[REG-978]: Interim with From previous invoice but previous invoice missing (product contract)",
+        "AutomationFile":  "EnergoTS/tests/billing/Interim/interimCases.spec.ts",
+        "Line":  638
+    },
+    {
+        "AutomationId":  "REG-1047",
+        "AllIds":  "REG-1047",
+        "AutomationName":  "[REG-1047]: Interim with From previous invoice but previous invoice missing (service contract)",
+        "AutomationFile":  "EnergoTS/tests/billing/Interim/interimCases.spec.ts",
+        "Line":  649
+    },
+    {
+        "AutomationId":  "REG-716",
+        "AllIds":  "REG-716",
+        "AutomationName":  "[REG-716]: Interim invoice exact amount | happy pass",
+        "AutomationFile":  "EnergoTS/tests/billing/Interim/interimCases.spec.ts",
+        "Line":  660
+    },
+    {
+        "AutomationId":  "REG-975",
+        "AllIds":  "REG-975",
+        "AutomationName":  "[REG-975]: interim with price component | happy pass",
+        "AutomationFile":  "EnergoTS/tests/billing/Interim/interimCases.spec.ts",
+        "Line":  675
+    },
+    {
+        "AutomationId":  "REG-1068",
+        "AllIds":  "REG-1068",
+        "AutomationName":  "[REG-1068]: Invoice cancellation - Manual invoice(credit note type) -\u003e All reverse process on receivable side (all possible object links)",
+        "AutomationFile":  "EnergoTS/tests/billing/InvoiceCancelation/manualInvoiceCancellation.spec.ts",
+        "Line":  12
+    },
+    {
+        "AutomationId":  "REG-977",
+        "AllIds":  "REG-977",
+        "AutomationName":  "[REG-977]: Over time one time  - happy pass",
+        "AutomationFile":  "EnergoTS/tests/billing/overTimeOneTime/overTimeOneTime.spec.ts",
+        "Line":  7
+    },
+    {
+        "AutomationId":  "REG-960",
+        "AllIds":  "REG-960",
+        "AutomationName":  "[REG-960]: Periodical for Product Contract - happy pass",
+        "AutomationFile":  "EnergoTS/tests/billing/overTimePeriodical/overTimePeriodical.spec.ts",
+        "Line":  138
+    },
+    {
+        "AutomationId":  "REG-961",
+        "AllIds":  "REG-961",
+        "AutomationName":  "[REG-961]: Periodical for Service Contract - happy pass",
+        "AutomationFile":  "EnergoTS/tests/billing/overTimePeriodical/overTimePeriodical.spec.ts",
+        "Line":  146
+    },
+    {
+        "AutomationId":  "REG-973",
+        "AllIds":  "REG-973",
+        "AutomationName":  "[REG-973]: Per Piece - happy pass",
+        "AutomationFile":  "EnergoTS/tests/billing/perPiece/perPiece.spec.ts",
+        "Line":  7
+    },
+    {
+        "AutomationId":  "REG-965",
+        "AllIds":  "REG-965",
+        "AutomationName":  "[REG-965]: pod has no gaps",
+        "AutomationFile":  "EnergoTS/tests/billing/pulling/pulling.spec.ts",
+        "Line":  1164
+    },
+    {
+        "AutomationId":  "REG-966",
+        "AllIds":  "REG-966",
+        "AutomationName":  "[REG-966]: customer, contract, pod level",
+        "AutomationFile":  "EnergoTS/tests/billing/pulling/pulling.spec.ts",
+        "Line":  1174
+    },
+    {
+        "AutomationId":  "REG-967",
+        "AllIds":  "REG-967",
+        "AutomationName":  "[REG-967]: pod has gaps",
+        "AutomationFile":  "EnergoTS/tests/billing/pulling/pulling.spec.ts",
+        "Line":  1184
+    },
+    {
+        "AutomationId":  "REG-968",
+        "AllIds":  "REG-968",
+        "AutomationName":  "[REG-968]: one pod has gap, second pod does not",
+        "AutomationFile":  "EnergoTS/tests/billing/pulling/pulling.spec.ts",
+        "Line":  1194
+    },
+    {
+        "AutomationId":  "REG-969",
+        "AllIds":  "REG-969",
+        "AutomationName":  "[REG-969]: pods have different measurement type",
+        "AutomationFile":  "EnergoTS/tests/billing/pulling/pulling.spec.ts",
+        "Line":  1204
+    },
+    {
+        "AutomationId":  "REG-970",
+        "AllIds":  "REG-970",
+        "AutomationName":  "[REG-970]: one chain fails another chain",
+        "AutomationFile":  "EnergoTS/tests/billing/pulling/pulling.spec.ts",
+        "Line":  1214
+    },
+    {
+        "AutomationId":  "REG-971",
+        "AllIds":  "REG-971",
+        "AutomationName":  "[REG-971]: pod has no gap (scale flow)",
+        "AutomationFile":  "EnergoTS/tests/billing/pulling/pulling.spec.ts",
+        "Line":  1224
+    },
+    {
+        "AutomationId":  "REG-972",
+        "AllIds":  "REG-972",
+        "AutomationName":  "[REG-972]: 3 contracts, 2 pulling chains",
+        "AutomationFile":  "EnergoTS/tests/billing/pulling/pulling.spec.ts",
+        "Line":  1234
+    },
+    {
+        "AutomationId":  "REG-1009",
+        "AllIds":  "REG-1009",
+        "AutomationName":  "[REG-1009] Restriction of volume with %",
+        "AutomationFile":  "EnergoTS/tests/billing/Restriction/restrictionForVolume(Percenage).spec.ts",
+        "Line":  10
+    },
+    {
+        "AutomationId":  "REG-706",
+        "AllIds":  "REG-706",
+        "AutomationName":  "[REG-706]: Reversal - Manual invoice reversal | happy pass",
+        "AutomationFile":  "EnergoTS/tests/billing/reversal/reversal.spec.ts",
+        "Line":  8
+    },
+    {
+        "AutomationId":  "REG-707",
+        "AllIds":  "REG-707",
+        "AutomationName":  "[REG-707]: Reversal - Standard invoice reversal",
+        "AutomationFile":  "EnergoTS/tests/billing/reversal/reversal.spec.ts",
+        "Line":  350
+    },
+    {
+        "AutomationId":  "REG-714",
+        "AllIds":  "REG-714",
+        "AutomationName":  "[REG-714]: Reversal - Standard invoice reversal with correction debit/credit notes",
+        "AutomationFile":  "EnergoTS/tests/billing/reversal/reversal.spec.ts",
+        "Line":  415
+    },
+    {
+        "AutomationId":  "REG-715",
+        "AllIds":  "REG-715",
+        "AutomationName":  "[REG-715]: deducted invoice reversal",
+        "AutomationFile":  "EnergoTS/tests/billing/reversal/reversal.spec.ts",
+        "Line":  426
+    },
+    {
+        "AutomationId":  "REG-1020",
+        "AllIds":  "REG-1020",
+        "AutomationName":  "[REG-1020]: invoice slot splitting - split by price component",
+        "AutomationFile":  "EnergoTS/tests/billing/slotSplitting/invoiceSlotSplitting.spec.ts",
+        "Line":  339
+    },
+    {
+        "AutomationId":  "REG-1021",
+        "AllIds":  "REG-1021",
+        "AutomationName":  "[REG-1021]: invoice slot splitting - split by billing group",
+        "AutomationFile":  "EnergoTS/tests/billing/slotSplitting/invoiceSlotSplitting.spec.ts",
+        "Line":  350
+    },
+    {
+        "AutomationId":  "REG-1022",
+        "AllIds":  "REG-1022",
+        "AutomationName":  "[REG-1022]: invoice slot splitting - split by seperate checkbox",
+        "AutomationFile":  "EnergoTS/tests/billing/slotSplitting/invoiceSlotSplitting.spec.ts",
+        "Line":  361
+    },
+    {
+        "AutomationId":  "PDT-2376",
+        "AllIds":  "PDT-2376",
+        "AutomationName":  "[PDT-2376]: Invoices - The system generates a tax (With electricity invoice) for deactivated POD",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2376-volume-with-electricity-pod-deactivation.spec.ts",
+        "Line":  37
+    },
+    {
+        "AutomationId":  "REG-1172",
+        "AllIds":  "REG-1172",
+        "AutomationName":  "[${JIRA_KEY}]: ${JIRA_TITLE}",
+        "AutomationFile":  "EnergoTS/tests/cursor/REG-1172-volume-with-electricity-pod-deactivation.spec.ts",
+        "Line":  53
+    },
+    {
+        "AutomationId":  "PDT-2750",
+        "AllIds":  "PDT-2750,TC-BE-13",
+        "AutomationName":  "[PDT-2750]: TC-BE-13 (API chain) â€” two contracts, backend re-sign flags, terminate A, volume then interim on B",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2750-missing-interim-invoice.spec.ts",
+        "Line":  130
+    },
+    {
+        "AutomationId":  "PDT-2872",
+        "AllIds":  "PDT-2872,TC-BE-1",
+        "AutomationName":  "[PDT-2872] TC-BE-1: Standard interim â€” total incl. VAT 5.00 EUR creates invoice",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2872-minimal-interim-payment.spec.ts",
+        "Line":  42
+    },
+    {
+        "AutomationId":  "PDT-2872",
+        "AllIds":  "PDT-2872,TC-BE-2",
+        "AutomationName":  "[PDT-2872] TC-BE-2: Standard interim â€” scaled incl. VAT above 5.00 EUR creates invoice",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2872-minimal-interim-payment.spec.ts",
+        "Line":  89
+    },
+    {
+        "AutomationId":  "PDT-2872",
+        "AllIds":  "PDT-2872,TC-BE-3",
+        "AutomationName":  "[PDT-2872] TC-BE-3: Standard interim â€” total incl. VAT 4.99 EUR â€” no invoice",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2872-minimal-interim-payment.spec.ts",
+        "Line":  122
+    },
+    {
+        "AutomationId":  "PDT-2872",
+        "AllIds":  "PDT-2872,TC-BE-4",
+        "AutomationName":  "[PDT-2872] TC-BE-4: Standard interim â€” total incl. VAT 0.00 EUR â€” no invoice",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2872-minimal-interim-payment.spec.ts",
+        "Line":  148
+    },
+    {
+        "AutomationId":  "PDT-2872",
+        "AllIds":  "PDT-2872,TC-BE-5",
+        "AutomationName":  "[PDT-2872] TC-BE-5: Rounding â€” scaled total 5.00 EUR creates invoice",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2872-minimal-interim-payment.spec.ts",
+        "Line":  168
+    },
+    {
+        "AutomationId":  "PDT-2872",
+        "AllIds":  "PDT-2872,TC-BE-6",
+        "AutomationName":  "[PDT-2872] TC-BE-6: Rounding â€” scaled total 4.99 EUR â€” no invoice",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2872-minimal-interim-payment.spec.ts",
+        "Line":  206
+    },
+    {
+        "AutomationId":  "PDT-2872",
+        "AllIds":  "PDT-2872,TC-BE-7",
+        "AutomationName":  "[PDT-2872] TC-BE-7: Manual interim â€” total incl. VAT â‰¥ 5.00 EUR creates invoice",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2872-minimal-interim-payment.spec.ts",
+        "Line":  221
+    },
+    {
+        "AutomationId":  "PDT-2872",
+        "AllIds":  "PDT-2872,TC-BE-8",
+        "AutomationName":  "[PDT-2872] TC-BE-8: Manual interim â€” total incl. VAT 4.99 EUR â€” no invoice",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2872-minimal-interim-payment.spec.ts",
+        "Line":  247
+    },
+    {
+        "AutomationId":  "PDT-2872",
+        "AllIds":  "PDT-2872,TC-BE-9",
+        "AutomationName":  "[PDT-2872] TC-BE-9: PRICE_COMPONENT IAP â€” total incl. VAT â‰¥ 5.00 creates invoice",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2872-minimal-interim-payment.spec.ts",
+        "Line":  267
+    },
+    {
+        "AutomationId":  "PDT-2872",
+        "AllIds":  "PDT-2872,TC-BE-10",
+        "AutomationName":  "[PDT-2872] TC-BE-10: PRICE_COMPONENT IAP â€” total incl. VAT 4.99 â€” no invoice",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2872-minimal-interim-payment.spec.ts",
+        "Line":  291
+    },
+    {
+        "AutomationId":  "PDT-2872",
+        "AllIds":  "PDT-2872,TC-BE-11",
+        "AutomationName":  "[PDT-2872] TC-BE-11: PERCENT_FROM_PREVIOUS â€” derived total incl. VAT \u003c 5.00 â€” no invoice",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2872-minimal-interim-payment.spec.ts",
+        "Line":  306
+    },
+    {
+        "AutomationId":  "PDT-2872",
+        "AllIds":  "PDT-2872,TC-BE-15",
+        "AutomationName":  "[PDT-2872] TC-BE-15: PERCENT_FROM_PREVIOUS â€” derived total incl. VAT â‰¥ 5.00 â€” creates invoice",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2872-minimal-interim-payment.spec.ts",
+        "Line":  338
+    },
+    {
+        "AutomationId":  "PDT-2872",
+        "AllIds":  "PDT-2872,TC-BE-12",
+        "AutomationName":  "[PDT-2872] TC-BE-12: Two interim IAPs â€” positive amount (â‰¥ 5.00) invoices; below-threshold does not",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2872-minimal-interim-payment.spec.ts",
+        "Line":  394
+    },
+    {
+        "AutomationId":  "TC-BE-1",
+        "AllIds":  "TC-BE-1",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-1: Interim deduction â€” interim â†” volume host Connected invoices",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2891-connected-invoices.spec.ts",
+        "Line":  78
+    },
+    {
+        "AutomationId":  "TC-BE-2",
+        "AllIds":  "TC-BE-2",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-2: Multiple interims â€” each connected to single volume host",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2891-connected-invoices.spec.ts",
+        "Line":  114
+    },
+    {
+        "AutomationId":  "TC-BE-3",
+        "AllIds":  "TC-BE-3",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-3: Standard billing without interim deduction â€” no Connected invoices",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2891-connected-invoices.spec.ts",
+        "Line":  156
+    },
+    {
+        "AutomationId":  "TC-BE-4",
+        "AllIds":  "TC-BE-4",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-4: Manual interim at creation â€” Connected invoices empty",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2891-connected-invoices.spec.ts",
+        "Line":  181
+    },
+    {
+        "AutomationId":  "TC-BE-5",
+        "AllIds":  "TC-BE-5",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-5: Manual interim after standard deduction â€” interim â†” volume host",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2891-connected-invoices.spec.ts",
+        "Line":  215
+    },
+    {
+        "AutomationId":  "TC-BE-17",
+        "AllIds":  "TC-BE-17",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-17: Mixed manual + standard interim â€” both Connected to volume host",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2891-connected-invoices.spec.ts",
+        "Line":  248
+    },
+    {
+        "AutomationId":  "TC-BE-6",
+        "AllIds":  "TC-BE-6",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-6: Manual credit note â€” bidirectional Connected invoices (single parent)",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2891-connected-invoices.spec.ts",
+        "Line":  291
+    },
+    {
+        "AutomationId":  "TC-BE-7",
+        "AllIds":  "TC-BE-7",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-7: Manual debit note â€” multiple parent invoices on one C/D note",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2891-connected-invoices.spec.ts",
+        "Line":  318
+    },
+    {
+        "AutomationId":  "TC-BE-11",
+        "AllIds":  "TC-BE-11",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-11: Correction â€” reversal invoice Connected to original standard invoice",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2891-connected-invoices.spec.ts",
+        "Line":  354
+    },
+    {
+        "AutomationId":  "TC-BE-12",
+        "AllIds":  "TC-BE-12",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-12: Correction â€” new correction C/D Connected to original (not reversal)",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2891-connected-invoices.spec.ts",
+        "Line":  386
+    },
+    {
+        "AutomationId":  "TC-BE-13",
+        "AllIds":  "TC-BE-13",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-13: Correction after manual credit â€” old C/D Connected to original (not correction C/D)",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2891-connected-invoices.spec.ts",
+        "Line":  422
+    },
+    {
+        "AutomationId":  "TC-BE-14",
+        "AllIds":  "TC-BE-14",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-14: Invoice reversal â€” cancellation invoice Connected to original",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2891-connected-invoices.spec.ts",
+        "Line":  454
+    },
+    {
+        "AutomationId":  "TC-BE-15",
+        "AllIds":  "TC-BE-15",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-15: Invoice reversal after manual credit â€” prior links preserved on original",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2891-connected-invoices.spec.ts",
+        "Line":  485
+    },
+    {
+        "AutomationId":  "PDT-2891",
+        "AllIds":  "PDT-2891",
+        "AutomationName":  "[${PDT_3045_JIRA_KEY}] ${PDT_3045_JIRA_KEY}: Correction on deducted volume invoice â€” Connected invoices",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2891-connected-invoices.spec.ts",
+        "Line":  522
+    },
+    {
+        "AutomationId":  "PDT-2915",
+        "AllIds":  "PDT-2915",
+        "AutomationName":  "[PDT-2915]: Invoice correction - PODs without correction are included in the credit and debit note",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2915-invoice-correction-deleted-bbp.spec.ts",
+        "Line":  29
+    },
+    {
+        "AutomationId":  "PDT-2915",
+        "AllIds":  "PDT-2915",
+        "AutomationName":  "[PDT-2915]: DELETE invoiced billing-by-profile is blocked (API guard)",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2915-invoice-correction-deleted-bbp.spec.ts",
+        "Line":  96
+    },
+    {
+        "AutomationId":  "PDT-2937",
+        "AllIds":  "PDT-2937",
+        "AutomationName":  "[PDT-2937]: [Backend] Invoice third tab - Wrong price component names in detail data tab",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-2937-invoice-detailed-data-same-pc-name.spec.ts",
+        "Line":  28
+    },
+    {
+        "AutomationId":  "PDT-3072",
+        "AllIds":  "PDT-3072,TC-BE-1",
+        "AutomationName":  "[PDT-3072]: TC-BE-1 (AC1+AC2) â€“ Invoice correction - problem when we have price change (new version of the PC group)",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3072-invoice-correction-volume-change-scale-pc-group.spec.ts",
+        "Line":  51
+    },
+    {
+        "AutomationId":  "PDT-3087",
+        "AllIds":  "PDT-3087,TC-BE-1",
+        "AutomationName":  "[PDT-3087]: TC-BE-1 â€“ Draft generation does not link government compensations",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3087-government-compensation-defer-to-pdf.spec.ts",
+        "Line":  71
+    },
+    {
+        "AutomationId":  "PDT-3087",
+        "AllIds":  "PDT-3087,TC-BE-2",
+        "AutomationName":  "[PDT-3087]: TC-BE-2 â€“ Manual create of uninvoiced compensations after draft",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3087-government-compensation-defer-to-pdf.spec.ts",
+        "Line":  130
+    },
+    {
+        "AutomationId":  "PDT-3087",
+        "AllIds":  "PDT-3087,TC-BE-3",
+        "AutomationName":  "[PDT-3087]: TC-BE-3 â€“ Mass import GOVERNMENT_COMPENSATION after draft",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3087-government-compensation-defer-to-pdf.spec.ts",
+        "Line":  194
+    },
+    {
+        "AutomationId":  "PDT-3087",
+        "AllIds":  "PDT-3087,TC-BE-4",
+        "AutomationName":  "[PDT-3087]: TC-BE-4 â€“ PDF start links matching compensations and sets index 0",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3087-government-compensation-defer-to-pdf.spec.ts",
+        "Line":  294
+    },
+    {
+        "AutomationId":  "PDT-3087",
+        "AllIds":  "PDT-3087,TC-BE-5",
+        "AutomationName":  "[PDT-3087]: TC-BE-5 â€“ Pre-uploaded compensations stay unlinked at draft and link at PDF",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3087-government-compensation-defer-to-pdf.spec.ts",
+        "Line":  359
+    },
+    {
+        "AutomationId":  "PDT-3087",
+        "AllIds":  "PDT-3087,TC-BE-6",
+        "AutomationName":  "[PDT-3087]: TC-BE-6 â€“ PDF succeeds with empty compensation when no matching rows",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3087-government-compensation-defer-to-pdf.spec.ts",
+        "Line":  427
+    },
+    {
+        "AutomationId":  "PDT-3087",
+        "AllIds":  "PDT-3087,TC-BE-8",
+        "AutomationName":  "[PDT-3087]: TC-BE-8 â€“ Accounting marks compensations INVOICED with liability/receivable",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3087-government-compensation-defer-to-pdf.spec.ts",
+        "Line":  473
+    },
+    {
+        "AutomationId":  "PDT-3087",
+        "AllIds":  "PDT-3087,TC-BE-10",
+        "AutomationName":  "[PDT-3087]: TC-BE-10 â€“ Compensation for unrelated POD is not linked at PDF",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3087-government-compensation-defer-to-pdf.spec.ts",
+        "Line":  535
+    },
+    {
+        "AutomationId":  "PDT-3087",
+        "AllIds":  "PDT-3087,TC-BE-11",
+        "AutomationName":  "[PDT-3087]: TC-BE-11 â€“ Terminate before PDF keeps compensations UNINVOICED and reusable",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3087-government-compensation-defer-to-pdf.spec.ts",
+        "Line":  608
+    },
+    {
+        "AutomationId":  "PDT-3087",
+        "AllIds":  "PDT-3087,TC-BE-12",
+        "AutomationName":  "[PDT-3087]: TC-BE-12 â€“ Terminate after PDF link before accounting unlinks compensations",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3087-government-compensation-defer-to-pdf.spec.ts",
+        "Line":  668
+    },
+    {
+        "AutomationId":  "PDT-3087",
+        "AllIds":  "PDT-3087,TC-BE-15",
+        "AutomationName":  "[PDT-3087]: TC-BE-15 â€“ Non-FOR_VOLUMES standard billing does not link compensations at PDF",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3087-government-compensation-defer-to-pdf.spec.ts",
+        "Line":  742
+    },
+    {
+        "AutomationId":  "PDT-3087",
+        "AllIds":  "PDT-3087,TC-BE-7",
+        "AutomationName":  "[PDT-3087]: TC-BE-7 â€“ Multi-POD invoice applies compensations per POD",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3087-government-compensation-defer-to-pdf.spec.ts",
+        "Line":  819
+    },
+    {
+        "AutomationId":  "PDT-3087",
+        "AllIds":  "PDT-3087,TC-BE-16",
+        "AutomationName":  "[PDT-3087]: TC-BE-16 â€“ Accounting offset invoice liability priority",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3087-government-compensation-defer-to-pdf.spec.ts",
+        "Line":  906
+    },
+    {
+        "AutomationId":  "PDT-3087",
+        "AllIds":  "PDT-3087,TC-BE-17",
+        "AutomationName":  "[PDT-3087]: TC-BE-17 â€“ Multi-invoice terminate before PDF reuse",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3087-government-compensation-defer-to-pdf.spec.ts",
+        "Line":  1024
+    },
+    {
+        "AutomationId":  "PDT-3113",
+        "AllIds":  "PDT-3113",
+        "AutomationName":  "[${PDT_3113_JIRA_KEY}]: ${PDT_3113_JIRA_TITLE}",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3113-incorrect-interim-generation.spec.ts",
+        "Line":  51
+    },
+    {
+        "AutomationId":  "PDT-3127",
+        "AllIds":  "PDT-3127,TC-BE-1",
+        "AutomationName":  "[PDT-3127]: TC-BE-1 â€“ Correction draft generation does not link government compensations",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3127-government-compensation-defer-to-pdf-invoice-correction.spec.ts",
+        "Line":  71
+    },
+    {
+        "AutomationId":  "PDT-3127",
+        "AllIds":  "PDT-3127,TC-BE-2",
+        "AutomationName":  "[PDT-3127]: TC-BE-2 â€“ Upload compensation after correction draft without cancelling the run",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3127-government-compensation-defer-to-pdf-invoice-correction.spec.ts",
+        "Line":  138
+    },
+    {
+        "AutomationId":  "PDT-3127",
+        "AllIds":  "PDT-3127,TC-BE-3",
+        "AutomationName":  "[PDT-3127]: TC-BE-3 â€“ PDF start on correction links matching compensations with index 0",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3127-government-compensation-defer-to-pdf-invoice-correction.spec.ts",
+        "Line":  203
+    },
+    {
+        "AutomationId":  "PDT-3127",
+        "AllIds":  "PDT-3127,TC-BE-4",
+        "AutomationName":  "[PDT-3127]: TC-BE-4 â€“ Correction accounting first-time flow â€” INVOICED status, liability, receivable",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3127-government-compensation-defer-to-pdf-invoice-correction.spec.ts",
+        "Line":  267
+    },
+    {
+        "AutomationId":  "PDT-3127",
+        "AllIds":  "PDT-3127,TC-BE-5",
+        "AutomationName":  "[PDT-3127]: TC-BE-5 â€“ Energy credit/debit documents remain unchanged after compensation PDF apply",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3127-government-compensation-defer-to-pdf-invoice-correction.spec.ts",
+        "Line":  327
+    },
+    {
+        "AutomationId":  "PDT-3127",
+        "AllIds":  "PDT-3127,TC-BE-6",
+        "AutomationName":  "[PDT-3127]: TC-BE-6 â€“ Pre-uploaded compensations stay unlinked at correction draft and link at PDF",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3127-government-compensation-defer-to-pdf-invoice-correction.spec.ts",
+        "Line":  434
+    },
+    {
+        "AutomationId":  "PDT-3127",
+        "AllIds":  "PDT-3127,TC-BE-7",
+        "AutomationName":  "[PDT-3127]: TC-BE-7 â€“ Compensation links to forward correction invoice, not energy CREDIT_NOTE / DEBIT_NOTE",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3127-government-compensation-defer-to-pdf-invoice-correction.spec.ts",
+        "Line":  512
+    },
+    {
+        "AutomationId":  "PDT-3127",
+        "AllIds":  "PDT-3127,TC-BE-8",
+        "AutomationName":  "[PDT-3127]: TC-BE-8 â€“ PDF generation succeeds on correction with no matching uninvoiced compensations",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3127-government-compensation-defer-to-pdf-invoice-correction.spec.ts",
+        "Line":  604
+    },
+    {
+        "AutomationId":  "PDT-3127",
+        "AllIds":  "PDT-3127,TC-BE-9",
+        "AutomationName":  "[PDT-3127]: TC-BE-9 â€“ Terminate correction run before PDF keeps compensations UNINVOICED and reusable",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3127-government-compensation-defer-to-pdf-invoice-correction.spec.ts",
+        "Line":  649
+    },
+    {
+        "AutomationId":  "PDT-3127",
+        "AllIds":  "PDT-3127,TC-BE-10",
+        "AutomationName":  "[PDT-3127]: TC-BE-10 â€“ Terminate correction run after PDF link before accounting unlinks compensations",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3127-government-compensation-defer-to-pdf-invoice-correction.spec.ts",
+        "Line":  712
+    },
+    {
+        "AutomationId":  "PDT-3127",
+        "AllIds":  "PDT-3127,TC-BE-11",
+        "AutomationName":  "[PDT-3127]: TC-BE-11 â€“ Unrelated POD compensation is not linked to correction invoice at PDF",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3127-government-compensation-defer-to-pdf-invoice-correction.spec.ts",
+        "Line":  784
+    },
+    {
+        "AutomationId":  "PDT-3127",
+        "AllIds":  "PDT-3127,TC-BE-12",
+        "AutomationName":  "[PDT-3127]: TC-BE-12 â€“ Mass import GOVERNMENT_COMPENSATION after correction draft",
+        "AutomationFile":  "EnergoTS/tests/cursor/PDT-3127-government-compensation-defer-to-pdf-invoice-correction.spec.ts",
+        "Line":  854
+    },
+    {
+        "AutomationId":  "TC-BE-1",
+        "AllIds":  "TC-BE-1",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-1: Single RPS POD, ACCORDING_TO_THE_CONTRACT â€” due date rolls to next month (FOR_VOLUMES)",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  58
+    },
+    {
+        "AutomationId":  "TC-BE-2",
+        "AllIds":  "TC-BE-2",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-2: RPS day later in same month â€” no roll-forward",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  105
+    },
+    {
+        "AutomationId":  "TC-BE-3",
+        "AllIds":  "TC-BE-3",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-3: Calculated RPS due date on weekend â€” adjusted to nearest working day",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  152
+    },
+    {
+        "AutomationId":  "TC-BE-4",
+        "AllIds":  "TC-BE-4",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-4: Holiday on calculated RPS due date â€” adjusted to nearest working day",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  201
+    },
+    {
+        "AutomationId":  "TC-BE-5",
+        "AllIds":  "TC-BE-5",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-5: invoiceDueDateType=DATE â€” RPS ignored, billing run dueDate used",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  250
+    },
+    {
+        "AutomationId":  "TC-BE-6",
+        "AllIds":  "TC-BE-6",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-6: Non-RPS POD, ACCORDING_TO_THE_CONTRACT â€” contract term calc unchanged (regression)",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  300
+    },
+    {
+        "AutomationId":  "TC-BE-7",
+        "AllIds":  "TC-BE-7",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-7: Two RPS PODs, same RPS number, same invoice â€” no error, single due date",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  347
+    },
+    {
+        "AutomationId":  "TC-BE-8",
+        "AllIds":  "TC-BE-8",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-8: Two RPS PODs, different RPS, different billing groups â€” two invoices, each own due date",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  396
+    },
+    {
+        "AutomationId":  "TC-BE-9",
+        "AllIds":  "TC-BE-9",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-9: Two RPS PODs, different RPS, same billing group, separate invoice per POD â€” two invoices, no error",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  450
+    },
+    {
+        "AutomationId":  "TC-BE-10",
+        "AllIds":  "TC-BE-10",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-10: One RPS POD + one non-RPS POD, same invoice â€” RPS nomenclature wins",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  504
+    },
+    {
+        "AutomationId":  "TC-BE-11",
+        "AllIds":  "TC-BE-11",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-11: One RPS POD + one non-RPS POD, different billing groups â€” each invoice independent",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  554
+    },
+    {
+        "AutomationId":  "TC-BE-12",
+        "AllIds":  "TC-BE-12",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-12: RPS due date in OVER_TIME_PERIODICAL flow",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  606
+    },
+    {
+        "AutomationId":  "TC-BE-13",
+        "AllIds":  "TC-BE-13",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-13: RPS due date in OVER_TIME_ONE_TIME flow",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  653
+    },
+    {
+        "AutomationId":  "TC-BE-14",
+        "AllIds":  "TC-BE-14",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-14: RPS due date in WITH_ELECTRICITY_INVOICE flow",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  700
+    },
+    {
+        "AutomationId":  "TC-BE-15",
+        "AllIds":  "TC-BE-15",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-15: RPS due date in INTERIM_AND_ADVANCE_PAYMENT flow",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  747
+    },
+    {
+        "AutomationId":  "TC-BE-16",
+        "AllIds":  "TC-BE-16",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-16: RPS due date in manual invoice flow",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  795
+    },
+    {
+        "AutomationId":  "TC-BE-17",
+        "AllIds":  "TC-BE-17",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-17: RPS due date in manual debit note flow",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  860
+    },
+    {
+        "AutomationId":  "TC-BE-18",
+        "AllIds":  "TC-BE-18",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-18: Manual credit note for RPS POD â€” paymentDeadline=null (credit notes always null)",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  939
+    },
+    {
+        "AutomationId":  "TC-BE-19",
+        "AllIds":  "TC-BE-19",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-19: RPS due date carried into invoice correction",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  1021
+    },
+    {
+        "AutomationId":  "TC-BE-20",
+        "AllIds":  "TC-BE-20",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-20: RPS due date in manual interim and advance payment flow",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  1078
+    },
+    {
+        "AutomationId":  "TC-BE-21",
+        "AllIds":  "TC-BE-21",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-21: RPS adjustment uses DEFAULT calendar, not contract-term calendar",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  1154
+    },
+    {
+        "AutomationId":  "TC-BE-22",
+        "AllIds":  "TC-BE-22",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-22: dayOfMonth=31, April (30 days) â€” clamp to last day of month (Finding F3 â€” may crash)",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  1209
+    },
+    {
+        "AutomationId":  "TC-BE-23",
+        "AllIds":  "TC-BE-23",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-23: No default calendar + RPS POD â€” start-billing returns HTTP 400",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  1270
+    },
+    {
+        "AutomationId":  "TC-BE-24",
+        "AllIds":  "TC-BE-24",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-24: No default calendar + non-RPS POD â€” run starts normally (control)",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  1338
+    },
+    {
+        "AutomationId":  "TC-BE-25",
+        "AllIds":  "TC-BE-25",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-25: Two RPS PODs with different RPS numbers on same invoice â€” per-invoice error",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  1383
+    },
+    {
+        "AutomationId":  "TC-BE-26",
+        "AllIds":  "TC-BE-26",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-26: Two different RPS numbers with same dayOfMonth on same invoice â€” still errors (identity check)",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  1459
+    },
+    {
+        "AutomationId":  "TC-BE-27",
+        "AllIds":  "TC-BE-27",
+        "AutomationName":  "[${JIRA_KEY}] TC-BE-27: Per-invoice error isolation â€” conflict invoice errors while other invoice succeeds",
+        "AutomationFile":  "EnergoTS/tests/cursor/RPS-POD-invoice-due-date.spec.ts",
+        "Line":  1529
+    }
+]

@@ -1,0 +1,63 @@
+Summary: EasyPay Payments - Liabilities/Receivables accounting period rules
+Status: Testing
+Environment: None
+Assignee: Ketevan Bardakovi
+
+==== description ====
+(empty)
+
+==== customfield_10103 ====
+Reproduce Steps:
+For Liabilities (from LPF) and Receivables generated from EasyPay payments, the system should follow the same accounting period rules as for all other payments.
+If the payment date falls within a previous accounting period and that period is still open, the Liability/Receivable should be created in that accounting period. If the accounting period is closed, the Liability/Receivable should be created in the next currently open accounting period.
+Actual Result:
+Expected Result:
+_________________
+Endpoint:Method:Status:Payload:Response:
+
+GE Description: 
+CHANGE TITLE
+
+Assign Accounting period on Customer Payment, Customer Receivable, and LPF Customer Liability using the occurrence-/payment-date period when that period is open; otherwise use the current accounting period
+BUSINESS CONTEXT
+
+During EasyPay / online payment confirm, Phoenix can create a Customer Payment, a Customer Receivable (when amount remains / overpayment cases), and — when a late fine applies — a Late Payment Fine that generates a new Customer Liability (LPF liability). Each of these three objects stores Accounting period.
+REQUESTED CHANGE (TO-BE)
+
+When EasyPay / online payment creates any in-scope object, the system must:
+Determine the driving date for that object.
+
+Identify the accounting period respective for that date.
+
+If that period is open at creation → assign that period.
+
+If that period is closed (or does not exist) → assign the current accounting period.
+
+SCOPE
+
+In scope:
+Customer Payment created by EasyPay / online payment
+
+Customer Receivable created by EasyPay / online payment
+
+Customer Liability created from Late Payment Fine during EasyPay / online payment (LPF liability)
+
+In-scope objects and driving dates
+Customer Payment → Payment date
+
+Customer Receivable → Occurrence date (online: first / check request date)
+
+Customer Liability from LPF → Occurrence date (online: check request date)
+
+==== customfield_10217 ====
+Link:A.R.(არსებული სიტუაცია):E.R.( სასურველი შედეგი):
+
+==== customfield_10048 ====
+(empty)
+
+==== comments ====
+--- Kalina.Koleva 2026-08-06T11:24:51.451+0400
+oppa-support.atlassian.net/browse/PDT-3214
+
+--- Slack 2026-08-06T11:24:52.865+0400
+Kalina.Koleva synced this conversation thread with the Slack thread . Replies in synced threads will automatically update across both Slack and Jira.
