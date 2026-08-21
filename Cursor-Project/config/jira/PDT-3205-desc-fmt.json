@@ -1,0 +1,146 @@
+﻿{
+    "type":  "doc",
+    "version":  1,
+    "content":  [
+                    {
+                        "type":  "paragraph",
+                        "content":  [
+                                        {
+                                            "type":  "text",
+                                            "text":  "In the system should be create a new online payment method called \"Virtual POS\"."
+                                        }
+                                    ],
+                        "attrs":  {
+                                      "localId":  "87039614dbe7"
+                                  }
+                    },
+                    {
+                        "type":  "paragraph",
+                        "content":  [
+                                        {
+                                            "type":  "text",
+                                            "text":  "To do this, all EasyPay endpoints should be copied (with the exact same logic as it works now) and a Virtual POS should be created based on this copy."
+                                        }
+                                    ],
+                        "attrs":  {
+                                      "localId":  "b89955a16471"
+                                  }
+                    },
+                    {
+                        "type":  "paragraph",
+                        "content":  [
+                                        {
+                                            "type":  "text",
+                                            "text":  "Exception: Payments received through Virtual POS should be linked to the Virtual POS collection channel (not to EasyPay collection channel)."
+                                        },
+                                        {
+                                            "type":  "hardBreak"
+                                        },
+                                        {
+                                            "type":  "hardBreak"
+                                        },
+                                        {
+                                            "type":  "hardBreak"
+                                        },
+                                        {
+                                            "type":  "text",
+                                            "text":  "Reproduce Steps:",
+                                            "marks":  [
+                                                          {
+                                                              "type":  "strong"
+                                                          }
+                                                      ]
+                                        }
+                                    ],
+                        "attrs":  {
+                                      "localId":  "1f0d9ebd69ac"
+                                  }
+                    },
+                    {
+                        "type":  "paragraph",
+                        "content":  [
+                                        {
+                                            "type":  "text",
+                                            "text":  "Actual Result:",
+                                            "marks":  [
+                                                          {
+                                                              "type":  "strong"
+                                                          }
+                                                      ]
+                                        }
+                                    ],
+                        "attrs":  {
+                                      "localId":  "35c087039e83"
+                                  }
+                    },
+                    {
+                        "type":  "paragraph",
+                        "content":  [
+                                        {
+                                            "type":  "text",
+                                            "text":  "Expected Result:",
+                                            "marks":  [
+                                                          {
+                                                              "type":  "strong"
+                                                          }
+                                                      ]
+                                        }
+                                    ],
+                        "attrs":  {
+                                      "localId":  "b036525f6a33"
+                                  }
+                    },
+                    {
+                        "type":  "paragraph",
+                        "content":  [
+                                        {
+                                            "type":  "text",
+                                            "text":  "_________________"
+                                        }
+                                    ],
+                        "attrs":  {
+                                      "localId":  "d824842e8295"
+                                  }
+                    },
+                    {
+                        "type":  "paragraph",
+                        "content":  [
+                                        {
+                                            "type":  "text",
+                                            "text":  "Endpoint:"
+                                        },
+                                        {
+                                            "type":  "hardBreak"
+                                        },
+                                        {
+                                            "type":  "text",
+                                            "text":  "Method:"
+                                        },
+                                        {
+                                            "type":  "hardBreak"
+                                        },
+                                        {
+                                            "type":  "text",
+                                            "text":  "Status:"
+                                        },
+                                        {
+                                            "type":  "hardBreak"
+                                        },
+                                        {
+                                            "type":  "text",
+                                            "text":  "Payload:"
+                                        },
+                                        {
+                                            "type":  "hardBreak"
+                                        },
+                                        {
+                                            "type":  "text",
+                                            "text":  "Response:"
+                                        }
+                                    ],
+                        "attrs":  {
+                                      "localId":  "da7557887a11"
+                                  }
+                    }
+                ]
+}

@@ -1,0 +1,90 @@
+﻿{
+    "expand":  "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
+    "id":  "78991",
+    "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/78991",
+    "key":  "PDT-3215",
+    "fields":  {
+                   "summary":  "Change Time for Accounting Period Dates and more",
+                   "issuetype":  {
+                                     "self":  "https://oppa-support.atlassian.net/rest/api/3/issuetype/10143",
+                                     "id":  "10143",
+                                     "description":  "",
+                                     "iconUrl":  "https://oppa-support.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10322?size=medium",
+                                     "name":  "Customer Feedback ",
+                                     "subtask":  false,
+                                     "avatarId":  10322,
+                                     "hierarchyLevel":  0
+                                 },
+                   "environment":  null,
+                   "project":  {
+                                   "self":  "https://oppa-support.atlassian.net/rest/api/3/project/10075",
+                                   "id":  "10075",
+                                   "key":  "PDT",
+                                   "name":  "Phoenix Delivery",
+                                   "projectTypeKey":  "software",
+                                   "simplified":  false,
+                                   "avatarUrls":  {
+                                                      "48x48":  "https://oppa-support.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10579",
+                                                      "24x24":  "https://oppa-support.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10579?size=small",
+                                                      "16x16":  "https://oppa-support.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10579?size=xsmall",
+                                                      "32x32":  "https://oppa-support.atlassian.net/rest/api/3/universal_avatar/view/type/project/avatar/10579?size=medium"
+                                                  }
+                               },
+                   "issuelinks":  [
+
+                                  ],
+                   "reporter":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ac4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                    "accountId":  "712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825",
+                                    "avatarUrls":  {
+                                                       "48x48":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/48",
+                                                       "24x24":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/24",
+                                                       "16x16":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/16",
+                                                       "32x32":  "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:c4734d94-7f53-4e3d-97a6-a38f9b0fa825/12233224-e2d0-4d36-930b-b01b532c9571/32"
+                                                   },
+                                    "displayName":  "Ani Giorganashvili",
+                                    "active":  true,
+                                    "timeZone":  "Asia/Dubai",
+                                    "accountType":  "atlassian"
+                                },
+                   "assignee":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=63875c10f48fbd9b62d82bbd",
+                                    "accountId":  "63875c10f48fbd9b62d82bbd",
+                                    "avatarUrls":  {
+                                                       "48x48":  "https://secure.gravatar.com/avatar/485dfad1c8c2a6882933ece63f84b985?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FKB-2.png",
+                                                       "24x24":  "https://secure.gravatar.com/avatar/485dfad1c8c2a6882933ece63f84b985?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FKB-2.png",
+                                                       "16x16":  "https://secure.gravatar.com/avatar/485dfad1c8c2a6882933ece63f84b985?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FKB-2.png",
+                                                       "32x32":  "https://secure.gravatar.com/avatar/485dfad1c8c2a6882933ece63f84b985?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FKB-2.png"
+                                                   },
+                                    "displayName":  "Ketevan Bardakovi",
+                                    "active":  true,
+                                    "timeZone":  "Asia/Dubai",
+                                    "accountType":  "atlassian"
+                                },
+                   "fixVersions":  [
+                                       {
+                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/version/15296",
+                                           "id":  "15296",
+                                           "description":  "",
+                                           "name":  "Hotfix 19.08",
+                                           "archived":  false,
+                                           "released":  false,
+                                           "releaseDate":  "2026-08-19"
+                                       }
+                                   ],
+                   "status":  {
+                                  "self":  "https://oppa-support.atlassian.net/rest/api/3/status/10192",
+                                  "description":  "This status is managed internally by Jira Software",
+                                  "iconUrl":  "https://oppa-support.atlassian.net/",
+                                  "name":  "Testing",
+                                  "id":  "10192",
+                                  "statusCategory":  {
+                                                         "self":  "https://oppa-support.atlassian.net/rest/api/3/statuscategory/4",
+                                                         "id":  4,
+                                                         "key":  "indeterminate",
+                                                         "colorName":  "yellow",
+                                                         "name":  "In Progress"
+                                                     }
+                              }
+               }
+}
