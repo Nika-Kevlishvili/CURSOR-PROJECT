@@ -27,8 +27,10 @@ NODE_TYPES = {
 EDGE_TYPES_INTRA = {
     "phoenix_domain": [
         ("Domain", "CONTAINS", "Entity"),
+        ("Entity", "BELONGS_TO", "Entity"),
         ("Domain", "HAS_PROCESS", "BusinessProcess"),
         ("BusinessProcess", "VALIDATES_WITH", "Validation"),
+        ("Validation", "DOCUMENTED_IN", "BusinessProcess"),
         ("BusinessProcess", "USES_SERVICE", "Service"),
         ("Service", "TRIGGERS", "Scheduler"),
     ],
@@ -70,15 +72,15 @@ COMMON_PROPERTIES = {
 }
 
 SETUP_CYPHER = [
-    "CREATE CONSTRAINT node_unique_id IF NOT EXISTS FOR (n:GraphNode) REQUIRE n.uid IS UNIQUE",
-    "CREATE INDEX node_zone_idx IF NOT EXISTS FOR (n:GraphNode) ON (n.zone)",
-    "CREATE INDEX node_name_idx IF NOT EXISTS FOR (n:GraphNode) ON (n.name)",
-    "CREATE INDEX node_type_idx IF NOT EXISTS FOR (n:GraphNode) ON (n.node_type)",
+    "CREATE CONSTRAINT graphidx_uid IF NOT EXISTS FOR (n:GraphIdx) REQUIRE n.uid IS UNIQUE",
+    "CREATE INDEX graphidx_zone_idx IF NOT EXISTS FOR (n:GraphIdx) ON (n.zone)",
+    "CREATE INDEX graphidx_name_idx IF NOT EXISTS FOR (n:GraphIdx) ON (n.name)",
+    "CREATE INDEX graphidx_type_idx IF NOT EXISTS FOR (n:GraphIdx) ON (n.node_type)",
 ]
 
 VECTOR_INDEX_CYPHER = (
-    "CREATE VECTOR INDEX node_embeddings IF NOT EXISTS "
-    "FOR (n:GraphNode) ON (n.embedding) "
+    "CREATE VECTOR INDEX node_embeddings_graphidx IF NOT EXISTS "
+    "FOR (n:GraphIdx) ON (n.embedding) "
     "OPTIONS {indexConfig: {"
     " `vector.dimensions`: 384,"
     " `vector.similarity_function`: 'cosine'"

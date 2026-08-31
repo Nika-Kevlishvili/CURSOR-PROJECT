@@ -15,19 +15,31 @@ WORKSPACE_ROOT = os.environ.get(
 )
 
 
+def _topic_key(topic: str) -> str:
+    return (topic or "").strip().lower().replace("_", "-").replace(" ", "-")
+
+
 def graph_index_topic(topic: str, zones: list[str] | None = None) -> dict:
     """
-    Run full ingest pipeline for a specific topic.
-    If zones are specified, only ingest those zones.
-    Otherwise, ingest all available zones.
-
-    Args:
-        topic: Topic name (e.g., "billing run", "invoice cancellation")
-        zones: Optional list of zones to target
-
-    Returns dict with ingest summary
+    Index a topic. Known scoped topics (zip-codes) use a dedicated ingest.
+    Otherwise ingest API only — do not dump every test-case markdown unless
+    `zones` explicitly includes `test_cases`.
     """
-    target_zones = zones or ["api_and_repo_layout", "test_cases"]
+    key = _topic_key(topic)
+    if "zip-code" in key or key in ("zip", "zipcodes", "zip-codes"):
+        from ...ingest.ingest_zip_codes import main as ingest_zip
+
+        ingest_zip()
+        return {
+            "topic": topic,
+            "zones_ingested": ["phoenix_domain", "api_and_repo_layout"],
+            "nodes_created": None,
+            "edges_created": None,
+            "errors": [],
+            "note": "Scoped zip-codes ingest. Test-case and Playwright layers omitted (no sources).",
+        }
+
+    target_zones = zones or ["api_and_repo_layout"]
 
     summary = run_ingest(
         workspace_root=WORKSPACE_ROOT,
@@ -41,4 +53,8 @@ def graph_index_topic(topic: str, zones: list[str] | None = None) -> dict:
         "nodes_created": summary.get("nodes_created", 0),
         "edges_created": summary.get("edges_created", 0),
         "errors": summary.get("errors", []),
+        "note": (
+            "Topic string is not a scoped filter except zip-codes. "
+            "Full Swagger ingest ran for the requested zones."
+        ),
     }

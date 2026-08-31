@@ -1,0 +1,93 @@
+---
+description: Graph RAG fill/ingest — 4-layer graph shape, what to index, what not to dump
+globs:
+  - "Cursor-Project/graph-rag/**"
+alwaysApply: true
+---
+
+# GRAPH RAG FILL [SHOULD]
+
+## Rule GRAPH.1: How the knowledge graph is filled
+
+**Intent:** The graph maps Phoenix work from **whatever sources exist**. Up to four layers are allowed (domain → API → test cases → Playwright). **Missing sources mean missing nodes** — do not invent placeholders. Test cases and Playwright MAY be added later. Fill with **parsers + embeddings**, not by asking the local chat LLM to invent nodes.
+
+**Canonical playbook (procedure, examples, Cypher):** `Cursor-Project/graph-rag/INGEST.md`  
+**Query-time agent use:** Rule GRAPH.0 in `graph_rag_integration.mdc` (does not define fill).
+
+Violation of this shape (dumping the whole wiki, four Swagger envs, or LLM-invented ontology as the primary fill) is a **SHOULD** — do not treat as a BLOCK. A sparse topic graph (domain + API only) is valid.
+
+---
+
+## 1. Graph shape (optional layers)
+
+```
+phoenix_domain              business meaning (wiki + domain facts)
+        | HAS_ENDPOINT
+api_and_repo_layout         HTTP API (Swagger: Endpoint, DTO, Enum)
+        | COVERS                 (only if test-case nodes exist)
+test_cases                  markdown test cases (steps, expected)
+        | IMPLEMENTS             (only if Playwright nodes exist)
+playwright_automation       EnergoTS specs / fixtures / writing rules
+```
+
+A topic MAY have only domain + API. That is a **valid sparse graph**, not a defect. Add `COVERS` / `IMPLEMENTS` only when those nodes exist. Do not create empty-layer markers.
+
+`n.zone` on nodes MUST be one of the four labels above — not the nine business-domain names (`contracts`, `billing`, `reference_data`, …). Optional property `domain` (e.g. `zip-codes`) MAY tag the business area for filtering.
+
+---
+
+## 2. What goes in each layer
+
+| Layer (`zone`) | Source | Node types |
+|----------------|--------|------------|
+| `phoenix_domain` | Confluence (scoped pages), not the whole wiki; optional domain notes from verified chat | Domain, BusinessProcess, Entity, Validation, Scheduler, Service |
+| `api_and_repo_layout` | **One** Swagger env (default: `config/swagger/dev/swagger-spec.json`) | Endpoint, DTO, EnumType (Module/Repository later) |
+| `test_cases` | `test_cases/Backend` and `Frontend` markdown that matches the TC parser | TestCase, TestStep, Precondition, ExpectedResult |
+| `playwright_automation` | `EnergoTS/tests` specs/fixtures + playwright instruction pack | Spec, Fixture, WritingRule, Pattern, Helper |
+
+---
+
+## 3. How to fill (order)
+
+1. **Parsers first** — OpenAPI / markdown / (later) spec files. Do **not** use Qwen/Ollama to extract the primary graph from unstructured dumps.
+2. **Embeddings** — MiniLM (`all-MiniLM-L6-v2`, 384-d) on node name+description. Local chat LLM is **not** the indexer.
+3. **Bridges** — After nodes exist, create the edges that still have both ends: Domain `HAS_ENDPOINT` Endpoint; TestCase `COVERS` Endpoint; Spec `IMPLEMENTS` TestCase. Skip a bridge if either side is absent.
+4. **Scope** — Prefer one topic (e.g. zip-codes) until that topic’s **available** layers are correct; then widen. Do not delay a topic because test cases or Playwright are missing.
+5. **Refresh** — Re-run ingest after Swagger/TC/spec change **when the user agrees** (GRAPH.0 Ask before fill). Upsert by `uid`; use `source_hash` / staleness. Do not duplicate four env specs as four copies of the same API.
+6. **`graph_update` / `graph_index_topic`** — Only after the user accepts a concrete proposal (what / from what / what would be written) and facts are verified against live code/Confluence/Swagger (Rule QA.0). Chat nodes are enrichment, not the spine. Never ingest because the graph is empty or stale without asking.
+
+---
+
+## 4. Do not put in the graph
+
+- Entire Confluence space or entire Phoenix Java tree as raw chunks
+- Swagger from every environment at once (dev + test + preprod + prod copies)
+- Unverified chat, secrets, credentials, `.env`
+- GPU/shader caches, Docker logs, or other machine junk
+
+---
+
+## 5. Local LLM vs fill
+
+| Piece | Role in **fill** |
+|-------|------------------|
+| MiniLM | Embeddings for search |
+| Qwen (Ollama) | **Not** primary extract. Query synthesis and optional `graph_update` JSON only |
+| Cursor (this chat) | Final expert; live evidence still required (GRAPH.0 + QA.0) |
+
+---
+
+## 6. Honest implementation gap
+
+As of GRAPH.1: schema **allows** four layers (`ingest/schema.py`). **Generic Confluence and Playwright extractors are missing**; `pipeline.py` does not create `COVERS` / `IMPLEMENTS`. Zip-codes scoped ingest (`ingest_zip_codes.py`) writes domain + API, `HAS_ENDPOINT`, and hand-built Confluence URL nodes (page IDs 197112, 845119490, 845283330). Absent test-case/Playwright extractors are not a reason to invent nodes.
+
+**Visualization:** Neo4j Browser `http://localhost:7474` (not Docker Desktop). Colors + captions: `config/layer_display.yaml` and `config/neo4j-browser.grass`. Procedure: `INGEST.md` (Visualization).
+
+---
+
+## 7. Display (titles, descriptions, colors)
+
+- Every node SHOULD have a **human `title`** (what you read on the bubble) and a **human `description`** (what it is). Keep technical `name` for lookup (`GET /zip-codes/{id}`, `ZipCodeRequest`).
+- **Color = GRAPH.1 layer**, not the nine business-domain names. Labels: `BlueBusiness` (blue `#0047FF`), `YellowAPI` (yellow `#FFD000`), `RedTests` (red `#FF0000`), `GreenPlaywright` (green `#00C853`). Neo4j Browser ignores `n.color` until GraSS (`config/neo4j-browser.grass`) is applied.
+- Optional `domain` (e.g. `zip-codes`) is a filter tag, not a fifth color.
+- Unknown `zone` values are mapped to the API layer for display (`core/display.py`).

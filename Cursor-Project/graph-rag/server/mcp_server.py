@@ -13,10 +13,14 @@ Environment variables:
     NEO4J_URI           - Neo4j bolt URI (default: bolt://localhost:7687)
     NEO4J_USER          - Neo4j username (default: neo4j)
     NEO4J_PASSWORD      - Neo4j password (default: graphrag)
-    LLM_BASE_URL        - LM Studio API URL (default: http://localhost:1234/v1)
+    NEO4J_BROWSER_URL   - Neo4j Browser URL shown in graph_status
+    LLM_BASE_URL        - OpenAI-compatible API URL (LM Studio or Ollama)
     LLM_MODEL           - Chat model name
-    LLM_EMBED_MODEL     - Embedding model name
+    LLM_EMBED_MODEL     - Embedding model name (documented; embeddings use MiniLM in-process)
     GRAPH_RAG_WORKSPACE - Workspace root path
+    MCP_TRANSPORT       - stdio (default) | sse | streamable-http
+    MCP_HOST            - Bind host for sse/streamable-http (default: 127.0.0.1)
+    MCP_PORT            - Bind port for sse/streamable-http (default: 8100)
 """
 
 import os
@@ -41,7 +45,10 @@ except Exception as e:
 
 from mcp.server.fastmcp import FastMCP
 
-mcp = FastMCP("GraphRAG")
+_mcp_host = os.environ.get("MCP_HOST", "127.0.0.1")
+_mcp_port = int(os.environ.get("MCP_PORT", "8100"))
+
+mcp = FastMCP("GraphRAG", host=_mcp_host, port=_mcp_port)
 
 
 def _get_graph():
@@ -56,23 +63,22 @@ def _get_llm():
 
 @mcp.tool()
 def graph_query(question: str, zone: str = "", top_k: int = 10,
-                use_llm_synthesis: bool = True) -> str:
+                use_llm_synthesis: bool = False) -> str:
     """
-    Ask a question and get a graph-enriched answer.
+    Return source_path pointers (files and Confluence URLs) for a Phoenix question.
 
-    The system routes the question to relevant zone(s), searches the knowledge
-    graph using vector + keyword search, checks staleness, follows cross-zone
-    bridges, and synthesizes an answer using the local LLM.
+    Default: no local-LLM essay. Agents must open the listed sources and answer
+    from live code / wiki. Set use_llm_synthesis true only for a short digest.
 
     Args:
         question: The question to answer
-        zone: Optional specific zone (contracts, billing, invoicing, payments, customers, products, service_operations, communications, reference_data)
+        zone: Optional GRAPH.1 layer (phoenix_domain, api_and_repo_layout, test_cases, playwright_automation). Legacy business names are mapped to domain + API.
         top_k: Number of results to retrieve per zone (default 10)
-        use_llm_synthesis: Whether to use LLM to synthesize answer (default True)
+        use_llm_synthesis: If true, Qwen summarizes the pointer list (not evidence)
     """
     from core.graph_client import GraphClient
     from core.llm_client import LLMClient
-    from core.zone_router import route_question
+    from core.graph_search import retrieve
     from core.bridge_resolver import resolve_bridges, format_context
     from core.staleness import filter_stale_nodes
 
@@ -81,33 +87,14 @@ def graph_query(question: str, zone: str = "", top_k: int = 10,
     workspace = os.environ.get("GRAPH_RAG_WORKSPACE", _workspace_root)
 
     try:
-        target_zones = [zone] if zone else route_question(question, llm_client=llm)
-
-        question_embedding = llm.embed(question)
-        all_nodes = []
-
-        def _search_zones(zones, emb, q, k):
-            nodes = []
-            for z in zones:
-                vector_results = graph.vector_search(emb, zone=z, top_k=k)
-                keyword_results = graph.keyword_search(q, zone=z, limit=k)
-                seen = {n["uid"] for n in vector_results}
-                combined = list(vector_results)
-                for kr in keyword_results:
-                    if kr["uid"] not in seen:
-                        combined.append(kr)
-                        seen.add(kr["uid"])
-                nodes.extend(combined)
-            return nodes
-
-        all_nodes = _search_zones(target_zones, question_embedding, question, top_k)
+        all_nodes, target_zones = retrieve(
+            graph, llm, question, zone=zone or None, top_k=top_k
+        )
 
         if not all_nodes:
-            all_nodes = _search_zones(
-                [None], question_embedding, question, top_k
-            )
+            all_nodes, _ = retrieve(graph, llm, question, zone="all", top_k=top_k)
             if all_nodes:
-                target_zones = ["all (fallback)"]
+                target_zones = ["phoenix_domain", "api_and_repo_layout"]
 
         if not all_nodes:
             return f"No relevant information found in the graph for: {question}"
@@ -127,7 +114,11 @@ def graph_query(question: str, zone: str = "", top_k: int = 10,
         parts.append(f"- Nodes found: {len(all_nodes)}")
         parts.append(f"- Bridge nodes: {len(bridge_nodes)}")
         parts.append(f"- Stale nodes: {len(stale)}")
-        sources = list({n.get("source_path", "") for n in all_nodes if n.get("source_path")})
+        sources = list({
+            n.get("source_path", "")
+            for n in list(all_nodes) + list(bridge_nodes)
+            if n.get("source_path")
+        })
         if sources:
             parts.append(f"- Sources: {', '.join(sources[:5])}")
 
@@ -168,7 +159,7 @@ def graph_update(context_summary: str, zone: str = "",
             "Extract knowledge entities from the following context.\n"
             "Return a JSON array of objects, each with:\n"
             '  {"name": "...", "type": "Domain|Entity|BusinessProcess|Validation|Endpoint|DTO", '
-            '"description": "...", "zone": "contracts|billing|invoicing|payments|customers|products|service_operations|communications|reference_data"}\n\n'
+            '"description": "...", "zone": "phoenix_domain|api_and_repo_layout|test_cases|playwright_automation"}\n\n'
             f"Context:\n{context_summary}\n\nJSON array:"
         )
         raw = llm.generate(extraction_prompt, temperature=0.0, max_tokens=1500)
@@ -187,7 +178,7 @@ def graph_update(context_summary: str, zone: str = "",
 
         nodes_added = 0
         for entity in entities:
-            entity_zone = zone or entity.get("zone", "contracts")
+            entity_zone = zone or entity.get("zone", "phoenix_domain")
             uid = f"chat:{entity_zone}:{entity['name'].lower().replace(' ', '_')}"
             embedding = llm.embed(f"{entity['name']}: {entity['description']}")
             graph.upsert_node(
@@ -289,7 +280,8 @@ def graph_status() -> str:
         parts = ["**Graph RAG Status: running**"]
         parts.append(f"Total nodes: {total}")
         parts.append(f"Total edges: {edge_count}")
-        parts.append(f"Neo4j Browser: http://localhost:7474")
+        browser_url = os.environ.get("NEO4J_BROWSER_URL", "http://localhost:7474")
+        parts.append(f"Neo4j Browser: {browser_url}")
 
         if zones_summary:
             parts.append("\n**Per-zone breakdown:**")
@@ -309,4 +301,15 @@ def graph_status() -> str:
 
 
 if __name__ == "__main__":
-    mcp.run(transport="stdio")
+    transport = os.environ.get("MCP_TRANSPORT", "stdio").strip().lower()
+    if transport not in {"stdio", "sse", "streamable-http"}:
+        raise SystemExit(
+            f"Unsupported MCP_TRANSPORT={transport!r}. "
+            "Use stdio, sse, or streamable-http."
+        )
+    print(
+        f"GraphRAG: starting transport={transport} host={_mcp_host} port={_mcp_port}",
+        file=sys.stderr,
+        flush=True,
+    )
+    mcp.run(transport=transport)

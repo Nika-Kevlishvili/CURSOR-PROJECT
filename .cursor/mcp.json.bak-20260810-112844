@@ -1,0 +1,118 @@
+{
+  "mcpServers": {
+    "Confluence": {
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/sse"
+    },
+    "Jira": {
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/sse"
+    },
+    "ElasticsearchDev": {
+      "command": "C:\\Users\\N.kevlishvili\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "args": [
+        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+      ],
+      "env": {
+        "ES_HOST": "https://10.236.20.13:9200",
+        "ES_API_KEY": "bUk0c281OEJHc0FWd3pIRUdVOTg6NjFrTTJ1T1ZnckFvNVZvWDk5aTJuZw==",
+        "ES_VERIFY_SSL": "false",
+        "ES_SERVER_NAME": "ElasticsearchDev",
+        "ES_ENVIRONMENTS": "dev,dev2"
+      }
+    },
+    "ElasticsearchTest": {
+      "command": "C:\\Users\\N.kevlishvili\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "args": [
+        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+      ],
+      "env": {
+        "ES_HOST": "http://10.236.20.27:9200",
+        "ES_API_KEY": "",
+        "ES_VERIFY_SSL": "false",
+        "ES_SERVER_NAME": "ElasticsearchTest",
+        "ES_ENVIRONMENTS": "test,preprod",
+        "ES_READ_ONLY": "true"
+      }
+    },
+    "ElasticsearchProd": {
+      "command": "C:\\Users\\N.kevlishvili\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "args": [
+        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+      ],
+      "env": {
+        "ES_HOST": "https://10.236.20.69:9200",
+        "ES_API_KEY": "YkhGNnA1OEJtc0dJd2JJT3Y5eF86eFllZ0hJakZ2cHVHQmljZUJPT19FQQ==",
+        "ES_VERIFY_SSL": "false",
+        "ES_SERVER_NAME": "ElasticsearchProd",
+        "ES_ENVIRONMENTS": "prod",
+        "ES_READ_ONLY": "true"
+      }
+    },
+    "PostgreSQLDev": {
+      "command": "npx",
+      "args": ["-y", "mcp-postgres-server"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://postgres:rakX5thB2qO3@10.236.20.21:5432/phoenix",
+        "MCP_SERVER_NAME": "PostgreSQLDev",
+        "POSTGRES_HOST": "10.236.20.21",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "rakX5thB2qO3"
+      }
+    },
+    "PostgreSQLDev2": {
+      "command": "npx",
+      "args": ["-y", "mcp-postgres-server"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://postgres:uj6MfFgUkV1R@10.236.20.22:5432/phoenix",
+        "MCP_SERVER_NAME": "PostgreSQLDev2",
+        "POSTGRES_HOST": "10.236.20.22",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "uj6MfFgUkV1R"
+      }
+    },
+    "PostgreSQLTest": {
+      "command": "npx",
+      "args": ["-y", "mcp-postgres-server"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://postgres:U%26Vd2Ge%40nyM1@10.236.20.24:5432/phoenix",
+        "MCP_SERVER_NAME": "PostgreSQLTest",
+        "POSTGRES_HOST": "10.236.20.24",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "U&Vd2Ge@nyM1"
+      }
+    },
+    "PostgreSQLPreProd": {
+      "command": "npx",
+      "args": ["-y", "mcp-postgres-server"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://postgres:U&Vd2Ge@nyM1@10.236.20.76:5432/phoenix",
+        "MCP_SERVER_NAME": "PostgreSQLPreProd",
+        "POSTGRES_HOST": "10.236.20.76",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "U&Vd2Ge@nyM1"
+      }
+    },
+    "PostgreSQLProd": {
+      "command": "npx",
+      "args": ["-y", "mcp-postgres-server"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://readonly_user:U$CM)*qr&Zb4JfU@@10.236.20.78:5000/phoenix",
+        "MCP_SERVER_NAME": "PostgreSQLProd",
+        "POSTGRES_HOST": "10.236.20.78",
+        "POSTGRES_PORT": "5000",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "readonly_user",
+        "POSTGRES_PASSWORD": "U$CM)*qr&Zb4JfU@"
+      }
+    }
+  }
+}

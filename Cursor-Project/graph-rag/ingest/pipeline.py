@@ -73,12 +73,17 @@ def run_ingest(workspace_root: str, zones: list[str] | None = None,
 
 def _upsert_result(graph: GraphClient, llm: LLMClient,
                    result: dict, summary: dict, verbose: bool) -> None:
+    from core.display import enrich_display
+
     nodes = result.get("nodes", [])
     edges = result.get("edges", [])
 
-    # Compute embeddings in batches
+    for node in nodes:
+        enrich_display(node)
+
+    # Compute embeddings in batches (human title + description)
     texts_to_embed = [
-        f"{n['name']}: {n['description']}" for n in nodes
+        f"{n.get('title', n['name'])}: {n['description']}" for n in nodes
     ]
 
     if verbose:
@@ -101,6 +106,7 @@ def _upsert_result(graph: GraphClient, llm: LLMClient,
                 properties={
                     "source_path": node.get("source_path", ""),
                     "source_hash": node.get("source_hash", ""),
+                    "title": node.get("title"),
                     **(node.get("properties", {})),
                 },
                 embedding=embedding if embedding else None,

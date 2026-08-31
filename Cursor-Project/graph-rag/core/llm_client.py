@@ -90,36 +90,29 @@ class LLMClient:
             "You classify questions into one or more knowledge zones. "
             "Return ONLY zone names, comma-separated, no explanation.\n"
             "Zones:\n"
-            "- contracts: product contracts, service contracts, express contracts, terms, terminations\n"
-            "- billing: billing runs, billing groups, billing profiles, accounting periods, IAP\n"
-            "- invoicing: invoices, invoice cancellation, credit notes\n"
-            "- payments: payments, deposits, liabilities, receivables, fines, penalties, collections\n"
-            "- customers: customers, customer assessment, unwanted customers\n"
-            "- products: products catalog, pricing, price components, discounts, nomenclature\n"
-            "- service_operations: service orders, actions, processes, tasks, disconnection, reconnection\n"
-            "- communications: email, SMS, system messages, templates, documents\n"
-            "- reference_data: geography, currencies, grid operators, portal, xEnergie, goods\n"
+            "- phoenix_domain: business meaning, entities, validations, processes\n"
+            "- api_and_repo_layout: HTTP endpoints, DTOs, Swagger, enums\n"
+            "- test_cases: markdown test cases, steps, expected results\n"
+            "- playwright_automation: Playwright specs, fixtures, EnergoTS\n"
         )
         result = self.generate(question, system_prompt=system, temperature=0.0, max_tokens=100)
         zones = [z.strip().lower() for z in result.split(",")]
         valid_zones = [
-            "contracts", "billing", "invoicing", "payments", "customers",
-            "products", "service_operations", "communications", "reference_data",
+            "phoenix_domain", "api_and_repo_layout",
+            "test_cases", "playwright_automation",
         ]
-        return [z for z in zones if z in valid_zones] or ["contracts"]
+        return [z for z in zones if z in valid_zones] or [
+            "phoenix_domain", "api_and_repo_layout",
+        ]
 
     def synthesize_answer(self, question: str, graph_context: str,
                           live_evidence: str | None = None) -> str:
         system = (
-            "You are a Senior QA / Phoenix Expert assistant. "
-            "Answer the question using ONLY the provided context. "
-            "Always cite sources (file paths, node names, zone names). "
-            "If the context is insufficient, say so clearly. "
-            "Format findings as:\n"
-            "### Finding: [title]\n"
-            "- **Type:** ...\n"
-            "- **Gap:** ...\n"
-            "- **Recommendation:** ...\n"
+            "You list which sources to open. Use ONLY the graph context. "
+            "Start with a bullet list of source_path values and Confluence page IDs. "
+            "Do not invent files, wiki IDs, or business rules that are not in the context. "
+            "Do not write a full product encyclopedia. "
+            "If a Finding/mismatch is in the context, one short sentence is enough."
         )
         prompt_parts = [f"## Question\n{question}\n", f"## Graph Context\n{graph_context}\n"]
         if live_evidence:

@@ -25,6 +25,9 @@ def is_stale(node: dict, workspace_root: str) -> bool:
     if not source_path or not stored_hash:
         return True
 
+    if source_path.startswith("http://") or source_path.startswith("https://"):
+        return stored_hash != compute_content_hash(source_path)
+
     abs_path = os.path.join(workspace_root, source_path)
     current_hash = compute_file_hash(abs_path)
 

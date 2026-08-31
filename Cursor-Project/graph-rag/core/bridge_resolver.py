@@ -1,18 +1,11 @@
-"""
-Bridge resolver — follow cross-zone edges to enrich retrieved context.
-"""
+"""Format retrieved graph nodes so agents open source_path first."""
 
 from .graph_client import GraphClient
 
 
 def resolve_bridges(graph: GraphClient, seed_nodes: list[dict],
                     max_depth: int = 1) -> list[dict]:
-    """
-    Given seed nodes from a primary zone query, follow bridge edges
-    into neighboring zones to collect related context.
-
-    Returns additional nodes discovered via bridges (deduplicated).
-    """
+    """Follow neighbors from seed nodes (deduplicated)."""
     seen_uids = {n["uid"] for n in seed_nodes}
     bridge_nodes: list[dict] = []
 
@@ -27,12 +20,38 @@ def resolve_bridges(graph: GraphClient, seed_nodes: list[dict],
     return bridge_nodes
 
 
+def _source_index(nodes: list[dict]) -> list[str]:
+    seen: set[str] = set()
+    out: list[str] = []
+    for n in nodes:
+        path = (n.get("source_path") or "").strip()
+        if not path or path in seen:
+            continue
+        seen.add(path)
+        page_id = ""
+        props = n.get("properties") if isinstance(n.get("properties"), dict) else {}
+        cid = n.get("confluence_page_id") or (props or {}).get("confluence_page_id")
+        if cid:
+            page_id = f" (Confluence page ID {cid})"
+        out.append(f"- `{path}`{page_id}")
+    return out
+
+
 def format_context(seed_nodes: list[dict], bridge_nodes: list[dict]) -> str:
-    """Format seed + bridge nodes into a readable context string for LLM."""
-    lines: list[str] = []
+    """Pointer block first (files / wiki URLs), then short node summaries."""
+    combined = list(seed_nodes) + list(bridge_nodes)
+    lines: list[str] = [
+        "### Open these sources (do not treat this graph text as evidence)",
+        "Read each path or Confluence page ID below, then answer from those live sources.",
+    ]
+    index = _source_index(combined)
+    if index:
+        lines.extend(index)
+    else:
+        lines.append("- (no source_path on retrieved nodes)")
 
     if seed_nodes:
-        lines.append("### Primary Results")
+        lines.append("\n### Primary Results")
         for n in seed_nodes:
             score = n.get("score", "")
             score_str = f" (relevance: {score:.3f})" if isinstance(score, float) else ""
@@ -49,7 +68,8 @@ def format_context(seed_nodes: list[dict], bridge_nodes: list[dict]) -> str:
             lines.append(
                 f"- **[{n.get('zone', '?')}] {n.get('node_type', '?')}: "
                 f"{n.get('name', '?')}**\n"
-                f"  {n.get('description', 'No description')}"
+                f"  {n.get('description', 'No description')}\n"
+                f"  Source: `{n.get('source_path', 'unknown')}`"
             )
 
-    return "\n".join(lines) if lines else "No relevant nodes found in the graph."
+    return "\n".join(lines)

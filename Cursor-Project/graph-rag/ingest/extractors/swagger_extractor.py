@@ -1,6 +1,6 @@
 """
 Swagger/OpenAPI extractor — parse spec JSON into Endpoint, DTO, and EnumType nodes.
-Assigns each node to a business domain zone based on its API path prefix.
+`n.zone` is the GRAPH.1 API layer (`api_and_repo_layout`). Business area is `properties.domain`.
 """
 
 import json
@@ -14,6 +14,109 @@ from core.staleness import compute_file_hash
 _ZONES_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "config", "zones.yaml")
 
 FALLBACK_ZONE = "reference_data"
+API_LAYER_ZONE = "api_and_repo_layout"
+
+_METHOD_VERB = {
+    "GET": "Get",
+    "POST": "Create",
+    "PUT": "Update",
+    "PATCH": "Change",
+    "DELETE": "Delete",
+}
+
+_OP_VERB = {
+    "view": "View",
+    "edit": "Edit",
+    "add": "Create",
+    "create": "Create",
+    "delete": "Delete",
+    "list": "List",
+    "treeview": "Tree view",
+    "detailedview": "Detailed view",
+}
+
+
+def _human_ident(name: str) -> str:
+    text = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", name or "")
+    text = text.replace("_", " ").replace(".", " ").replace("-", " ")
+    text = re.sub(r"\s+", " ", text).strip()
+    if not text:
+        return name or "Untitled"
+    return text[0].upper() + text[1:]
+
+
+def _path_phrase(path: str) -> str:
+    parts = []
+    for raw in (path or "").strip("/").split("/"):
+        if not raw:
+            continue
+        if raw.startswith("{") and raw.endswith("}"):
+            parts.append("by id")
+            continue
+        parts.append(raw.replace("-", " "))
+    return " — ".join(parts) if parts else "this resource"
+
+
+def _endpoint_title(method: str, path: str, summary: str, op_id: str) -> str:
+    summary = (summary or "").strip()
+    if summary and summary.lower() not in ("ok", "default"):
+        return summary
+    phrase = _path_phrase(path)
+    op_key = re.sub(r"[^a-z0-9]", "", (op_id or "").lower())
+    if op_key in _OP_VERB and not re.match(r"^[a-z]+_\d+$", op_id or ""):
+        return f"{_OP_VERB[op_key]} ({phrase})"
+    verb = _METHOD_VERB.get((method or "").upper(), (method or "").upper())
+    return f"{verb} {phrase}"
+
+
+def _endpoint_description(title: str, method: str, path: str, summary: str,
+                          description: str, env_name: str) -> str:
+    extra = " ".join(
+        part.strip()
+        for part in (summary, description)
+        if part and part.strip() and part.strip().lower() not in ("ok", title.lower())
+    )
+    base = (
+        f"{title}. HTTP {method.upper()} {path} "
+        f"(Swagger environment: {env_name})."
+    )
+    if extra:
+        return _truncate(f"{base} {extra}", 500)
+    return base
+
+
+def _dto_title(schema_name: str, is_enum: bool) -> str:
+    if is_enum:
+        return f"{_human_ident(schema_name)} (allowed values)"
+    lower = schema_name.lower()
+    if lower.endswith("filterrequest"):
+        return f"{_human_ident(schema_name[:-13])} search filter"
+    if lower.endswith("request"):
+        return f"{_human_ident(schema_name[:-7])} request body"
+    if lower.endswith("response"):
+        stem = schema_name[:-8]
+        if stem.lower().startswith("page"):
+            return f"{_human_ident(stem[4:])} list page"
+        return f"{_human_ident(stem)} API result"
+    return _human_ident(schema_name)
+
+
+def _dto_description(schema_name: str, is_enum: bool, required: list,
+                     field_names: list, enum_values: list | None = None) -> str:
+    label = _human_ident(schema_name)
+    if is_enum:
+        values = ", ".join(str(v) for v in (enum_values or [])[:20])
+        return f"{label}: allowed values are {values}." if values else f"{label} is a fixed list of values."
+    parts = [f"{label} is an API data type."]
+    if required:
+        parts.append(
+            "Must include: " + ", ".join(_human_ident(x) for x in required[:10]) + "."
+        )
+    if field_names:
+        parts.append(
+            "Fields: " + ", ".join(_human_ident(x) for x in field_names[:15]) + "."
+        )
+    return _truncate(" ".join(parts), 500)
 
 
 def _build_prefix_to_zone() -> dict[str, str]:
@@ -95,19 +198,23 @@ def extract_swagger(swagger_path: str, workspace_root: str) -> list[dict]:
             if method in ("parameters", "servers", "summary", "description", "$ref"):
                 continue
 
-            zone = _resolve_zone_for_path(path)
+            domain = _resolve_zone_for_path(path)
             op_id = details.get("operationId", f"{method}_{path}")
             summary = details.get("summary", "")
             description = details.get("description", summary)
             tags = details.get("tags", [])
+            title = _endpoint_title(method, path, summary, op_id)
 
             uid = f"endpoint:{env_name}:{method.upper()}:{path}"
             nodes.append({
                 "uid": uid,
                 "node_type": "Endpoint",
-                "zone": zone,
+                "zone": API_LAYER_ZONE,
                 "name": f"{method.upper()} {path}",
-                "description": _truncate(f"{summary}. {description}".strip(". "), 500),
+                "title": title,
+                "description": _endpoint_description(
+                    title, method, path, summary, description, env_name
+                ),
                 "source_path": rel_path,
                 "source_hash": source_hash,
                 "properties": {
@@ -116,18 +223,18 @@ def extract_swagger(swagger_path: str, workspace_root: str) -> list[dict]:
                     "operation_id": op_id,
                     "tags": ", ".join(tags),
                     "environment": env_name,
+                    "domain": domain,
                 },
             })
 
-            req_ref = _extract_request_schema_ref(details)
-            if req_ref:
+            for req_ref in _extract_accepted_schema_refs(details):
                 dto_uid = f"dto:{env_name}:{req_ref}"
                 edges.append({
                     "from_uid": uid,
                     "to_uid": dto_uid,
                     "edge_type": "ACCEPTS",
                 })
-                endpoint_dto_zones[req_ref] = zone
+                endpoint_dto_zones[req_ref] = domain
 
             resp_refs = _extract_response_schema_refs(details)
             for ref_name in resp_refs:
@@ -138,7 +245,7 @@ def extract_swagger(swagger_path: str, workspace_root: str) -> list[dict]:
                     "edge_type": "RETURNS",
                 })
                 if ref_name not in endpoint_dto_zones:
-                    endpoint_dto_zones[ref_name] = zone
+                    endpoint_dto_zones[ref_name] = domain
 
     # --- DTOs (schemas/components) ---
     schemas = spec.get("components", {}).get("schemas", {})
@@ -150,31 +257,26 @@ def extract_swagger(swagger_path: str, workspace_root: str) -> list[dict]:
         is_enum = "enum" in schema_def
         node_type = "EnumType" if is_enum else "DTO"
 
-        zone = _resolve_zone_for_dto(schema_name, endpoint_dto_zones)
+        domain = _resolve_zone_for_dto(schema_name, endpoint_dto_zones)
+        enum_values = schema_def.get("enum", []) if is_enum else []
 
         uid = f"{'enum' if is_enum else 'dto'}:{env_name}:{schema_name}"
-        desc_parts = []
-        if is_enum:
-            values = schema_def.get("enum", [])
-            desc_parts.append(f"Enum values: {', '.join(str(v) for v in values[:20])}")
-        else:
-            if required:
-                desc_parts.append(f"Required: {', '.join(required[:10])}")
-            if field_names:
-                desc_parts.append(f"Fields: {', '.join(field_names[:15])}")
-
         nodes.append({
             "uid": uid,
             "node_type": node_type,
-            "zone": zone,
+            "zone": API_LAYER_ZONE,
             "name": schema_name,
-            "description": _truncate(". ".join(desc_parts), 500),
+            "title": _dto_title(schema_name, is_enum),
+            "description": _dto_description(
+                schema_name, is_enum, required, field_names, enum_values
+            ),
             "source_path": rel_path,
             "source_hash": source_hash,
             "properties": {
                 "fields": ", ".join(field_names[:30]),
                 "required_fields": ", ".join(required[:20]),
                 "environment": env_name,
+                "domain": domain,
             },
         })
 
@@ -182,15 +284,24 @@ def extract_swagger(swagger_path: str, workspace_root: str) -> list[dict]:
             if "enum" in field_def:
                 enum_uid = f"enum:{env_name}:{schema_name}_{field_name}"
                 enum_values = field_def["enum"]
+                field_title = f"{_human_ident(schema_name)} — {_human_ident(field_name)}"
                 nodes.append({
                     "uid": enum_uid,
                     "node_type": "EnumType",
-                    "zone": zone,
+                    "zone": API_LAYER_ZONE,
                     "name": f"{schema_name}.{field_name}",
-                    "description": f"Enum values: {', '.join(str(v) for v in enum_values[:20])}",
+                    "title": field_title,
+                    "description": (
+                        f"Allowed values for {_human_ident(field_name)} on "
+                        f"{_human_ident(schema_name)}: "
+                        f"{', '.join(str(v) for v in enum_values[:20])}."
+                    ),
                     "source_path": rel_path,
                     "source_hash": source_hash,
-                    "properties": {"environment": env_name},
+                    "properties": {
+                        "environment": env_name,
+                        "domain": domain,
+                    },
                 })
                 edges.append({
                     "from_uid": uid,
@@ -209,15 +320,50 @@ def _extract_env_from_path(swagger_path: str) -> str:
     return "unknown"
 
 
+def _schema_ref_name(schema: dict | None) -> str | None:
+    if not schema:
+        return None
+    ref = schema.get("$ref") or ""
+    if ref:
+        return ref.rsplit("/", 1)[-1]
+    items_ref = (schema.get("items") or {}).get("$ref") or ""
+    if items_ref:
+        return items_ref.rsplit("/", 1)[-1]
+    return None
+
+
 def _extract_request_schema_ref(operation: dict) -> str | None:
     rb = operation.get("requestBody", {})
     content = rb.get("content", {})
     for media_type in ("application/json", "*/*"):
-        schema = content.get(media_type, {}).get("schema", {})
-        ref = schema.get("$ref", "")
-        if ref:
-            return ref.rsplit("/", 1)[-1]
+        name = _schema_ref_name(content.get(media_type, {}).get("schema"))
+        if name:
+            return name
     return None
+
+
+def _extract_accepted_schema_refs(operation: dict) -> list[str]:
+    """DTOs the operation accepts: JSON body and query/path parameter $refs."""
+    names: list[str] = []
+    body = _extract_request_schema_ref(operation)
+    if body:
+        names.append(body)
+    for param in operation.get("parameters") or []:
+        name = _schema_ref_name(param.get("schema"))
+        if name:
+            names.append(name)
+        content = param.get("content") or {}
+        for media in content.values():
+            name = _schema_ref_name((media or {}).get("schema"))
+            if name:
+                names.append(name)
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for name in names:
+        if name not in seen:
+            seen.add(name)
+            ordered.append(name)
+    return ordered
 
 
 def _extract_response_schema_refs(operation: dict) -> list[str]:

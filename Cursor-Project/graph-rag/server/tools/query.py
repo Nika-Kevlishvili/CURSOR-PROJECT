@@ -6,7 +6,7 @@ import os
 
 from ...core.graph_client import GraphClient
 from ...core.llm_client import LLMClient
-from ...core.zone_router import route_question
+from ...core.graph_search import retrieve
 from ...core.bridge_resolver import resolve_bridges, format_context
 from ...core.staleness import filter_stale_nodes
 
@@ -18,15 +18,9 @@ WORKSPACE_ROOT = os.environ.get(
 
 
 def graph_query(question: str, zone: str | None = None, top_k: int = 10,
-                use_llm_synthesis: bool = True) -> dict:
+                use_llm_synthesis: bool = False) -> dict:
     """
-    Query the Graph RAG system.
-
-    1. Route question to zone(s)
-    2. Vector + keyword search in Neo4j
-    3. Check staleness of results
-    4. Follow bridge edges for cross-zone context
-    5. Synthesize answer via local LLM
+    Return source_path pointers. LLM synthesis is off by default.
 
     Returns dict with: answer, sources, zones_queried, nodes_found, stale_count
     """
@@ -34,28 +28,9 @@ def graph_query(question: str, zone: str | None = None, top_k: int = 10,
     llm = LLMClient()
 
     try:
-        # 1. Route to zone(s)
-        if zone:
-            target_zones = [zone]
-        else:
-            target_zones = route_question(question, llm_client=llm)
-
-        # 2. Search graph
-        question_embedding = llm.embed(question)
-        all_nodes: list[dict] = []
-
-        for z in target_zones:
-            vector_results = graph.vector_search(question_embedding, zone=z, top_k=top_k)
-            keyword_results = graph.keyword_search(question, zone=z, limit=top_k)
-
-            seen = {n["uid"] for n in vector_results}
-            combined = list(vector_results)
-            for kr in keyword_results:
-                if kr["uid"] not in seen:
-                    combined.append(kr)
-                    seen.add(kr["uid"])
-
-            all_nodes.extend(combined)
+        all_nodes, target_zones = retrieve(
+            graph, llm, question, zone=zone, top_k=top_k
+        )
 
         if not all_nodes:
             return {

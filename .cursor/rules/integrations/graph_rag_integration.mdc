@@ -6,9 +6,11 @@ alwaysApply: true
 
 # GRAPH RAG INTEGRATION [SHOULD]
 
+**Fill / graph shape:** Rule **GRAPH.1** — `.cursor/rules/integrations/graph_rag_ingest.mdc` and `Cursor-Project/graph-rag/INGEST.md`. GRAPH.0 does **not** define how to populate Neo4j.
+
 ## Rule GRAPH.0: Auto-query Graph RAG for project questions
 
-**Intent:** When the Graph RAG MCP server is available, Cursor agents SHOULD check the knowledge graph before answering Phoenix/project questions. This provides pre-indexed context from Swagger, test cases, Confluence, and Playwright sources.
+**Intent:** When the Graph RAG MCP server is available, Cursor agents SHOULD check the knowledge graph before answering Phoenix/project questions. Indexed layers (when filled) are the four GRAPH.1 zones: domain, API, test cases, Playwright.
 
 **When to use `graph_query`:**
 - Before answering Phoenix domain questions (business logic, endpoints, validations)
@@ -24,23 +26,56 @@ alwaysApply: true
 
 ## Workflow
 
-1. **Check graph first:** Call `graph_query` with the user's question
-2. **Use graph context:** If graph returns relevant nodes, include them as additional context alongside live evidence (code, Confluence, Swagger per existing rules)
-3. **Live evidence still required:** Graph RAG is supplementary — it does NOT replace the evidence gate (Rule QA.0). Always verify critical facts against live sources
-4. **Staleness handled automatically:** The graph_query tool checks source_hash and auto-refreshes stale nodes
+1. **Check graph first:** Call `graph_status` when fill/emptiness matters, then `graph_query` with `use_llm_synthesis: false` unless the user asked for a short summary.
+2. **Open every `source_path`:** Phoenix `.java` files, Swagger JSON, and Confluence URLs / page IDs from the **Open these sources** block. Do not answer from the graph description or Qwen synthesis alone.
+3. **Live evidence:** After opening those sources, apply Rule QA.0 (code vs Confluence). Graph text is a pointer, not evidence.
+4. **Staleness** is reported by `graph_query` (`stale_count` / `source_hash`). Stale or missing graph data is **not** auto-fixed — see **Ask before fill** below.
 
 ## Available tools (GraphRAG MCP server)
 
 | Tool | Purpose |
 |------|---------|
-| `graph_query` | Ask a question, get graph-enriched answer with citations |
-| `graph_update` | After chat work, save new knowledge back to graph |
+| `graph_query` | Return `source_path` pointers (files + Confluence URLs). Default: no LLM essay (`use_llm_synthesis: false`). |
+| `graph_update` | Save verified facts **after user yes** (Ask before fill) |
 | `graph_index_topic` | Index a specific topic across all sources on demand |
 | `graph_status` | Show zone stats, node counts, system health |
 
+## Ask before fill (user gate) [MUST]
+
+The graph is filled **incrementally** (GRAPH.1). Agents MUST NOT call `graph_index_topic`, `graph_update`, or run ingest unless the user **agrees in this chat**.
+
+**Ask** (pause until yes/no) when any of these is true:
+
+1. **Graph empty** — `graph_status` total nodes is 0 (or MCP graph is down / returns no index).
+2. **Empty for this question** — `graph_query` has no relevant hits, or only off-topic nodes (wrong topic’s `source_path` list). Do not treat another topic’s pointers as the answer.
+3. **Stale** — `stale_count` > 0, or live file/wiki at `source_path` no longer matches the node (`source_hash` / content).
+4. **Live mismatch** — after QA.0, code, Confluence, or Swagger disagrees with what graph nodes currently say.
+
+The ask MUST name all three (no vague “should I update the graph?”):
+
+| Field | Required content |
+|-------|------------------|
+| **What** | Topic and which nodes/edges would change (add / refresh / replace). |
+| **From what** | Exact sources: Phoenix path + line range if known, Confluence title + page ID + URL, Swagger file + endpoint/DTO. |
+| **What would be written** | GRAPH.1 node types and one-line facts to store (pointers + `source_path`). No placeholders, no whole-wiki dump, no four Swagger envs. |
+
+Template:
+
+```
+Graph fill proposal
+- What: …
+- From what: …
+- What would be written: …
+May I apply this to the graph? (yes / no)
+```
+
+- **Yes** → scoped fill only (named topic ingest or verified `graph_update`). Parsers first (GRAPH.1). Then re-query.
+- **No** → answer from live evidence only; leave Neo4j unchanged.
+- Still answer the user’s Phoenix question from code/wiki even while waiting; do not block the Q&A on fill.
+
 ## After resolution
 
-When the agent has answered a Phoenix/project question using live evidence and the answer contains new insights not yet in the graph, offer to call `graph_update` to save the knowledge for future queries.
+If live evidence produced **new verified** facts not in the graph, use the same **Ask before fill** template (do not silently `graph_update`). Chat nodes are enrichment, not a substitute for parsers (GRAPH.1).
 
 ## Graph visualization
 

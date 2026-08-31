@@ -1,0 +1,27 @@
+# Four GRAPH.1 layers — high-contrast colors (Neo4j Browser ignores n.color unless GraSS is applied)
+# Label names include the color so chips stay readable even with the default palette.
+layers:
+  phoenix_domain:
+    title: "Business meaning"
+    badge: "🔵 BUSINESS"
+    description: "What this object is in the product — rules and wiki, not the HTTP path."
+    color: "#0047FF"
+    neo4j_label: "BlueBusiness"
+  api_and_repo_layout:
+    title: "API"
+    badge: "🟡 API"
+    description: "HTTP operations and request/response types from Swagger."
+    color: "#FFD000"
+    neo4j_label: "YellowAPI"
+  test_cases:
+    title: "Test cases"
+    badge: "🔴 Test cases"
+    description: "Written test cases — steps, preconditions, expected results."
+    color: "#FF0000"
+    neo4j_label: "RedTests"
+  playwright_automation:
+    title: "Playwright tests"
+    badge: "🟢 PLAYWRIGHT"
+    description: "Automated tests, fixtures, and writing rules."
+    color: "#00C853"
+    neo4j_label: "GreenPlaywright"

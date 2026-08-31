@@ -60,12 +60,16 @@ def _parse_test_case_file(abs_path: str, rel_path: str) -> dict | None:
         jira_key = tc.get("jira_key", "")
 
         tc_uid = f"testcase:{rel_path}:{tc_id}"
+        tc_desc = _truncate(tc_description, 500) or (
+            f"Written test case {tc_id} from {topic}."
+        )
         nodes.append({
             "uid": tc_uid,
             "node_type": "TestCase",
             "zone": ZONE,
             "name": tc_name,
-            "description": _truncate(tc_description, 500),
+            "title": tc_name,
+            "description": tc_desc,
             "source_path": rel_path,
             "source_hash": source_hash,
             "properties": {
@@ -84,6 +88,7 @@ def _parse_test_case_file(abs_path: str, rel_path: str) -> dict | None:
                 "node_type": "Precondition",
                 "zone": ZONE,
                 "name": f"Preconditions for {tc_id}",
+                "title": f"Preconditions — {tc_id}",
                 "description": _truncate(preconditions, 500),
                 "source_path": rel_path,
                 "source_hash": source_hash,
@@ -102,6 +107,7 @@ def _parse_test_case_file(abs_path: str, rel_path: str) -> dict | None:
                 "node_type": "TestStep",
                 "zone": ZONE,
                 "name": f"{tc_id} Step {step_idx}",
+                "title": f"Step {step_idx} — {tc_id}",
                 "description": _truncate(step.get("action", ""), 300),
                 "source_path": rel_path,
                 "source_hash": source_hash,
@@ -121,6 +127,7 @@ def _parse_test_case_file(abs_path: str, rel_path: str) -> dict | None:
                     "node_type": "ExpectedResult",
                     "zone": ZONE,
                     "name": f"{tc_id} Step {step_idx} Expected",
+                    "title": f"Expected result — step {step_idx}",
                     "description": _truncate(expected, 300),
                     "source_path": rel_path,
                     "source_hash": source_hash,
