@@ -28,7 +28,7 @@ Single map from **rule / topic** to the **primary procedural** file(s). When `wo
 | PHOENIX-BUG.0 | Phoenix Phase 2 Internal Bug reporting with mandatory approval gate; board resolution from parent ticket; REJECT loop (edit, never delete); priority AI-determined | `.cursor/rules/integrations/phoenix_bug_reporter.mdc`, `.cursor/skills/phoenix-bug-reporter/SKILL.md`, `.cursor/agents/phoenix-bug-reporter.md` |
 | PDR.0 | Production DB read | `.cursor/skills/production-data-reader/SKILL.md` |
 | Reporting / Slack | Paths and uploads | `Cursor-Project/config/template/Slack_reporting_paths.md`, `.cursor/rules/workflows/playwright_detailed_reporting.mdc` |
-| GRAPH.0 | Query Graph RAG before Phoenix questions; **ask before fill** if empty, off-topic, stale, or live mismatch (what / from what / what would be written) | `.cursor/rules/integrations/graph_rag_integration.mdc` |
+| GRAPH.0 | Query Graph RAG (SHOULD); **after a hit, MUST open live `source_path`s** (wiki REST if MCP fails); never cite graph text as spec; ask before fill | `.cursor/rules/integrations/graph_rag_integration.mdc` |
 | GRAPH.1 | Fill/ingest: four layers, parsers not chat-LLM, bridges | `.cursor/rules/integrations/graph_rag_ingest.mdc`, `Cursor-Project/graph-rag/INGEST.md` |
 | File layout | Stories, reports, test_cases | `.cursor/rules/workspace/file_organization_rules.mdc`, `.cursor/rules/workspace/test_cases_structure.mdc` |
 

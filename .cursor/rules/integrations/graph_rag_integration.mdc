@@ -24,18 +24,23 @@ alwaysApply: true
 - Trivial Q&A, chit-chat
 - When the user explicitly says to skip graph lookup
 
-## Workflow
+## Workflow [MUST after a successful `graph_query`]
 
-1. **Check graph first:** Call `graph_status` when fill/emptiness matters, then `graph_query` with `use_llm_synthesis: false` unless the user asked for a short summary.
-2. **Open every `source_path`:** Phoenix `.java` files, Swagger JSON, and Confluence URLs / page IDs from the **Open these sources** block. Do not answer from the graph description or Qwen synthesis alone.
-3. **Live evidence:** After opening those sources, apply Rule QA.0 (code vs Confluence). Graph text is a pointer, not evidence.
-4. **Staleness** is reported by `graph_query` (`stale_count` / `source_hash`). Stale or missing graph data is **not** auto-fixed — see **Ask before fill** below.
+Calling the graph is **SHOULD** when MCP is up. **Using** the result is **MUST**. Do not treat graph node text as wiki or as unopened Java rules.
+
+1. **Wait for the graph.** Call `graph_query` with argument **`question`** (not `query`) and `use_llm_synthesis: false`. Do **not** Grep/Read the topic in the same turn as the first `graph_query`. After the tool returns, use **only** the **Open these sources** list (plus neighbors you opened from those paths).
+2. **Open every `source_path` as live evidence:**
+   - Phoenix `.java` / Swagger JSON → **Read** / Grep that file.
+   - Confluence URL or `confluence_page_id` → **getConfluencePage**, then Rule 43 **REST fallback** (`get-confluence-page-rest.ps1 -PageId …`) if MCP 404s or is the wrong cloud. **Forbidden:** skipping the page and quoting the graph `description` as Confluence.
+3. **Cite only what you opened.** Graph `description` / Qwen text is a pointer, not spec. If you did not open a wiki page, you MUST NOT write “Confluence says…” from the graph. If you did not open a Java file, you MUST NOT copy field rules (e.g. “required FK”) from a node.
+4. **Counts from metadata only.** Node totals (`29`, `stale_count`) come from this turn’s `graph_status` / `graph_query` footer — not from memory or ingest comments.
+5. **QA.0** on the files/pages you opened. Stale graph → **Ask before fill**, do not silently ingest.
 
 ## Available tools (GraphRAG MCP server)
 
 | Tool | Purpose |
 |------|---------|
-| `graph_query` | Return `source_path` pointers (files + Confluence URLs). Default: no LLM essay (`use_llm_synthesis: false`). |
+| `graph_query` | Return `source_path` pointers (files + Confluence URLs). Argument name: **`question`**. Default: no LLM essay (`use_llm_synthesis: false`). |
 | `graph_update` | Save verified facts **after user yes** (Ask before fill) |
 | `graph_index_topic` | Index a specific topic across all sources on demand |
 | `graph_status` | Show zone stats, node counts, system health |
@@ -83,4 +88,5 @@ Users can explore the knowledge graph visually at `http://localhost:7474` (Neo4j
 
 ## Compliance tier
 
-**SHOULD** — Graph RAG is supplementary. Failure to query the graph is not a BLOCK; but using it improves answer quality and speed. The evidence gate (Rules QA.0, 0.5) remains MUST.
+- **SHOULD** — Call `graph_query` when MCP is available (not a BLOCK if skipped).
+- **MUST** — After a successful `graph_query`, open live `source_path`s (files + wiki REST on MCP fail). **Forbidden** to cite graph node text as Confluence or as unopened Java rules. Evidence gate (QA.0, 0.5) unchanged.
