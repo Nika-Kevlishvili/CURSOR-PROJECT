@@ -9,9 +9,9 @@
       "url": "https://mcp.atlassian.com/v1/sse"
     },
     "ElasticsearchDev": {
-      "command": "C:\\Users\\N.kevlishvili\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3",
       "args": [
-        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+        "/Users/lukachrikishvili/Desktop/CURSOR-PROJECT/Cursor-Project/scripts/elasticsearch_mcp_server.py"
       ],
       "env": {
         "ES_HOST": "https://10.236.20.13:9200",
@@ -22,9 +22,9 @@
       }
     },
     "ElasticsearchTest": {
-      "command": "C:\\Users\\N.kevlishvili\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3",
       "args": [
-        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+        "/Users/lukachrikishvili/Desktop/CURSOR-PROJECT/Cursor-Project/scripts/elasticsearch_mcp_server.py"
       ],
       "env": {
         "ES_HOST": "http://10.236.20.27:9200",
@@ -36,9 +36,9 @@
       }
     },
     "ElasticsearchTest2ES": {
-      "command": "C:\\Users\\N.kevlishvili\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3",
       "args": [
-        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+        "/Users/lukachrikishvili/Desktop/CURSOR-PROJECT/Cursor-Project/scripts/elasticsearch_mcp_server.py"
       ],
       "env": {
         "ES_HOST": "http://10.236.20.27:9200",
@@ -52,9 +52,9 @@
       }
     },
     "ElasticsearchTest2SLR": {
-      "command": "C:\\Users\\N.kevlishvili\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3",
       "args": [
-        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+        "/Users/lukachrikishvili/Desktop/CURSOR-PROJECT/Cursor-Project/scripts/elasticsearch_mcp_server.py"
       ],
       "env": {
         "ES_HOST": "http://10.236.20.27:9200",
@@ -68,9 +68,9 @@
       }
     },
     "ElasticsearchProd": {
-      "command": "C:\\Users\\N.kevlishvili\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3",
       "args": [
-        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+        "/Users/lukachrikishvili/Desktop/CURSOR-PROJECT/Cursor-Project/scripts/elasticsearch_mcp_server.py"
       ],
       "env": {
         "ES_HOST": "https://10.236.20.69:9200",
