@@ -1,0 +1,80 @@
+{
+  "environment": "dev2",
+  "calendarIapId": 3907,
+  "calendarIapName": "DPI CALENDAR_DAYS 10 2026-08-20 37257",
+  "calendarTerm": {
+    "id": 3899,
+    "name": "10 Calendar Days (EXCLUDE_WEEKENDS,EXCLUDE_HOLIDAYS,NEXT_WORKING_DAY)",
+    "calendarType": "CALENDAR_DAYS",
+    "value": 10,
+    "valueFrom": null,
+    "valueTo": null,
+    "calendar": {
+      "id": 1133,
+      "name": "RPS CALENDAR",
+      "defaultSelection": true,
+      "status": "ACTIVE",
+      "orderingId": 37,
+      "weekends": [
+        "SATURDAY",
+        "SUNDAY"
+      ],
+      "holidays": []
+    },
+    "excludeWeekends": true,
+    "excludeHolidays": true,
+    "dueDateChange": "NEXT_WORKING_DAY",
+    "status": "ACTIVE"
+  },
+  "calendarProductId": 26664,
+  "calendarProductName": "DPI CalendarDays10 2026-08-20 37417",
+  "workingIapId": 3908,
+  "workingIapName": "DPI WORKING_DAYS 10 2026-08-20 37417",
+  "workingTerm": {
+    "id": 3900,
+    "name": "10 Working Days",
+    "calendarType": "WORKING_DAYS",
+    "value": 10,
+    "valueFrom": null,
+    "valueTo": null,
+    "calendar": {
+      "id": 1133,
+      "name": "RPS CALENDAR",
+      "defaultSelection": true,
+      "status": "ACTIVE",
+      "orderingId": 37,
+      "weekends": [
+        "SATURDAY",
+        "SUNDAY"
+      ],
+      "holidays": []
+    },
+    "excludeWeekends": false,
+    "excludeHolidays": false,
+    "dueDateChange": null,
+    "status": "ACTIVE"
+  },
+  "workingProductId": 26665,
+  "workingProductName": "DPI WorkingDays10 2026-08-20 37417",
+  "customerIdentifier": "8903166522",
+  "excelRow2": {
+    "productId": 26664,
+    "term": "CALENDAR_DAYS",
+    "pod": "32XAUTOMATION822092218309"
+  },
+  "excelRow3": {
+    "productId": 26665,
+    "term": "WORKING_DAYS",
+    "pod": "32XAUTOMATION822092737745"
+  },
+  "expectedResult": "Both rows should create contracts. Mass import still does not set termValue, but the CERTAIN_DAYS-only validator does not run for CALENDAR_DAYS or WORKING_DAYS.",
+  "massImportFile": "/Users/lukachrikishvili/Desktop/CURSOR-PROJECT/Cursor-Project/config/bug-repro/dev2-iap-calendar-working-days/PRODUCT_CONTRACT_MASS_IMPORT_IAP_CALENDAR_AND_WORKING_DAYS.xlsx",
+  "desktopCopy": "/Users/lukachrikishvili/Desktop/PRODUCT_CONTRACT_MASS_IMPORT_IAP_CALENDAR_AND_WORKING_DAYS.xlsx",
+  "uiCalendarProduct": "https://devapps.energo-pro.bg/app/phoenix2-dev/products/preview/basic-settings?id=26664",
+  "uiWorkingProduct": "https://devapps.energo-pro.bg/app/phoenix2-dev/products/preview/basic-settings?id=26665",
+  "uiCalendarIap": "https://devapps.energo-pro.bg/app/phoenix2-dev/advance-payment/preview?id=3907",
+  "uiWorkingIap": "https://devapps.energo-pro.bg/app/phoenix2-dev/advance-payment/preview?id=3908",
+  "uiMassImport": "https://devapps.energo-pro.bg/app/phoenix2-dev/products-contracts/mass-import",
+  "contrastCertainDayProduct": 26493,
+  "contrastCertainDayIap": 3895
+}

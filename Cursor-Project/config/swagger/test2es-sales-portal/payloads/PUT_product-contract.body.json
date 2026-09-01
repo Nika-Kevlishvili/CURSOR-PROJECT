@@ -1,0 +1,43 @@
+{
+  "contract": {
+    "contractId": 89,
+    "contractVersionId": 1,
+    "contractStatus": "DRAFT",
+    "contractSubStatus": "DRAFT",
+    "signingDate": "2026-08-12",
+    "estimatedTotalConsumption": 1200.0,
+    "productId": 30,
+    "productVersionId": 1,
+    "contractType": "COMBINED",
+    "contractTermId": 33,
+    "invoicePaymentTermId": 49,
+    "paymentGuarantee": "NO",
+    "cashDepositAmount": 0.01,
+    "cashDepositCurrencyId": 1001,
+    "bankGuaranteeAmount": 0.01,
+    "bankGuaranteeCurrencyId": 1001,
+    "entryIntoForce": "SIGNING",
+    "startOfInitialTerm": "SIGNING",
+    "supplyActivationAfterContractResigning": "MANUAL",
+    "waitForOldContractTermToExpire": "NO",
+    "customerUic": "103920492",
+    "communicationDataContractId": 1598,
+    "communicationDataBillingId": 1598,
+    "podIdentifiers": [
+      "32Z4VV0102030405"
+    ]
+  },
+  "customer": {
+    "customerSegmentIds": [
+      1013
+    ],
+    "address": {
+      "isForeign": false,
+      "localAddressData": {
+        "countryId": 1027,
+        "populatedPlaceId": 1694,
+        "zipCodeId": 1664
+      }
+    }
+  }
+}

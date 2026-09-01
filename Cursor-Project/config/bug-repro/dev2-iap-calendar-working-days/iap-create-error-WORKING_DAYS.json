@@ -1,0 +1,27 @@
+{
+  "status": 500,
+  "body": {
+    "errorCode": "APPLICATION_ERROR",
+    "exceptionId": "ValidationException",
+    "message": "HV000028: Unexpected exception during isValid call."
+  },
+  "request": {
+    "name": "DPI WORKING_DAYS 10 2026-08-20 37257",
+    "valueType": "PERCENT_FROM_PREVIOUS_INVOICE_AMOUNT",
+    "value": 50,
+    "currencyId": 1001,
+    "paymentType": "OBLIGATORY",
+    "dateOfIssueType": "MATCH_THE_INVOICE_DATE",
+    "issuingForTheMonthToCurrent": "PLUS_TWO",
+    "deductionFrom": "FIRST_INVOICE_FOR_SAME_PERIOD",
+    "matchesWithTermOfStandardInvoice": false,
+    "noInterestInOverdueDebt": false,
+    "missingInvoice": false,
+    "interimAdvancePaymentTerm": {
+      "calendarType": "WORKING_DAYS",
+      "name": "10 Working Days",
+      "value": 10,
+      "calendarId": 1133
+    }
+  }
+}

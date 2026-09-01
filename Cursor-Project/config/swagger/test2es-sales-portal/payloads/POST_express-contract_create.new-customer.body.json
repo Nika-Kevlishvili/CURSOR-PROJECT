@@ -1,0 +1,79 @@
+{
+  "expressContractType": "PRODUCT",
+  "expressContractParameters": {
+    "productId": 44,
+    "productVersionId": 1,
+    "signingDate": "2026-08-12",
+    "estimatedTotalConsumption": 12.0
+  },
+  "customer": {
+    "identifier": "9901010000",
+    "systemSourceId": "SALES_PORTAL",
+    "customerType": "PRIVATE_CUSTOMER",
+    "foreign": false,
+    "customerSegments": [
+      1013
+    ],
+    "privateCustomerDetails": {
+      "firstName": "ТЕСТИНА",
+      "firstNameTranslated": "TESTINA",
+      "lastName": "ТЕСТОВА",
+      "lastNameTranslated": "TESTOVA"
+    },
+    "address": {
+      "foreign": false,
+      "localAddressData": {
+        "countryId": 1027,
+        "populatedPlaceId": 1694,
+        "zipCodeId": 1664,
+        "streetId": 112651
+      },
+      "number": "7"
+    },
+    "communications": [
+      {
+        "communicationTypes": "CONTRACT_COMMUNICATION",
+        "contactRequests": [],
+        "address": {
+          "foreign": false,
+          "localAddressData": {
+            "countryId": 1027,
+            "populatedPlaceId": 1694,
+            "zipCodeId": 1664,
+            "streetId": 112651
+          },
+          "number": "7"
+        }
+      },
+      {
+        "communicationTypes": "INVOICE_ISSUANCE",
+        "contactRequests": [],
+        "address": {
+          "foreign": false,
+          "localAddressData": {
+            "countryId": 1027,
+            "populatedPlaceId": 1694,
+            "zipCodeId": 1664,
+            "streetId": 112651
+          },
+          "number": "7"
+        }
+      }
+    ]
+  },
+  "productParameters": {
+    "contractType": "COMBINED",
+    "productContractTermId": 47,
+    "paymentGuarantee": "NO",
+    "invoicePaymentTermId": 77,
+    "entryIntoForce": "SIGNING",
+    "startOfContractInitialTerm": "SIGNING",
+    "supplyActivation": "FIRST_DAY_OF_MONTH",
+    "contractFormulas": [],
+    "interimAdvancePayments": []
+  },
+  "podDetailIds": [
+    70
+  ],
+  "proxyRequest": []
+}
