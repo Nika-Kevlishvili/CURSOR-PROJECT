@@ -6,17 +6,18 @@ Supports environment-aware Phoenix log searching, SQL queries (like Kibana
 Dev Tools), native Query DSL, index discovery, and field mapping inspection.
 
 Each MCP server instance serves one of these cluster roles:
-  ElasticsearchDev       → Dev + Dev2   (HTTPS, API key auth) — paired app_name filter
-  ElasticsearchTest      → Test + PreProd (HTTP, no auth) — paired app_name filter
-  ElasticsearchTest2ES   → Test 2 ES logs on Test cluster — fixed app_name + environment.keyword
-  ElasticsearchTest2SLR  → Test 2 SLR logs on Test cluster — fixed app_name + environment.keyword
-  ElasticsearchProd      → Prod only (HTTPS, API key) — no app_name filter
+  ElasticsearchDev         → Dev + Dev2   (HTTPS, API key auth) — paired app_name filter
+  ElasticsearchExperiment  → Experiments on Dev cluster — fixed app_name + environment.keyword
+  ElasticsearchTest        → Test + PreProd (HTTP, no auth) — paired app_name filter
+  ElasticsearchTest2ES     → Test 2 ES logs on Test cluster — fixed app_name + environment.keyword
+  ElasticsearchTest2SLR    → Test 2 SLR logs on Test cluster — fixed app_name + environment.keyword
+  ElasticsearchProd        → Prod only (HTTPS, API key) — no app_name filter
 
 Paired filtering uses the `app_name` field:
   Primary env (dev/test)     → phoenix, phoenix-scheduler, ...
   Secondary env (dev2/preprod) → phoenix2, phoenix-scheduler2, ...
 
-Keyword filtering (Test 2 ES / Test 2 SLR) uses:
+Keyword filtering (Experiment / Test 2 ES / Test 2 SLR) uses:
   app_name.keyword + environment.keyword (from ES_FILTER_* env vars)
 
 Environment variables (set in mcp.json env block):
@@ -150,7 +151,7 @@ def _request(method: str, path: str, body: dict | None = None, params: dict | No
 def _build_env_filter(environment: str) -> list[dict]:
     """Build Elasticsearch bool filter clauses for the requested environment.
 
-    Keyword mode (Test 2 ES / Test 2 SLR — ES_FILTER_APP_NAME + ES_FILTER_ENVIRONMENT_KEYWORD):
+    Keyword mode (Experiment / Test 2 ES / Test 2 SLR — ES_FILTER_APP_NAME + ES_FILTER_ENVIRONMENT_KEYWORD):
       term filters on app_name.keyword and environment.keyword.
     Paired mode (dev+dev2, test+preprod):
       Primary env uses base app names, secondary uses base + '2' suffix.
@@ -198,12 +199,14 @@ def es_search_logs(
 
     This is the primary tool for bug validation log analysis.
     Paired clusters filter by app_name automatically (primary: phoenix, ... vs
-    secondary: phoenix2, ...). Keyword-mode servers (Test 2 ES / Test 2 SLR)
-    filter by fixed app_name.keyword + environment.keyword from server config.
+    secondary: phoenix2, ...). Keyword-mode servers (Experiment / Test 2 ES /
+    Test 2 SLR) filter by fixed app_name.keyword + environment.keyword from
+    server config.
 
     Args:
         environment: REQUIRED. One of the supported environments for this server
-                    (e.g. "dev"/"dev2", "test"/"preprod", "test2es", "test2slr").
+                    (e.g. "dev"/"dev2", "test"/"preprod", "test2es", "test2slr",
+                    "experiments"/"experiment").
         search_text: Free-text search across message and stack_trace fields.
                     Supports wildcards. Example: "NullPointerException",
                     "invoice cancellation", "timeout".

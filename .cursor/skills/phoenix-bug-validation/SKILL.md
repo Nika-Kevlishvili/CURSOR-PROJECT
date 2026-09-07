@@ -161,9 +161,9 @@ Search application logs via Elasticsearch to find runtime evidence of the report
 | test2es (Test 2 ES) | `ElasticsearchTest2ES` | `test2es` |
 | test2slr (Test 2 SLR) | `ElasticsearchTest2SLR` | `test2slr` |
 | prod | `ElasticsearchProd` | `prod` |
-| experiments | Not configured — skip, document `elasticsearch_investigation=not_available` |
+| experiments | `ElasticsearchExperiment` | `experiments` |
 
-Clusters: **ElasticsearchDev** (Dev+Dev2, paired, HTTPS+API key), **ElasticsearchTest** (Test+PreProd, paired, HTTP, no auth), **ElasticsearchTest2ES** / **ElasticsearchTest2SLR** (same Test cluster URL, keyword filters), **ElasticsearchProd** (Prod only, single, HTTPS+API key). Paired clusters filter by `app_name` (primary = base names, secondary = `2` suffix). Test 2 servers filter with `app_name.keyword=phoenix2` plus `environment.keyword=test` (ES) or `testi2` (SLR). Prod has no filtering — all logs belong to Prod. **Prod limitation:** `es_cluster_health` and `es_list_indices` return 403 — use search tools only.
+Clusters: **ElasticsearchDev** (Dev+Dev2, paired, HTTPS+API key), **ElasticsearchExperiment** (same Dev cluster URL, keyword filters), **ElasticsearchTest** (Test+PreProd, paired, HTTP, no auth), **ElasticsearchTest2ES** / **ElasticsearchTest2SLR** (same Test cluster URL, keyword filters), **ElasticsearchProd** (Prod only, single, HTTPS+API key). Paired clusters filter by `app_name` (primary = base names, secondary = `2` suffix). Experiment filters with `app_name.keyword=phoenix-billing-run` plus `environment.keyword=experiment`. Test 2 servers filter with `app_name.keyword=phoenix2` plus `environment.keyword=test` (ES) or `testi2` (SLR). Prod has no filtering — all logs belong to Prod. **Prod limitation:** `es_cluster_health` and `es_list_indices` return 403 — use search tools only.
 
 **4c.0 — Portal URL override for Test 2 ES / SLR logs (Rule ES.0a) [MUST]:**
 

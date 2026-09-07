@@ -13,6 +13,21 @@
         "ES_ENVIRONMENTS": "dev,dev2"
       }
     },
+    "ElasticsearchExperiment": {
+      "command": "__ELASTICSEARCH_PYTHON__",
+      "args": [
+        "__ELASTICSEARCH_SCRIPT__"
+      ],
+      "env": {
+        "ES_HOST": "https://10.236.20.13:9200",
+        "ES_API_KEY": "bUk0c281OEJHc0FWd3pIRUdVOTg6NjFrTTJ1T1ZnckFvNVZvWDk5aTJuZw==",
+        "ES_VERIFY_SSL": "false",
+        "ES_SERVER_NAME": "ElasticsearchExperiment",
+        "ES_ENVIRONMENTS": "experiments,experiment",
+        "ES_FILTER_APP_NAME": "phoenix-billing-run",
+        "ES_FILTER_ENVIRONMENT_KEYWORD": "experiment"
+      }
+    },
     "ElasticsearchProd": {
       "command": "__ELASTICSEARCH_PYTHON__",
       "args": [

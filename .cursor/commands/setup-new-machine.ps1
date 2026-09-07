@@ -328,7 +328,7 @@ function Set-ElasticsearchMcpServerEntries {
         [string]$ScriptPath
     )
 
-    foreach ($name in @('ElasticsearchDev', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd')) {
+    foreach ($name in @('ElasticsearchDev', 'ElasticsearchExperiment', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd')) {
         if (-not $McpServersObj.$name) { continue }
         $McpServersObj.$name.command = $PythonExe
         if ($McpServersObj.$name.args -is [System.Array] -and $McpServersObj.$name.args.Count -gt 0) {
@@ -416,7 +416,7 @@ function Clear-UserLevelMcpConfig {
     $knownServers = @(
         'Confluence', 'Jira',
         'PostgreSQLTest', 'PostgreSQLDev', 'PostgreSQLDev2', 'PostgreSQLPreProd', 'PostgreSQLProd',
-        'ElasticsearchDev', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd'
+        'ElasticsearchDev', 'ElasticsearchExperiment', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd'
     )
 
     try {
@@ -474,7 +474,7 @@ function Invoke-WriteMcpConfig {
         Set-ElasticsearchMcpServerEntries -McpServersObj $template.mcpServers -PythonExe $esSetup.Python -ScriptPath $esSetup.ScriptPath
     }
     else {
-        foreach ($name in @('ElasticsearchDev', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd')) {
+        foreach ($name in @('ElasticsearchDev', 'ElasticsearchExperiment', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd')) {
             if ($template.mcpServers.$name) {
                 $template.mcpServers.PSObject.Properties.Remove($name)
             }
@@ -666,7 +666,7 @@ function Invoke-Verify {
             $required = @(
                 'Confluence', 'Jira',
                 'PostgreSQLTest', 'PostgreSQLDev', 'PostgreSQLDev2', 'PostgreSQLPreProd', 'PostgreSQLProd',
-                'ElasticsearchDev', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd'
+                'ElasticsearchDev', 'ElasticsearchExperiment', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd'
             )
             $missing = @($required | Where-Object { $names -notcontains $_ })
             if ($missing.Count -eq 0) {

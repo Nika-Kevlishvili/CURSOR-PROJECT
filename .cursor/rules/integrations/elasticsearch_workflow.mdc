@@ -13,13 +13,14 @@
 | Test 2 ES | `ElasticsearchTest2ES` | `test2es` | None (no auth) |
 | Test 2 SLR | `ElasticsearchTest2SLR` | `test2slr` | None (no auth) |
 | Prod | `ElasticsearchProd` | `prod` | API key (read-only) |
-| Experiments | Not configured | — | Skip ES, document `elasticsearch_investigation=not_available` |
+| Experiments | `ElasticsearchExperiment` | `experiments` (alias: `experiment`) | API key |
 
 **Clusters / MCP servers:**
 
 | MCP server | URL | Environments | Auth | Write protection | Mode |
 |---|---|---|---|---|---|
 | **ElasticsearchDev** | `https://10.236.20.13:9200` | Dev + Dev2 | API key (read-only) | API key is read-only | Paired — filter by `app_name` |
+| **ElasticsearchExperiment** | `https://10.236.20.13:9200` (same as Dev) | Experiments | API key (read-only) | API key is read-only | Keyword — `app_name.keyword=phoenix-billing-run` + `environment.keyword=experiment` |
 | **ElasticsearchTest** | `http://10.236.20.27:9200` | Test + PreProd | None (open) | `ES_READ_ONLY=true` (Rule ES.4a) | Paired — filter by `app_name` |
 | **ElasticsearchTest2ES** | `http://10.236.20.27:9200` (same as Test) | Test 2 ES | None (open) | `ES_READ_ONLY=true` (Rule ES.4a) | Keyword — `app_name.keyword=phoenix2` + `environment.keyword=test` |
 | **ElasticsearchTest2SLR** | `http://10.236.20.27:9200` (same as Test) | Test 2 SLR | None (open) | `ES_READ_ONLY=true` (Rule ES.4a) | Keyword — `app_name.keyword=phoenix2` + `environment.keyword=testi2` |
@@ -34,7 +35,7 @@ Paired clusters use the **same** `logstash-*` index pattern and the **same** `ap
 | Primary env (dev, test) | `phoenix`, `phoenix-scheduler`, `phoenix-billing-run`, `phoenix-mass-import`, `phoenix-sales-portal`, `phoenix-payment-api` |
 | Secondary env (dev2, preprod) | `phoenix2`, `phoenix-scheduler2`, `phoenix-billing-run2`, `phoenix-mass-import2`, `phoenix-sales-portal2`, `phoenix-payment-api2` |
 
-Keyword-mode servers (Test 2 ES / Test 2 SLR) share the Test cluster URL but filter with fixed term clauses (configured via `ES_FILTER_APP_NAME` + `ES_FILTER_ENVIRONMENT_KEYWORD` in mcp.json).
+Keyword-mode servers share a cluster URL with another env but filter with fixed term clauses (configured via `ES_FILTER_APP_NAME` + `ES_FILTER_ENVIRONMENT_KEYWORD` in mcp.json): **ElasticsearchExperiment** on the Dev cluster (`phoenix-billing-run` + `environment.keyword=experiment`); Test 2 ES / Test 2 SLR on the Test cluster. Kibana for Dev/Dev2/Experiment: `http://10.236.20.13:5601`.
 
 The `es_search_logs` and `es_error_summary` tools apply the configured filter automatically when you pass the `environment` parameter.
 
@@ -101,7 +102,7 @@ Never commit or log Elasticsearch API keys. Credentials stay in Cursor MCP serve
 **ElasticsearchTest** (`test`, `preprod`), **ElasticsearchTest2ES** (`test2es`), and **ElasticsearchTest2SLR** (`test2slr`) share the same open Test cluster endpoint. The MCP server enforces **read-only** mode via `ES_READ_ONLY=true`:
 
 - **BLOCKED at the script level:** `PUT`, `DELETE`, `PATCH` methods and write-path endpoints (`_bulk`, `_delete_by_query`, `_update_by_query`, `_reindex`, `_aliases`, `_template`, `_ingest`, `_snapshot`, etc.) are rejected before any HTTP request is sent.
-- **ElasticsearchDev** (`dev`, `dev2`) uses a **read-only API key** — write protection is enforced by Elasticsearch itself.
+- **ElasticsearchDev** (`dev`, `dev2`) and **ElasticsearchExperiment** (`experiments`) use a **read-only API key** on the same Dev cluster — write protection is enforced by Elasticsearch itself.
 - **ElasticsearchProd** (`prod`) uses a **read-only API key** AND `ES_READ_ONLY=true` — double protection.
 - Agents MUST NOT attempt to create, modify, or delete indices, documents, templates, or pipelines on any Elasticsearch cluster. All ES interactions are **search and read only**.
 - Violation is a **BLOCK** (security — unauthenticated write to shared infrastructure).

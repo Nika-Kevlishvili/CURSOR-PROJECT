@@ -21,6 +21,21 @@
         "ES_ENVIRONMENTS": "dev,dev2"
       }
     },
+    "ElasticsearchExperiment": {
+      "command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3",
+      "args": [
+        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+      ],
+      "env": {
+        "ES_HOST": "https://10.236.20.13:9200",
+        "ES_API_KEY": "bUk0c281OEJHc0FWd3pIRUdVOTg6NjFrTTJ1T1ZnckFvNVZvWDk5aTJuZw==",
+        "ES_VERIFY_SSL": "false",
+        "ES_SERVER_NAME": "ElasticsearchExperiment",
+        "ES_ENVIRONMENTS": "experiments,experiment",
+        "ES_FILTER_APP_NAME": "phoenix-billing-run",
+        "ES_FILTER_ENVIRONMENT_KEYWORD": "experiment"
+      }
+    },
     "ElasticsearchTest": {
       "command": "C:\\Users\\N.kevlishvili\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
       "args": [
