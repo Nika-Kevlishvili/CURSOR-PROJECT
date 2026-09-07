@@ -145,6 +145,19 @@
         "POSTGRES_USER": "readonly_user",
         "POSTGRES_PASSWORD": "U$CM)*qr&Zb4JfU@"
       }
+    },
+    "PostgreSQLExperiment": {
+      "command": "npx",
+      "args": ["-y", "mcp-postgres-server"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://readonly_user:U$CM)*qr&Zb4JfU@@10.236.20.85:5432/postgres",
+        "MCP_SERVER_NAME": "PostgreSQLExperiment",
+        "POSTGRES_HOST": "10.236.20.85",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "postgres",
+        "POSTGRES_USER": "readonly_user",
+        "POSTGRES_PASSWORD": "U$CM)*qr&Zb4JfU@"
+      }
     }
   }
 }
