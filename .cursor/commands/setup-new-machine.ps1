@@ -415,8 +415,13 @@ function Clear-UserLevelMcpConfig {
 
     $knownServers = @(
         'Confluence', 'Jira',
+<<<<<<< Updated upstream
         'PostgreSQLTest', 'PostgreSQLDev', 'PostgreSQLDev2', 'PostgreSQLPreProd', 'PostgreSQLProd',
         'ElasticsearchDev', 'ElasticsearchExperiment', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd'
+=======
+        'PostgreSQLTest', 'PostgreSQLDev', 'PostgreSQLDev2', 'PostgreSQLPreProd', 'PostgreSQLProd', 'PostgreSQLExperiment',
+        'ElasticsearchDev', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd'
+>>>>>>> Stashed changes
     )
 
     try {
@@ -665,8 +670,13 @@ function Invoke-Verify {
             $names = @($mcp.mcpServers.PSObject.Properties.Name)
             $required = @(
                 'Confluence', 'Jira',
+<<<<<<< Updated upstream
                 'PostgreSQLTest', 'PostgreSQLDev', 'PostgreSQLDev2', 'PostgreSQLPreProd', 'PostgreSQLProd',
                 'ElasticsearchDev', 'ElasticsearchExperiment', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd'
+=======
+                'PostgreSQLTest', 'PostgreSQLDev', 'PostgreSQLDev2', 'PostgreSQLPreProd', 'PostgreSQLProd', 'PostgreSQLExperiment',
+                'ElasticsearchDev', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd'
+>>>>>>> Stashed changes
             )
             $missing = @($required | Where-Object { $names -notcontains $_ })
             if ($missing.Count -eq 0) {

@@ -1,0 +1,800 @@
+﻿{
+    "expand":  "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
+    "id":  "40106",
+    "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/40106",
+    "key":  "PHX-11466",
+    "names":  {
+                  "summary":  "Summary",
+                  "issuetype":  "Issue Type",
+                  "components":  "Components",
+                  "created":  "Created",
+                  "customfield_10283":  "Clarification Reason",
+                  "description":  "Description",
+                  "reporter":  "Reporter",
+                  "priority":  "Priority",
+                  "labels":  "Labels",
+                  "customfield_10104":  "Design",
+                  "environment":  "Environment",
+                  "attachment":  "Attachment",
+                  "comment":  "Comment",
+                  "issuelinks":  "Linked Issues",
+                  "assignee":  "Assignee",
+                  "updated":  "Updated",
+                  "status":  "Status"
+              },
+    "changelog":  {
+                      "startAt":  0,
+                      "maxResults":  14,
+                      "total":  14,
+                      "histories":  [
+                                        {
+                                            "id":  "387668",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ae76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                           "accountId":  "712020:e76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png"
+                                                                          },
+                                                           "displayName":  "beka.aivazashvili",
+                                                           "active":  false,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2024-10-31T05:31:47.908+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Rank",
+                                                              "fieldtype":  "custom",
+                                                              "fieldId":  "customfield_10011",
+                                                              "from":  "",
+                                                              "fromString":  "",
+                                                              "to":  "",
+                                                              "toString":  "Ranked higher"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "387667",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ae76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                           "accountId":  "712020:e76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png"
+                                                                          },
+                                                           "displayName":  "beka.aivazashvili",
+                                                           "active":  false,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2024-10-31T05:31:47.406+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "resolution",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "resolution",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "10000",
+                                                              "toString":  "Done"
+                                                          },
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10162",
+                                                              "fromString":  "Testing",
+                                                              "to":  "10159",
+                                                              "toString":  "Done"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "387569",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ae76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                           "accountId":  "712020:e76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png"
+                                                                          },
+                                                           "displayName":  "beka.aivazashvili",
+                                                           "active":  false,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2024-10-30T18:44:37.017+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10161",
+                                                              "fromString":  "Ready for Testing",
+                                                              "to":  "10162",
+                                                              "toString":  "Testing"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "387564",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A96a5e807-6740-4627-a2f7-39842ed8da3c",
+                                                           "accountId":  "712020:96a5e807-6740-4627-a2f7-39842ed8da3c",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png"
+                                                                          },
+                                                           "displayName":  "Rezi Kartvelishvili",
+                                                           "active":  false,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2024-10-30T18:41:35.509+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10160",
+                                                              "fromString":  "To Code Review",
+                                                              "to":  "10161",
+                                                              "toString":  "Ready for Testing"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "387463",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A96a5e807-6740-4627-a2f7-39842ed8da3c",
+                                                           "accountId":  "712020:96a5e807-6740-4627-a2f7-39842ed8da3c",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png"
+                                                                          },
+                                                           "displayName":  "Rezi Kartvelishvili",
+                                                           "active":  false,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2024-10-30T17:02:37.327+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10158",
+                                                              "fromString":  "In Progress",
+                                                              "to":  "10160",
+                                                              "toString":  "To Code Review"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "387460",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A96a5e807-6740-4627-a2f7-39842ed8da3c",
+                                                           "accountId":  "712020:96a5e807-6740-4627-a2f7-39842ed8da3c",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png"
+                                                                          },
+                                                           "displayName":  "Rezi Kartvelishvili",
+                                                           "active":  false,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2024-10-30T17:00:53.730+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Rank",
+                                                              "fieldtype":  "custom",
+                                                              "fieldId":  "customfield_10011",
+                                                              "from":  "",
+                                                              "fromString":  "",
+                                                              "to":  "",
+                                                              "toString":  "Ranked lower"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "387459",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A96a5e807-6740-4627-a2f7-39842ed8da3c",
+                                                           "accountId":  "712020:96a5e807-6740-4627-a2f7-39842ed8da3c",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png"
+                                                                          },
+                                                           "displayName":  "Rezi Kartvelishvili",
+                                                           "active":  false,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2024-10-30T17:00:53.401+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10185",
+                                                              "fromString":  "QA Failed",
+                                                              "to":  "10158",
+                                                              "toString":  "In Progress"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "387064",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ae76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                           "accountId":  "712020:e76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png"
+                                                                          },
+                                                           "displayName":  "beka.aivazashvili",
+                                                           "active":  false,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2024-10-30T05:13:31.078+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10162",
+                                                              "fromString":  "Testing",
+                                                              "to":  "10185",
+                                                              "toString":  "QA Failed"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "386957",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ae76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                           "accountId":  "712020:e76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png"
+                                                                          },
+                                                           "displayName":  "beka.aivazashvili",
+                                                           "active":  false,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2024-10-29T15:40:10.951+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10161",
+                                                              "fromString":  "Ready for Testing",
+                                                              "to":  "10162",
+                                                              "toString":  "Testing"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "386781",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A96a5e807-6740-4627-a2f7-39842ed8da3c",
+                                                           "accountId":  "712020:96a5e807-6740-4627-a2f7-39842ed8da3c",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png"
+                                                                          },
+                                                           "displayName":  "Rezi Kartvelishvili",
+                                                           "active":  false,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2024-10-29T03:50:21.926+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10160",
+                                                              "fromString":  "To Code Review",
+                                                              "to":  "10161",
+                                                              "toString":  "Ready for Testing"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "386754",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A96a5e807-6740-4627-a2f7-39842ed8da3c",
+                                                           "accountId":  "712020:96a5e807-6740-4627-a2f7-39842ed8da3c",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png"
+                                                                          },
+                                                           "displayName":  "Rezi Kartvelishvili",
+                                                           "active":  false,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2024-10-29T01:58:58.934+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Rank",
+                                                              "fieldtype":  "custom",
+                                                              "fieldId":  "customfield_10011",
+                                                              "from":  "",
+                                                              "fromString":  "",
+                                                              "to":  "",
+                                                              "toString":  "Ranked higher"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "386753",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A96a5e807-6740-4627-a2f7-39842ed8da3c",
+                                                           "accountId":  "712020:96a5e807-6740-4627-a2f7-39842ed8da3c",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png"
+                                                                          },
+                                                           "displayName":  "Rezi Kartvelishvili",
+                                                           "active":  false,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2024-10-29T01:58:58.557+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10157",
+                                                              "fromString":  "To Do",
+                                                              "to":  "10160",
+                                                              "toString":  "To Code Review"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "386475",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ae76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                           "accountId":  "712020:e76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png"
+                                                                          },
+                                                           "displayName":  "beka.aivazashvili",
+                                                           "active":  false,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2024-10-25T17:12:50.187+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Link",
+                                                              "fieldtype":  "jira",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "PHX-11019",
+                                                              "toString":  "This issue relates to PHX-11019"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "386473",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ae76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                           "accountId":  "712020:e76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png"
+                                                                          },
+                                                           "displayName":  "beka.aivazashvili",
+                                                           "active":  false,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2024-10-25T17:12:50.095+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "IssueParentAssociation",
+                                                              "fieldtype":  "jira",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "35729",
+                                                              "toString":  "35729"
+                                                          }
+                                                      ]
+                                        }
+                                    ]
+                  },
+    "fields":  {
+                   "summary":  "[Frontend] - Collection Channel - Less Than/ Greater Than",
+                   "issuetype":  {
+                                     "self":  "https://oppa-support.atlassian.net/rest/api/3/issuetype/10120",
+                                     "id":  "10120",
+                                     "description":  "Bugs track problems or errors.",
+                                     "iconUrl":  "https://oppa-support.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10303?size=medium",
+                                     "name":  "Bug",
+                                     "subtask":  false,
+                                     "avatarId":  10303,
+                                     "entityId":  "410761b5-24f3-459f-a52f-09657c2315e0",
+                                     "hierarchyLevel":  0
+                                 },
+                   "components":  [
+
+                                  ],
+                   "created":  "2024-10-25T17:12:49.861+0400",
+                   "customfield_10283":  null,
+                   "description":  {
+                                       "type":  "doc",
+                                       "version":  1,
+                                       "content":  [
+                                                       {
+                                                           "type":  "paragraph",
+                                                           "content":  [
+                                                                           {
+                                                                               "type":  "text",
+                                                                               "text":  "Steps To Reproduce:",
+                                                                               "marks":  [
+                                                                                             {
+                                                                                                 "type":  "strong"
+                                                                                             }
+                                                                                         ]
+                                                                           }
+                                                                       ]
+                                                       },
+                                                       {
+                                                           "type":  "paragraph",
+                                                           "content":  [
+                                                                           {
+                                                                               "type":  "text",
+                                                                               "text":  "Open Collection Channel"
+                                                                           }
+                                                                       ]
+                                                       },
+                                                       {
+                                                           "type":  "paragraph",
+                                                           "content":  [
+                                                                           {
+                                                                               "type":  "text",
+                                                                               "text":  "Check these two fields and enter these values "
+                                                                           }
+                                                                       ]
+                                                       },
+                                                       {
+                                                           "type":  "mediaSingle",
+                                                           "attrs":  {
+                                                                         "layout":  "align-start"
+                                                                     },
+                                                           "content":  [
+                                                                           {
+                                                                               "type":  "media",
+                                                                               "attrs":  {
+                                                                                             "type":  "file",
+                                                                                             "id":  "bfb68b5b-24e3-438d-9d93-be31e7e5daa9",
+                                                                                             "alt":  "image-20241025-131208.png",
+                                                                                             "collection":  "",
+                                                                                             "height":  173,
+                                                                                             "width":  710
+                                                                                         }
+                                                                           }
+                                                                       ]
+                                                       },
+                                                       {
+                                                           "type":  "paragraph",
+                                                           "content":  [
+                                                                           {
+                                                                               "type":  "text",
+                                                                               "text":  "Actual Result:",
+                                                                               "marks":  [
+                                                                                             {
+                                                                                                 "type":  "strong"
+                                                                                             }
+                                                                                         ]
+                                                                           }
+                                                                       ]
+                                                       },
+                                                       {
+                                                           "type":  "paragraph",
+                                                           "content":  [
+                                                                           {
+                                                                               "type":  "text",
+                                                                               "text":  "No error is shown"
+                                                                           }
+                                                                       ]
+                                                       },
+                                                       {
+                                                           "type":  "paragraph",
+                                                           "content":  [
+                                                                           {
+                                                                               "type":  "text",
+                                                                               "text":  "Expected Result:",
+                                                                               "marks":  [
+                                                                                             {
+                                                                                                 "type":  "strong"
+                                                                                             }
+                                                                                         ]
+                                                                           }
+                                                                       ]
+                                                       },
+                                                       {
+                                                           "type":  "paragraph",
+                                                           "content":  [
+                                                                           {
+                                                                               "type":  "text",
+                                                                               "text":  "As stated in the confluence max length should be 10 not 11"
+                                                                           }
+                                                                       ]
+                                                       }
+                                                   ]
+                                   },
+                   "reporter":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ae76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                    "accountId":  "712020:e76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                    "avatarUrls":  {
+                                                       "48x48":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                       "24x24":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                       "16x16":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                       "32x32":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png"
+                                                   },
+                                    "displayName":  "beka.aivazashvili",
+                                    "active":  true,
+                                    "timeZone":  "Asia/Dubai",
+                                    "accountType":  "atlassian"
+                                },
+                   "priority":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/priority/3",
+                                    "iconUrl":  "https://oppa-support.atlassian.net/images/icons/priorities/medium_new.svg",
+                                    "name":  "Medium",
+                                    "id":  "3"
+                                },
+                   "labels":  [
+                                  "Frontend"
+                              ],
+                   "customfield_10104":  null,
+                   "environment":  null,
+                   "attachment":  [
+                                      {
+                                          "self":  "https://oppa-support.atlassian.net/rest/api/3/attachment/35651",
+                                          "id":  "35651",
+                                          "filename":  "image-20241025-131208.png",
+                                          "author":  {
+                                                         "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ae76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                         "accountId":  "712020:e76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                         "avatarUrls":  {
+                                                                            "48x48":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                            "24x24":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                            "16x16":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                            "32x32":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png"
+                                                                        },
+                                                         "displayName":  "beka.aivazashvili",
+                                                         "active":  true,
+                                                         "timeZone":  "Asia/Dubai",
+                                                         "accountType":  "atlassian"
+                                                     },
+                                          "created":  "2024-10-25T17:12:50.294+0400",
+                                          "size":  12105,
+                                          "mimeType":  "image/png",
+                                          "content":  "https://oppa-support.atlassian.net/rest/api/3/attachment/content/35651",
+                                          "thumbnail":  "https://oppa-support.atlassian.net/rest/api/3/attachment/thumbnail/35651"
+                                      },
+                                      {
+                                          "self":  "https://oppa-support.atlassian.net/rest/api/3/attachment/35676",
+                                          "id":  "35676",
+                                          "filename":  "image-20241030-011339.png",
+                                          "author":  {
+                                                         "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ae76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                         "accountId":  "712020:e76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                         "avatarUrls":  {
+                                                                            "48x48":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                            "24x24":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                            "16x16":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                            "32x32":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png"
+                                                                        },
+                                                         "displayName":  "beka.aivazashvili",
+                                                         "active":  true,
+                                                         "timeZone":  "Asia/Dubai",
+                                                         "accountType":  "atlassian"
+                                                     },
+                                          "created":  "2024-10-30T05:13:44.530+0400",
+                                          "size":  11006,
+                                          "mimeType":  "image/png",
+                                          "content":  "https://oppa-support.atlassian.net/rest/api/3/attachment/content/35676",
+                                          "thumbnail":  "https://oppa-support.atlassian.net/rest/api/3/attachment/thumbnail/35676"
+                                      }
+                                  ],
+                   "comment":  {
+                                   "comments":  [
+                                                    {
+                                                        "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/40106/comment/42067",
+                                                        "id":  "42067",
+                                                        "author":  {
+                                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ae76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                                       "accountId":  "712020:e76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                                       "avatarUrls":  {
+                                                                                          "48x48":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                                          "24x24":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                                          "16x16":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                                          "32x32":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png"
+                                                                                      },
+                                                                       "displayName":  "beka.aivazashvili",
+                                                                       "active":  true,
+                                                                       "timeZone":  "Asia/Dubai",
+                                                                       "accountType":  "atlassian"
+                                                                   },
+                                                        "body":  {
+                                                                     "type":  "doc",
+                                                                     "version":  1,
+                                                                     "content":  [
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "I can write 13 symbols now. after talking with Tiko she told me that max number of symbols should be 10 no matter if it is decmal point number or not so max number is 9 999 999 999 and maximum decimal point number is 999 999.99 (caracters include “.” as well)based on information that was provided"
+                                                                                                         }
+                                                                                                     ]
+                                                                                     },
+                                                                                     {
+                                                                                         "type":  "mediaSingle",
+                                                                                         "attrs":  {
+                                                                                                       "layout":  "align-start"
+                                                                                                   },
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "media",
+                                                                                                             "attrs":  {
+                                                                                                                           "type":  "file",
+                                                                                                                           "id":  "03800b73-ce5c-4c5d-b03f-5e08bb4aa539",
+                                                                                                                           "alt":  "image-20241030-011339.png",
+                                                                                                                           "collection":  "",
+                                                                                                                           "height":  183,
+                                                                                                                           "width":  651
+                                                                                                                       }
+                                                                                                         }
+                                                                                                     ]
+                                                                                     }
+                                                                                 ]
+                                                                 },
+                                                        "updateAuthor":  {
+                                                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Ae76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                                             "accountId":  "712020:e76c0d4e-a1b2-44d0-8ab7-474e47148bfa",
+                                                                             "avatarUrls":  {
+                                                                                                "48x48":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                                                "24x24":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                                                "16x16":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png",
+                                                                                                "32x32":  "https://secure.gravatar.com/avatar/118d26550683a5b698460c611b29b795?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FB-2.png"
+                                                                                            },
+                                                                             "displayName":  "beka.aivazashvili",
+                                                                             "active":  true,
+                                                                             "timeZone":  "Asia/Dubai",
+                                                                             "accountType":  "atlassian"
+                                                                         },
+                                                        "created":  "2024-10-30T05:13:28.572+0400",
+                                                        "updated":  "2024-10-30T05:13:45.626+0400",
+                                                        "jsdPublic":  true
+                                                    }
+                                                ],
+                                   "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/40106/comment",
+                                   "maxResults":  1,
+                                   "total":  1,
+                                   "startAt":  0
+                               },
+                   "issuelinks":  [
+                                      {
+                                          "id":  "22800",
+                                          "self":  "https://oppa-support.atlassian.net/rest/api/3/issueLink/22800",
+                                          "type":  {
+                                                       "id":  "10003",
+                                                       "name":  "Relates",
+                                                       "inward":  "relates to",
+                                                       "outward":  "relates to",
+                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/issueLinkType/10003"
+                                                   },
+                                          "inwardIssue":  {
+                                                              "id":  "39612",
+                                                              "key":  "PHX-11019",
+                                                              "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/39612",
+                                                              "fields":  {
+                                                                             "summary":  "Regression - Collection Channel",
+                                                                             "status":  {
+                                                                                            "self":  "https://oppa-support.atlassian.net/rest/api/3/status/10207",
+                                                                                            "description":  "",
+                                                                                            "iconUrl":  "https://oppa-support.atlassian.net/",
+                                                                                            "name":  "Can Not Reproduce",
+                                                                                            "id":  "10207",
+                                                                                            "statusCategory":  {
+                                                                                                                   "self":  "https://oppa-support.atlassian.net/rest/api/3/statuscategory/3",
+                                                                                                                   "id":  3,
+                                                                                                                   "key":  "done",
+                                                                                                                   "colorName":  "green",
+                                                                                                                   "name":  "Done"
+                                                                                                               }
+                                                                                        },
+                                                                             "priority":  {
+                                                                                              "self":  "https://oppa-support.atlassian.net/rest/api/3/priority/3",
+                                                                                              "iconUrl":  "https://oppa-support.atlassian.net/images/icons/priorities/medium_new.svg",
+                                                                                              "name":  "Medium",
+                                                                                              "id":  "3"
+                                                                                          },
+                                                                             "issuetype":  {
+                                                                                               "self":  "https://oppa-support.atlassian.net/rest/api/3/issuetype/10119",
+                                                                                               "id":  "10119",
+                                                                                               "description":  "Tasks track small, distinct pieces of work.",
+                                                                                               "iconUrl":  "https://oppa-support.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+                                                                                               "name":  "Task",
+                                                                                               "subtask":  false,
+                                                                                               "avatarId":  10318,
+                                                                                               "entityId":  "5e22e290-d6c5-4977-9e97-11ac6532b608",
+                                                                                               "hierarchyLevel":  0
+                                                                                           }
+                                                                         }
+                                                          }
+                                      }
+                                  ],
+                   "assignee":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A96a5e807-6740-4627-a2f7-39842ed8da3c",
+                                    "accountId":  "712020:96a5e807-6740-4627-a2f7-39842ed8da3c",
+                                    "avatarUrls":  {
+                                                       "48x48":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                       "24x24":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                       "16x16":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png",
+                                                       "32x32":  "https://secure.gravatar.com/avatar/bb4581db19bd80067bdf857f0b45393f?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FRK-4.png"
+                                                   },
+                                    "displayName":  "Rezi Kartvelishvili",
+                                    "active":  true,
+                                    "timeZone":  "Asia/Dubai",
+                                    "accountType":  "atlassian"
+                                },
+                   "updated":  "2024-10-31T05:31:47.908+0400",
+                   "status":  {
+                                  "self":  "https://oppa-support.atlassian.net/rest/api/3/status/10159",
+                                  "description":  "",
+                                  "iconUrl":  "https://oppa-support.atlassian.net/",
+                                  "name":  "Done",
+                                  "id":  "10159",
+                                  "statusCategory":  {
+                                                         "self":  "https://oppa-support.atlassian.net/rest/api/3/statuscategory/3",
+                                                         "id":  3,
+                                                         "key":  "done",
+                                                         "colorName":  "green",
+                                                         "name":  "Done"
+                                                     }
+                              }
+               }
+}

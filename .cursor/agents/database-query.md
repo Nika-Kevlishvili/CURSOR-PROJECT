@@ -21,7 +21,7 @@ You run **PostgreSQL** queries for the Phoenix project via MCP. **Canonical cont
    - Test → PostgreSQLTest
    - PreProd → PostgreSQLPreProd
    - Prod → PostgreSQLProd (read-only user)
-   - Experiments → PostgreSQLexperiments
+   - Experiments → PostgreSQLExperiment
 4. **Connect first**: use the matching MCP `mcp_PostgreSQL{Env}_connect_db(...)` with arguments from that MCP tool’s schema / server config — **not** from pasted rule text. Do not paste passwords in your response.
 5. Then run queries with `mcp_PostgreSQL{Env}_query(sql="...")` or `mcp_PostgreSQL{Env}_execute(...)` as needed.
 

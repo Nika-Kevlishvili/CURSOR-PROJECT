@@ -1,0 +1,170 @@
+﻿TITLE: Price component conditions
+ID: 150241300
+
+ how to check conditions in price component first tab.
+conditions logical operators:
+= equality operator . return true if condition 1 equals to condition 2. return false if condition 1 not equals conditions 2.
+> greater then operator. return true if condition 1 is greater then condition 2. return false if condition 1 less/equal then condition 2.
+< less then operator. return true if condition 1 is less then condition 2. return false if condition 1 more/equal then condition 2.
+<> not equality operator. return true if condition 1 not equals to condition 2. return false if condition 1 equals condition 2.
+in attribute. return true if condition 1 equals one of the value from list which is added in in attribute. return false if condition 1 not equals one of the value from list which is added in in attribute. 
+should have brackets after attribute, to separate more then one value in brackets use comma.
+and logical operator. return true if condition 1 and condition 2 both are true. return false if condition 1 or condition 2 is false.
+or logical operator. return true if condition 1 or condition 2 is true. return false if condition 1 and condition 2 are false.
+not attribute. can be used before any condition and should have brackets after attribute. returns the opposite Boolean of condition
+() brackets. can be used for identification which condition should be checked firstly.
+Validate. validate formula format and displays error if format is wrong.
+Conditions 
+Display Active AND Non Active Values of nomenclature in dropdown
+`POD
+activation
+deactivation
+product version
+customer version
+customer type
+customer segment
+customer preferences
+billing data by profile
+calculated period from
+calculated period to
+directly added price component
+POD1
+01-Sep
+15-Sep
+a(v1)
+customer1(version1)
+Legal Entity
+seg5,
+seg8
+preference26,
+preference27,
+preference28
+POD1
+01-Sep
+05-Sep
+price component3
+Customer type 
+value should be taken from customer object “type” field (connection is with ID).
+in invoicing process customer should be taken from product/service contract valid version for each POD for each record which is filtered in table.
+should be checked condition and if it returns true, continue invoice creation process for this price component, if it returns false skip this price component for all contract valid version where this customer is used 
+example:
+{
+"condition": "NOT($CUSTOMER_TYPE$<>$LEGAL_ENTITY$)"
+} 
+this condition means opposite (customer type isn’t equal to Legal Entity) => customer type equal to Legal Entity. if we input our values in it get condition: Legal Entity = Legal Entity, and should return true and continue in
+voice creation process for price component 3
+Customer segment 
+value should be taken from customer object “Segment” field (connection is with version).
+in invoicing process customer version should be taken from product/service contract valid version for each POD for each record which is filtered in table
+should be checked condition and if it returns true, continue invoice creation process for this price component, if it returns false skip this price component for all contract valid version where this customer is used
+if there is more then 1 segment selected in customer version should check condition for each segment and if one of this checked condition is true, continue invoice creation process, if all of this condition is false skip this price component for all contract valid version where this customer is used
+example:
+{
+"condition": "($CUSTOMER_TYPE$=$PRIVATE_CUSTOMER$)OR($CUSTOMER_SEGMENT$ in ($177$,$178$))"
+}
+in this example $PRIVATE_CUSTOMER$ should be Legal Entity and $CUSTOMER_SEGMENT$ should be seg5,seg8 in conditions we are using segment ID seg5=177, seg8=181
+we need to check 2 condition:
+{
+"condition": "($CUSTOMER_TYPE$=$Legal Entity$)OR($177$ in ($177$,$178$))"
+}
+return true.
+{
+"condition": "($CUSTOMER_TYPE$=$Legal Entity$)OR($181$ in ($177$,$178$))"
+}
+return false.
+should continue invoice creation process because 1 condition is true. 
+Customer preferences 
+value should be taken from customer object “Preference” field (connection is with version).
+in invoicing process customer version should be taken from product/service contract valid version for each POD for each record which is filtered in table
+should be checked condition and if it returns true, continue invoice creation process for this price component, if it returns false skip this price component for all contract valid version where this customer is used
+if there is more then 1 segment selected in customer version should check condition for each segment and if one of this checked condition is true, continue invoice creation process, if all of this condition is false skip this price component for all contract valid version where this customer is used
+Additional parameter 
+condition can be used for only product contract. for service contract this condition is always true 
+value should be taken from POD object “POD additional parameter” field 
+Months difference between Max Date of Billing Run and Contract Activation Date 
+Returns number of month 
+it means we should search for > “Months difference between Max Date of Billing Run and Contract Activation Date” 
+If they are In same month - Return 0 
+Months difference between Current Date and Contract Activation Date 
+Returns number of month 
+it means we should search for > “Months difference between Current Date (Billing run Execution Date) and Contract Activation Date” 
+If they are In same month - Return 0 
+POD country 
+condition can be used for only product contract. for service contract this condition is always true
+value should be taken from POD object “Country” field (connection is with version).
+in invoicing process POD version should be taken from product contract valid version for each record which is filtered in table
+should be checked condition and if it returns true, continue invoice creation process for this price component, if it returns false skip this price component for this POD version in invoice creation process
+POD region 
+condition can be used for only product contract. for service contract this condition is always true
+value should be taken from POD object “Region” field (connection is with version).
+in invoicing process POD version should be taken from product contract valid version for each record which is filtered in table
+should be checked condition and if it returns true, continue invoice creation process for this price component, if it returns false skip this price component for this POD version in invoice creation process
+POD populated place 
+condition can be used for only product contract. for service contract this condition is always true
+value should be taken from POD object “Populated place” field (connection is with version).
+in invoicing process POD version should be taken from product contract valid version for each record which is filtered in table
+should be checked condition and if it returns true, continue invoice creation process for this price component, if it returns false skip this price component for this POD version in invoice creation process
+POD grid operator 
+condition can be used for only product contract. for service contract this condition is always true
+value should be taken from POD object “Grid operator” field (connection is with ID).
+in invoicing process POD should be taken from product contract valid version for each record which is filtered in table (we have POD version in product contract, but it’s easy to take POD depend on this version)
+should be checked condition and if it returns true, continue invoice creation process for this price component, if it returns false skip this price component for this POD in invoice creation process
+# note should skip this price component in calculation for all version of this POD 
+POD voltage level 
+condition can be used for only product contract. for service contract this condition is always true
+value should be taken from POD object “voltage level” field (connection is with version).
+in invoicing process POD version should be taken from product contract valid version for each record which is filtered in table
+should be checked condition and if it returns true, continue invoice creation process for this price component, if it returns false skip this price component for this POD version in invoice creation process
+POD Measurement type 
+condition can be used for only product contract. for service contract this condition is always true
+value should be taken from POD object “Measurement type” field (connection is with version).
+in invoicing process POD version should be taken from product contract valid version for each record which is filtered in table
+should be checked condition and if it returns true, continue invoice creation process for this price component, if it returns false skip this price component for this POD version in invoice creation process
+POD Provided power 
+condition can be used for only product contract. for service contract this condition is always true
+value should be taken from POD object “Provided power” field (connection is with version).
+in invoicing process POD version should be taken from product contract valid version for each record which is filtered in table
+should be checked condition and if it returns true, continue invoice creation process for this price component, if it returns false skip this price component for this POD version in invoice creation process
+POD multiplicator 
+condition can be used for only product contract. for service contract this condition is always true
+value should be taken from POD object “Multiplier” field (connection is with version).
+in invoicing process POD version should be taken from product contract valid version for each record which is filtered in table
+should be checked condition and if it returns true, continue invoice creation process for this price component, if it returns false skip this price component for this POD version in invoice creation process
+Purpose of Consumption 
+condition can be used for only product contract. for service contract this condition is always true 
+Household 
+Non-household 
+Direct Debit 
+should be checked in 3 place (connection is with version).
+in product contract 4th tab in billing group is direct debit checkbox marked or not.
+in product/service contract 2th tab is direct debit checkbox marked or not
+in customer 1th tab is direct debit checkbox marked or not.
+in invoicing process contract valid version should be taken from filtered table, customer should be taken from product contract valid version for each POD for each record which is filtered in table
+for each contract valid version should be checked condition 
+if in condition direct debit is YES, should check if it is marked one of above mention 3 place and if it’s marked should return true, continue invoice creation process for this price component, if it isn’t marked any of above mention place returns false and skip this price component for this contract valid version in invoice creation process
+if in condition direct debit is NO, should check if it is marked one of above mention 3 place and if it’s marked should return false , skip this price component for this contract valid version in invoice creation process , if it isn’t marked any of above mention place return true and continue invoice creation process for this price component
+Contract status in perpetuity 
+value should be taken from product/service contract object “status” field (connection is with ID) from filtered table.
+for each contract should be checked condition
+if in condition contract status in perpetuity is YES, should check if selected contract status is active in perpetuity and if YES return true, continue invoice creation process for this price component for this contract
+if in condition contract status in perpetuity is NO, should check if selected contract status is active in perpetuity and if NO return false, skip this price component for this contract in invoice creation process
+Active power for supply activation 
+part of receivable bundle.
+condition can be used for only product contract. for service contract this condition is always true
+value should be taken from PODs new listing in receivable bundle.
+condition has 2 values : Yes, No
+if in condition is used YES value, should check POD has active power and if yes continue invoice creation for this POD for selected price component. if no skip this POD in calculation for selected price component.
+if in condition is used NO value, should check POD has active power and if NO continue invoice creation for this POD for selected price component. if YES skip this POD in calculation for selected price component.
+Contract type 
+condition can be used for only product contract. for service contract this condition is always true
+value should be taken from product contract 3rd tab, from contract type field.
+4 hardcoded values : combined, supply and balancing, supply only, without supply.
+should be checked condition and if it returns true, continue invoice creation process for this price component, if it returns false skip selected contract valid version for this price component in invoice creation process.
+Risk assessment additional conditions 
+Condition is applicable only for product contract
+Value should be taken from contract valid version. If value saved in contract valid version matches exactly value from nomenclature result should be true. if no - false.
+Contract campaign 
+value should be taken from product/service contract 2nd tab, from campaign field.
+values manageable from nomenclature.
+should be checked condition and if it returns true, continue invoice creation process for this price component, if it returns false skip selected contract valid version for this price component in invoice creation process.
+

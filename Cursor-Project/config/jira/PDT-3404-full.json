@@ -1,0 +1,1682 @@
+﻿{
+    "expand":  "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
+    "id":  "80953",
+    "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/80953",
+    "key":  "PDT-3404",
+    "names":  {
+                  "issuetype":  "Issue Type",
+                  "components":  "Components",
+                  "customfield_10095":  "Tester",
+                  "description":  "Description",
+                  "customfield_10104":  "Design",
+                  "customfield_10745":  "Test Case",
+                  "attachment":  "Attachment",
+                  "summary":  "Summary",
+                  "created":  "Created",
+                  "customfield_10283":  "Clarification Reason",
+                  "reporter":  "Reporter",
+                  "customfield_10483":  "DB Points",
+                  "customfield_10484":  "Dev Points",
+                  "priority":  "Priority",
+                  "customfield_10485":  "QA points",
+                  "customfield_10048":  "Acceptance Criteria",
+                  "labels":  "Labels",
+                  "customfield_10103":  "Description formatted",
+                  "environment":  "Environment",
+                  "customfield_10877":  "Approved for Prod",
+                  "customfield_10217":  "Bug Description",
+                  "issuelinks":  "Linked Issues",
+                  "comment":  "Comment",
+                  "assignee":  "Assignee",
+                  "updated":  "Updated",
+                  "status":  "Status"
+              },
+    "changelog":  {
+                      "startAt":  0,
+                      "maxResults":  5,
+                      "total":  5,
+                      "histories":  [
+                                        {
+                                            "id":  "718011",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "accountId":  "712020:7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png"
+                                                                          },
+                                                           "displayName":  "Mariam Kvitsiani",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Tbilisi",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-09-02T10:50:52.062+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "resolution",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "resolution",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "10000",
+                                                              "toString":  "Done"
+                                                          },
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10447",
+                                                              "fromString":  "Ready for development",
+                                                              "to":  "10188",
+                                                              "toString":  "Won\u0027t Do"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "717635",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "accountId":  "712020:7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png"
+                                                                          },
+                                                           "displayName":  "Mariam Kvitsiani",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Tbilisi",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-09-01T12:29:36.080+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Fix Version",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "fixVersions",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "15661",
+                                                              "toString":  "Hotfix 09.09"
+                                                          },
+                                                          {
+                                                              "field":  "Fix Version",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "fixVersions",
+                                                              "from":  "15562",
+                                                              "fromString":  "Hotfix 02.09",
+                                                              "to":  null,
+                                                              "toString":  null
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "717633",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "accountId":  "712020:7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png"
+                                                                          },
+                                                           "displayName":  "Mariam Kvitsiani",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Tbilisi",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-09-01T12:29:09.322+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "labels",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "labels",
+                                                              "from":  null,
+                                                              "fromString":  "Frontend",
+                                                              "to":  null,
+                                                              "toString":  "Backend"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "717632",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "accountId":  "712020:7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png"
+                                                                          },
+                                                           "displayName":  "Mariam Kvitsiani",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Tbilisi",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-09-01T12:28:57.827+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10020",
+                                                              "fromString":  "Backlog",
+                                                              "to":  "10447",
+                                                              "toString":  "Ready for development"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "717630",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "accountId":  "712020:7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png"
+                                                                          },
+                                                           "displayName":  "Mariam Kvitsiani",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Tbilisi",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-09-01T12:28:46.784+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Link",
+                                                              "fieldtype":  "jira",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "PDT-3392",
+                                                              "toString":  "This work item clones PDT-3392"
+                                                          }
+                                                      ]
+                                        }
+                                    ]
+                  },
+    "fields":  {
+                   "issuetype":  {
+                                     "self":  "https://oppa-support.atlassian.net/rest/api/3/issuetype/10004",
+                                     "id":  "10004",
+                                     "description":  "A problem which impairs or prevents the functions of the product.",
+                                     "iconUrl":  "https://oppa-support.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10303?size=medium",
+                                     "name":  "Bug",
+                                     "subtask":  false,
+                                     "avatarId":  10303,
+                                     "hierarchyLevel":  0
+                                 },
+                   "components":  [
+
+                                  ],
+                   "customfield_10095":  {
+                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4beaccf3-5cdc-4b7e-8c41-111d8b70f4ac",
+                                             "accountId":  "712020:4beaccf3-5cdc-4b7e-8c41-111d8b70f4ac",
+                                             "avatarUrls":  {
+                                                                "48x48":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png",
+                                                                "24x24":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png",
+                                                                "16x16":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png",
+                                                                "32x32":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png"
+                                                            },
+                                             "displayName":  "Giorgi Kikriashvili",
+                                             "active":  true,
+                                             "timeZone":  "Asia/Dubai",
+                                             "accountType":  "atlassian"
+                                         },
+                   "description":  null,
+                   "customfield_10104":  null,
+                   "customfield_10745":  {
+                                             "type":  "doc",
+                                             "version":  1,
+                                             "content":  [
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "PASSED:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\tyes/no"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Title:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Description:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Test Type:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Test Steps:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Expected Result:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Notes:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "\t"
+                                                                                 }
+                                                                             ]
+                                                             }
+                                                         ]
+                                         },
+                   "attachment":  [
+                                      {
+                                          "self":  "https://oppa-support.atlassian.net/rest/api/3/attachment/68929",
+                                          "id":  "68929",
+                                          "filename":  "9-01-2026 (10-24-07).mp4",
+                                          "author":  {
+                                                         "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                         "accountId":  "712020:7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                         "avatarUrls":  {
+                                                                            "48x48":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                            "24x24":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                            "16x16":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                            "32x32":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png"
+                                                                        },
+                                                         "displayName":  "Mariam Kvitsiani",
+                                                         "active":  true,
+                                                         "timeZone":  "Asia/Tbilisi",
+                                                         "accountType":  "atlassian"
+                                                     },
+                                          "created":  "2026-09-01T12:28:47.264+0400",
+                                          "size":  1342552,
+                                          "mimeType":  "video/mp4",
+                                          "content":  "https://oppa-support.atlassian.net/rest/api/3/attachment/content/68929"
+                                      },
+                                      {
+                                          "self":  "https://oppa-support.atlassian.net/rest/api/3/attachment/68928",
+                                          "id":  "68928",
+                                          "filename":  "image-20260827-110638.png",
+                                          "author":  {
+                                                         "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                         "accountId":  "712020:7c05a673-6f87-448f-8721-f720854a6ba2",
+                                                         "avatarUrls":  {
+                                                                            "48x48":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                            "24x24":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                            "16x16":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                                            "32x32":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png"
+                                                                        },
+                                                         "displayName":  "Mariam Kvitsiani",
+                                                         "active":  true,
+                                                         "timeZone":  "Asia/Tbilisi",
+                                                         "accountType":  "atlassian"
+                                                     },
+                                          "created":  "2026-09-01T12:28:42.454+0400",
+                                          "size":  33476,
+                                          "mimeType":  "image/png",
+                                          "content":  "https://oppa-support.atlassian.net/rest/api/3/attachment/content/68928",
+                                          "thumbnail":  "https://oppa-support.atlassian.net/rest/api/3/attachment/thumbnail/68928"
+                                      }
+                                  ],
+                   "summary":  "[Backend] Cancelation of Request for disconnection - Pagination in The object\u0027s Table",
+                   "created":  "2026-09-01T12:28:42.763+0400",
+                   "customfield_10283":  null,
+                   "reporter":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A7c05a673-6f87-448f-8721-f720854a6ba2",
+                                    "accountId":  "712020:7c05a673-6f87-448f-8721-f720854a6ba2",
+                                    "avatarUrls":  {
+                                                       "48x48":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                       "24x24":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                       "16x16":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png",
+                                                       "32x32":  "https://secure.gravatar.com/avatar/a433c145f68653229855b79c8bb29d61?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMK-5.png"
+                                                   },
+                                    "displayName":  "Mariam Kvitsiani",
+                                    "active":  true,
+                                    "timeZone":  "Asia/Tbilisi",
+                                    "accountType":  "atlassian"
+                                },
+                   "customfield_10483":  null,
+                   "customfield_10484":  null,
+                   "priority":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/priority/3",
+                                    "iconUrl":  "https://oppa-support.atlassian.net/images/icons/priorities/medium_new.svg",
+                                    "name":  "Medium",
+                                    "id":  "3"
+                                },
+                   "customfield_10485":  null,
+                   "customfield_10048":  null,
+                   "labels":  [
+                                  "Backend"
+                              ],
+                   "customfield_10103":  {
+                                             "type":  "doc",
+                                             "version":  1,
+                                             "content":  [
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Reproduce Steps:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "b8b2f29e0899"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "orderedList",
+                                                                 "attrs":  {
+                                                                               "order":  1,
+                                                                               "localId":  "c2fa523ebd13"
+                                                                           },
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "listItem",
+                                                                                     "attrs":  {
+                                                                                                   "localId":  "88c9f41ab070"
+                                                                                               },
+                                                                                     "content":  [
+                                                                                                     {
+                                                                                                         "type":  "paragraph",
+                                                                                                         "content":  [
+                                                                                                                         {
+                                                                                                                             "type":  "text",
+                                                                                                                             "text":  "Checkt this Cancellation of Request for disconnection "
+                                                                                                                         }
+                                                                                                                     ],
+                                                                                                         "attrs":  {
+                                                                                                                       "localId":  "76f9b84d2b23"
+                                                                                                                   }
+                                                                                                     }
+                                                                                                 ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "listItem",
+                                                                                     "attrs":  {
+                                                                                                   "localId":  "5227c9a187cc"
+                                                                                               },
+                                                                                     "content":  [
+                                                                                                     {
+                                                                                                         "type":  "paragraph",
+                                                                                                         "content":  [
+                                                                                                                         {
+                                                                                                                             "type":  "text",
+                                                                                                                             "text":  "Open Preview "
+                                                                                                                         }
+                                                                                                                     ],
+                                                                                                         "attrs":  {
+                                                                                                                       "localId":  "58216a51e9f2"
+                                                                                                                   }
+                                                                                                     }
+                                                                                                 ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "listItem",
+                                                                                     "attrs":  {
+                                                                                                   "localId":  "f029c113fa75"
+                                                                                               },
+                                                                                     "content":  [
+                                                                                                     {
+                                                                                                         "type":  "paragraph",
+                                                                                                         "content":  [
+                                                                                                                         {
+                                                                                                                             "type":  "text",
+                                                                                                                             "text":  "Go to Third Page "
+                                                                                                                         }
+                                                                                                                     ],
+                                                                                                         "attrs":  {
+                                                                                                                       "localId":  "c0426ee420ab"
+                                                                                                                   }
+                                                                                                     }
+                                                                                                 ]
+                                                                                 }
+                                                                             ]
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Actual Result:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "textColor",
+                                                                                                       "attrs":  {
+                                                                                                                     "color":  "#ff5630"
+                                                                                                                 }
+                                                                                                   }
+                                                                                               ]
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "87c558cde815"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "The Data is empty on Third or more Pages, Secont Page returns the data but another pages does not. BE Returns Empty Content"
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "dda20653ee1e"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "The problem exists for Draft Cancellation of RFD, for execution it works correctly",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   }
+                                                                                               ]
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "0a6f87bad778"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Cancellation: "
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "https://devapps.energo-pro.bg/app/phoenix1-dev/cancellation-of-request-for-disconnection/preview?id=1224",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "link",
+                                                                                                       "attrs":  {
+                                                                                                                     "href":  "https://devapps.energo-pro.bg/app/phoenix1-dev/cancellation-of-request-for-disconnection/preview?id=1224"
+                                                                                                                 }
+                                                                                                   }
+                                                                                               ]
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "13198a872fd9"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "mediaSingle",
+                                                                 "attrs":  {
+                                                                               "width":  649,
+                                                                               "widthType":  "pixel",
+                                                                               "localId":  "a7c64c53a8bc",
+                                                                               "layout":  "center"
+                                                                           },
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "media",
+                                                                                     "attrs":  {
+                                                                                                   "type":  "file",
+                                                                                                   "id":  "54119038-2595-47d2-9194-73eb639728c2",
+                                                                                                   "alt":  "image-20260827-110638.png",
+                                                                                                   "collection":  "",
+                                                                                                   "localId":  "fdf904be7288",
+                                                                                                   "height":  693,
+                                                                                                   "width":  1353
+                                                                                               }
+                                                                                 }
+                                                                             ]
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "attrs":  {
+                                                                               "localId":  "8cf0fcdbf4d4"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Expected Result:",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "strong"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "type":  "textColor",
+                                                                                                       "attrs":  {
+                                                                                                                     "color":  "#36b37e"
+                                                                                                                 }
+                                                                                                   }
+                                                                                               ]
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "f928afd75cf1"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "The Data should be visible for all pages "
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "2961c96ab7c7"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "_________________"
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "cd31880055bc"
+                                                                           }
+                                                             },
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Endpoint: "
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "https://devapps.energo-pro.bg/backend/phoenix1-dev/cancellation-of-disconnection-of-the-power-supply/table/view/1224?page=2\u0026size=25",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "link",
+                                                                                                       "attrs":  {
+                                                                                                                     "href":  "https://devapps.energo-pro.bg/backend/phoenix1-dev/cancellation-of-disconnection-of-the-power-supply/table/view/1224?page=2\u0026size=25"
+                                                                                                                 }
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Method: GET"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Status: 200 Ok"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Payload: page=2\u0026size=25"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Response: {"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "    \"numberOfCheckedPods\": 155,"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "   "
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  " \"content\": [],",
+                                                                                     "marks":  [
+                                                                                                   {
+                                                                                                       "type":  "textColor",
+                                                                                                       "attrs":  {
+                                                                                                                     "color":  "#ff5630"
+                                                                                                                 }
+                                                                                                   }
+                                                                                               ]
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "    \"pageable\": {"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "        \"pageNumber\": 2,"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "        \"pageSize\": 25,"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "        \"sort\": {"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "            \"unsorted\": true,"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "            \"sorted\": false,"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "            \"empty\": true"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "        },"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "        \"offset\": 50,"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "        \"unpaged\": false,"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "        \"paged\": true"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "    },"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "    \"totalPages\": 2,"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "    \"totalElements\": 48,"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "    \"size\": 25,"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "    \"number\": 2,"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "    \"sort\": {"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "        \"unsorted\": true,"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "        \"sorted\": false,"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "        \"empty\": true"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "    },"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "    \"first\": false,"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "    \"last\": true,"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "    \"numberOfElements\": 0,"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "    \"empty\": true"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "}"
+                                                                                 }
+                                                                             ],
+                                                                 "attrs":  {
+                                                                               "localId":  "03f63f6f1e58"
+                                                                           }
+                                                             }
+                                                         ]
+                                         },
+                   "environment":  null,
+                   "customfield_10877":  {
+                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/customFieldOption/10250",
+                                             "value":  "No",
+                                             "id":  "10250"
+                                         },
+                   "customfield_10217":  {
+                                             "type":  "doc",
+                                             "version":  1,
+                                             "content":  [
+                                                             {
+                                                                 "type":  "paragraph",
+                                                                 "content":  [
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "Link:"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "A.R.(არსებული სიტუაცია):"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "hardBreak"
+                                                                                 },
+                                                                                 {
+                                                                                     "type":  "text",
+                                                                                     "text":  "E.R.( სასურველი შედეგი):"
+                                                                                 }
+                                                                             ]
+                                                             }
+                                                         ]
+                                         },
+                   "issuelinks":  [
+                                      {
+                                          "id":  "49221",
+                                          "self":  "https://oppa-support.atlassian.net/rest/api/3/issueLink/49221",
+                                          "type":  {
+                                                       "id":  "10001",
+                                                       "name":  "Cloners",
+                                                       "inward":  "is cloned by",
+                                                       "outward":  "clones",
+                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/issueLinkType/10001"
+                                                   },
+                                          "outwardIssue":  {
+                                                               "id":  "80580",
+                                                               "key":  "PDT-3392",
+                                                               "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/80580",
+                                                               "fields":  {
+                                                                              "summary":  "[Frontend] Cancelation of Request for disconnection - Pagination in The object\u0027s Table ",
+                                                                              "status":  {
+                                                                                             "self":  "https://oppa-support.atlassian.net/rest/api/3/status/3",
+                                                                                             "description":  "This work item is being actively worked on at the moment by the assignee.",
+                                                                                             "iconUrl":  "https://oppa-support.atlassian.net/images/icons/statuses/inprogress.png",
+                                                                                             "name":  "In Progress",
+                                                                                             "id":  "3",
+                                                                                             "statusCategory":  {
+                                                                                                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/statuscategory/4",
+                                                                                                                    "id":  4,
+                                                                                                                    "key":  "indeterminate",
+                                                                                                                    "colorName":  "yellow",
+                                                                                                                    "name":  "In Progress"
+                                                                                                                }
+                                                                                         },
+                                                                              "priority":  {
+                                                                                               "self":  "https://oppa-support.atlassian.net/rest/api/3/priority/3",
+                                                                                               "iconUrl":  "https://oppa-support.atlassian.net/images/icons/priorities/medium_new.svg",
+                                                                                               "name":  "Medium",
+                                                                                               "id":  "3"
+                                                                                           },
+                                                                              "issuetype":  {
+                                                                                                "self":  "https://oppa-support.atlassian.net/rest/api/3/issuetype/10004",
+                                                                                                "id":  "10004",
+                                                                                                "description":  "A problem which impairs or prevents the functions of the product.",
+                                                                                                "iconUrl":  "https://oppa-support.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10303?size=medium",
+                                                                                                "name":  "Bug",
+                                                                                                "subtask":  false,
+                                                                                                "avatarId":  10303,
+                                                                                                "hierarchyLevel":  0
+                                                                                            }
+                                                                          }
+                                                           }
+                                      }
+                                  ],
+                   "comment":  {
+                                   "comments":  [
+                                                    {
+                                                        "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/80953/comment/75509",
+                                                        "id":  "75509",
+                                                        "author":  {
+                                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4beaccf3-5cdc-4b7e-8c41-111d8b70f4ac",
+                                                                       "accountId":  "712020:4beaccf3-5cdc-4b7e-8c41-111d8b70f4ac",
+                                                                       "avatarUrls":  {
+                                                                                          "48x48":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png",
+                                                                                          "24x24":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png",
+                                                                                          "16x16":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png",
+                                                                                          "32x32":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png"
+                                                                                      },
+                                                                       "displayName":  "Giorgi Kikriashvili",
+                                                                       "active":  true,
+                                                                       "timeZone":  "Asia/Dubai",
+                                                                       "accountType":  "atlassian"
+                                                                   },
+                                                        "body":  {
+                                                                     "type":  "doc",
+                                                                     "version":  1,
+                                                                     "content":  [
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "Could you please approve this bug? "
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "mention",
+                                                                                                             "attrs":  {
+                                                                                                                           "id":  "63b7cf5c2c70aae1e6fc1cf5",
+                                                                                                                           "text":  "@Kalina.Koleva",
+                                                                                                                           "accessLevel":  "",
+                                                                                                                           "localId":  "85586d5a-e005-475d-9417-a294d76f8d56"
+                                                                                                                       }
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  " "
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "mention",
+                                                                                                             "attrs":  {
+                                                                                                                           "id":  "63b7cf707cde7bff9d7adad8",
+                                                                                                                           "text":  "@Valeri.Valev",
+                                                                                                                           "accessLevel":  "",
+                                                                                                                           "localId":  "aaf14d23-9259-44f4-b2cb-b94207859098"
+                                                                                                                       }
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  " "
+                                                                                                         }
+                                                                                                     ],
+                                                                                         "attrs":  {
+                                                                                                       "localId":  "55d845786047"
+                                                                                                   }
+                                                                                     }
+                                                                                 ]
+                                                                 },
+                                                        "created":  "2026-09-01T12:28:47.162+0400",
+                                                        "updated":  "2026-09-01T12:28:47.162+0400",
+                                                        "jsdPublic":  true
+                                                    },
+                                                    {
+                                                        "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/80953/comment/75510",
+                                                        "id":  "75510",
+                                                        "author":  {
+                                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A1460e239-e95b-42a7-89a1-f429da3c2e4f",
+                                                                       "accountId":  "712020:1460e239-e95b-42a7-89a1-f429da3c2e4f",
+                                                                       "avatarUrls":  {
+                                                                                          "48x48":  "https://secure.gravatar.com/avatar/f005e3cd26f3bf19f4e4547709a3418e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGM-6.png",
+                                                                                          "24x24":  "https://secure.gravatar.com/avatar/f005e3cd26f3bf19f4e4547709a3418e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGM-6.png",
+                                                                                          "16x16":  "https://secure.gravatar.com/avatar/f005e3cd26f3bf19f4e4547709a3418e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGM-6.png",
+                                                                                          "32x32":  "https://secure.gravatar.com/avatar/f005e3cd26f3bf19f4e4547709a3418e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGM-6.png"
+                                                                                      },
+                                                                       "displayName":  "Giorgi Michitashvili",
+                                                                       "active":  true,
+                                                                       "timeZone":  "Asia/Dubai",
+                                                                       "accountType":  "atlassian"
+                                                                   },
+                                                        "body":  {
+                                                                     "type":  "doc",
+                                                                     "version":  1,
+                                                                     "content":  [
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "For Frontend:"
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "hardBreak"
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "hardBreak"
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "Not a backend data bug. API pagination for the preview table is correct."
+                                                                                                         }
+                                                                                                     ],
+                                                                                         "attrs":  {
+                                                                                                       "localId":  "e87a2a14e5b6"
+                                                                                                   }
+                                                                                     },
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "Verified:"
+                                                                                                         }
+                                                                                                     ],
+                                                                                         "attrs":  {
+                                                                                                       "localId":  "d643861f98b7"
+                                                                                                   }
+                                                                                     },
+                                                                                     {
+                                                                                         "type":  "bulletList",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "listItem",
+                                                                                                             "attrs":  {
+                                                                                                                           "localId":  "421754fe7ad5"
+                                                                                                                       },
+                                                                                                             "content":  [
+                                                                                                                             {
+                                                                                                                                 "type":  "paragraph",
+                                                                                                                                 "content":  [
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  "GET /cancellation-of-disconnection-of-the-power-supply/table/view/{id}?page=0\u0026size=25",
+                                                                                                                                                     "marks":  [
+                                                                                                                                                                   {
+                                                                                                                                                                       "type":  "code"
+                                                                                                                                                                   }
+                                                                                                                                                               ]
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  " → 25 rows"
+                                                                                                                                                 }
+                                                                                                                                             ],
+                                                                                                                                 "attrs":  {
+                                                                                                                                               "localId":  "3af23fdef339"
+                                                                                                                                           }
+                                                                                                                             }
+                                                                                                                         ]
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "listItem",
+                                                                                                             "attrs":  {
+                                                                                                                           "localId":  "57930b197fe2"
+                                                                                                                       },
+                                                                                                             "content":  [
+                                                                                                                             {
+                                                                                                                                 "type":  "paragraph",
+                                                                                                                                 "content":  [
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  "page=1",
+                                                                                                                                                     "marks":  [
+                                                                                                                                                                   {
+                                                                                                                                                                       "type":  "code"
+                                                                                                                                                                   }
+                                                                                                                                                               ]
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  " → 23 rows"
+                                                                                                                                                 }
+                                                                                                                                             ],
+                                                                                                                                 "attrs":  {
+                                                                                                                                               "localId":  "c6054a7058e4"
+                                                                                                                                           }
+                                                                                                                             }
+                                                                                                                         ]
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "listItem",
+                                                                                                             "attrs":  {
+                                                                                                                           "localId":  "fbf2b76057af"
+                                                                                                                       },
+                                                                                                             "content":  [
+                                                                                                                             {
+                                                                                                                                 "type":  "paragraph",
+                                                                                                                                 "content":  [
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  "page=2",
+                                                                                                                                                     "marks":  [
+                                                                                                                                                                   {
+                                                                                                                                                                       "type":  "code"
+                                                                                                                                                                   }
+                                                                                                                                                               ]
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  " → "
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  "content: []",
+                                                                                                                                                     "marks":  [
+                                                                                                                                                                   {
+                                                                                                                                                                       "type":  "code"
+                                                                                                                                                                   }
+                                                                                                                                                               ]
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  " (expected — only 48 rows = 2 pages)"
+                                                                                                                                                 }
+                                                                                                                                             ],
+                                                                                                                                 "attrs":  {
+                                                                                                                                               "localId":  "528d7848d2f6"
+                                                                                                                                           }
+                                                                                                                             }
+                                                                                                                         ]
+                                                                                                         }
+                                                                                                     ],
+                                                                                         "attrs":  {
+                                                                                                       "localId":  "4a4037088f79"
+                                                                                                   }
+                                                                                     },
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "Expected behavior (per BA): Preview shows 48 eligible executed-request pods, not all 155 checked pods."
+                                                                                                         }
+                                                                                                     ],
+                                                                                         "attrs":  {
+                                                                                                       "localId":  "ec5839ec99e2"
+                                                                                                   }
+                                                                                     },
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "Root cause: Pagination UI is likely driven by "
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "numberOfCheckedPods",
+                                                                                                             "marks":  [
+                                                                                                                           {
+                                                                                                                               "type":  "code"
+                                                                                                                           }
+                                                                                                                       ]
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  " (155) instead of "
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "totalElements",
+                                                                                                             "marks":  [
+                                                                                                                           {
+                                                                                                                               "type":  "code"
+                                                                                                                           }
+                                                                                                                       ]
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  " / "
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "totalPages",
+                                                                                                             "marks":  [
+                                                                                                                           {
+                                                                                                                               "type":  "code"
+                                                                                                                           }
+                                                                                                                       ]
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  " (48 / 2), so the UI shows ~7 pages and page 3+ returns empty."
+                                                                                                         }
+                                                                                                     ],
+                                                                                         "attrs":  {
+                                                                                                       "localId":  "701ca933b874"
+                                                                                                   }
+                                                                                     },
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "Fix:"
+                                                                                                         }
+                                                                                                     ],
+                                                                                         "attrs":  {
+                                                                                                       "localId":  "17720fe69396"
+                                                                                                   }
+                                                                                     },
+                                                                                     {
+                                                                                         "type":  "orderedList",
+                                                                                         "attrs":  {
+                                                                                                       "order":  1,
+                                                                                                       "localId":  "b78a79604c85"
+                                                                                                   },
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "listItem",
+                                                                                                             "attrs":  {
+                                                                                                                           "localId":  "6bc730962f45"
+                                                                                                                       },
+                                                                                                             "content":  [
+                                                                                                                             {
+                                                                                                                                 "type":  "paragraph",
+                                                                                                                                 "content":  [
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  "Build pager from "
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  "totalElements",
+                                                                                                                                                     "marks":  [
+                                                                                                                                                                   {
+                                                                                                                                                                       "type":  "code"
+                                                                                                                                                                   }
+                                                                                                                                                               ]
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  " / "
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  "totalPages",
+                                                                                                                                                     "marks":  [
+                                                                                                                                                                   {
+                                                                                                                                                                       "type":  "code"
+                                                                                                                                                                   }
+                                                                                                                                                               ]
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  " from the API response."
+                                                                                                                                                 }
+                                                                                                                                             ],
+                                                                                                                                 "attrs":  {
+                                                                                                                                               "localId":  "72b301c44937"
+                                                                                                                                           }
+                                                                                                                             }
+                                                                                                                         ]
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "listItem",
+                                                                                                             "attrs":  {
+                                                                                                                           "localId":  "dc35204a201d"
+                                                                                                                       },
+                                                                                                             "content":  [
+                                                                                                                             {
+                                                                                                                                 "type":  "paragraph",
+                                                                                                                                 "content":  [
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  "Do not use "
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  "numberOfCheckedPods",
+                                                                                                                                                     "marks":  [
+                                                                                                                                                                   {
+                                                                                                                                                                       "type":  "code"
+                                                                                                                                                                   }
+                                                                                                                                                               ]
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  " for page count — it’s summary metadata (checked pods on the cancellation), not table row count."
+                                                                                                                                                 }
+                                                                                                                                             ],
+                                                                                                                                 "attrs":  {
+                                                                                                                                               "localId":  "cd937b56ee82"
+                                                                                                                                           }
+                                                                                                                             }
+                                                                                                                         ]
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "listItem",
+                                                                                                             "attrs":  {
+                                                                                                                           "localId":  "da8e44f428fc"
+                                                                                                                       },
+                                                                                                             "content":  [
+                                                                                                                             {
+                                                                                                                                 "type":  "paragraph",
+                                                                                                                                 "content":  [
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  "Keep "
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  "page",
+                                                                                                                                                     "marks":  [
+                                                                                                                                                                   {
+                                                                                                                                                                       "type":  "code"
+                                                                                                                                                                   }
+                                                                                                                                                               ]
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  " 0-based ("
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  "0",
+                                                                                                                                                     "marks":  [
+                                                                                                                                                                   {
+                                                                                                                                                                       "type":  "code"
+                                                                                                                                                                   }
+                                                                                                                                                               ]
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  " = first page, "
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  "1",
+                                                                                                                                                     "marks":  [
+                                                                                                                                                                   {
+                                                                                                                                                                       "type":  "code"
+                                                                                                                                                                   }
+                                                                                                                                                               ]
+                                                                                                                                                 },
+                                                                                                                                                 {
+                                                                                                                                                     "type":  "text",
+                                                                                                                                                     "text":  " = second page). Only 2 pages exist for this case."
+                                                                                                                                                 }
+                                                                                                                                             ],
+                                                                                                                                 "attrs":  {
+                                                                                                                                               "localId":  "282d9f07c0a5"
+                                                                                                                                           }
+                                                                                                                             }
+                                                                                                                         ]
+                                                                                                         }
+                                                                                                     ]
+                                                                                     },
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "Rule: "
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "totalPages",
+                                                                                                             "marks":  [
+                                                                                                                           {
+                                                                                                                               "type":  "code"
+                                                                                                                           }
+                                                                                                                       ]
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "/"
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "totalElements",
+                                                                                                             "marks":  [
+                                                                                                                           {
+                                                                                                                               "type":  "code"
+                                                                                                                           }
+                                                                                                                       ]
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  " → table pagination · "
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  "numberOfCheckedPods",
+                                                                                                             "marks":  [
+                                                                                                                           {
+                                                                                                                               "type":  "code"
+                                                                                                                           }
+                                                                                                                       ]
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  " → badge/summary only."
+                                                                                                         }
+                                                                                                     ],
+                                                                                         "attrs":  {
+                                                                                                       "localId":  "5215692cb295"
+                                                                                                   }
+                                                                                     }
+                                                                                 ]
+                                                                 },
+                                                        "created":  "2026-09-01T12:28:47.167+0400",
+                                                        "updated":  "2026-09-01T12:28:47.167+0400",
+                                                        "jsdPublic":  true
+                                                    },
+                                                    {
+                                                        "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/80953/comment/75511",
+                                                        "id":  "75511",
+                                                        "author":  {
+                                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=63b7cf5c2c70aae1e6fc1cf5",
+                                                                       "accountId":  "63b7cf5c2c70aae1e6fc1cf5",
+                                                                       "avatarUrls":  {
+                                                                                          "48x48":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                          "24x24":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                          "16x16":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                          "32x32":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png"
+                                                                                      },
+                                                                       "displayName":  "Kalina.Koleva",
+                                                                       "active":  true,
+                                                                       "timeZone":  "Asia/Dubai",
+                                                                       "accountType":  "atlassian"
+                                                                   },
+                                                        "body":  {
+                                                                     "type":  "doc",
+                                                                     "version":  1,
+                                                                     "content":  [
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "mention",
+                                                                                                             "attrs":  {
+                                                                                                                           "id":  "712020:4beaccf3-5cdc-4b7e-8c41-111d8b70f4ac",
+                                                                                                                           "text":  "@Giorgi Kikriashvili",
+                                                                                                                           "accessLevel":  "",
+                                                                                                                           "localId":  "2c63b9289564"
+                                                                                                                       }
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  " Approve."
+                                                                                                         }
+                                                                                                     ],
+                                                                                         "attrs":  {
+                                                                                                       "localId":  "a0d5685571b4"
+                                                                                                   }
+                                                                                     }
+                                                                                 ]
+                                                                 },
+                                                        "created":  "2026-09-01T12:28:47.253+0400",
+                                                        "updated":  "2026-09-01T12:28:47.253+0400",
+                                                        "jsdPublic":  true
+                                                    },
+                                                    {
+                                                        "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/80953/comment/75512",
+                                                        "id":  "75512",
+                                                        "author":  {
+                                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=63b7cf5c2c70aae1e6fc1cf5",
+                                                                       "accountId":  "63b7cf5c2c70aae1e6fc1cf5",
+                                                                       "avatarUrls":  {
+                                                                                          "48x48":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                          "24x24":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                          "16x16":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png",
+                                                                                          "32x32":  "https://secure.gravatar.com/avatar/061facb9b640967395eb12ba37855df9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-0.png"
+                                                                                      },
+                                                                       "displayName":  "Kalina.Koleva",
+                                                                       "active":  true,
+                                                                       "timeZone":  "Asia/Dubai",
+                                                                       "accountType":  "atlassian"
+                                                                   },
+                                                        "body":  {
+                                                                     "type":  "doc",
+                                                                     "version":  1,
+                                                                     "content":  [
+                                                                                     {
+                                                                                         "type":  "paragraph",
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "mention",
+                                                                                                             "attrs":  {
+                                                                                                                           "id":  "712020:1460e239-e95b-42a7-89a1-f429da3c2e4f",
+                                                                                                                           "text":  "@Giorgi Michitashvili",
+                                                                                                                           "accessLevel":  "",
+                                                                                                                           "localId":  "34187c7fcbe9"
+                                                                                                                       }
+                                                                                                         },
+                                                                                                         {
+                                                                                                             "type":  "text",
+                                                                                                             "text":  " "
+                                                                                                         }
+                                                                                                     ],
+                                                                                         "attrs":  {
+                                                                                                       "localId":  "5309d5a174cf"
+                                                                                                   }
+                                                                                     },
+                                                                                     {
+                                                                                         "type":  "mediaSingle",
+                                                                                         "attrs":  {
+                                                                                                       "width":  929,
+                                                                                                       "widthType":  "pixel",
+                                                                                                       "localId":  "e458ccb62e07",
+                                                                                                       "layout":  "align-start"
+                                                                                                   },
+                                                                                         "content":  [
+                                                                                                         {
+                                                                                                             "type":  "media",
+                                                                                                             "attrs":  {
+                                                                                                                           "type":  "file",
+                                                                                                                           "id":  "6bddd6e1-8a22-41fc-b755-1bff0b4fcb1d",
+                                                                                                                           "alt":  "9-01-2026 (10-24-07).mp4",
+                                                                                                                           "collection":  "",
+                                                                                                                           "localId":  "85180bc3a883",
+                                                                                                                           "height":  988,
+                                                                                                                           "width":  1918
+                                                                                                                       }
+                                                                                                         }
+                                                                                                     ]
+                                                                                     }
+                                                                                 ]
+                                                                 },
+                                                        "created":  "2026-09-01T12:28:47.612+0400",
+                                                        "updated":  "2026-09-01T12:28:47.612+0400",
+                                                        "jsdPublic":  true
+                                                    }
+                                                ],
+                                   "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/80953/comment",
+                                   "maxResults":  4,
+                                   "total":  4,
+                                   "startAt":  0
+                               },
+                   "assignee":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A1460e239-e95b-42a7-89a1-f429da3c2e4f",
+                                    "accountId":  "712020:1460e239-e95b-42a7-89a1-f429da3c2e4f",
+                                    "avatarUrls":  {
+                                                       "48x48":  "https://secure.gravatar.com/avatar/f005e3cd26f3bf19f4e4547709a3418e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGM-6.png",
+                                                       "24x24":  "https://secure.gravatar.com/avatar/f005e3cd26f3bf19f4e4547709a3418e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGM-6.png",
+                                                       "16x16":  "https://secure.gravatar.com/avatar/f005e3cd26f3bf19f4e4547709a3418e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGM-6.png",
+                                                       "32x32":  "https://secure.gravatar.com/avatar/f005e3cd26f3bf19f4e4547709a3418e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGM-6.png"
+                                                   },
+                                    "displayName":  "Giorgi Michitashvili",
+                                    "active":  true,
+                                    "timeZone":  "Asia/Dubai",
+                                    "accountType":  "atlassian"
+                                },
+                   "updated":  "2026-09-02T10:50:52.062+0400",
+                   "status":  {
+                                  "self":  "https://oppa-support.atlassian.net/rest/api/3/status/10188",
+                                  "description":  "This status is managed internally by Jira Software",
+                                  "iconUrl":  "https://oppa-support.atlassian.net/",
+                                  "name":  "Won\u0027t Do",
+                                  "id":  "10188",
+                                  "statusCategory":  {
+                                                         "self":  "https://oppa-support.atlassian.net/rest/api/3/statuscategory/3",
+                                                         "id":  3,
+                                                         "key":  "done",
+                                                         "colorName":  "green",
+                                                         "name":  "Done"
+                                                     }
+                              }
+               }
+}

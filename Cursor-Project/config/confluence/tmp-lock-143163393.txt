@@ -1,0 +1,51 @@
+﻿TITLE: Hard Lock Of Billing Run Usable Objects
+ID: 143163393
+LEN=2380
+
+ User Story 
+As a system user
+I want to lock all objects while generating invoices and can’t be edited with any permission
+So that all information will remain unchanged until the process is complete
+Acceptance Criteria 
+The trigger of hard lock should be starting billing run
+Hard lock process include 2 stages:
+Define exactly what objects should be locked during this billing run
+Until hard lock process is not completed all changes in objects will be affected
+Lock defined objects
+Locked for editing/deleting:
+The objects which should be locked
+Billing data by profile 
+Billing data by scale 
+Contract
+Customer
+Product
+Service 
+Point of delivery
+Price components
+Price Component Group
+Price parameters (all price parameters connected to locked price component)
+Interim and advance payments
+Group of interim and advance payments
+Discounts (all with connected to filtered customers)
+Currency nomenclature (all)
+Vat rate nomenclature (all)
+Compensation (connected to the Customer)
+While object is locked from hard lock it can’t be edited with any permission
+When billing process creates all real invoices for contract all objects connected to this contract should be unlocked
+Lock processes which will be affected on hard lock objects
+Point of delivery Manual activation
+If manual activation affect on locked contract version should display error
+Example: System user activates POD in 1st version of contract from 1st may without deactivation date and this contract has 2nd and 3rd versions from 1st June and 1st July and 2nd version is hard locked from billing run, after user starts activation of POD in 1st version the automatic process should activate it to 2nd and 3rd version but because 2nd version is hard locked system should display error: you cannot activate POD because 2nd version is locked.
+Point of delivery activation mass import
+If mass import activation affect on locked contract version should display error
+Real deactivation of POD from mass import
+If mass import deactivation affect on locked contract version should display error
+Contract mass import
+If process affect on locked contract version should display error
+Contract status change job
+If any of version of contract is locked display error
+Termination job 
+If any of version of contract is locked display error 
+Customer mass import 
+If process affect on locked contract version should display error 
+

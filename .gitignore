@@ -28,6 +28,11 @@ out.txt
 
 # --- Cursor-Project specific ---
 
+# Phoenix Backend Toolkit secrets (tokens, GitLab URL overrides)
+Cursor-Project/toolkits/phoenix-backend/.env
+Cursor-Project/toolkits/phoenix-backend/.env.local
+Cursor-Project/toolkits/phoenix-backend/.env.*.local
+
 # # Environment variables
 # Cursor-Project/.env
 # Cursor-Project/.env.local

@@ -44,7 +44,7 @@ Use the **exact** environment the user asks for. Do not switch.
 | Test | PostgreSQLTest |
 | PreProd | PostgreSQLPreProd |
 | Prod | PostgreSQLProd (read-only user) |
-| Experiments | PostgreSQLexperiments |
+| Experiments | PostgreSQLExperiment |
 
 ## Workflow
 

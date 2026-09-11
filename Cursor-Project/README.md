@@ -8,6 +8,7 @@ Workspace with **Cursor rules/subagents/skills**, Phoenix Java projects (read-on
 Cursor-Project/
 ├── .cursor/               # Cursor IDE config (agents, rules, skills, commands, hooks)
 ├── config/                # Swagger specs, Jira/Confluence scripts, Playwright generation, templates
+├── toolkits/              # Standalone toolkits (Phoenix backend clone/update)
 ├── cross_dependencies/    # Cross-dependency-finder JSON outputs (date_JIRA-KEY.json)
 ├── Cursor Setup/          # MCP config template, env.example for new machine setup
 ├── docs/                  # Active documentation (archived Python-era docs in docs/_archive/)
@@ -54,6 +55,8 @@ URLs in `.gitmodules` use `git.domain.internal`. Prefer `setup-new-machine.ps1` 
 ```bash
 git submodule update --init --recursive
 ```
+
+Dedicated clone/update toolkit (own `.env` for GitLab token and host, Source Control workspace): [`toolkits/phoenix-backend/README.md`](toolkits/phoenix-backend/README.md).
 
 ### Java/Gradle (Phoenix)
 

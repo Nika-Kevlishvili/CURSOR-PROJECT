@@ -58,3 +58,5 @@ Optional:
 2. Confirm workspace MCP in `.cursor/mcp.json` (not user-level `mcp.json`).
 3. Review `.env` files and adjust credentials if needed.
 4. Re-run `.\.cursor\commands\setup-new-machine.ps1 -VerifyOnly` anytime.
+
+Phoenix GitLab clones only (separate `.env`, Source Control workspace): see [phoenix-backend-toolkit.md](phoenix-backend-toolkit.md).

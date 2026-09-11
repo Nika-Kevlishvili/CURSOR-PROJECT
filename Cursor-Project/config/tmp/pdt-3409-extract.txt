@@ -1,0 +1,231 @@
+﻿=== KEY FIELDS ===
+key: PDT-3409
+summary: Reconnection of power supply - DRAFT status - Dissappearing PODs
+issuetype: Bug
+status: Validating
+priority: Highest
+--- environment dump ---
+{
+    "type":  "doc",
+    "version":  1,
+    "content":  [
+                    {
+                        "type":  "paragraph",
+                        "content":  [
+                                        {
+                                            "type":  "text",
+                                            "text":  "TEST"
+                                        }
+                                    ]
+                    }
+                ]
+}
+--- labels ---
+--- components ---
+reporter: Kalina.Koleva
+assignee: UNASSIGNED
+--- attachments ---
+9-02-2026 (10-43-07).mp4 | video/mp4 | 3005803
+--- issuelinks ---
+NONE
+cf_10103 present: True
+cf_10217 present: True
+cf_10048 present: False
+cf_10745 present: True
+description present: False
+--- description json ---
+--- cf_10103 json ---
+{
+    "type":  "doc",
+    "version":  1,
+    "content":  [
+                    {
+                        "type":  "paragraph",
+                        "content":  [
+                                        {
+                                            "type":  "text",
+                                            "text":  "Reproduce Steps:",
+                                            "marks":  [
+                                                          {
+                                                              "type":  "strong"
+                                                          }
+                                                      ]
+                                        }
+                                    ],
+                        "attrs":  {
+                                      "localId":  "4451f3906f69"
+                                  }
+                    },
+                    {
+                        "type":  "mediaSingle",
+                        "attrs":  {
+                                      "width":  647,
+                                      "widthType":  "pixel",
+                                      "localId":  "5db5403f35a7",
+                                      "layout":  "center"
+                                  },
+                        "content":  [
+                                        {
+                                            "type":  "media",
+                                            "attrs":  {
+                                                          "type":  "file",
+                                                          "id":  "323367f8-6e27-413d-9c9b-a4ca3fdb0782",
+                                                          "alt":  "9-02-2026 (10-43-07).mp4",
+                                                          "collection":  "",
+                                                          "localId":  "6ac37463a4c3",
+                                                          "height":  998,
+                                                          "width":  1918
+                                                      }
+                                        }
+                                    ]
+                    },
+                    {
+                        "type":  "paragraph",
+                        "attrs":  {
+                                      "localId":  "aa30fefdcdff"
+                                  }
+                    },
+                    {
+                        "type":  "paragraph",
+                        "content":  [
+                                        {
+                                            "type":  "text",
+                                            "text":  "Actual Result:",
+                                            "marks":  [
+                                                          {
+                                                              "type":  "strong"
+                                                          }
+                                                      ]
+                                        }
+                                    ],
+                        "attrs":  {
+                                      "localId":  "02a6f3f710da"
+                                  }
+                    },
+                    {
+                        "type":  "paragraph",
+                        "content":  [
+                                        {
+                                            "type":  "text",
+                                            "text":  "I think the disappearing PODs belong to customers who currently have unpaid overdue liabilities, but these liabilities are not included in the request for disconnection connected to the disconnection. For example, UICs 202421263 and 4508272248."
+                                        }
+                                    ],
+                        "attrs":  {
+                                      "localId":  "942f9b238266"
+                                  }
+                    },
+                    {
+                        "type":  "paragraph",
+                        "content":  [
+                                        {
+                                            "type":  "text",
+                                            "text":  "Expected Result:",
+                                            "marks":  [
+                                                          {
+                                                              "type":  "strong"
+                                                          }
+                                                      ]
+                                        }
+                                    ],
+                        "attrs":  {
+                                      "localId":  "a47fbb4c3c22"
+                                  }
+                    },
+                    {
+                        "type":  "paragraph",
+                        "content":  [
+                                        {
+                                            "type":  "text",
+                                            "text":  "They should be visible in the DRAFT listing."
+                                        }
+                                    ],
+                        "attrs":  {
+                                      "localId":  "5f1f055b3fb8"
+                                  }
+                    },
+                    {
+                        "type":  "paragraph",
+                        "content":  [
+                                        {
+                                            "type":  "text",
+                                            "text":  "_________________"
+                                        }
+                                    ],
+                        "attrs":  {
+                                      "localId":  "ca2b3c55e00d"
+                                  }
+                    },
+                    {
+                        "type":  "paragraph",
+                        "content":  [
+                                        {
+                                            "type":  "text",
+                                            "text":  "Endpoint:"
+                                        },
+                                        {
+                                            "type":  "hardBreak"
+                                        },
+                                        {
+                                            "type":  "text",
+                                            "text":  "Method:"
+                                        },
+                                        {
+                                            "type":  "hardBreak"
+                                        },
+                                        {
+                                            "type":  "text",
+                                            "text":  "Status:"
+                                        },
+                                        {
+                                            "type":  "hardBreak"
+                                        },
+                                        {
+                                            "type":  "text",
+                                            "text":  "Payload:"
+                                        },
+                                        {
+                                            "type":  "hardBreak"
+                                        },
+                                        {
+                                            "type":  "text",
+                                            "text":  "Response:"
+                                        }
+                                    ],
+                        "attrs":  {
+                                      "localId":  "787c815bbf92"
+                                  }
+                    }
+                ]
+}
+--- cf_10217 json ---
+{
+    "type":  "doc",
+    "version":  1,
+    "content":  [
+                    {
+                        "type":  "paragraph",
+                        "content":  [
+                                        {
+                                            "type":  "text",
+                                            "text":  "Link:"
+                                        },
+                                        {
+                                            "type":  "hardBreak"
+                                        },
+                                        {
+                                            "type":  "text",
+                                            "text":  "A.R.(???????? ????????):"
+                                        },
+                                        {
+                                            "type":  "hardBreak"
+                                        },
+                                        {
+                                            "type":  "text",
+                                            "text":  "E.R.( ????????? ??????):"
+                                        }
+                                    ]
+                    }
+                ]
+}
+--- comments ---
+NO COMMENTS

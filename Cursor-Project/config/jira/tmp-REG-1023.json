@@ -1,0 +1,422 @@
+﻿{
+    "expand":  "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
+    "id":  "56988",
+    "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/56988",
+    "key":  "REG-1023",
+    "names":  {
+                  "summary":  "Summary",
+                  "issuetype":  "Issue Type",
+                  "components":  "Components",
+                  "created":  "Created",
+                  "description":  "Description",
+                  "reporter":  "Reporter",
+                  "priority":  "Priority",
+                  "labels":  "Labels",
+                  "customfield_10104":  "Design",
+                  "environment":  "Environment",
+                  "attachment":  "Attachment",
+                  "comment":  "Comment",
+                  "issuelinks":  "Linked Issues",
+                  "assignee":  "Assignee",
+                  "updated":  "Updated",
+                  "status":  "Status"
+              },
+    "changelog":  {
+                      "startAt":  0,
+                      "maxResults":  9,
+                      "total":  9,
+                      "histories":  [
+                                        {
+                                            "id":  "721566",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Adf62b854-f9dc-4fea-add6-23e156be4be0",
+                                                           "accountId":  "712020:df62b854-f9dc-4fea-add6-23e156be4be0",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png"
+                                                                          },
+                                                           "displayName":  "Luka Tchrikishvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-09-09T18:17:22.993+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10462",
+                                                              "fromString":  "To Do",
+                                                              "to":  "10464",
+                                                              "toString":  "Done"
+                                                          },
+                                                          {
+                                                              "field":  "resolution",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "resolution",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "10000",
+                                                              "toString":  "Done"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "719438",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4beaccf3-5cdc-4b7e-8c41-111d8b70f4ac",
+                                                           "accountId":  "712020:4beaccf3-5cdc-4b7e-8c41-111d8b70f4ac",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png"
+                                                                          },
+                                                           "displayName":  "Giorgi Kikriashvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-09-07T12:10:23.565+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "status",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "status",
+                                                              "from":  "10462",
+                                                              "fromString":  "To Do",
+                                                              "to":  "10462",
+                                                              "toString":  "To Do"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "593012",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4beaccf3-5cdc-4b7e-8c41-111d8b70f4ac",
+                                                           "accountId":  "712020:4beaccf3-5cdc-4b7e-8c41-111d8b70f4ac",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png"
+                                                                          },
+                                                           "displayName":  "Giorgi Kikriashvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-03-31T17:04:51.290+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Regression Scope",
+                                                              "fieldtype":  "custom",
+                                                              "fieldId":  "customfield_11285",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "10455",
+                                                              "toString":  "Version 1.1"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "591313",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Adf62b854-f9dc-4fea-add6-23e156be4be0",
+                                                           "accountId":  "712020:df62b854-f9dc-4fea-add6-23e156be4be0",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png"
+                                                                          },
+                                                           "displayName":  "Luka Tchrikishvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2026-03-30T15:46:51.623+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "assignee",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "assignee",
+                                                              "from":  "712020:df62b854-f9dc-4fea-add6-23e156be4be0",
+                                                              "fromString":  "Luka Tchrikishvili",
+                                                              "to":  null,
+                                                              "toString":  null
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "500676",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3A4beaccf3-5cdc-4b7e-8c41-111d8b70f4ac",
+                                                           "accountId":  "712020:4beaccf3-5cdc-4b7e-8c41-111d8b70f4ac",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/9e2ca526864b62bfe068aa50eb23788e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FGK-4.png"
+                                                                          },
+                                                           "displayName":  "Giorgi Kikriashvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2025-12-22T12:55:27.098+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Descrtiption",
+                                                              "fieldtype":  "custom",
+                                                              "fieldId":  "customfield_11118",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "10351",
+                                                              "toString":  "To do "
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "497351",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Adf62b854-f9dc-4fea-add6-23e156be4be0",
+                                                           "accountId":  "712020:df62b854-f9dc-4fea-add6-23e156be4be0",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png"
+                                                                          },
+                                                           "displayName":  "Luka Tchrikishvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2025-12-18T14:54:38.121+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "priority",
+                                                              "fieldtype":  "jira",
+                                                              "fieldId":  "priority",
+                                                              "from":  "3",
+                                                              "fromString":  "Medium",
+                                                              "to":  "2",
+                                                              "toString":  "High"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "497347",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Adf62b854-f9dc-4fea-add6-23e156be4be0",
+                                                           "accountId":  "712020:df62b854-f9dc-4fea-add6-23e156be4be0",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png"
+                                                                          },
+                                                           "displayName":  "Luka Tchrikishvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2025-12-18T14:54:21.537+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Link",
+                                                              "fieldtype":  "jira",
+                                                              "from":  "REG-1022",
+                                                              "fromString":  "This work item clones REG-1022",
+                                                              "to":  null,
+                                                              "toString":  null
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "497333",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Adf62b854-f9dc-4fea-add6-23e156be4be0",
+                                                           "accountId":  "712020:df62b854-f9dc-4fea-add6-23e156be4be0",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png"
+                                                                          },
+                                                           "displayName":  "Luka Tchrikishvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2025-12-18T14:49:49.179+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Link",
+                                                              "fieldtype":  "jira",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "REG-1019",
+                                                              "toString":  "This work item relates to REG-1019"
+                                                          }
+                                                      ]
+                                        },
+                                        {
+                                            "id":  "497330",
+                                            "author":  {
+                                                           "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Adf62b854-f9dc-4fea-add6-23e156be4be0",
+                                                           "accountId":  "712020:df62b854-f9dc-4fea-add6-23e156be4be0",
+                                                           "avatarUrls":  {
+                                                                              "48x48":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "24x24":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "16x16":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                                              "32x32":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png"
+                                                                          },
+                                                           "displayName":  "Luka Tchrikishvili",
+                                                           "active":  true,
+                                                           "timeZone":  "Asia/Dubai",
+                                                           "accountType":  "atlassian"
+                                                       },
+                                            "created":  "2025-12-18T14:49:48.933+0400",
+                                            "items":  [
+                                                          {
+                                                              "field":  "Link",
+                                                              "fieldtype":  "jira",
+                                                              "from":  null,
+                                                              "fromString":  null,
+                                                              "to":  "REG-1022",
+                                                              "toString":  "This work item clones REG-1022"
+                                                          }
+                                                      ]
+                                        }
+                                    ]
+                  },
+    "fields":  {
+                   "summary":  "invoice slot splitting - split by contract versions",
+                   "issuetype":  {
+                                     "self":  "https://oppa-support.atlassian.net/rest/api/3/issuetype/10405",
+                                     "id":  "10405",
+                                     "description":  "",
+                                     "iconUrl":  "https://oppa-support.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10707?size=medium",
+                                     "name":  "Test Case",
+                                     "subtask":  false,
+                                     "avatarId":  10707,
+                                     "entityId":  "2c13f4de-d487-4bf3-a80f-29f200850e87",
+                                     "hierarchyLevel":  0
+                                 },
+                   "components":  [
+
+                                  ],
+                   "created":  "2025-12-18T14:49:48.286+0400",
+                   "description":  null,
+                   "reporter":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/user?accountId=712020%3Adf62b854-f9dc-4fea-add6-23e156be4be0",
+                                    "accountId":  "712020:df62b854-f9dc-4fea-add6-23e156be4be0",
+                                    "avatarUrls":  {
+                                                       "48x48":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                       "24x24":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                       "16x16":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png",
+                                                       "32x32":  "https://secure.gravatar.com/avatar/770efef8d48e8ca3ba6a359d927c786e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLT-5.png"
+                                                   },
+                                    "displayName":  "Luka Tchrikishvili",
+                                    "active":  true,
+                                    "timeZone":  "Asia/Dubai",
+                                    "accountType":  "atlassian"
+                                },
+                   "priority":  {
+                                    "self":  "https://oppa-support.atlassian.net/rest/api/3/priority/2",
+                                    "iconUrl":  "https://oppa-support.atlassian.net/images/icons/priorities/high_new.svg",
+                                    "name":  "High",
+                                    "id":  "2"
+                                },
+                   "labels":  [
+                                  "Billing"
+                              ],
+                   "customfield_10104":  null,
+                   "environment":  null,
+                   "attachment":  [
+
+                                  ],
+                   "comment":  {
+                                   "comments":  [
+
+                                                ],
+                                   "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/56988/comment",
+                                   "maxResults":  0,
+                                   "total":  0,
+                                   "startAt":  0
+                               },
+                   "issuelinks":  [
+                                      {
+                                          "id":  "34075",
+                                          "self":  "https://oppa-support.atlassian.net/rest/api/3/issueLink/34075",
+                                          "type":  {
+                                                       "id":  "10003",
+                                                       "name":  "Relates",
+                                                       "inward":  "relates to",
+                                                       "outward":  "relates to",
+                                                       "self":  "https://oppa-support.atlassian.net/rest/api/3/issueLinkType/10003"
+                                                   },
+                                          "inwardIssue":  {
+                                                              "id":  "56983",
+                                                              "key":  "REG-1019",
+                                                              "self":  "https://oppa-support.atlassian.net/rest/api/3/issue/56983",
+                                                              "fields":  {
+                                                                             "summary":  "invoice slot splitting",
+                                                                             "status":  {
+                                                                                            "self":  "https://oppa-support.atlassian.net/rest/api/3/status/10464",
+                                                                                            "description":  "",
+                                                                                            "iconUrl":  "https://oppa-support.atlassian.net/",
+                                                                                            "name":  "Done",
+                                                                                            "id":  "10464",
+                                                                                            "statusCategory":  {
+                                                                                                                   "self":  "https://oppa-support.atlassian.net/rest/api/3/statuscategory/3",
+                                                                                                                   "id":  3,
+                                                                                                                   "key":  "done",
+                                                                                                                   "colorName":  "green",
+                                                                                                                   "name":  "Done"
+                                                                                                               }
+                                                                                        },
+                                                                             "priority":  {
+                                                                                              "self":  "https://oppa-support.atlassian.net/rest/api/3/priority/3",
+                                                                                              "iconUrl":  "https://oppa-support.atlassian.net/images/icons/priorities/medium_new.svg",
+                                                                                              "name":  "Medium",
+                                                                                              "id":  "3"
+                                                                                          },
+                                                                             "issuetype":  {
+                                                                                               "self":  "https://oppa-support.atlassian.net/rest/api/3/issuetype/10341",
+                                                                                               "id":  "10341",
+                                                                                               "description":  "Subtasks track small pieces of work that are part of a larger task.",
+                                                                                               "iconUrl":  "https://oppa-support.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10316?size=medium",
+                                                                                               "name":  "Subtask",
+                                                                                               "subtask":  true,
+                                                                                               "avatarId":  10316,
+                                                                                               "entityId":  "66011ce2-2c3d-4d08-b033-106abe5a9981",
+                                                                                               "hierarchyLevel":  -1
+                                                                                           }
+                                                                         }
+                                                          }
+                                      }
+                                  ],
+                   "assignee":  null,
+                   "updated":  "2026-09-09T18:17:22.993+0400",
+                   "status":  {
+                                  "self":  "https://oppa-support.atlassian.net/rest/api/3/status/10464",
+                                  "description":  "",
+                                  "iconUrl":  "https://oppa-support.atlassian.net/",
+                                  "name":  "Done",
+                                  "id":  "10464",
+                                  "statusCategory":  {
+                                                         "self":  "https://oppa-support.atlassian.net/rest/api/3/statuscategory/3",
+                                                         "id":  3,
+                                                         "key":  "done",
+                                                         "colorName":  "green",
+                                                         "name":  "Done"
+                                                     }
+                              }
+               }
+}

@@ -1,0 +1,133 @@
+<mxfile host="app.diagrams.net" type="device">
+  <diagram id="prod-volumes" name="Prod volumes">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1800" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="t" value="Prod — generate_run_volume (old engine)" style="text;html=1;fontSize=16;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="520" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="a" value="run_standard_billing_main_data_preparation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="80" y="70" width="280" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="b" value="pg_cron + 2 minutes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="80" y="140" width="280" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c" value="billing_run_data_generation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="80" y="200" width="280" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="d" value="FOR_VOLUMES? generate_run_volume&#xa;(one plpgsql session)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="95" y="260" width="250" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="e" value="fill_by_volume_ri + fill_by_volume_bds" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="80" y="370" width="280" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="f" value="bdp_periods + volume_holder + mass SLP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="80" y="430" width="280" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="g" value="Pulling loop (contracts / coverage / SLP)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="80" y="490" width="280" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="h" value="billing_data_by_profile + errors + PC mapping" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="80" y="560" width="280" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="i" value="slots + settlement prices + publish&#xa;run_contracts / splits / settlement_period" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="80" y="630" width="280" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="j" value="other AM + slot enrich + electricity" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="80" y="710" width="280" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="k" value="lock + FINISHED&#xa;compensation mapping COMMENTED OUT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="80" y="780" width="280" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="a" target="b"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="b" target="c"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="c" target="d"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="d" target="e"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e5" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="e" target="f"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e6" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="f" target="g"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e7" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="g" target="h"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e8" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="h" target="i"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e9" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="i" target="j"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e10" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="j" target="k"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="experiment-stages" name="Experiment stages">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="2000" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="t" value="Experiment — standard_billing_preparation (new engine)" style="text;html=1;fontSize=16;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="640" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="a" value="standard_billing_preparation (plpython3u)&#xa;new connection per stage, then COMMIT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="80" y="70" width="340" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="s1" value="01 population → standard_run_criteria_data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="80" y="145" width="340" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="s2" value="02.01–02.06 ownership, scales, SLP seed&#xa;(does NOT call fill_by_volume_*)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="80" y="205" width="340" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="s3" value="03 pulling loop on standard_volume_holder" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="80" y="280" width="340" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="s5" value="04–06 SLP workers x8 — separate COMMIT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="80" y="345" width="340" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="s7" value="07–10 errors + PC; condition workers x8&#xa;condition errors do NOT fail the run" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="80" y="410" width="340" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="s12" value="11–13 settlement; price workers x10&#xa;separate COMMIT per BDP chunk" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="80" y="485" width="340" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="s14" value="14 publish run_contracts / splits / settlement_period" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="80" y="560" width="340" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="s18" value="15–19 other AM + slots + electricity" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="80" y="625" width="340" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="s20" value="20 compensation mapping ON (Prod: commented out)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="80" y="690" width="340" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="s21" value="21 lock + 22 FINISHED&#xa;no FAILED update on exception" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="80" y="760" width="340" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="a" target="s1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="s1" target="s2"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="s2" target="s3"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="s3" target="s5"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e5" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="s5" target="s7"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e6" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="s7" target="s12"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e7" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="s12" target="s14"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e8" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="s14" target="s18"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e9" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="s18" target="s20"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e10" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="s20" target="s21"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="mapping" name="Prod to Experiment map">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="t" value="Prod phase → Experiment stage" style="text;html=1;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="500" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="p" value="PROD&#xa;&#xa;criteria&#xa;fill_by_volume_ri/bds&#xa;volume_holder + SLP&#xa;pulling loop&#xa;billing_data_by_profile&#xa;errors + PC&#xa;settlement prices&#xa;publish tables&#xa;compensation OFF" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#dae8fc;strokeColor=#6c8ebf;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="280" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="x" value="EXPERIMENT&#xa;&#xa;01&#xa;02.01–02.03&#xa;02.04–02.06&#xa;03&#xa;04–06 workers&#xa;07–10&#xa;11–13 workers&#xa;14&#xa;20 ON" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#fff2cc;strokeColor=#d6b656;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="520" y="70" width="280" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="arr" style="endArrow=block;html=1;strokeWidth=3;" edge="1" parent="1" source="p" target="x">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="n" value="Red boxes on other tabs = highest QA risk (pulling, worker COMMIT, compensation)." style="text;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="370" width="760" height="30" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -9,7 +9,7 @@ try {
     $toolName = $input.tool_name
     $toolInput = $input.tool_input
     
-    $databaseTools = @("mcp_PostgreSQLTest_execute", "mcp_PostgreSQLDev_execute", "mcp_PostgreSQLDev2_execute", "mcp_PostgreSQLPreProd_execute", "mcp_PostgreSQLProd_execute")
+    $databaseTools = @("mcp_PostgreSQLTest_execute", "mcp_PostgreSQLDev_execute", "mcp_PostgreSQLDev2_execute", "mcp_PostgreSQLPreProd_execute", "mcp_PostgreSQLProd_execute", "mcp_PostgreSQLExperiment_execute")
     
     $isDatabaseTool = $false
     foreach ($dbTool in $databaseTools) {
