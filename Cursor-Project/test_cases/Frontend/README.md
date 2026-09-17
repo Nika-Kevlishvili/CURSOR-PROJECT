@@ -20,3 +20,4 @@ TC numbering: `TC-FE-1`, `TC-FE-2`, ...
 | `Version_Validity_Three_Processes_PDT_2815.md` | Mass Email/SMS import reports, penalty calculate UI, all-customers preview � rejection visibility vs PDT-2815 gaps | PDT-2815 | TC-FE-1 through TC-FE-8 |
 
 | `Service_Contract_First_Version_StartDate_PDT_2846.md` | Service Contract first version startDate re-alignment � UI reflects realigned startDate, version dropdown, form field behavior, post-save consistency | PDT-2846 | TC-FE-1 through TC-FE-10 |
+| `Customer_Receivables_Liabilities_Totals_Pagination_PDT_3453.md` | Customer Liabilities and receivables Amount board — totals stable across UI pagination; change on filter checkbox; reject page-only sum | PDT-3453 | TC-FE-1 through TC-FE-4 |

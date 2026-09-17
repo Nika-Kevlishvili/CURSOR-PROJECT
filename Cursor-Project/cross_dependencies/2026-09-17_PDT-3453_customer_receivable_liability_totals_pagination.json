@@ -1,0 +1,147 @@
+{
+  "jira_key": "PDT-3453",
+  "target_environment": "dev",
+  "phoenix_alignment": {
+    "attempted": true,
+    "script_exit_code": 0,
+    "note": "switch-phoenix-branches.ps1 reported no Phoenix git repositories; Cursor-Project/Phoenix/* are empty submodule stubs pointing at git.domain.internal (unreachable in this cloud VM). Runtime evidence from Swagger (dev) only."
+  },
+  "scope": {
+    "summary": "Customer Liabilities and receivables tab — Amount board TOTAL Current Amount / TOTAL Initial Amount must be dataset-wide (all pages), stable across pagination, and change only when filter/search checkboxes change.",
+    "issue_type": "Customer Feedback",
+    "status": "Done on Dev"
+  },
+  "entry_points": [
+    {
+      "type": "api",
+      "name": "POST /customer/{customerId}/customer-liability-and-receivable",
+      "operationId": "getCustomerRelatedLiabilitiesAndReceivables",
+      "request": "CustomerRelatedLiabilitiesAndReceivablesListRequest",
+      "response": "CustomerLiabilityAndReceivableListingResponse (totalInitialAmount, totalCurrentAmount, content[], totalElements, totalPages, page/size metadata)"
+    },
+    {
+      "type": "ui",
+      "name": "Customer detail → Liabilities and receivables tab → Amount board",
+      "usage": "Displays TOTAL Initial Amount and TOTAL Current Amount; paginated grid (default 25 rows)"
+    }
+  ],
+  "upstream": [
+    {
+      "type": "api",
+      "name": "POST /customer",
+      "usage": "Create customer under test"
+    },
+    {
+      "type": "api",
+      "name": "POST /customer-liability",
+      "usage": "Create uncovered liabilities (currentAmount > 0) to populate listing across multiple pages"
+    },
+    {
+      "type": "api",
+      "name": "POST /customer-receivable",
+      "usage": "Create uncovered receivables (displayed as negative amounts on board)"
+    },
+    {
+      "type": "api",
+      "name": "Accounting period + currency nomenclatures",
+      "usage": "Required fields on CustomerLiabilityRequest / CustomerReceivableRequest"
+    }
+  ],
+  "downstream": [
+    {
+      "type": "ui",
+      "name": "phoenix-ui Customer Liabilities and receivables Amount board",
+      "usage": "Renders totalInitialAmount / totalCurrentAmount from listing API response"
+    },
+    {
+      "type": "consumer",
+      "name": "Portal pagination controls",
+      "usage": "Re-calls listing with page/size; must not recompute board from current page rows only"
+    }
+  ],
+  "shared": [
+    "CustomerLiabilityAndReceivableListingResponse.totalInitialAmount",
+    "CustomerLiabilityAndReceivableListingResponse.totalCurrentAmount",
+    "Filter flags: blockedForPayments, blockedForReminders, blockedForInterest, blockedForOffsetting, blockedForDisconnection, showDeposits, showLiabilitiesAndReceivables, prompt/searchFields"
+  ],
+  "data_entities": [
+    "Customer",
+    "CustomerLiability",
+    "CustomerReceivable",
+    "Deposit (optional via showDeposits)",
+    "AccountingPeriod",
+    "Currency"
+  ],
+  "integration_points": [
+    {
+      "name": "Listing API totals vs page content",
+      "detail": "Response carries both paginated content[] and aggregate totalInitialAmount/totalCurrentAmount — aggregates must reflect full filtered dataset, not only content[] on the current page"
+    },
+    {
+      "name": "UI Amount board binding",
+      "detail": "Board values must bind to API totals fields; must not sum only visible grid rows"
+    }
+  ],
+  "what_could_break": [
+    {
+      "item": "Amount board totals change when only page number changes",
+      "location": "POST /customer/{customerId}/customer-liability-and-receivable + UI Amount board",
+      "reason": "PDT-3453 defect: totals were computed from current page rows; fix must keep totals stable across page 0..N for the same filters"
+    },
+    {
+      "item": "Totals ignore liabilities/receivables on later pages",
+      "location": "CustomerLiabilityAndReceivableListingResponse.totalCurrentAmount / totalInitialAmount",
+      "reason": "Customer feedback requires sum of all amounts of all pages when no filters selected"
+    },
+    {
+      "item": "Filter checkbox changes do not update Amount board",
+      "location": "Request filter flags + Amount board",
+      "reason": "Ticket expected: totals change only when selecting different checkboxes / filter+search, not on bare pagination"
+    },
+    {
+      "item": "Receivable sign / liability-receivable netting on board",
+      "location": "Amount board Initial/Current amount rules",
+      "reason": "Confluence: receivables contribute as negative; board can show negative or zero when receivables exceed liabilities"
+    }
+  ],
+  "confluence_evidence": [
+    {
+      "title": "Customer Receivable/Liability",
+      "page_id": "209977345",
+      "url": "https://asterbit.atlassian.net/wiki/spaces/Phoenix/pages/209977345/Customer+Receivable+Liability",
+      "source": "REST fallback (Atlassian MCP searchScope jira-only; asterbit Confluence cloudId not granted to MCP). Page fetched via get-confluence-page-rest.ps1.",
+      "key_findings": [
+        "Tab after Invoice; default 25 rows/page; pagination required",
+        "Default list: latest not-covered liabilities/receivables (current amount > 0), deposits excluded unless shown",
+        "Amount board Initial/Current: dynamic based on filtering or search; equal sum of amounts of liabilities/receivables/deposits shown further down; can be negative",
+        "Doc does NOT explicitly state all-pages aggregation vs current-page-only (gap called out in PDT-3453 comment by Ani Giorganashvili)"
+      ]
+    }
+  ],
+  "technical_details": {
+    "jira": {
+      "key": "PDT-3453",
+      "summary": "Customer -> Receivables and Liabilities - The customer balance is changing when switching the pages",
+      "description_formatted": "Actual: TOTAL Current Amount and TOTAL Initial Amount change when switching pages. Expected: should not change when switching pages; should change only when selecting different checkboxes.",
+      "customer_feedback": "TOTAL Current Amount and TOTAL Initial Amount must show sum of all amounts of all pages together, not only the page on screen, when no filters selected.",
+      "clarification_reason": "needs clarification for total amounts / pagination logic",
+      "attachment": "Video_260910101706.mp4",
+      "linked_confluence_from_comment": "https://asterbit.atlassian.net/wiki/spaces/Phoenix/pages/209977345/Customer+Receivable+Liability"
+    },
+    "swagger_dev": {
+      "path": "Cursor-Project/config/swagger/dev/swagger-spec.json",
+      "endpoint": "POST /customer/{customerId}/customer-liability-and-receivable",
+      "response_fields": ["content", "totalPages", "totalElements", "size", "number", "totalInitialAmount", "totalCurrentAmount"]
+    },
+    "codebase": "Phoenix submodule trees empty in this environment; no Java/UI implementation citations available."
+  },
+  "findings_for_generator": [
+    {
+      "type": "Doc gap / Code↔Doc mismatch risk",
+      "title": "Amount board pagination totals not specified on Confluence",
+      "spec_says": "Confluence Amount board: amounts update based on filtering/search and equal sum of items 'shown further down' (ambiguous for multi-page lists).",
+      "ticket_says": "PDT-3453: totals must not change on page switch; must equal sum across all pages when no filters; change only when checkboxes/filters change.",
+      "recommendation": "Update Confluence Amount board section with explicit all-pages aggregation rule; TCs validate ticket + customer-feedback expected behavior."
+    }
+  ]
+}
