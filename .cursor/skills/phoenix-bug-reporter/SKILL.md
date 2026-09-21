@@ -1,11 +1,11 @@
 ---
 name: phoenix-bug-reporter
-description: Full workflow for drafting and submitting Phoenix Phase 2 Internal Bug and External (standalone Bug) tickets. User selects allowed external Jira project at Step 0. Enforces approval gate via bug review file. Rule PHOENIX-BUG.0.
+description: Full workflow for drafting and submitting Phoenix Phase 2 Internal Bug and External (standalone Bug) tickets. User selects the Jira project at Step 0 from live visible projects (denylist in phoenix_bug_reporter.mdc). Enforces approval gate via bug review file. Rule PHOENIX-BUG.0.
 ---
 
 # Phoenix Bug Reporter — SKILL
 
-Creates **Internal Bug** sub-tasks on Phoenix Phase 2 Jira boards and **External** standalone **Bug** tickets on user-selected allowed projects. Always produces a review file for user approval before touching Jira.
+Creates **Internal Bug** sub-tasks on Phoenix Phase 2 Jira boards and **External** standalone **Bug** tickets on any visible Jira project except the denylist in **`.cursor/rules/integrations/phoenix_bug_reporter.mdc`**. Always produces a review file for user approval before touching Jira.
 
 **Agent file:** `.cursor/agents/phoenix-bug-reporter.md`
 **Rule:** `.cursor/rules/integrations/phoenix_bug_reporter.mdc` (PHOENIX-BUG.0)
@@ -78,18 +78,20 @@ The agent determines priority from the bug description. Do not ask the user for 
 | Class | Issue type | Parent on create | Project resolution |
 |-------|------------|------------------|-------------------|
 | **Internal (Ph2)** | Internal Bug | Yes when parent provided | PHN or parent ticket’s Ph2 `project.key` |
-| **External (Ph2-related)** | Bug (standalone) | No | User-selected **allowed external** project (Step 0) |
+| **External** | Bug (standalone; confirm via createmeta) | No | Any visible project except denylist + Experiments (Step 0) |
 
 **Allowed internal:** PHN and other Ph2 delivery project keys (from parent or user answer when Internal, no parent).
 
-**Allowed external project keys (allowlist — extend only in `phoenix_bug_reporter.mdc`):** **`GB`** ([board 86](https://oppa-support.atlassian.net/jira/software/c/projects/GB/boards/86)). GB is **not** auto-selected.
+**External denylist (cite only — do not copy keys here):** **`.cursor/rules/integrations/phoenix_bug_reporter.mdc`** section **External excluded project keys**. Extend that list only.
+
+**GB** is not special and is **not** auto-selected. **PDT** and **PHN** are valid External targets when visible.
 
 **Board / project resolution:**
-- User asks for **external** / **external bug** / standalone Bug → **External** class → **External project selection** (Step 0) — **always** ask which project (see below). Do **not** assume GB.
+- User asks for **external** / **external bug** / standalone Bug → **External** class → **External project selection** (Step 0). Do **not** assume GB.
 - Parent on Ph2 and user did **not** request External → **Internal**; board = parent `project.key`; issue type **Internal Bug** with `parent`.
-- User names a project key or Jira board URL → map URL to project key; validate against allowlist for that class.
+- User names a project key or Jira board URL → map URL to project key; refuse if denylist or Experiments.
 - Internal, no parent → ask Ph2 board (e.g. PHN) and sprint.
-- **Experiments** or other non-approved projects → refuse and redirect (`jira-bug` for Experiments).
+- **Experiments** → refuse and redirect to **`jira-bug`** (Rule JIRA.0). Unchanged.
 
 ---
 
@@ -97,15 +99,15 @@ The agent determines priority from the bug description. Do not ask the user for 
 
 **Applies to:**
 - **PHN** (and Ph2) **Internal Bug** — Key details panel shows **Description formatted** (`customfield_10103`).
-- **External class Bug** (e.g. on GB) — often requires **`customfield_10103`** at create; UI matches PHN Key details (GB-1772, GB-1773, 2026-07-21).
+- **External class Bug** — split ADF **only when** createmeta for that project + issue type includes `customfield_10103` or a field whose **name** contains `Description formatted`. Do not assume GB/PHN field ids.
 
-**Detection:** Use split ADF for **Internal Bug** or **External Bug** when `getJiraIssueTypeMetaWithFields` / createmeta shows **`customfield_10103`** required or present for that issue type and project.
+**Detection:** Use split ADF when `getJiraIssueTypeMetaWithFields` / createmeta for **this** project + issue type shows **`customfield_10103`** or a field named **Description formatted** (required or present). Use the **createmeta field key**. If neither is present → **legacy markdown `description`**.
 
 **Authoritative bug body (split ADF boards):**
 
 | Field | Behavior |
 |-------|----------|
-| **`customfield_10103`** | **Full** Tier 1 Key details ADF at **Step 5a** create — all review-file content mapped per **Key details ADF template** (Description + TL;DR first, body marks, steps, Actual `bulletList`, expected, env line, API `codeBlock` evidence, optional screenshot embed after **5b** via conditional **5c** when image provided — any Backend/Frontend/DB label). **`strong` + `textColor`** on section/API labels (exact hex below). |
+| **`customfield_10103`** | **Full** Tier 1 Key details ADF at **Step 5a** create — all review-file content mapped per **Key details ADF template** (Description + TL;DR first, body marks, steps, Actual `bulletList`, expected, env line, API `codeBlock` evidence; screenshot embed added after **5b** via mandatory **5c** when an image was provided — any Backend/Frontend/DB label). **`strong` + `textColor`** on section/API labels (exact hex below). |
 | **`description`** | **Not** part of authoring: omit or empty at **5a**. If create validation requires standard Description, retry **once** with **minimal stub** only (see Step 5a). **MUST NOT** write the full bug body to standard `description` on split-ADF boards. |
 
 Inline marks (`strong`, `textColor`, `code`) on the **standard `description`** field corrupt rendering (literal `{color:…}` / `*bold*`). Colored marks belong **only** on **`customfield_10103`**.
@@ -113,8 +115,17 @@ Inline marks (`strong`, `textColor`, `code`) on the **standard `description`** f
 **Rules (split ADF boards):**
 - Step **5a:** `createJiraIssue` with **full colored Key details ADF** in **`customfield_10103`** (`additional_fields` + ADF). Standard **`description`** omitted or empty; minimal stub retry only on create validation failure. (External projects may require Epic, Fix version, Environment ADF, Tester — see **External Bug (standalone)** and createmeta.)
 - Step **5b:** Screenshot upload when file exists (after **5a**).
-- Step **5d:** **Mandatory** after **5b** — verify **`renderedFields.customfield_10103`** only. **Pass → skip 5c** and finish.
-- Step **5c:** **Conditional** — run **only when 5d fails**; `editJiraIssue` with **`customfield_10103` only** (no `description` key). At most **two** 5c attempts per ticket. **Forbidden:** Jira REST `PUT`/`POST` from Shell for formatting — MCP only. Temp ADF payload files must **not** include `description`.
+- Step **5c:** **Mandatory once when Step 5b uploaded at least one image** (exit **0**) — the create call cannot embed an image that did not exist yet, so the media node is always added here. Otherwise **conditional**: run only when **5d** fails. `editJiraIssue` with **`customfield_10103` only** (no `description` key). At most **two** 5c attempts per ticket. **Forbidden:** Jira REST `PUT`/`POST` from Shell for formatting — MCP only. Temp ADF payload files must **not** include `description`.
+- Step **5d:** **Mandatory** — verify **`renderedFields.customfield_10103`** only, and **report** the outcome. Runs after the mandatory **5c** when an image was uploaded, otherwise directly after **5b**.
+
+**Step order by screenshot presence:**
+
+| Screenshot uploaded at 5b | Order |
+|---|---|
+| **Yes** (exit 0, ≥1 file) | **5a → 5b → 5c (mandatory, with media node) → 5d (verify + report)** |
+| **No** (no file, or upload failed) | **5a → 5b → 5d → 5c only if 5d fails** — unchanged from before |
+
+**Screenshots are optional.** When the user provided no image, nothing about the workflow changes: no extra step, no warning, no screenshot criterion at **5d**, and bug creation is never blocked.
 
 **Legacy Ph2 boards without `customfield_10103`:** Unchanged — **5a** full markdown `description`; **5c** colored ADF on **`description` only**. Do not set `customfield_10103`.
 
@@ -139,51 +150,56 @@ On **`customfield_10103` (split ADF)**, body content under headers **MAY** use `
 
 ### External Bug (standalone — project-specific)
 
-When **bug class = External** and Step 0 stored **`externalProjectKey`** (e.g. **`GB`**):
+When **bug class = External** and Step 0 stored **`externalProjectKey`**:
 
-**Review file:** Record **Bug class** = External; **Issue Type** = Bug; **Board** = `externalProjectKey`; **Parent** = —; include **Epic Link**, **Fix version** when known (ask user or resolve via createmeta before Step 5a).
+**Review file:** Record **Bug class** = External; **Issue Type** = name from createmeta (usually Bug); **Board** = `externalProjectKey`; **Parent** = —; include **Epic Link**, **Fix version**, and other required createmeta fields **only when known** (ask the user — never guess).
 
-**Step 0:** **Reporter** from `.env` (current user). **Tester** from `.env` (`JIRA_REPORTER_EMAIL` lookup). No chapter-subtask assignee for External. A parent key in the user message for **context only** does **not** set Jira `parent` on External creates.
+**Step 0:** **Reporter** from `.env` (current user). **Tester** from `.env` (`JIRA_REPORTER_EMAIL` lookup). No chapter-subtask assignee for External. A parent key in the user message for **context only** does **not** set Jira `parent` on External creates. A pasted key **may** supply **`externalProjectKey`** via Step 0 source 2 (`fields.project.key` or key prefix).
 
-**Step 5a — `createJiraIssue` example (External Bug — GB shown as reference):**
+**Step 5a — createmeta first (MANDATORY for External, before `createJiraIssue`):**
+
+1. Call **`getJiraProjectIssueTypesMetadata`** with `cloudId` `ad451d5c-7331-46f8-9a47-f51dc8e6bbde` and `projectIdOrKey` = `externalProjectKey`.
+2. **Issue type:** use the type whose **name** is exactly `Bug`. If missing, renamed, or ambiguous → **AskQuestion** listing every type as `"{name} — {id}"`. **Never** guess an id; **never** use PHN Internal Bug `10504` or GB Bug `10004` unless that id is in **this** metadata response.
+3. Call **`getJiraIssueTypeMetaWithFields`** with `projectIdOrKey`, `issueTypeId` from step 2, `requiredFieldsOnly`: **false**.
+4. **Split ADF** iff returned fields include key `customfield_10103` **or** a field whose **name** contains `Description formatted`. Payload uses the **returned key**.
+5. **No split field:** **legacy** path — full review-file markdown in **`description`**; do **not** send `customfield_10103`.
+6. **Required fields:** iterate createmeta `required: true`. Map by **field name / schema**, not by a remembered id:
+   - Summary / project / issuetype — MCP top-level (`summary`, `projectKey`, `issueTypeName` from step 2).
+   - Description — split vs legacy as above (minimal stub retry only on split boards if create requires standard Description).
+   - Name contains **Epic** — **AskQuestion** for the epic issue key; never invent (no `GB-1501` default).
+   - Name contains **Tester** — send `{ accountId: testerAccountId }` on **that field’s key** when tester is set; omit if Leave unset or field absent from meta.
+   - `fixVersions` or name contains **Fix Version** — **AskQuestion** if required and unknown.
+   - `environment` — Step 0b canonical env if required.
+   - Any other required field — **AskQuestion**; never guess id or value.
+7. **Forbidden:** `customfield_10008`, `customfield_10095`, `customfield_10103`, or any other custom id **unless that exact key is in this createmeta**.
+
+Illustrative payload **only after** createmeta confirms each key (GB-shaped ids shown as a possible outcome, not a template to copy blindly):
 
 ```json
 {
   "cloudId": "ad451d5c-7331-46f8-9a47-f51dc8e6bbde",
   "projectKey": "<externalProjectKey from Step 0>",
-  "issueTypeName": "Bug",
+  "issueTypeName": "<Bug or user-selected type name from metadata>",
   "summary": "<from review file>",
   "contentFormat": "adf",
   "additional_fields": {
     "priority": { "name": "<priority>" },
-    "labels": ["Frontend"],
-    "fixVersions": [{ "name": "<fix version name>" }],
-    "customfield_10008": "<Epic issue key, e.g. GB-1501>",
-    "customfield_10095": { "accountId": "<testerAccountId from Step 0 — current user for External>" },
-    "environment": {
-      "type": "doc",
-      "version": 1,
-      "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Dev2" }] }]
-    },
-    "customfield_10103": { "type": "doc", "version": 1, "content": [ /* Key details colored ADF — full template */ ] }
+    "labels": ["Frontend"]
   }
 }
 ```
 
-- Omit top-level **`description`** when MCP allows. On validation error requiring standard Description, retry **once** with minimal stub (see Step 5a).
-- **`customfield_10103`:** full Tier 1 Key details ADF at create — same structure as **Key details ADF template** (Description first, TL;DR, body marks, Actual bullets, API `codeBlock`s; screenshot `mediaSingle` nodes usually added in conditional **5c** after **5b** when user provided image(s) — Backend, Frontend, or DB).
-- Resolve required fields via `getJiraIssueTypeMetaWithFields` for **`externalProjectKey`** when create fails; never guess Epic or Fix version — ask the user. Field ids may differ by project (GB uses `customfield_10008`, `customfield_10095`, etc.).
-- **`reporter`:** same optional `additional_fields.reporter` rule as PHN; omit if Jira rejects.
+Add epic / tester / environment / Description formatted **only** with keys returned by createmeta. **`reporter`:** same optional `additional_fields.reporter` rule as PHN; omit if Jira rejects.
 
-**Steps 5b–5d:** Same as Internal split ADF — **5b** screenshot, **5d** verify `customfield_10103`, **5c** patch **`customfield_10103` only** when **5d** fails.
+**Steps 5b–5d:** Split ADF — **5b** screenshot, **5d** verify the createmeta Description-formatted field, **5c** patch **that field only** when **5d** fails. **Legacy (no Description formatted field):** **5a** markdown `description` → **5b** → **5c** colored ADF on **`description` only**.
 
-**Hook note:** `block-bugreview-unapproved-jira.ps1` guards **`Internal Bug`** and External **`Bug`**. Requires `# Bug Review — APPROVED` and `.active-bugreview` sidecar (Step 4 On Agree). Resolves review file via sidecar → single APPROVED scan → latest mtime fallback.
+**Hook note:** `block-bugreview-unapproved-jira.ps1` guards **`Internal Bug`** and External **`Bug`**. Requires `# Bug Review — APPROVED` and `.active-bugreview` sidecar (Step 4 On Agree). Resolves review file via sidecar → single APPROVED scan → latest mtime fallback. If the user selected a non-`Bug` type because `Bug` was absent, the hook may **not** intercept create — still require Step 4 Agree + sidecar in the workflow.
 
 ---
 
 ## Step-by-Step Workflow
 
-**Entry:** Start at **Step 0** as soon as the user invokes the bug reporter. There is **no** pre-registration validity question. **Step 3.5** (MUST offer Validate/Skip/Cancel) may run **bug-validator** (Rule 32) against the review file before Jira consent. Jira consent is **Step 4 only** (after Step 3 and Step 3.5 resolved). The `beforeMCPExecution` hook `block-bugreview-unapproved-jira.ps1` blocks `createJiraIssue` for **Internal Bug** and **Bug** unless the review file first line is `# Bug Review — APPROVED` and `.active-bugreview` sidecar points to that file.
+**Entry:** Start at **Step 0** as soon as the user invokes the bug reporter. There is **no** pre-registration validity question. Jira consent is **Step 4 only** (immediately after Step 3). The `beforeMCPExecution` hook `block-bugreview-unapproved-jira.ps1` blocks `createJiraIssue` for **Internal Bug** and **Bug** unless the review file first line is `# Bug Review — APPROVED` and `.active-bugreview` sidecar points to that file.
 
 ---
 
@@ -223,7 +239,7 @@ Set **`bugClass`** to **`Internal`** or **`External`** before resolving board/pr
 
 | Signal | `bugClass` |
 |--------|------------|
-| User says **external**, **external bug**, standalone **Bug** (not Internal Bug), or names an allowed external project / external board URL | **External** |
+| User says **external**, **external bug**, standalone **Bug** (not Internal Bug), or names a non-Ph2-parent board/URL for a standalone ticket | **External** |
 | Ph2 **parent** ticket provided and user did **not** ask for External | **Internal** |
 | No parent and intent unclear | **AskQuestion:** *How should this bug be reported on Jira?* → **Internal Bug** (subtask under a Ph2 ticket) / **External Bug** (standalone Bug, no parent) |
 
@@ -233,24 +249,32 @@ Store **`bugClass`** for the review file and Step 5a.
 
 #### External project selection (MANDATORY when `bugClass` = External)
 
-**Do not** default to GB. **`externalProjectKey`** must come from user choice or an explicit allowed key/URL in the user message.
+**Do not** default to GB or any project. Store **`externalProjectKey`** and **`externalProjectSource`**. Filter using the **denylist** in **`.cursor/rules/integrations/phoenix_bug_reporter.mdc`**; Experiments → `jira-bug`.
 
-**Skip AskQuestion** only when the user already named an **allowed external project key** (e.g. `GB`) or a Jira Software board URL whose project key is on the allowlist — set **`externalProjectKey`** to that key.
+**Map to a project key:**
+- Token equal to a Jira project key (e.g. `GB`, `PDT`, `PHN`)
+- Board/project URL: `/jira/software/c/projects/{KEY}/`, `/jira/software/projects/{KEY}/`, `/browse/{KEY}-{n}`
+- Fetched issue: `fields.project.key`
+- Issue key `ABC-123` when no fetch: prefix `ABC` only if that key is in the current `getVisibleJiraProjects` result (do not invent)
 
-**Otherwise (always ask, including when only one allowed project exists):**
+**Resolution order (strict) — stop at the first non-excluded unique key; if several candidates in the same source, prefer the most recently discussed (last in the message / newest chat turn):**
 
-1. Call Jira MCP **`getVisibleJiraProjects`** with `cloudId`: `ad451d5c-7331-46f8-9a47-f51dc8e6bbde`.
-2. **Filter** projects to keys in **Allowed external project keys** (see **Bug class and allowed targets** — currently **`GB`** only).
-3. **AskQuestion** — one question, options built from filtered projects: label `"{key} — {name}"`, value = project key.
+1. **Current user message** — explicit key or URL. Store `externalProjectSource` = `user message`.
+2. **This chat** — a ticket, board/project URL, or issue fetched earlier **that this external bug is being reported against**. Newest first. Store `externalProjectSource` e.g. `this chat (PHN-4050 project.key)` or `this chat (board URL)`.
+3. **Otherwise AskQuestion** — build options from live Jira (never a hardcoded allowlist).
 
-   **Prompt:** *Which Jira project should this external bug be created on?*  
-   (Only Phase 2–approved external projects you can access are listed.)
+**AskQuestion construction:**
+1. Call **`getVisibleJiraProjects`** (`cloudId` `ad451d5c-7331-46f8-9a47-f51dc8e6bbde`, `action`: `create`). Paginate until `isLast`.
+2. Drop keys on the **denylist** and **Experiments** (if present).
+3. Options: every remaining project, label `"{key} — {name}"`, value = project key. **PHN**, **PDT**, and **GB** must appear when they are in the visible list. If the UI cannot fit all options, ask in sequential batches — do not drop keys.
+4. **Prompt:** *Which Jira project should this external bug be created on?*
+5. Store the chosen key as **`externalProjectKey`**. `createJiraIssue` uses `projectKey`; board id is not required.
 
-4. Store the chosen key as **`externalProjectKey`**. Ticket creation uses **`projectKey`** (`externalProjectKey`); board id is not required for `createJiraIssue`.
+If source 1 or 2 resolves to a **denylist** key → refuse (do not create). If **Experiments** → refuse; redirect to **`jira-bug`**. Then continue to the next source or AskQuestion only when no valid key remains.
 
-**If `getVisibleJiraProjects` fails:** retry once; then ask the user to type a project key and validate it against the external allowlist.
+**If `getVisibleJiraProjects` fails:** retry once; then ask the user to type a project key; refuse denylist/Experiments; do not invent keys.
 
-**If the allowlisted project is missing from visible projects:** warn that Jira access may be insufficient; ask user to confirm the key manually or fix permissions — do **not** create on an unlisted project.
+**Never** auto-select GB when it is the only remaining option — still AskQuestion unless sources 1–2 already set a key.
 
 ---
 
@@ -286,7 +310,7 @@ Store **`bugClass`** for the review file and Step 5a.
 
 **When `bugClass` = External:**
 
-- Complete **External project selection** above before Step 1 (unless skipped per explicit key/URL).
+- Complete **External project selection** above before Step 1 (skip AskQuestion only when source 1 or 2 already set a non-excluded `externalProjectKey`).
 - **Assignee** = empty unless user specifies one for the external project.
 - Optional parent key in the message is **context only** — do **not** set Jira `parent` on create.
 
@@ -298,13 +322,21 @@ Proceed to **Step 0b** when board/project (`board` or **`externalProjectKey`**) 
 
 ### Step 0b — Environment gate (MANDATORY)
 
-Resolve **`resolvedEnvironment`** before Step 1. Canonical procedure aligns with **`.cursor/skills/environment-resolver/SKILL.md`** (six envs only; no silent Test default).
+Resolve **`resolvedEnvironment`** and **`environmentSource`** before Step 1. Canonical names: `Dev`, `Dev2`, `Test`, `PreProd`, `Prod`, `Experiments`. Normalize using the **alias table** in **`.cursor/skills/environment-resolver/SKILL.md`** (cite that file; do **not** edit it). Six envs only; no silent Test default.
 
-**Resolution order (strict):**
+**This four-source order applies only to phoenix-bug-reporter Step 0b.** It does **not** change **DB.0a**, **TC-ENV-ASK.0**, or environment-resolver usage elsewhere.
 
-1. **Explicit env in the current user message** — normalize to one of: `Dev`, `Dev2`, `Test`, `PreProd`, `Prod`, `Experiments` (aliases: dev2/dev-2, preprod/pre-prod, etc.).
-2. **Parent Jira `environment` field** — when Internal + parent and `fields.environment` is non-null/non-empty after fetch; normalize to canonical name.
-3. **Otherwise** → **AskQuestion** (standalone, exactly one question, six options):
+**Resolution order (strict) — stop at the first unique canonical:**
+
+1. **Current user message** — explicit env token in this turn; store `environmentSource` = `user message`.
+2. **Internal + parent only** — after parent fetch, scan in this field order; first unique canonical wins:
+   - `fields.environment`
+   - the Jira field whose **name** contains `Acceptance` (do **not** hardcode a `customfield_*` id)
+   - parent **description**
+   - parent **comments** (newest first)
+   Store `environmentSource` as e.g. `parent PHN-1234 fields.environment` or `parent PHN-1234 description`.
+3. **This chat** — a previously resolved env **for the same parent/bug only** (same Internal parent key, or the same in-progress External/Internal bug report). Store `environmentSource` = `this chat (same parent/bug)`.
+4. **Otherwise** → **AskQuestion** (standalone, exactly one question, six options). Store `environmentSource` = `AskQuestion`.
 
    **Prompt:** *Which environment was this bug reproduced on?*
 
@@ -315,17 +347,18 @@ Resolve **`resolvedEnvironment`** before Step 1. Canonical procedure aligns with
    - Prod
    - Experiments
 
+Do **not** AskQuestion until sources 1–3 are empty or ambiguous (multiple distinct canonicals with similar strength).
+
 **Forbidden inference (MUST — violation if used as env source):**
 
 - Fix version names (`Test 2 Release …`, `Release 4`, hotfix labels, etc.)
 - PHN / Phase 2 board or parent `project.key`
 - Parent sprint name
-- Prior chat session unless user explicitly says "same as before" / "same env"
-- Silent default to `Test` or any env without AskQuestion
+- Silent default to `Test` or any env without a source above
 
-**Gate:** Do **not** write the Step 3 review file until **`resolvedEnvironment`** is set. Review file **Environment** line must show the canonical name (e.g. `Dev2`), never bare `—`.
+**Gate:** Do **not** write the Step 3 review file until **`resolvedEnvironment`** is set. Review file **Environment** line must show canonical name **and** source, never bare `—`.
 
-Store **`resolvedEnvironment`** for the review file, Step 3.5 bug-validator delegation, and Bug Content **Environment** section.
+Store **`resolvedEnvironment`** and **`environmentSource`** for the review file Bug Content **Environment** section.
 
 ---
 
@@ -469,7 +502,7 @@ Where:
 <expected>
 
 **Environment:**
-- Environment: <canonical env from Step 0b — e.g. Dev2>
+- Environment: <canonical> (source: <environmentSource>)  e.g. `Environment: Dev2 (source: parent PHN-1234 fields.environment)`
 
 **Technical details:**
 - Endpoint: <METHOD /api/path>
@@ -489,33 +522,12 @@ Where:
 
 ---
 
-## Pre-create validation
-
-| Field | Value |
-|-------|-------|
-| **Status** | Not run / Skipped / Completed / Stopped |
-| **Verdict** | — (VALID / NOT VALID / NEEDS CLARIFICATION / NEEDS APPROVAL / INSUFFICIENT EVIDENCE / PROCESS BLOCKED) |
-| **Confidence** | — |
-| **Validated at** | — |
-
-> Populated by Step 3.5 when user chooses **Validate**. Leave **Status** = **Not run** on first save.
-
-### Validation summary
-
-<One short paragraph — verdict + key evidence, or "Skipped by user">
-
-### Quality Findings (from validator)
-
-- <Finding or "None">
-
----
-
 *Awaiting your response: **Agree** to submit to Jira, **Disagree** to request changes.*
 ```
 
 **Screenshot handoff gate (Step 3 — MANDATORY when user provided an image):**
 
-Run **immediately after** writing the review file and **before** displaying the clickable link or Step 3.5. Chat images live under Cursor `assets/` and may be ephemeral — the review-folder copy is the **durable** file Step **5b** uploads.
+Run **immediately after** writing the review file and **before** displaying the clickable link or Step 4. Chat images live under Cursor `assets/` and may be ephemeral — the review-folder copy is the **durable** file Step **5b** uploads.
 
 **When `image_files` is present in the user message (user attached at least one image):**
 
@@ -535,15 +547,15 @@ if (-not (Test-Path -LiteralPath $dest) -or (Get-Item -LiteralPath $dest).Length
 ```
 
 5. **On verify success:** Update the review file **Screenshots:** section — `Actual: <review-basename>_screenshot.png`. If second image copied and verified, set `Expected: <review-basename>_screenshot_expected.png`.
-6. **On verify failure:** **STOP** — do **not** display the review link for Step 3.5 or proceed to Step 3.5. Tell the user the copy failed and ask them to **re-attach the image in chat** or provide a local file path, then retry Step 3 copy. **MUST NOT** list a screenshot filename in the review file when the destination file does not exist on disk.
+6. **On verify failure:** **STOP** — do **not** display the review link for Step 4 or proceed to Step 4. Tell the user the copy failed and ask them to **re-attach the image in chat** or provide a local file path, then retry Step 3 copy. **MUST NOT** list a screenshot filename in the review file when the destination file does not exist on disk.
 
 **Gate rules (BLOCK):**
 
 - **MUST NOT** use `-ErrorAction SilentlyContinue` on screenshot copy.
 - **MUST NOT** write `Screenshots: Actual: <filename>` unless `Test-Path` on that destination succeeds and file size &gt; 0.
-- **MUST NOT** proceed to Step 3.5 while user provided an image but Actual screenshot handoff failed.
+- **MUST NOT** proceed to Step 4 while user provided an image but Actual screenshot handoff failed.
 
-**When no image was provided in chat:** Set `Screenshots: Actual: —` and `Expected: —`; skip copy; proceed to Step 3.5.
+**When no image was provided in chat:** Set `Screenshots: Actual: —` and `Expected: —`; skip copy; proceed to Step 4.
 
 **Screenshot scope:** Not Frontend/UI-only. Valid evidence includes UI captures, browser network tab, Postman/Swagger response, application logs, SQL/query result grids, DB client views — embed under **Actual Result** (and **Expected Result** for second image) when upload succeeds at Step **5b** / embed at **5c**, for **any** Backend/Frontend/DB label.
 
@@ -554,112 +566,7 @@ Write this file to disk using the file write tool. After writing:
 Review file: [BugReview_<slug>_<HHMM>.md](c:\Users\g.gamjashvili\new_cursor\CURSOR-PROJECT\Cursor-Project\reports\Bug Reports\YYYY\<month>\<DD>\BugReview_<slug>_<HHMM>.md)
 ```
 
-2. Proceed to **Step 3.5** — do NOT display the full file content in chat; the clickable link is sufficient for the user to review it.
-
----
-
-### Step 3.5 — Pre-create validation (bug-validator)
-
-**Purpose:** Before Jira consent, optionally run **Rule 32** validation against the draft review file to confirm the bug is real and the report aligns with Confluence, code, and Swagger. **No changes to bug-validator** — the reporter delegates via **Task** (`subagent_type: bug-validator`) and passes the review file as the bug description.
-
-**When:** Immediately after Step 3 (review file on disk, screenshot handoff passed if applicable, clickable link shown). **MUST** offer the AskQuestion below — user may choose Skip.
-
-**AskQuestion — standalone, exactly one question, three options:**
-
-```
-Validate this bug before reporting to Jira?
-  ● Validate (recommended)
-  ● Skip validation
-  ● Cancel
-```
-
-**On Cancel (#8, #12):**
-- Set review header to `# Bug Review — CANCELLED`
-- Replace the Agree/Disagree footer line with: `*Report cancelled — do not submit to Jira.*`
-- **Clear sidecar** (see **Active review sidecar** below)
-- Stop workflow. Do not call Step 4 or create Jira ticket.
-
-**On Skip validation:**
-- Update review file **Pre-create validation** section: **Status** = `Skipped`, **Verdict** = `—`, summary = `Skipped by user at Step 3.5.`
-- Proceed to **Step 4**.
-
-**On Validate:**
-
-1. **Resolve environment** from review file **Environment** line (e.g. `Dev2`). If missing or ambiguous → **AskQuestion** with six envs (`dev`, `dev2`, `test`, `preprod`, `prod`, `experiments`) before delegating. Do not silently default to `test`.
-
-2. **Parent prefetch (#9 — Internal + parent key):** Before Task delegation, when `bugClass = Internal` and parent ticket key exists:
-   - Call `getJiraIssue` on the **parent** (delivery ticket, e.g. `PHN-3795`) with fields for summary, description, and links
-   - Extract **parent summary** and **linked Confluence URLs** from parent description, comments, or remote links when available
-   - Pass into the Task prompt as **Parent delivery context** (below)
-
-3. **Delegate to bug-validator** via **Task** tool:
-
-```
-subagent_type: bug-validator
-description: Pre-create bug validation for BugReview
-prompt: |
-  Pre-create validation for a Phoenix bug **review file** (no Jira bug ticket exists yet).
-
-  **Review file path:** <full absolute path to BugReview_*.md>
-  **Environment:** <env from review file or user answer — user must have confirmed>
-  **Bug class:** Internal / External
-
-  **Parent delivery context (when Internal + parent):**
-  **Parent delivery ticket:** <parent key>
-  **Parent summary:** <from getJiraIssue parent>
-  **Linked Confluence from parent:** <urls or none>
-  **Phase 2 pre-create context:** Apply bug-validation SKILL Step 2c user override:
-    Phase 2 excluded: no (pre-create Ph2 delivery — parent <key>).
-  Validate expected behavior against parent + linked Confluence + review file — not Phase 1 wiki alone.
-
-  **Instructions:**
-  - There is **no Jira bug key** — treat the **Bug Content** and **Code evidence** sections of the review file as the bug report (Steps to reproduce, Expected, Actual, Technical details, Example).
-  - Run full Rule 32 workflow per `.cursor/skills/phoenix-bug-validation/SKILL.md`.
-  - If screenshots exist next to the review file (`*_screenshot.png`), note their paths as visual evidence.
-  - Return: **verdict** (one of VALID / NOT VALID / NEEDS CLARIFICATION / NEEDS APPROVAL / INSUFFICIENT EVIDENCE / PROCESS BLOCKED), **confidence score + zone**, **Validation summary** (2–4 sentences), **Quality Findings** bullets (Rule QA.2), and for NEEDS CLARIFICATION / NEEDS APPROVAL a **What needs clarification** list.
-  - Do NOT create Jira tickets or edit Phoenix code.
-```
-
-4. **If bug-validator Task fails or times out (#10):** **AskQuestion:** Retry validation / **Cancel** only — **do not** offer Skip (Skip is only on the initial Step 3.5 ask).
-
-5. **Append results** to the review file **Pre-create validation** section (edit in place, same path):
-   - **Status** = `Completed` on VALID; `Stopped` on all stop verdicts
-   - **Verdict**, **Confidence**, **Validated at** (timestamp)
-   - **Validation summary** and **Quality Findings** from subagent output
-
-6. **Show validation outcome in chat** (short — verdict + confidence + link to updated review file). Do not dump the full validator report unless the user asks.
-
-7. **Gate Step 4** by verdict — **strict; no "proceed anyway":**
-
-| Verdict | Action |
-|---------|--------|
-| **VALID** | Proceed to **Step 4** Agree/Disagree |
-| **NOT VALID** | **Stop**. Set header `# Bug Review — VALIDATION STOPPED`. Replace footer with `*Validation stopped — do not submit to Jira.*`. **Clear sidecar**. Explain **why**. **Do not** offer Agree |
-| **NEEDS CLARIFICATION** | **Stop**. Same header/footer/sidecar as NOT VALID. List **what needs clarification**. **Do not** offer Agree |
-| **NEEDS APPROVAL** | **Stop** (same as NEEDS CLARIFICATION) |
-| **INSUFFICIENT EVIDENCE** | **Stop**. Same header/footer/sidecar. Explain missing evidence. **Do not** offer Agree |
-| **PROCESS BLOCKED** | **Stop**. Same header/footer/sidecar. Explain blocker. **Do not** offer Agree |
-
-**Footer patch (#12):** On stop or cancel only — replace the line `*Awaiting your response: **Agree** to submit to Jira, **Disagree** to request changes.*` Do **not** change Step 3 initial template on first save; patch footer only when stopping or cancelling.
-
-**Chat template on stop:**
-
-```
-Validation: <VERDICT> (<confidence> <zone>)
-
-Why: <2–4 sentences with Confluence/code evidence — for NOT VALID>
-
-What needs clarification: <bullets — for NEEDS CLARIFICATION / NEEDS APPROVAL only>
-
-Quality Findings:
-- <Finding bullets>
-
-Bug report stopped. Review file updated. No Jira ticket will be created.
-```
-
-**After Step 4 Disagree loop:** When the user edits the review file, reset header to `# Bug Review — PENDING APPROVAL`, clear stale validation (Status = `Not run`), **clear sidecar**, and return to **Step 3.5** (re-offer Validate / Skip / Cancel) before Step 4.
-
-**Footer when validation ran:** append `bug-validator` to agents involved line.
+2. Proceed to **Step 4** — do NOT display the full file content in chat; the clickable link is sufficient for the user to review it.
 
 ---
 
@@ -672,8 +579,8 @@ Bug report stopped. Review file updated. No Jira ticket will be created.
 |------|--------|
 | **Step 4 On Agree** | **Write** sidecar with full path to current review file (after APPROVED header) |
 | **Step 5 post-create** | **Delete** sidecar |
-| **VALIDATION STOPPED / CANCELLED** | **Delete** sidecar |
-| **Step 4 Disagree** (before re-validate) | **Delete** sidecar if present |
+| **CANCELLED** | **Delete** sidecar |
+| **Step 4 Disagree** | **Delete** sidecar if present |
 
 **Write (Step 4 On Agree — after APPROVED header):**
 
@@ -696,11 +603,11 @@ Hook resolution order: sidecar path (must be APPROVED) → exactly one APPROVED 
 ### Step 4 — Agree / Disagree gate
 
 > **CRITICAL — APPROVAL AskQuestion (Step 4 only):**
-> This question may ONLY be asked after Step 3 complete, Step 3.5 resolved (**VALID** path or **Skip validation**), the **screenshot handoff gate** has passed when the user provided an image, the clickable link has been displayed, and the review file header is **not** `# Bug Review — VALIDATION STOPPED`. Use a standalone **AskQuestion** call for Agree/Disagree — do not batch it with unrelated questions in the same call.
+> This question may ONLY be asked after Step 3 complete, the **screenshot handoff gate** has passed when the user provided an image, and the clickable link has been displayed. Header must be `# Bug Review — PENDING APPROVAL` (not `CANCELLED` or `CREATED`). Use a standalone **AskQuestion** call for Agree/Disagree — do not batch it with unrelated questions in the same call.
 
 **Preconditions (BLOCK — do not offer Agree if any fail):**
 
-- **Environment** is set in the review file (canonical name from Step 0b; not bare `—`).
+- **Environment** is set in the review file (canonical name + source from Step 0b; not bare `—`).
 - **Assignee** and **Tester** are either resolved display names **or** `— (Leave unset — user confirmed)` after Step 1b (or user named them in chat). Bare `—` without Step 1b confirmation is **forbidden**.
 
 After the review file link is shown, ask using **AskQuestion** with exactly **one question** and exactly **two options**:
@@ -729,11 +636,11 @@ Is this bug ready to be reported on Jira?
 Updated review file: [BugReview_<slug>_<HHMM>.md](<full path>)
 ```
 
-- Reset review header to `# Bug Review — PENDING APPROVAL` and clear **Pre-create validation** (Status = `Not run`) if previously set
+- Reset review header to `# Bug Review — PENDING APPROVAL`
 - **Clear sidecar** if present
 - If user changes **Environment** on Disagree → re-run **Step 0b** resolution for the new value
 - If user changes **Assignee** or **Tester** on Disagree → re-run **Step 1b** for changed fields only
-- Return to **Step 3.5** (re-offer Validate / Skip / Cancel) before Step 4 Agree
+- Return to **Step 4** Agree/Disagree (same AskQuestion)
 - This loop repeats until the user selects Agree or explicitly cancels
 
 **On explicit cancel / "don't report" / "abort":**
@@ -745,17 +652,21 @@ Updated review file: [BugReview_<slug>_<HHMM>.md](<full path>)
 
 This is a **mandatory sequence** executed in this exact order. Do NOT skip parts or reorder.
 
-**Split ADF boards (Internal Bug or External Bug with `customfield_10103`):** **5a** → **5b** → **5d** (verify) → **5c** only if **5d** fails → optional second **5d**.
+**Split ADF boards (Internal Bug, or External when createmeta has Description formatted / `customfield_10103`):**
+- **Screenshot uploaded at 5b:** **5a** → **5b** → **5c** (mandatory — inserts the media node) → **5d** (verify + report) → at most one more **5c** if **5d** fails.
+- **No screenshot:** **5a** → **5b** → **5d** (verify) → **5c** only if **5d** fails → optional second **5d**.
 
-**Legacy Ph2 (no `customfield_10103`):** **5a** → **5b** → **5c** (colored `description`) — no **5d**.
+**Legacy (no Description formatted field):** **5a** → **5b** → **5c** (colored `description`) — no **5d**.
 
 ---
 
 #### Step 5a — Create the ticket
 
-**Split ADF (Internal Bug or External Bug with `customfield_10103`):**
+**External:** complete **Step 5a — createmeta first** (External Bug standalone) **before** calling `createJiraIssue`. Use split vs legacy from **this** project's createmeta, not from the Internal JSON below.
 
-Call `createJiraIssue` with **full Tier 1 colored Key details ADF** in **`additional_fields.customfield_10103`** (see **Key details ADF template**). Build ADF from **every** review-file section (Description TL;DR, context, steps, Actual bullets, expected, environment, technical details, example when present). Do NOT condense or summarize.
+**Split ADF (Internal Bug, or External when createmeta includes Description formatted / `customfield_10103`):**
+
+Call `createJiraIssue` with **full Tier 1 colored Key details ADF** in **`additional_fields.customfield_10103`** (or the createmeta key if different — see **Key details ADF template**). Build ADF from **every** review-file section (Description TL;DR, context, steps, Actual bullets, expected, environment, technical details, example when present). Do NOT condense or summarize.
 
 - **`description`:** Omit or leave empty when MCP allows.
 - **Create validation fails** because standard Description is required: retry **once** with this **minimal stub** only (markdown or plain ADF per MCP):
@@ -787,9 +698,9 @@ Do **not** expand the stub in later steps. **MUST NOT** put the full bug body in
 }
 ```
 
-If create fails because **`customfield_10103`** is empty/rejected: retry once with a minimal 10103 stub (single paragraph: *Details pending — see review file*), then rely on conditional **5c** for the full ADF after **5b**/**5d**.
+If create fails because **`customfield_10103`** is empty/rejected: retry once with a minimal 10103 stub (single paragraph: *Details pending — see review file*), then rely on **5c** for the full ADF after **5b** (mandatory when an image was uploaded; otherwise triggered by the **5d** failure the stub will produce).
 
-**Assignee / Tester payload (MUST):** When `assigneeAccountId` / `testerAccountId` are set (user picked or auto-resolved), **MUST** include `assignee_account_id` and `customfield_10095.accountId` in create payload. When user confirmed **Leave unset** in Step 1b, **omit** the corresponding field — do not send empty accountId objects.
+**Assignee / Tester payload (MUST):** When `assigneeAccountId` / `testerAccountId` are set (user picked or auto-resolved), **MUST** include them on create. **Internal:** `assignee_account_id` and `customfield_10095.accountId`. **External:** `assignee_account_id` if assignee is in createmeta; Tester on the **createmeta Tester field key** (not assumed `customfield_10095`). When user confirmed **Leave unset** in Step 1b, **omit** the corresponding field — do not send empty accountId objects.
 
 **Legacy Ph2 (no `customfield_10103`):**
 
@@ -854,11 +765,11 @@ Note the returned `key` (e.g. `PHN-3718`). Proceed immediately to Step 5b.
 #### Step 5b — Upload screenshot (after create, before verification)
 
 > **MANDATORY SEQUENCE — DO NOT SKIP OR COMBINE:**
-> Execute **5a → 5b → 5d** as separate operations in order (plus conditional **5c** when **5d** fails).
+> Execute each part as a separate operation: **5a → 5b → 5c → 5d** when 5b uploaded an image, otherwise **5a → 5b → 5d** (plus conditional **5c** when **5d** fails).
 > - Do NOT skip Step 5b even if you believe no screenshot exists — always check the file path first.
 > - Do NOT use Shell Jira REST to patch formatting — MCP **`editJiraIssue`** only for **5c**.
 
-> **Why before 5d / conditional 5c:** First create usually cannot include inline screenshot `mediaSingle` (no attachment yet). After **5b**, **5d** checks embed or fallback line; failure triggers **5c** patch on **`customfield_10103` only**.
+> **Why 5b precedes the embed:** Step **5a** cannot include an inline `mediaSingle` because the attachment does not exist yet. Once **5b** has uploaded the file and resolved `ATTACHMENT_MEDIA_UUID`, **5c** inserts the media node, and **5d** confirms it actually rendered.
 
 > **Screenshot scope:** Applies to **Backend**, **Frontend**, and **DB** bugs when the reporter provided image evidence (UI, network tab, Postman, logs, SQL/DB result, etc.). Not required when no image was provided.
 
@@ -889,17 +800,22 @@ ATTACHMENT_ID=<integer>
 ATTACHMENT_FILENAME=<filename>
 ATTACHMENT_THUMBNAIL=<url>
 ATTACHMENT_CONTENT_URL=<url>
+ATTACHMENT_MEDIA_UUID=<uuid>
+ATTACHMENT_WIDTH=<integer>
+ATTACHMENT_HEIGHT=<integer>
 ```
 
 Extract from stdout:
 
-- `ATTACHMENT_FILENAME` — required for fallback screenshot line and `media` `alt`
-- `ATTACHMENT_ID` — Jira attachment id (integer)
-- `ATTACHMENT_CONTENT_URL` — optional; use when resolving embed
+- `ATTACHMENT_FILENAME` — `media` `alt`, and the fallback screenshot line when no UUID resolves
+- `ATTACHMENT_MEDIA_UUID` — **the value for ADF `media.attrs.id`** in Step **5c**
+- `ATTACHMENT_WIDTH` / `ATTACHMENT_HEIGHT` — intrinsic pixel size for `media.attrs.width` / `media.attrs.height`
+- `ATTACHMENT_ID` — Jira attachment id (integer); **not** usable in `media.attrs.id`
+- `ATTACHMENT_CONTENT_URL` — optional; the script derives the UUID from this URL's 303 redirect
 
-After a successful upload (exit **0**), call `getJiraIssue` on the same key with `fields: ["attachment"]` and match the attachment whose `filename` equals `ATTACHMENT_FILENAME`. If the response exposes a media UUID suitable for ADF `media.attrs.id`, use it in conditional Step 5c `mediaSingle`. If no UUID is available, use the **fallback** screenshot paragraph in Key details (unmarked body text).
+**Do not** attempt to recover a media UUID from `getJiraIssue` `fields: ["attachment"]` — the Jira attachment payload exposes only the numeric id, `content`, and `thumbnail`. The upload script resolves the UUID and prints it; if `ATTACHMENT_MEDIA_UUID` is absent, treat the embed as unavailable and use the fallback screenshot paragraph.
 
-- Exit code **0**: screenshot uploaded — retain all parsed lines for **5d** / conditional **5c**
+- Exit code **0**: screenshot uploaded — retain all parsed lines for mandatory **5c** and **5d**
 - Exit code **1**: **Jira authentication failed** — notify the user at the end of the workflow: `⚠️ Screenshot upload failed: Jira API token authentication error. Check JIRA_EMAIL and JIRA_API_TOKEN in Cursor-Project/.env.` Proceed to **5d** without the screenshot.
 - Exit code **2**: upload failed for another reason — warn user, proceed to **5d** without the screenshot
 - No matching file: skip silently, proceed to **5d** without screenshot
@@ -920,13 +836,13 @@ Used for **Internal Bug** and **External Bug** when split ADF applies. Build at 
 - **Actual Result** uses ADF `bulletList` (Option B) — not a single paragraph for all actual content.
 - **Payload**, **Response**, and **Example** values use **`codeBlock`** nodes (not inline paragraphs with hard breaks).
 - API label lines (Endpoint, Method, Status) are separate **paragraph** nodes after the `_________________` paragraph; Payload/Response/Example label paragraphs precede their `codeBlock`.
-- On Step **5d** failure, conditional **5c** patches **`customfield_10103` only** (do not send `description`).
+- Step **5c** patches **`customfield_10103` only** (do not send `description`) — mandatory once when **5b** uploaded an image, otherwise only on **5d** failure.
 
 **Mandatory section order for `customfield_10103`:**
 
 1. **Description:** — header (`#403294`, strong + textColor) → **bold TL;DR** paragraph (entire paragraph `strong`, Option A — mirrors Summary) → context paragraph(s) with `strong`/`code` marks as needed.
 2. **Reproduce Steps:** — header (`#00B8D9`) → `orderedList` of all steps (step text may use `code` for technical values). **No** Description fold-in.
-3. **Actual Result:** — header (`#FF5630`) → `bulletList` (≥1 symptom bullet; optional proof/scope bullets) → optional `mediaSingle` **when Step 5b exit 0** (any label — UI, API, logs, SQL/DB evidence).
+3. **Actual Result:** — header (`#FF5630`) → `bulletList` (≥1 symptom bullet; optional proof/scope bullets) → `mediaSingle` **when Step 5b exit 0 and `ATTACHMENT_MEDIA_UUID` resolved** (any label — UI, API, logs, SQL/DB evidence). No image provided → no node, no placeholder.
 4. **Expected Result:** — header (`#36B37E`) → paragraph(s) → optional `mediaSingle` when second screenshot uploaded (`*_screenshot_expected.png`).
 5. **Environment:** — unmarked paragraph(s) from review **Environment:** (e.g. `Environment: Dev2`).
 6. Plain paragraph: `_________________`
@@ -1069,27 +985,39 @@ Used for **Internal Bug** and **External Bug** when split ADF applies. Build at 
 }
 ```
 
-**Example `mediaSingle` under Actual Result (when media UUID resolved after Step 5b — any Backend/Frontend/DB label):**
+**Example `mediaSingle` under Actual Result (when `ATTACHMENT_MEDIA_UUID` resolved at Step 5b — any Backend/Frontend/DB label):**
+
+Shape verified against a correctly rendering embed on **PHN-4249** (`customfield_10103`, attachment `70014`).
 
 ```json
 {
   "type": "mediaSingle",
-  "attrs": { "layout": "align-start" },
+  "attrs": { "layout": "center", "width": 647, "widthType": "pixel" },
   "content": [
     {
       "type": "media",
       "attrs": {
         "type": "file",
-        "id": "<media-uuid-from-issue-or-upload>",
+        "id": "<ATTACHMENT_MEDIA_UUID from Step 5b>",
         "alt": "<ATTACHMENT_FILENAME>",
-        "collection": ""
+        "collection": "",
+        "width": <ATTACHMENT_WIDTH>,
+        "height": <ATTACHMENT_HEIGHT>
       }
     }
   ]
 }
 ```
 
-Place **Actual** `mediaSingle` immediately after the Actual `bulletList`. Place **Expected** `mediaSingle` after Expected paragraph(s). If UUID unknown after **5b** exit 0, use unmarked fallback paragraph: `Screenshot: <ATTACHMENT_FILENAME> (attached)` — **5d** should fail embed criterion and trigger **5c** with full ADF including `mediaSingle` when UUID becomes available.
+**Attribute rules (MUST):**
+
+- **`id`** is the **media UUID** (`ATTACHMENT_MEDIA_UUID`), never the numeric `ATTACHMENT_ID`. Jira silently drops the node when the id is wrong — the edit still returns success, so a dropped node is invisible without **5d**.
+- **`collection`** is the empty string `""`.
+- **`media.attrs.width` / `height`** are the image's intrinsic pixel size (`ATTACHMENT_WIDTH` / `ATTACHMENT_HEIGHT`). Omit both when the script did not emit them.
+- **`mediaSingle.attrs.width`** is display width — keep `647` with `widthType: "pixel"` and `layout: "center"`.
+- Do **not** add `localId` attrs; those are Jira UI artifacts.
+
+Place **Actual** `mediaSingle` immediately after the Actual `bulletList`. Place **Expected** `mediaSingle` after Expected paragraph(s). If `ATTACHMENT_MEDIA_UUID` is missing after **5b** exit 0, use the unmarked fallback paragraph `Screenshot: <ATTACHMENT_FILENAME> (attached)` instead, and report the screenshot as **attached only — not embedded** at the end of the workflow.
 
 **Body text formatting rules (customfield_10103 — split ADF):**
 
@@ -1101,17 +1029,19 @@ Place **Actual** `mediaSingle` immediately after the Actual `bulletList`. Place 
    - **Optional:** scope bullet (frequency, all cases, compare case)
    - **Forbidden:** empty or invented filler bullets
 4. **Charset:** Use `→` in step/bullet text; never `?` as arrow substitute.
-5. **Screenshots:** When user provided image(s) and Step **5b** exit **0**, embed `mediaSingle` under **Actual Result** (and under **Expected Result** for second image) — **not** gated on Frontend label only.
+5. **Screenshots:** When user provided image(s) and Step **5b** exit **0**, embed `mediaSingle` under **Actual Result** (and under **Expected Result** for second image) via mandatory **5c** — **not** gated on Frontend label only. When no image was provided, omit entirely; screenshots are optional and never block bug creation.
 
 All review-file sections map into **`customfield_10103` only** on split-ADF boards — not into standard `description`.
 
 ---
 
-#### Step 5d — Verify Key details rendering (split ADF boards — MANDATORY after 5b)
+#### Step 5d — Verify Key details rendering (split ADF boards — MANDATORY)
 
 Required when split ADF applies (**Internal Bug**, **External Bug**, or any issue type with formatted Key details on `customfield_10103`).
 
-Immediately after Step **5b** (before any **5c**), call:
+**When 5d runs:** immediately after the mandatory **5c** when Step **5b** uploaded an image; otherwise immediately after **5b**. (Step **5c** is documented below this section — follow the order stated here, not the document order.)
+
+Call:
 
 ```json
 {
@@ -1134,21 +1064,32 @@ Immediately after Step **5b** (before any **5c**), call:
 - API block includes **Endpoint** and **Method** after the separator (not inside the list).
 - When review file had Payload/Response/Example: rendered HTML includes `<pre>` / code-block markup for those sections.
 - **Content coverage** vs approved review file (no dropped sections).
-- When Step **5b** exit **0** (any Backend/Frontend/DB label): screenshot **media** embed **or** fallback line naming `ATTACHMENT_FILENAME` appears under **Actual Result**; when second image uploaded, embed or fallback under **Expected Result**.
+- **Screenshot criterion — applies only when Step 5b uploaded an image** (exit **0**, ≥1 file). Then the rendered HTML **MUST** contain a real image embed (`<img>` / media markup) under **Actual Result**, and under **Expected Result** when a second image was uploaded. A text line naming `ATTACHMENT_FILENAME` is **NOT** a pass — it is the fallback used when no UUID resolved, and it must be reported as *attached only — not embedded*.
+- **When no image was provided, the screenshot criterion does not apply** and **MUST NOT** cause a failure or a warning.
 
 **Standard `description` (split ADF):** Must be empty or stub-only (e.g. *Full details in Description formatted.*). If full duplicate markdown/HTML appears, treat as workflow violation — do not claim success until corrected manually or via a one-time stub trim (never add full body to `description` in **5c**).
 
-**On pass:** Skip **5c**. Proceed to post-workflow (CREATED header + URL).
+**On pass:** Proceed to post-workflow (CREATED header + URL). When an image was uploaded, report `Screenshot embedded under Actual Result`.
 
-**On failure:** Run **Step 5c** once (patch **`customfield_10103` only**), then **5d** again. If still failing after at most **two** **5c** attempts, warn: `⚠️ Key details (Description formatted / customfield_10103) incomplete — verify in Jira.` Do **not** claim full formatting success.
+**On failure:** Run **Step 5c** once more (patch **`customfield_10103` only**), then **5d** again. If still failing after at most **two** **5c** attempts, warn: `⚠️ Key details (Description formatted / customfield_10103) incomplete — verify in Jira.` Do **not** claim full formatting success.
+
+**On screenshot-only failure** (all other criteria pass; image uploaded but no embed rendered, or `ATTACHMENT_MEDIA_UUID` never resolved): do not retry indefinitely. State plainly in the final response: `⚠️ Screenshot attached to the ticket but not embedded under Actual Result.` **MUST NOT** report the screenshot as embedded when only a filename line is present.
 
 ---
 
-#### Step 5c — Conditional patch (split ADF) or mandatory colored Description (legacy)
+#### Step 5c — Screenshot embed / repair patch (split ADF) or mandatory colored Description (legacy)
 
 **Split ADF (Internal Bug or External Bug with `customfield_10103`):**
 
-Run **only when Step 5d verification fails** (or after second **5d** following first failed **5c**). **Skip entirely** when **5d** passes on first fetch.
+**When to run:**
+
+| Condition | 5c |
+|---|---|
+| Step **5b** uploaded ≥1 image (exit **0**) | **Mandatory, once, before 5d** — this is the only step that can place the `mediaSingle` in Key details |
+| No image uploaded | **Conditional** — only when **5d** fails |
+| **5d** fails after a mandatory 5c | One more attempt (two per ticket maximum) |
+
+**Content is unchanged either way:** rebuild the **same** Tier 1 Key details ADF from the approved review file — identical section order, colours, marks, lists, separator, API lines, and `codeBlock`s — and add the media node(s). **5c MUST NOT** alter, reword, reorder, or restyle any existing content. The only delta versus what **5a** sent is the `mediaSingle` under **Actual Result** (and under **Expected Result** for a second image).
 
 > **Forbidden:** formatting via Shell Jira REST `PUT`/`POST` — use **`editJiraIssue`** only. **`fields` must contain only `customfield_10103`** — no `description` key.
 
@@ -1465,7 +1406,7 @@ The description must be formatted as Atlassian Document Format (ADF). Every sect
 ```
 
 **Rules:**
-- **Split ADF (Internal, External with 10103):** Tier 1 colored Key details template → **`customfield_10103` only** at **5a** and conditional **5c** (Description first, Option A TL;DR, body marks, Option B Actual bullets, API `codeBlock`s, screenshot embed when **5b** succeeds). **MUST NOT** write full bug body to standard **`description`**. Do not use the legacy colored template on split-ADF `description`.
+- **Split ADF (Internal, External with 10103):** Tier 1 colored Key details template → **`customfield_10103` only** at **5a** and **5c** (Description first, Option A TL;DR, body marks, Option B Actual bullets, API `codeBlock`s, screenshot embed when **5b** succeeds). **MUST NOT** write full bug body to standard **`description`**. Do not use the legacy colored template on split-ADF `description`.
 - **Legacy Ph2 (no `customfield_10103`):** Colored-marks template applies to **`description` only** at **5c**.
 - Every section label paragraph contains ONLY the label text (bold + colored) — content follows in a separate node
 - Steps to reproduce → `orderedList`
@@ -1485,9 +1426,9 @@ Split-ADF **`customfield_10103`** uses **Body text formatting rules (customfield
 
 4. **Mixed content paragraphs** — a paragraph can contain multiple text nodes with different marks. Split the sentence into segments: plain text nodes for connective words, `strong` nodes for key terms, `code` nodes for technical values. Do NOT mark entire paragraphs — mark individual words or short phrases only.
 
-**After Steps 5a–5b–5d (and conditional 5c when split ADF; legacy 5c) complete:**
+**After Steps 5a–5b–5c–5d (split ADF; 5c mandatory when an image was uploaded, conditional otherwise) or legacy 5c complete:**
 1. Return the Jira URL: `https://oppa-support.atlassian.net/browse/<ISSUE_KEY>`
-2. If a screenshot was uploaded in Step 5b: confirm "Screenshot attached: `<ATTACHMENT_FILENAME>`" and whether Key details embed succeeded (`customfield_10103`)
+2. If a screenshot was uploaded in Step 5b: confirm `Screenshot attached: <ATTACHMENT_FILENAME>` **and** state the embed outcome verified at **5d** — either `embedded under Actual Result` or `attached only — not embedded`. If no screenshot was provided, say nothing about screenshots.
 3. Update the review file header from `# Bug Review — APPROVED` to `# Bug Review — CREATED — <ISSUE_KEY>` (edit in place)
 4. **Delete** `.active-bugreview` sidecar
 5. Display the confidence block and agents footer
@@ -1505,8 +1446,6 @@ Include a confidence score in the final response. Base: 40. Evidence factors:
 | Board/sprint confirmed | +10 |
 | Priority determined from clear description | +10 |
 | User explicitly APPROVED | +10 |
-| Pre-create validation VALID (Step 3.5) | +10 |
-| Pre-create validation skipped | -5 |
 | Missing bug fields (per missing field) | -5 each |
 | Board inferred (no parent ticket) | -5 |
 | Assumption made (per assumption) | -5 |
@@ -1535,21 +1474,24 @@ Reason: <1-2 sentences>
 | `getJiraIssue` MCP fails | Retry once; if still fails, ask user to provide board/sprint/assignee/tester manually |
 | Internal + parent: no QA/Test subtask or QA subtask unassigned | **Step 1b AskQuestion** for Tester (+ **Leave unset** option); **MUST NOT** proceed to Step 3 with bare `—` without ask |
 | Assignee unresolved after chapter subtask + parent fallback | **Step 1b AskQuestion** for Assignee (+ **Leave unset**); **MUST NOT** create Jira without user pick or confirmed Leave unset |
-| Environment missing after Step 0 (no user message, no parent field) | **Step 0b AskQuestion** (six envs); **MUST NOT** infer from fix version or Ph2 board; **MUST NOT** write review file until resolved |
+| Environment missing after Step 0 (sources 1–3 empty: no user message, no parent text, no same-bug chat env) | **Step 0b AskQuestion** (six envs) **only after sources 1–3 are empty**; **MUST NOT** infer from fix version or Ph2 board; **MUST NOT** write review file until resolved |
 | `createJiraIssue` fails — standard Description required | Retry **once** with minimal stub: summary line + `Full details in Description formatted.` — do not add full body |
-| `createJiraIssue` fails — empty/rejected `customfield_10103` | Retry once with minimal 10103 stub paragraph; then **5b** → **5d** → conditional **5c** with full ADF |
+| `createJiraIssue` fails — empty/rejected `customfield_10103` | Retry once with minimal 10103 stub paragraph; then **5b** → **5c** with full ADF → **5d** |
 | `createJiraIssue` MCP fails (other) | Show error to user; do not retry silently; ask user how to proceed |
-| Step 3 screenshot handoff fails (copy or verify — destination missing/empty) | **STOP** before Step 3.5 / Step 4; ask user to re-attach image or provide path; **MUST NOT** list screenshot filename in review file or proceed to Jira create until handoff passes |
-| Step 3.5 validation NOT VALID / NEEDS CLARIFICATION / NEEDS APPROVAL / INSUFFICIENT EVIDENCE / PROCESS BLOCKED | **Stop**; set `# Bug Review — VALIDATION STOPPED`; patch footer; **clear sidecar**; **MUST NOT** offer Step 4 Agree |
-| bug-validator Task fails or times out | **AskQuestion:** Retry validation / **Cancel** only (no Skip) |
+| Step 3 screenshot handoff fails (copy or verify — destination missing/empty) | **STOP** before Step 4; ask user to re-attach image or provide path; **MUST NOT** list screenshot filename in review file or proceed to Jira create until handoff passes |
 | Screenshot upload (Step 5b) script exits with code 1 (auth error) | **Notify user at end of workflow:** `⚠️ Screenshot upload failed: Jira API token authentication error. Check JIRA_EMAIL and JIRA_API_TOKEN in Cursor-Project/.env.` Proceed to **5d** without screenshot |
 | Screenshot upload (Step 5b) script exits with code 2 | Warn user to attach manually; include the file path and Jira ticket URL; proceed to **5d** without screenshot |
 | `editJiraIssue` (Step 5c legacy or conditional split) fails | Warn user that ADF formatting was not applied; do not skip silently |
 | Step 5d verification fails (split ADF) | Run **5c** with **`customfield_10103` only** (max two attempts); re-run **5d**; if still failing, warn — Description formatted panel may be incomplete |
+| Step 5b exit 0 but no `ATTACHMENT_MEDIA_UUID` printed | Build **5c** with the fallback `Screenshot: <ATTACHMENT_FILENAME> (attached)` paragraph instead of `mediaSingle`; report `⚠️ Screenshot attached to the ticket but not embedded under Actual Result.` Do **not** retry the upload and do **not** block the ticket |
+| No screenshot provided by the user | Normal path — no **5c** on screenshot grounds, no screenshot criterion at **5d**, no warning, nothing about screenshots in the final response. Screenshots are **optional** and never block bug creation |
 | `customfield_10103` rejected at Step 5c | Log the error; warn: `⚠️ Could not populate the "Description formatted" field (customfield_10103) — please verify the ticket's Key details panel.` |
-| `getVisibleJiraProjects` fails (External class) | Retry once; then ask user for allowed external project key and validate against allowlist |
-| External class but user skipped project AskQuestion without explicit allowed key/URL | **BLOCK** workflow until **externalProjectKey** is set |
-| User selects or names non-allowlisted external project | Refuse; list allowed external keys (currently GB) |
+| `getVisibleJiraProjects` fails (External class) | Retry once; then ask user to type a project key; refuse denylist (rule file) and Experiments |
+| External class but `externalProjectKey` unset after sources 1–2 | **AskQuestion** from visible projects minus denylist; **BLOCK** create until set |
+| User selects or names a denylist project | Refuse; cite **External excluded project keys** in `phoenix_bug_reporter.mdc` |
+| `getJiraProjectIssueTypesMetadata` has no exact `Bug` | **AskQuestion** with `"{name} — {id}"` from metadata; never guess |
+| Createmeta required field (Epic, Fix version, other) has no value | **AskQuestion**; never guess field id or value |
+| Createmeta has no Description formatted / `customfield_10103` | Legacy markdown **`description`** at 5a; **5c** on **`description` only**; do not send `10103` |
 | Parent ticket is not a Phoenix Phase 2 board | Warn user; ask if they want to report on PHN anyway |
 | User provides Experiments board | Refuse; redirect to `jira-bug` agent (JIRA.0) |
 
@@ -1557,4 +1499,4 @@ Reason: <1-2 sentences>
 
 ## Agents involved footer
 
-Always end with: `Agents involved: phoenix-bug-reporter` (+ `bug-validator` when Step 3.5 Validate ran)
+Always end with: `Agents involved: phoenix-bug-reporter`

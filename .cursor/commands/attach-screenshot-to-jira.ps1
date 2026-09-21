@@ -12,6 +12,12 @@
 #   ATTACHMENT_FILENAME=<filename>
 #   ATTACHMENT_THUMBNAIL=<url>
 #   ATTACHMENT_CONTENT_URL=<url>
+#   ATTACHMENT_MEDIA_UUID=<uuid>      (best effort - required for ADF media.attrs.id)
+#   ATTACHMENT_WIDTH=<intrinsic px>   (best effort - ADF media.attrs.width)
+#   ATTACHMENT_HEIGHT=<intrinsic px>  (best effort - ADF media.attrs.height)
+#
+# The three best-effort lines are omitted when they cannot be resolved. Their absence never
+# changes the exit code: the upload itself is what this script guarantees.
 #
 # Exit codes: 0 = all uploaded, 1 = credential error, 2 = one or more uploads failed
 
@@ -154,6 +160,56 @@ foreach ($rawPath in $ScreenshotPath) {
                 Write-Output "ATTACHMENT_FILENAME=$attFilename"
                 Write-Output "ATTACHMENT_CONTENT_URL=$attContentUrl"
                 if ($attThumbnail) { Write-Output "ATTACHMENT_THUMBNAIL=$attThumbnail" }
+
+                # ADF media nodes need the Media Services UUID, which the attachment API never
+                # returns. The content URL answers 303 with a Location of
+                # https://api.media.atlassian.com/file/<uuid>/binary - the UUID lives there.
+                $mediaUuid = $null
+                try {
+                    $location = $null
+                    try {
+                        $redirect = Invoke-WebRequest -Uri "$apiBase/rest/api/3/attachment/content/$attId" `
+                            -Headers $authHeaders -MaximumRedirection 0 -UseBasicParsing -ErrorAction Stop
+                        $location = $redirect.Headers['Location']
+                    }
+                    catch {
+                        # Windows PowerShell throws on 3xx when redirects are disabled.
+                        $redirectResponse = $_.Exception.Response
+                        if ($redirectResponse) {
+                            try { $location = $redirectResponse.Headers['Location'] } catch { }
+                            if (-not $location) { try { $location = $redirectResponse.Headers.Location.ToString() } catch { } }
+                        }
+                    }
+                    if ($location) {
+                        $uuidMatch = [regex]::Match($location, '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}')
+                        if ($uuidMatch.Success) { $mediaUuid = $uuidMatch.Value }
+                    }
+                }
+                catch { }
+
+                if ($mediaUuid) {
+                    Write-Output "ATTACHMENT_MEDIA_UUID=$mediaUuid"
+                } else {
+                    Write-Warning "  Could not resolve media UUID - the screenshot will attach but may not embed."
+                }
+
+                # Intrinsic pixel size for ADF media.attrs.width / height.
+                $image = $null
+                try {
+                    Add-Type -AssemblyName System.Drawing -ErrorAction Stop
+                    $image = [System.Drawing.Image]::FromFile($filePath)
+                    $imageWidth  = $image.Width
+                    $imageHeight = $image.Height
+                }
+                catch { }
+                finally {
+                    if ($image) { $image.Dispose() }
+                }
+
+                if ($imageWidth -and $imageHeight) {
+                    Write-Output "ATTACHMENT_WIDTH=$imageWidth"
+                    Write-Output "ATTACHMENT_HEIGHT=$imageHeight"
+                }
 
                 Write-Host ("  [INFO] Attachment ID: {0} | File: {1}" -f $attId, $attFilename) -ForegroundColor DarkCyan
             }

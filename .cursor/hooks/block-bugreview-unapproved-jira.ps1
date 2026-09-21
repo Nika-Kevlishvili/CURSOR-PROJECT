@@ -4,20 +4,22 @@
 #          corresponding BugReview file has been explicitly approved by the user.
 #
 # How it works:
-#   1. Intercepts createJiraIssue where issueTypeName is "Internal Bug" or "Bug"
+#   1. Intercepts createJiraIssue (or CallDynamicTool wrapping createJiraIssue) where
+#      issueTypeName is "Internal Bug" or "Bug"
 #   2. Resolves the active BugReview file (sidecar -> single APPROVED scan -> latest mtime)
 #   3. Reads first line for approval state:
 #        "# Bug Review - APPROVED"           -> allow
 #        "# Bug Review - PENDING APPROVAL"   -> ask
-#        "# Bug Review - VALIDATION STOPPED" -> deny
 #        "# Bug Review - CANCELLED"          -> deny
 #        "# Bug Review - CREATED - KEY"      -> deny (stale for new ticket)
 #
 # Sidecar: Cursor-Project/reports/Bug Reports/.active-bugreview (one line = absolute path)
-# Written by agent on Step 4 Agree; cleared on CREATED / VALIDATION STOPPED / CANCELLED
+# Written by agent on Step 4 Agree; cleared on CREATED / CANCELLED
 #
-# Fail-open: parse/runtime errors on non-createJiraIssue MCP (ES, DB, Confluence reads) MUST allow.
-# Fail-secure: only createJiraIssue (Internal Bug / Bug) is denied when approval gate or parse fails.
+# Fail-open: empty stdin, parse failures, unexpected payload shapes, and all non-create
+# MCP (Jira reads, Confluence reads, PostgreSQL/Oracle/MySQL, Elasticsearch, Slack) MUST allow.
+# Fail-secure: only a parsed guarded createJiraIssue (Internal Bug / Bug) is denied when
+# the approval gate fails.
 
 $jsonInput = [Console]::In.ReadToEnd()
 
@@ -64,7 +66,7 @@ function Get-ApprovedReviewFiles {
 function Resolve-ActiveReviewFile {
     param([string]$ReportsDir)
 
-    $sidecarPath = Join-Path $reportsDir ".active-bugreview"
+    $sidecarPath = Join-Path $ReportsDir ".active-bugreview"
     if (Test-Path -LiteralPath $sidecarPath) {
         try {
             $sidecarLine = (Get-Content -LiteralPath $sidecarPath -Raw).Trim()
@@ -109,14 +111,16 @@ function Write-HookDeny {
     } | ConvertTo-Json -Compress
 }
 
-function Test-LooksLikeCreateJiraIssue {
-    param([string]$Raw)
-    if ([string]::IsNullOrWhiteSpace($Raw)) { return $false }
-    return [bool]($Raw -match '"tool_name"\s*:\s*"createJiraIssue"' -or
-                  $Raw -match '"toolName"\s*:\s*"createJiraIssue"')
+function Get-ToolField {
+    param($Obj, [string]$Camel, [string]$Snake)
+    if ($null -eq $Obj) { return $null }
+    $v = $Obj.$Camel
+    if ($null -eq $v) { $v = $Obj.$Snake }
+    return $v
 }
 
-# Fail-open for non-createJiraIssue (ES/DB/Confluence reads). Fail-secure only for createJiraIssue.
+# $true only after successful JSON parse of a guarded create.
+$isGuardedCreate = $false
 $toolName = $null
 
 try {
@@ -125,34 +129,60 @@ try {
         exit 0
     }
 
+    $jsonForParse = $jsonInput.Trim()
+    if ($jsonForParse.StartsWith([char]0xFEFF)) {
+        $jsonForParse = $jsonForParse.Substring(1)
+    }
+
     $payload = $null
     try {
-        $payload = $jsonInput | ConvertFrom-Json -ErrorAction Stop
+        $payload = $jsonForParse | ConvertFrom-Json -ErrorAction Stop
     } catch {
-        if (Test-LooksLikeCreateJiraIssue -Raw $jsonInput) {
-            Write-HookDeny `
-                -UserMessage "[HOOK BLOCKED] Bug approval hook could not parse createJiraIssue payload (error: $_). Jira bug creation blocked for safety. Please retry." `
-                -AgentMessage "BLOCK: block-bugreview-unapproved-jira could not parse createJiraIssue payload. Denying as fail-secure."
-        } else {
-            # Not createJiraIssue (or unclear) — do not block Elasticsearch/DB/other MCP
-            Write-HookAllow
-        }
+        # Parse failure — fail open (never deny/ask unparsed MCP, including reads)
+        Write-HookAllow
         exit 0
     }
 
-    $toolName = $payload.tool_name
-    if (-not $toolName) { $toolName = $payload.toolName }
-    $toolInput = $payload.tool_input
-    if ($null -eq $toolInput) { $toolInput = $payload.toolInput }
+    if ($null -eq $payload) {
+        Write-HookAllow
+        exit 0
+    }
 
-    if ($toolName -ne "createJiraIssue") {
+    $toolName = Get-ToolField -Obj $payload -Camel "toolName" -Snake "tool_name"
+    $toolInput = Get-ToolField -Obj $payload -Camel "toolInput" -Snake "tool_input"
+    if ($null -eq $toolInput) { $toolInput = $payload.arguments }
+
+    $createInput = $null
+    if ($toolName -eq "createJiraIssue") {
+        $isGuardedCreate = $true
+        $createInput = $toolInput
+    } elseif ($toolName -eq "CallDynamicTool") {
+        $innerName = $null
+        if ($toolInput) {
+            $innerName = Get-ToolField -Obj $toolInput -Camel "toolName" -Snake "tool_name"
+            if ($innerName -ne "createJiraIssue") {
+                $innerArgs = Get-ToolField -Obj $toolInput -Camel "arguments" -Snake "args"
+                if ($innerArgs) {
+                    $fromArgs = Get-ToolField -Obj $innerArgs -Camel "toolName" -Snake "tool_name"
+                    if ($fromArgs -eq "createJiraIssue") { $innerName = $fromArgs }
+                }
+            }
+        }
+        if ($innerName -eq "createJiraIssue") {
+            $isGuardedCreate = $true
+            $createInput = Get-ToolField -Obj $toolInput -Camel "arguments" -Snake "args"
+            if ($null -eq $createInput) { $createInput = $toolInput }
+        }
+    }
+
+    if (-not $isGuardedCreate) {
         Write-HookAllow
         exit 0
     }
 
     $args = $null
     try {
-        $args = if ($toolInput -is [string]) { $toolInput | ConvertFrom-Json -ErrorAction Stop } else { $toolInput }
+        $args = if ($createInput -is [string]) { $createInput | ConvertFrom-Json -ErrorAction Stop } else { $createInput }
     } catch { }
 
     $issueTypeName = ""
@@ -184,7 +214,7 @@ try {
     if (-not $reviewFile) {
         Write-HookDeny `
             -UserMessage "[HOOK BLOCKED] Cannot create Jira bug (Internal Bug or External Bug): no BugReview file found. Start the bug reporter workflow to create a review file and get approval first." `
-            -AgentMessage "BLOCK (PHOENIX-BUG.0): createJiraIssue denied. No BugReview_*.md file found under Cursor-Project/reports/Bug Reports/. The full approval workflow (review file -> Step 3.5 -> user Agree -> APPROVED + .active-bugreview sidecar) must complete before the ticket can be created."
+            -AgentMessage "BLOCK (PHOENIX-BUG.0): createJiraIssue denied. No BugReview_*.md file found under Cursor-Project/reports/Bug Reports/. The full approval workflow (review file -> user Agree -> APPROVED + .active-bugreview sidecar) must complete before the ticket can be created."
         exit 0
     }
 
@@ -202,13 +232,6 @@ try {
             user_message  = "[APPROVAL REQUIRED] The bug review file '$($reviewFile.Name)' is still in PENDING APPROVAL state. Did you confirm 'Agree' in the chat? The Jira bug ticket will only be created after you approve."
             agent_message = "BLOCK (PHOENIX-BUG.0): createJiraIssue intercepted - BugReview file is PENDING APPROVAL. You MUST update the review file first line to APPROVED header and write .active-bugreview sidecar (Step 4: On Agree) before calling createJiraIssue."
         } | ConvertTo-Json -Compress
-        exit 0
-    }
-
-    if ($firstLine -match "VALIDATION STOPPED") {
-        Write-HookDeny `
-            -UserMessage "[HOOK BLOCKED] BugReview '$($reviewFile.Name)' is VALIDATION STOPPED. Pre-create validation failed - start a new bug report or fix evidence before filing on Jira." `
-            -AgentMessage "BLOCK (PHOENIX-BUG.0): createJiraIssue denied. BugReview header is VALIDATION STOPPED. Do not create Jira ticket; validation stop is mandatory."
         exit 0
     }
 
@@ -231,8 +254,8 @@ try {
         -AgentMessage "BLOCK (PHOENIX-BUG.0): createJiraIssue denied. BugReview first line is '$firstLine'. Expected APPROVED header plus .active-bugreview sidecar after user Agree."
 
 } catch {
-    # Fail-secure ONLY for createJiraIssue. Never deny Elasticsearch/DB/other MCP on hook errors.
-    if ($toolName -eq "createJiraIssue" -or (Test-LooksLikeCreateJiraIssue -Raw $jsonInput)) {
+    # Deny only if we already identified a guarded create before the exception.
+    if ($isGuardedCreate) {
         Write-HookDeny `
             -UserMessage "[HOOK BLOCKED] Bug approval hook failed (error: $_). Jira bug creation blocked for safety. Please retry." `
             -AgentMessage "BLOCK: block-bugreview-unapproved-jira hook threw an exception. Denying createJiraIssue as fail-secure."
