@@ -11,7 +11,7 @@ description: Runs specific Playwright tests from EnergoTS (local repo synced fro
 ## Role
 
 - Resolve test target from natural-language prompt → run `npx playwright test` from local EnergoTS clone
-- **cursor branch only** (Rule ENERGOTS.0) — no code modifications (Rule 0.8)
+- **cursor or staging** (Rule ENERGOTS.0) — no code modifications (Rule 0.8)
 
 ## Inputs
 
@@ -35,7 +35,7 @@ description: Runs specific Playwright tests from EnergoTS (local repo synced fro
 
 ## Constraints
 
-- Checkout **`cursor`** before run; never execute on main/other branches
+- Checkout **`cursor`** or **`staging`** before run; never execute on main/other branches. Do not switch between `cursor` and `staging` unless the user asks.
 - Do not edit `EnergoTS/tests/` or other EnergoTS paths (Rule 0.8.1 — run only)
 - English output (Rule 0.7)
 

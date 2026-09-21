@@ -15,7 +15,7 @@ User-triggered Slack delivery of **scoped** Playwright results.
 ## Workflow (smart reporting + machine file)
 
 1. **Scope** – Resolve the exact Playwright target from the user (e.g. `npx playwright test --grep "PDT-2599"`, or `tests/cursor/....spec.ts`). If ambiguous, ask one clarifying question (Rule CONF.0).
-2. **Branch** – `Cursor-Project/EnergoTS` on branch **`cursor`** (Rule ENERGOTS.0 / `energo-ts-run` skill).
+2. **Branch** – `Cursor-Project/EnergoTS` on branch **`cursor`** or **`staging`** (Rule ENERGOTS.0 / `energo-ts-run` skill).
 3. **Run** – Execute the scoped `npx playwright test ...` and capture pass/fail, titles, failure messages, and (if available) test case `.md` paths for TC mapping.
 4. **Machine detailed Markdown** – From **`EnergoTS/`**, if **`playwright-report.json`** exists, run **`node ../config/playwright/generate-detailed-report.mjs`** → **`Cursor-Project/EnergoTS/playwright-report-detailed.md`**. If JSON missing, skip and note in **Notes**.
 5. **Smart detailed file** – Build content per **`Cursor-Project/config/playwright/Playwright_run_detailed_report_template.md`** and save under **`Cursor-Project/reports/Chat reports/YYYY/<english-month>/<DD>/ScopedPlaywright_{JIRA_KEY_or_timestamp}.md`** per **`Cursor-Project/reports/README.md`**. If no Jira key, use `ScopedPlaywright_adhoc_{YYYYMMDD-HHmm}.md`.

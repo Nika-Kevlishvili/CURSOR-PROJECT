@@ -65,7 +65,7 @@ Format: `test('[JIRA-KEY]: {Exact Jira Task Title}', async ({...}) => {`
 - **New** `tests/cursor/*.spec.ts`: `./cursor-test.fixtures` — see test-writing-rules § Imports
 - **Legacy** specs: `../../fixtures/baseFixture`; do not migrate unless user asks
 - Assertions: prefer `await expect(response).CheckResponse()` for POST/create chains
-- Branch: **`cursor`** only (Rule ENERGOTS.0)
+- Branch: **`cursor`** or **`staging`** (Rule ENERGOTS.0)
 
 ## Manual verification links [CRITICAL — new specs]
 

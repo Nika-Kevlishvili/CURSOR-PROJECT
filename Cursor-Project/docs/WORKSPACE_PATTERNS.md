@@ -37,7 +37,7 @@ Typical ordered chain:
 6. **test-case-quality-validator**  
 7. **energo-ts-test** (Playwright authoring — agent-only writes under `EnergoTS/tests/`)  
 8. **playwright-test-validator**  
-9. **energo-ts-run** (Rule 36: `cursor` branch only)
+9. **energo-ts-run** (Rule 36: `cursor` or `staging`)
 
 **Swagger:** Before creating or editing EnergoTS `.spec.ts`, run **`update-swagger-specs.ps1`** (Rule 41).
 

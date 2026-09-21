@@ -26,7 +26,7 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 | **test-case-quality-validator.md** | TC quality gate (Rule 35 Step 2.5) | **10-axis, ≥80/100** STRICT scoring; READ-ONLY; max 3 rewrites. |
 | **cross-dependency-finder.md** | Cross-dependencies (Rule 35, 35a) | Jira + code + deep Confluence exploration; **no** local merge/git; hand off to test-case-generator. |
 | **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8.1) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.spec.ts`; Playwright under `EnergoTS/tests/` only. |
-| **energo-ts-run.md** | Playwright runner (Rule 36) | `npx playwright test` from EnergoTS; `cursor` branch only. JSON→MD + Slack uploads for **scoped Slack path 2**; ad-hoc runs: generator only if user explicitly asks (**Rule DPR.0**). |
+| **energo-ts-run.md** | Playwright runner (Rule 36) | `npx playwright test` from EnergoTS; `cursor` or `staging`. JSON→MD + Slack uploads for **scoped Slack path 2**; ad-hoc runs: generator only if user explicitly asks (**Rule DPR.0**). |
 | **jira-bug.md** | Jira bug (Rule JIRA.0) | Experiments board only. |
 | **phoenix-bug-reporter.md** | Phoenix Phase 2 bug reporter (Rule PHOENIX-BUG.0) | Review file → Step 3.5 **bug-validator** (parent prefetch) → APPROVE + `.active-bugreview` sidecar → `createJiraIssue`; hook guards Internal Bug + Bug; reporter from `.env`; Internal tester from QA/Test subtask. |
 | **playwright-test-validator.md** | Playwright QA gate | Spec vs test cases + **`playwright instructions/`** (Rule 35 / energo-ts-test quality gate). |
