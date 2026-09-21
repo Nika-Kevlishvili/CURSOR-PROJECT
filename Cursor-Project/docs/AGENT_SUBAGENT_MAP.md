@@ -18,7 +18,7 @@ Use this file as the **single map** from “agent role” to **where it lives to
 | **test-case-quality-validator.md** | TC quality (10-axis ≥80) | `test-case-quality-validator` | Rule 35 Step 2.5 |
 | **energo-ts-test.md** | Playwright test authoring | `energo-ts-test` | Rule 0.8.1; `EnergoTS/tests/` only |
 | **playwright-test-validator.md** | Spec vs test cases | `playwright-test-validator` | After energo-ts-test authoring |
-| **energo-ts-run.md** | Playwright test run | `energo-ts-run` | Rule 36; `cursor` or `staging` |
+| **energo-ts-run.md** | Playwright test run | `energo-ts-run` | Rule 36; `cursor` branch only |
 | **test-runner.md** | Test execution | — (consult PhoenixExpert) | Test-related runs |
 | **database-query.md** | PostgreSQL (Dev/Test/Prod) | `phoenix-database` | DB questions; `database_workflow.mdc` |
 | **production-data-reader.md** | Production DB (read-only) | `production-data-reader` | Rule PDR.0; PostgreSQLProd MCP |

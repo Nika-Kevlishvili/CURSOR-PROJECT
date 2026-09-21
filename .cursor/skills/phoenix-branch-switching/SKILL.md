@@ -7,7 +7,7 @@ description: "Align Cursor-Project/Phoenix/* repos to origin/<branch> for enviro
 
 Align every `Cursor-Project/Phoenix/*` repo to the target environment's `origin/<branch>` before reading Phoenix code for env-sensitive tasks (Q&A, bug validation, cross-dep, test cases). Phoenix files remain **READ-ONLY** (Rule 0.8 Tier A).
 
-Does **not** apply to `EnergoTS/` (locked to `cursor` or `staging` per Rule ENERGOTS.0).
+Does **not** apply to `EnergoTS/` (locked to `cursor` per Rule ENERGOTS.0).
 Does **not** constitute merge-history archaeology (Rule 35a safe).
 
 ## When to Apply
@@ -112,7 +112,7 @@ Run alignment twice in series — once per env. Capture code reads between switc
 
 ## 9. Coverage for other agents
 
-Same requirement applies to `postman-collection`, `test-runner`, `PhoenixExpert` consultation when code reads are env-sensitive. Out of scope: `production-data-reader`, `database-query` (DB only), `energo-ts-*` (locked to `cursor` or `staging`).
+Same requirement applies to `postman-collection`, `test-runner`, `PhoenixExpert` consultation when code reads are env-sensitive. Out of scope: `production-data-reader`, `database-query` (DB only), `energo-ts-*` (locked to `cursor`).
 
 ## 10. Interaction with other rules
 

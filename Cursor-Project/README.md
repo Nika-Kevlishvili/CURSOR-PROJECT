@@ -79,7 +79,7 @@ Requires Java 17+. Gradle wrapper included.
 
 1. **Secrets**: API keys, tokens, passwords belong in environment variables or MCP config — do NOT commit `.env` to Git
 2. **Phoenix is read-only**: Cursor AI must never modify files under `Phoenix/` (Rule 0.8 Tier A)
-3. **EnergoTS branch lock**: EnergoTS stays on `cursor` or `staging` (Rule ENERGOTS.0)
+3. **EnergoTS branch lock**: EnergoTS stays on `cursor` branch only (Rule ENERGOTS.0)
 
 ---
 

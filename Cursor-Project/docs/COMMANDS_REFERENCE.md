@@ -40,7 +40,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 
 **When Cursor agents must run this:** before environment-sensitive Phoenix code reading — Phoenix Q&A, bug validation (Rule 32), cross-dependency analysis (Rule 35a), and test case generation (Rule 35). See Rule PHOENIX-SWITCH.0.
 
-**Scope:** Only repos under `Cursor-Project/Phoenix/`. Read-only for the remote (no commits, no pushes, no MRs). Phoenix source files remain READ-ONLY for Cursor AI (Rule 0.8 Tier A). EnergoTS is unaffected — that path stays locked to `cursor` or `staging` (Rule ENERGOTS.0).
+**Scope:** Only repos under `Cursor-Project/Phoenix/`. Read-only for the remote (no commits, no pushes, no MRs). Phoenix source files remain READ-ONLY for Cursor AI (Rule 0.8 Tier A). EnergoTS is unaffected — that path stays locked to `cursor` (Rule ENERGOTS.0).
 
 > **Legacy note:** the older `/sync`, `!update <branch>`, `!checkout <branch>` triggers and the `git_sync_workflow.mdc` rule are no longer present in this workspace. Use the command above for any Phoenix branch alignment.
 

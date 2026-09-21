@@ -158,7 +158,7 @@ environments without an explicit alignment in between.
 ## Out of scope
 
 - This command does **not** touch `Cursor-Project/EnergoTS/` (that path is locked to the
-  `cursor` and `staging` branches by Rule ENERGOTS.0).
+  `cursor` branch by Rule ENERGOTS.0).
 - This command does **not** modify Phoenix source code (Rule 0.8 Tier A still applies — only
   branch state changes, no `.java` edits).
 - This command does **not** push, commit, or open MRs against Phoenix.

@@ -59,7 +59,7 @@ Cursor loads **all** `.mdc` files under `.cursor/rules/` **recursively** (subjec
 12. **Rule 42 / JIRA.1:** Jira issue reads — **MCP first**; if Jira MCP fails after retries, use **REST read fallback** — **`.cursor/rules/integrations/jira_rest_fallback.mdc`**
 13. **Rule 43 / CONFLUENCE.1:** Confluence reads — **MCP first**; if Confluence MCP fails after retries, use **REST read fallback** — **`.cursor/rules/integrations/confluence_rest_fallback.mdc`** (script: **`Cursor-Project/config/confluence/get-confluence-page-rest.ps1`**)
 14. **Rule 44:** Jira ticket **analysis/triage/summary** with linked Confluence URLs → **must** read those pages same pass — **`.cursor/rules/main/evidence_only_project_answers.mdc`** (*Jira ticket analysis — linked Confluence*); **`workflow_rules.mdc`** Rule 44
-15. **Rule 36:** Run Playwright tests from EnergoTS → energo-ts-run workflow ONLY; run only from `cursor` or `staging` (Rule ENERGOTS.0)
+15. **Rule 36:** Run Playwright tests from EnergoTS → energo-ts-run workflow ONLY; run only from `cursor` branch (Rule ENERGOTS.0)
 16. **Rule PHOENIX-SWITCH.0:** Before environment-sensitive Phoenix code reading (Q&A, bug validation, cross-dep, test-case generation), align every `Cursor-Project/Phoenix/*` repo to the matching `origin/<branch>` via `.cursor/commands/switch-phoenix-branches.ps1`; local Phoenix edits are discarded; Phoenix files stay READ-ONLY (Rule 0.8 Tier A) — see `.cursor/rules/integrations/phoenix_branch_switching.mdc`
 17. **Slack paths:** Bug validation (Rule 32) vs scoped Playwright Slack — **`Cursor-Project/config/template/Slack_reporting_paths.md`** (do not merge; bug-validator workflow untouched)
 18. **Rule JIRA.0:** Jira bug agent → Experiments board ONLY; NEVER create bugs in Phoenix delivery
