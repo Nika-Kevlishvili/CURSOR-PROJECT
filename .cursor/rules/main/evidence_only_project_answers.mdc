@@ -43,6 +43,26 @@ Before asserting behavior for project scope, the assistant MUST do ALL of the fo
 - **On conflict:** state runtime (code) and spec (Confluence) separately; file a **Code↔Doc mismatch** Finding (Rule QA.2) — **forbidden** to silently pick one side.
 - **Do not generalize** beyond what the evidence supports.
 
+### Rule QA.INT: Label interpretation vs documented text [MUST]
+
+The user MUST be able to tell **what the source literally says** from **what the assistant inferred**.
+
+In project answers, separate these in the chat reply (not only internally):
+
+| Label | Allowed content |
+|-------|-----------------|
+| **Documented** | Close paraphrase or quote of Confluence / ticket / Swagger, with citation (title + page ID, or ticket key) |
+| **Runtime** | Code (file:line) and/or DB/Swagger result |
+| **My interpretation (not written in the spec)** | Any reading of intent, “this means X”, “therefore it is a bug”, filling an AC gap, or treating print-house/user-impact reasoning as a written rule |
+
+**MUST label interpretation.** If the assistant goes beyond the literal source, prefix that paragraph or sentence with **`My interpretation (not written in the spec):`** (or equivalent in the user’s chat language).
+
+**Forbidden:** Stating an inference as documented AC. Example: calling a behavior a **clear / unambiguous bug** when Confluence/ticket never states the expected filter or outcome. Say instead: documented text is A; runtime is B; **my interpretation** is that A implies C — user decides.
+
+**Finding blocks (QA.2):** **Spec / doc says** may contain only sourced text. Put inferred “should be” in **Gap** or **Recommendation**, and mark it as interpretation if it is not a quote.
+
+Violation is a **MUST**.
+
 ### Required citations in the answer
 
 When making a project-behavior claim, include at least one of:

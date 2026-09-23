@@ -8,6 +8,7 @@ Single map from **rule / topic** to the **primary procedural** file(s). When `wo
 | CONF.0 | Clarify before substantive work | `.cursor/rules/main/clarification_and_confidence.mdc` |
 | CONF.1 | Evidence-based confidence scoring (Three-Zone: GO/CAUTION/STOP) | `.cursor/rules/main/clarification_and_confidence.mdc`, **`.cursor/rules/scoring/confidence_scoring_matrix.mdc`** |
 | QA.0 Senior QA mission | Default Senior QA persona; code defects, doc gaps, code↔doc mismatches; dual-track answers | **`.cursor/rules/main/senior_qa_product_quality.mdc`**, **`.cursor/skills/senior-qa-analysis/SKILL.md`**, **`.cursor/agents/senior-qa.md`** |
+| QA.INT interpretation label | Chat must separate documented text / runtime from assistant inference; never present inference as AC | **`.cursor/rules/main/evidence_only_project_answers.mdc`** (primary), **`senior_qa_product_quality.mdc`** QA.1 |
 | 0.10 | Senior QA on all Phoenix scope (points to QA.0) | `.cursor/rules/main/core_rules.mdc` |
 | 1 / safety | GitLab & Confluence read-only; tiers | `.cursor/rules/safety/safety_rules.mdc` |
 | 8 / agents | Consultation patterns | `.cursor/rules/agents/agent_rules.mdc` |

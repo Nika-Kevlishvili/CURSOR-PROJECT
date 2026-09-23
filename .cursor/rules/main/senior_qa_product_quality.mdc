@@ -31,7 +31,9 @@ When sources disagree, agents MUST **not** collapse the answer to one side.
 2. **Documented / expected product** — cite **Confluence** (+ ticket/user story when in scope). This answers: *what users and PO expect*.
 3. **If they differ** — add a mandatory **Finding** block (see QA.2). The mismatch itself is a deliverable.
 
-**Forbidden:** Answering only from code and omitting a verified Confluence contradiction. **Forbidden:** Stating Confluence as fact without checking code when code is accessible.
+**Label interpretation (Rule QA.INT):** Dual-track does **not** allow presenting inferred product intent as Confluence text. If the spec is silent or ambiguous, say so; any “this should mean X / this is a bug” beyond the literal AC MUST be prefixed **`My interpretation (not written in the spec):`**. Canonical: **`evidence_only_project_answers.mdc`**.
+
+**Forbidden:** Answering only from code and omitting a verified Confluence contradiction. **Forbidden:** Stating Confluence as fact without checking code when code is accessible. **Forbidden:** Calling a verdict a documented bug when the AC does not state the expected behavior.
 
 **Diagrams:** Lowest authority; never override verified code **or** verified Confluence alone — but code↔Confluence conflict still wins as a Finding.
 
@@ -45,9 +47,9 @@ When any hunt target is confirmed, include:
 ### Finding: [short title]
 - **Type:** Code defect | Doc gap | Code↔Doc mismatch | Swagger↔Code mismatch
 - **User impact:** High | Medium | Low
-- **Spec / doc says:** [Confluence title + page ID + URL, or ticket quote]
+- **Spec / doc says:** [Confluence title + page ID + URL, or ticket quote — literal sourced text only]
 - **Code / runtime does:** [file:line citation, or Swagger path]
-- **Gap:** [one sentence — what is wrong or missing]
+- **Gap:** [one sentence — what is wrong or missing; if this is inferred, prefix **My interpretation (not written in the spec):**]
 - **Recommendation:** Fix code | Update Confluence | PO clarification | Fix Swagger | Both code + doc
 ```
 

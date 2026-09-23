@@ -48,7 +48,7 @@ Cursor loads **all** `.mdc` files under `.cursor/rules/` **recursively** (subjec
 1. **Rule 0.0:** Tiered rules loading — see **`core_rules.mdc`**; canonical map: **`Cursor-Project/docs/RULES_CANONICAL_INDEX.md`**. **Rule CONF.0:** If scope/environment/target/success criteria are ambiguous → ask before substantive action; do not guess (`clarification_and_confidence.mdc`).
 2. **Rule 0.1:** "Agents involved" footer mandatory
 3. **Rule 0.2:** ALL Phoenix questions → PhoenixExpert ONLY (+ Senior QA lens, Rule QA.0)
-4. **Rule 0.10 / QA.0:** Default Senior QA — defects, doc gaps, code↔doc mismatches; dual-track answers; **Finding** on conflict
+4. **Rule 0.10 / QA.0:** Default Senior QA — defects, doc gaps, code↔doc mismatches; dual-track answers; **Finding** on conflict. **QA.INT:** label interpretation vs documented text (`evidence_only_project_answers.mdc`)
 5. **Rule 0.6:** Disk reports **only** when **`/report`**, **`/feedback`**, or explicit user save — default **chat-first**; full text: **`core_rules.mdc`** Rule 0.6
 6. **Rule 0.8:** Phoenix never edited by AI; EnergoTS only EnergoTSTestAgent in `tests/`; all other workspace paths editable when user requests (provisional) — see `.cursor/rules/safety/safety_rules.mdc` Rule 7
 7. **Rule 1:** GitLab and Confluence are READ-ONLY
