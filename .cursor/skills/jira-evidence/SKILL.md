@@ -34,8 +34,11 @@ When the user requests **analysis / triage / summary / retrieval** of a Jira iss
 
 1. **Read every linked in-scope Confluence page** (Rule 39 narrow scope — linked URLs only; no broad CQL except Rule 32 `bug-validator`).
 2. Confluence MCP first; after 2–3 retries use **Rule 43** REST (**`get-confluence-page-rest.ps1`**). Set **`CONFLUENCE_WIKI_BASE`** when wiki host differs from default.
-3. Merge findings into the **same** response; cite page title + page ID.
-4. Jira-only analysis when readable linked Confluence was skipped → **BLOCK violation** (evidence gate).
+3. **Page comments (GB-1746) — MANDATORY with each page read:** also fetch **footer** and **inline** comments for that page ID. Prefer MCP comment tools when present (`getConfluencePageFooterComments`, `getConfluencePageInlineComments`). If those tools are missing (current Atlassian MCP often has none), run:  
+   `powershell -ExecutionPolicy Bypass -File "Cursor-Project/config/confluence/get-confluence-page-comments-rest.ps1" -PageId "<id>"`  
+   Merge comment text into evidence when non-empty; if empty/unavailable, note `confluence_comments: none_or_unavailable` (do not invent comments).
+4. Merge findings into the **same** response; cite page title + page ID.
+5. Jira-only analysis when readable linked Confluence was skipped → **BLOCK violation** (evidence gate).
 
 ---
 

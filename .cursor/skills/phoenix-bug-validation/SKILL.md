@@ -101,6 +101,8 @@ When the resolved environment is **Prod** or **PreProd** (and by default for **T
 
 **Methods:** Use MCP Confluence tools (`search`, `searchConfluenceUsingCql`, `getConfluencePage`, etc.). Apply **>=2 distinct** discovery approaches. Cap result size. Jira-linked pages are additive, not a substitute.
 
+**Page comments (GB-1746):** For every Confluence page that informs the verdict, also read **footer + inline** comments (MCP comment tools if available; else `get-confluence-page-comments-rest.ps1`). Include non-empty comment clarifications in evidence; if none, note `confluence_comments: none_or_unavailable`.
+
 **REST fallback (Rule 43):** MCP failure after retries → REST per `.cursor/rules/integrations/confluence_rest_fallback.mdc`. Disclose fallback in output. If both fail → **`PROCESS BLOCKED`**.
 
 **Classify:** EXACT match / contextual match / no match / contradicts / **search failed**.
@@ -131,6 +133,8 @@ When the resolved environment is **Prod** or **PreProd** (and by default for **T
 ### Step 4b: Database Investigation [RECOMMENDED]
 
 Gather DB evidence to strengthen or clarify conclusions. Use the **same environment** as Step 0. Follow **`.cursor/skills/phoenix-database/SKILL.md`** for env mapping, connect-first workflow, SQL patterns, and query best practices. **SELECT-only**.
+
+**Data migration tickets (Customer SLR/ES):** Before Backend-vs-DB assignment or a business verdict, SELECT Tato staging on **PostgreSQLTest2ES** / `phoenix_intermediate` (`customer_migration_slr` or `customer_migration` — Rule DB.0b). Compare staging vs Phoenix created tables. **Do not CREATE** anything on that MCP.
 
 **What to investigate (prioritized):** entity data state → audit/change logs → error logs → relationships/dependencies → data consistency checks.
 

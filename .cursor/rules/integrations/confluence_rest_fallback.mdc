@@ -78,6 +78,16 @@ Use **Confluence Cloud** REST under the wiki base `{CONFLUENCE_WIKI_BASE}` (norm
 - `GET {CONFLUENCE_WIKI_BASE}/rest/api/content/search?cql={encodedCql}&limit=25`  
   Keep each CQL query focused; for cross-dependency deep exploration, run **multiple targeted queries** rather than one broad crawl. Increase `limit` if needed (e.g. `limit=50`) when the workflow expects deep results.
 
+**Page comments (GB-1746 — read with every page used as evidence):**
+
+- Prefer MCP `getConfluencePageFooterComments` / `getConfluencePageInlineComments` when those tools exist on the connected server.
+- If MCP has **no** comment tools (common on current Atlassian Remote MCP), use REST:
+  - v2: `GET {CONFLUENCE_WIKI_BASE}/api/v2/pages/{pageId}/footer-comments?limit=50`
+  - v2: `GET {CONFLUENCE_WIKI_BASE}/api/v2/pages/{pageId}/inline-comments?limit=50`
+  - Script (preferred):  
+    `powershell -ExecutionPolicy Bypass -File "Cursor-Project/config/confluence/get-confluence-page-comments-rest.ps1" -PageId "<numericId>"`
+- Empty result is OK — record `confluence_comments: none_or_unavailable`. Skipping comments after a successful page body read is a **MUST** gap for ticket analysis / bug validation / PhoenixExpert when the page informed the answer.
+
 **Implementation in Cursor:** use **terminal** `Invoke-RestMethod` / `curl` with **Basic auth** (email + API token) and `Accept: application/json`, and/or run:
 
 `powershell -ExecutionPolicy Bypass -File "Cursor-Project/config/confluence/get-confluence-page-rest.ps1" -PageId "<numericId>"`

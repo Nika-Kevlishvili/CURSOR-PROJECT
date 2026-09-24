@@ -17,8 +17,8 @@ Summarizes what must never happen and what is read-only. Prevents Confluence/Git
 
 - **No** commits, pushes, merges, or page edits.
 - **GitLab/Confluence content:** no AI edits. **Jira/pipeline updates:** only via approved external tooling where applicable; this Cursor workspace has no Python IntegrationService in chat.
-- Confluence **edit tools forbidden:** updateConfluencePage, createConfluencePage, createConfluenceFooterComment, createConfluenceInlineComment.
-- Confluence **allowed (read):** getConfluencePage, getPagesInConfluenceSpace, getConfluenceSpaces, search, searchConfluenceUsingCql, getConfluencePageDescendants, getConfluencePageFooterComments, getConfluencePageInlineComments.
+- Confluence **edit tools forbidden:** updateConfluencePage, createConfluencePage, createConfluenceFooterComment, createConfluenceInlineComment (any write).
+- Confluence **allowed (read):** page/space/search/descendant tools when present; footer/inline comment **read** when present. If MCP has no comment tools → REST `Cursor-Project/config/confluence/get-confluence-page-comments-rest.ps1` (GB-1746).
 
 ## Code Modification: FORBIDDEN (Rule 0.8 / 7)
 

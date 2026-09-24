@@ -10,8 +10,8 @@ alwaysApply: true
    - Violation is a **BLOCK** (security).
    
    1a. [CRITICAL] Confluence Editing Tools are FORBIDDEN - READ-ONLY ONLY.
-      - FORBIDDEN: updateConfluencePage(), createConfluencePage(), createConfluenceFooterComment(), createConfluenceInlineComment()
-      - ALLOWED: getConfluencePage(), getPagesInConfluenceSpace(), getConfluenceSpaces(), search(), searchConfluenceUsingCql(), getConfluencePageDescendants(), getConfluencePageFooterComments(), getConfluencePageInlineComments()
+      - FORBIDDEN: updateConfluencePage(), createConfluencePage(), createConfluenceFooterComment(), createConfluenceInlineComment() (any Confluence write)
+      - ALLOWED (read): page/space/search/descendant tools when present on MCP; footer/inline **comment read** tools when present (`getConfluencePageFooterComments`, `getConfluencePageInlineComments`). If MCP lacks comment tools → use REST **`get-confluence-page-comments-rest.ps1`** (GB-1746). Never invent comments.
       - Applies to ALL agents, ALL operations, ALL circumstances - NO EXCEPTIONS.
 
 # SOURCE-OF-TRUTH RULES
