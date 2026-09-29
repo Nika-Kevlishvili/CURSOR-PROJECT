@@ -1,6 +1,6 @@
 ---
 name: energo-ts-test
-description: Manages EnergoTS Playwright test automation under Cursor-Project/EnergoTS/tests/ only (*.spec.ts, *.fixtures.ts). Rule 0.8.1 sole writer. Mandatory Swagger refresh + playwright instructions pack before edits.
+description: Manages EnergoTS Playwright test automation (*.spec.ts, *.fixtures.ts). Mandatory Swagger refresh + playwright instructions pack before spec edits. Other EnergoTS files may be edited when the user asks (Rule 0.8).
 ---
 
 # EnergoTS Test Skill
@@ -11,7 +11,7 @@ description: Manages EnergoTS Playwright test automation under Cursor-Project/En
 ## When to apply
 
 - User asks to create, modify, or analyze EnergoTS Playwright tests (map test cases → `EnergoTS/tests/cursor/{KEY}-*.spec.ts` when TC `.md` exists)
-- Any write under `Cursor-Project/EnergoTS/tests/` (**`.spec.ts`**, **`.fixtures.ts`** only — hooks enforce)
+- Writes under `Cursor-Project/EnergoTS/tests/` for `.spec.ts` and `.fixtures.ts`. Other EnergoTS files are allowed when the user asked for page objects or frontend cases (Rule 0.8). Branch: `cursor` or `staging`.
 
 ## Mandatory before `.spec.ts` / `.fixtures.ts` edits
 
@@ -65,7 +65,7 @@ Format: `test('[JIRA-KEY]: {Exact Jira Task Title}', async ({...}) => {`
 - **New** `tests/cursor/*.spec.ts`: `./cursor-test.fixtures` — see test-writing-rules § Imports
 - **Legacy** specs: `../../fixtures/baseFixture`; do not migrate unless user asks
 - Assertions: prefer `await expect(response).CheckResponse()` for POST/create chains
-- Branch: **`cursor`** only (Rule ENERGOTS.0)
+- Branch: **`cursor` or `staging`** (Rule ENERGOTS.0). Do not switch off `staging` unless the user asks.
 
 ## Manual verification links [CRITICAL — new specs]
 
@@ -103,7 +103,8 @@ Legacy snippet (`attachManualVerificationLinks` without `testRunSummary`) — do
 ## Permissions
 
 - ✅ `EnergoTS/tests/**/*.spec.ts`, `*.fixtures.ts`
-- ❌ EnergoTS outside `tests/`; ❌ Phoenix (Tier A)
+- ✅ Other files under `Cursor-Project/EnergoTS/**` when the user asked for page objects or frontend cases (Rule 0.8), on `cursor` or `staging`
+- ❌ Phoenix (Tier A)
 
 ## Post-authoring validation [MANDATORY — all paths]
 

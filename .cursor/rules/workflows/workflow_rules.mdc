@@ -60,7 +60,7 @@ When the user requests test cases, run **in order** (gates fixed — **`test_cas
 
 ## Rule 36 — EnergoTS Playwright run [CRITICAL]
 
-- **`energo-ts-run`** only; EnergoTS **`cursor`** branch only (**Rule ENERGOTS.0**)
+- **`energo-ts-run`** only; EnergoTS **`cursor`** or **`staging`** branch only (**Rule ENERGOTS.0**)
 - **`.cursor/skills/energo-ts-run/SKILL.md`**, **`.cursor/agents/energo-ts-run.md`**
 
 Violation is a **MUST**.

@@ -21,9 +21,9 @@ alwaysApply: true
 
 7. Code modification per Rule 0.8 tiers (`.cursor/rules/main/core_rules.mdc`):
    - **Phoenix (`Cursor-Project/Phoenix/**`):** NEVER modified by Cursor AI.
-   - **EnergoTS:** Only **EnergoTSTestAgent** may write under `EnergoTS/tests/`; rest of EnergoTS is no-write for AI.
+   - **EnergoTS:** User-requested edits under `Cursor-Project/EnergoTS/**` are allowed on the `cursor` or `staging` branch (page objects, fixtures, helpers, frontend tests).
    - **Elsewhere:** Allowed when user requests (provisional).
-   - Violation is a **BLOCK** (hooks enforce Tier A/B).
+   - Violation of the Phoenix ban is a **BLOCK** (hooks enforce Tier A).
 
 # READ-ONLY OPERATION RULE
 
@@ -84,5 +84,5 @@ alwaysApply: true
     - Omitting **optional** disk reports after routine tasks is **not** a violation (Rule 0.6 default).
     - Violation is a **MUST** when a required workflow artifact or explicit user file request is skipped.
     
-31. Cursor AI MUST follow Rule 0.8 path tiers: never edit Phoenix; never edit EnergoTS except EnergoTSTestAgent in `tests/` only; may edit other paths when user requests.
+31. Cursor AI MUST follow Rule 0.8 path tiers: never edit Phoenix; EnergoTS files may be edited when the user requests that work, on the `cursor` or `staging` branch only; other paths may be edited when the user requests.
     - Violation is a **BLOCK** (hooks enforce).

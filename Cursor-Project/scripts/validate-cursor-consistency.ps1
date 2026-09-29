@@ -261,12 +261,12 @@ if (Test-Path -LiteralPath $protectPhoenix) {
     }
 }
 
-# --- EnergoTS hook: tests/ allowlist
+# --- EnergoTS hook: writes under EnergoTS are allowed (Rule 0.8)
 $protectEnergo = Join-Path $CursorRoot 'hooks\protect-energots-writes.ps1'
 if (Test-Path -LiteralPath $protectEnergo) {
     $eg = Get-Content -LiteralPath $protectEnergo -Raw
-    if ($eg -notmatch '\.spec\.ts' -or $eg -notmatch '\.fixtures\.ts') {
-        Add-Warning 'protect-energots-writes.ps1 may not restrict tests/ to spec/fixtures only'
+    if ($eg -match 'outside tests/' -and $eg -match 'permission\s*=\s*"deny"') {
+        Add-Warning 'protect-energots-writes.ps1 still denies EnergoTS writes outside tests/ (Rule 0.8 allows them)'
     }
 }
 

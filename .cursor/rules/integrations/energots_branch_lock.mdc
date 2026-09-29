@@ -1,5 +1,5 @@
 ---
-description: "EnergoTS (Cursor-Project/EnergoTS) git branch lock (Rule ENERGOTS.0): use only the `cursor` branch—never checkout/switch to main or other branches; never auto-sync `cursor` from main unless the user explicitly asks. Apply for Playwright test runs (energo-ts-run), git in EnergoTS, or any work under that directory."
+description: "EnergoTS (Cursor-Project/EnergoTS) git branch lock (Rule ENERGOTS.0): use the `cursor` or `staging` branch. Do not checkout main or any other branch. Do not auto-sync from main unless the user explicitly asks. File writes under EnergoTS are allowed when the user requests them (Rule 0.8)."
 alwaysApply: false
 globs:
   - "Cursor-Project/EnergoTS/**"
@@ -9,29 +9,29 @@ globs:
 ---
 # ENERGOTS BRANCH LOCK RULE [CRITICAL]
 
-## Rule ENERGOTS.0: EnergoTS Branch Restriction [CRITICAL - ABSOLUTE PROHIBITION]
+## Rule ENERGOTS.0: EnergoTS Branch Restriction
 
-**Cursor AI MUST NEVER** checkout, switch to, or use any branch other than **`cursor`** under `Cursor-Project/EnergoTS/`.
+**Cursor AI may use only `cursor` or `staging`** under `Cursor-Project/EnergoTS/`.
 
-**Cursor AI MUST NEVER automatically** fetch/merge/pull/rebase **`cursor`** from **`main`** — only when the user **explicitly** asks (e.g. “merge main into cursor”, “update cursor from main”).
+**Cursor AI MUST NEVER automatically** fetch/merge/pull/rebase from **`main`** — only when the user **explicitly** asks.
 
 ### Allowed vs prohibited
 
-- **Allowed on EnergoTS:** All git ops **while already on `cursor`**; switching **to** `cursor`; **`git fetch origin main` / `merge` / `pull` / `rebase` from `main` into `cursor` ONLY after explicit user request**.
-- **Prohibited:** `git checkout` / `switch` to any branch except `cursor`; `checkout -b` new branches; any proactive sync with `main` without explicit request.
+- **Allowed on EnergoTS:** All git ops while already on `cursor` or `staging`; switching **to** `cursor` or **to** `staging`; merging `main` into the current allowed branch only after an explicit user request.
+- **Prohibited:** `git checkout` / `switch` to any branch other than `cursor` or `staging`; `checkout -b` new branches; any proactive sync with `main` without an explicit request.
 
 ### Before git branch ops under EnergoTS
 
 1. Confirm path is under `Cursor-Project/EnergoTS/`.
-2. If operation changes branch → target **must** be `cursor`; otherwise **BLOCK** and state EnergoTS is locked to `cursor`.
+2. If the operation changes branch, the target **must** be `cursor` or `staging`. Otherwise **BLOCK**.
 
 ### Enforcement hooks
 
-Hooks **`block-energots-branch-switch.ps1`** (`beforeShellExecution`) and **`block-energots-branch-requests.ps1`** (`beforeSubmitPrompt`) enforce branch lock and forbidden prompts; merge-from-main commands remain allowed when they keep checkout on `cursor`.
+Hooks **`block-energots-branch-switch.ps1`** (`beforeShellExecution`) and **`block-energots-branch-requests.ps1`** (`beforeSubmitPrompt`) allow `cursor` and `staging` and block every other branch. **`protect-energots-writes.ps1`** allows file writes under `Cursor-Project/EnergoTS/`.
 
 ### Integration
 
-- **Rule 0.8 / EnergoTS:** branch lock only; does not authorize edits outside allowed paths.
-- Phoenix/other repos: **not** covered by this rule.
+- **Rule 0.8:** On `cursor` or `staging`, user-requested edits under `Cursor-Project/EnergoTS/**` are allowed, including page objects, fixtures, helpers, and frontend tests.
+- Phoenix/other repos: **not** covered by this rule. Phoenix stays read-only.
 
 **Violation of ENERGOTS.0 is a BLOCK.**

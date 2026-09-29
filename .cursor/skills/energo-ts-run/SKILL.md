@@ -5,7 +5,7 @@ description: Runs specific Playwright tests from EnergoTS (local repo synced fro
 
 # EnergoTS Playwright Test Run Skill
 
-Use when the user wants to **run** (execute) Playwright tests from the local EnergoTS repo (**`cursor` branch only**, Rule ENERGOTS.0).
+Use when the user wants to **run** (execute) Playwright tests from the local EnergoTS repo (**`cursor` or `staging` branch**, Rule ENERGOTS.0).
 
 ## When to Apply
 
@@ -13,7 +13,7 @@ Use when the user wants to **run** (execute) Playwright tests from the local Ene
 
 ## Workflow
 
-1. **cursor branch** — in `Cursor-Project/EnergoTS/`, `git checkout cursor` if not already on cursor.
+1. **Branch** — in `Cursor-Project/EnergoTS/`, stay on `cursor` or `staging`. If the checkout is another branch, switch to `staging` when the user is doing frontend or POM work, otherwise switch to `cursor`. Do not switch away from `staging` to `cursor` unless the user asks.
 2. **Resolve target** (see table below).
 3. **Execute** from `Cursor-Project/EnergoTS/`: `npx playwright test <path|grep|dir>`.
 4. **Report** pass/fail; optional Chat reports file on user request (Rule 0.6).
@@ -41,7 +41,7 @@ From `EnergoTS/`: `npx playwright test --project=setup` (requires `.env` with PO
 
 | Condition | Action |
 |-----------|--------|
-| Not on `cursor` / checkout fails | Report error; do not run on other branch |
+| Not on `cursor` or `staging` / checkout fails | Report error; do not run on any other branch |
 | EnergoTS or Playwright missing | Report path / `npm install` hint |
 | No matching test | "No matching test found" + how you searched |
 | Tests fail | Report failures; do not fix code unless user asked |

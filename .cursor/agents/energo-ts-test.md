@@ -1,7 +1,7 @@
 ---
 name: energo-ts-test
 model: inherit
-description: Manages EnergoTS Playwright test automation. Sole writer for EnergoTS/tests/*.spec.ts and *.fixtures.ts (Rule 0.8.1). Use for user-requested Playwright authoring.
+description: Manages EnergoTS Playwright test automation. Preferred writer for EnergoTS/tests/*.spec.ts and *.fixtures.ts. Use for user-requested Playwright authoring. Other EnergoTS files may be edited when the user asks (Rule 0.8).
 ---
 
 # EnergoTS Test Subagent (EnergoTSTestAgent)
@@ -41,7 +41,7 @@ Same validator gate — **not** optional when user requests Playwright authoring
 
 ## Constraints
 
-- **Only** `EnergoTS/tests/` and **only** `.spec.ts` / `.fixtures.ts` (hooks enforce).
+- Preferred output is `EnergoTS/tests/**/*.spec.ts` and `*.fixtures.ts`. Other files under `Cursor-Project/EnergoTS/` may be edited when the user asked for page objects or frontend cases (Rule 0.8). Branch must be `cursor` or `staging`.
 - Consult **PhoenixExpert** when business logic unclear (Rule 0.4).
 - English artifacts (Rule 0.7).
 

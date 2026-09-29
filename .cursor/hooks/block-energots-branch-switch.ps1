@@ -1,6 +1,6 @@
 # block-energots-branch-switch.ps1
 # Hook: beforeShellExecution
-# Purpose: Block git checkout/switch operations in EnergoTS directory to branches other than 'cursor'
+# Purpose: Block git checkout/switch in EnergoTS except the allowed branches cursor and staging
 # Rule: ENERGOTS.0 - EnergoTS Branch Restriction
 
 $jsonInput = [Console]::In.ReadToEnd()
@@ -128,8 +128,8 @@ try {
     # Normalize target branch name (remove quotes, trim)
     $targetBranchNormalized = $targetBranch.Trim('"', "'", '`').Trim()
     
-    # Check if target branch is 'cursor' (allowed)
-    if ($targetBranchNormalized -eq "cursor") {
+    # Allowed EnergoTS branches: cursor and staging
+    if ($targetBranchNormalized -eq "cursor" -or $targetBranchNormalized -eq "staging") {
         $response = @{ continue = $true }
         $response | ConvertTo-Json -Compress
         exit 0
@@ -140,8 +140,8 @@ try {
         continue = $false
         block = $true
         permission = "deny"
-        user_message = "[HOOK BLOCKED] EnergoTS project is locked to 'cursor' branch only. Cannot switch to '$targetBranchNormalized'. Operation blocked. To update cursor from main, use: git fetch origin main && git merge origin/main"
-        agent_message = "CRITICAL: Branch switch blocked. Rule ENERGOTS.0 states that EnergoTS project must remain on 'cursor' branch only. Attempted to switch to '$targetBranchNormalized' in EnergoTS directory. Use 'git fetch origin main && git merge origin/main' to update cursor branch from main instead."
+        user_message = "[HOOK BLOCKED] EnergoTS may use only the 'cursor' or 'staging' branch. Cannot switch to '$targetBranchNormalized'. Operation blocked."
+        agent_message = "CRITICAL: Branch switch blocked. Rule ENERGOTS.0 allows only 'cursor' and 'staging' under EnergoTS. Attempted to switch to '$targetBranchNormalized'."
     }
     
     $response | ConvertTo-Json -Compress

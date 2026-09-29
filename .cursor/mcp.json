@@ -158,6 +158,12 @@
         "POSTGRES_USER": "readonly_user",
         "POSTGRES_PASSWORD": "U$CM)*qr&Zb4JfU@"
       }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ]
     }
   }
 }

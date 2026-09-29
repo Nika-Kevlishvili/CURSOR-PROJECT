@@ -68,30 +68,27 @@ alwaysApply: true
    - Violation is a **MUST** when **persisted** project artifacts are not in English without an explicit project exception
    
    ### Rule 0.8: Path-Based Code Modification (Phoenix, EnergoTS, everything else)
-   - **Intent:** (1) **Phoenix** — no AI/agent edits, ever. (2) **EnergoTS** — only **EnergoTSTestAgent** (the agent that writes Playwright tests) may add/change code, and **only** under `EnergoTS/tests/`. (3) **All other paths** — Cursor AI may modify when the user requests (**provisional — Tier C**).
+   - **Intent:** (1) **Phoenix** — no AI/agent edits, ever. (2) **EnergoTS** — user-requested edits are allowed on the `cursor` or `staging` branch, including page objects, fixtures, helpers, and frontend tests. (3) **All other paths** — Cursor AI may modify when the user requests (**provisional — Tier C**).
    - **TIER A — ABSOLUTELY FORBIDDEN (no exceptions, no agent, no user override via AI):**
      - `Cursor-Project/Phoenix/**` — Cursor AI MUST NEVER create, modify, or delete any file here. Hooks enforce protection. ONLY read, analyze, search, recommend.
-   - **TIER B — EnergoTS (restricted):**
-     - `Cursor-Project/EnergoTS/**` **outside** `Cursor-Project/EnergoTS/tests/**` — Cursor AI MUST NOT modify (fixtures, config, app code, etc.). **No agent** may write here except as forbidden for all.
-     - `Cursor-Project/EnergoTS/tests/**` — ONLY **EnergoTSTestAgent** (and **EnergoTSTestAgentAdapter**) may create/modify/delete files here (see Rule 0.8.1). **Generic Cursor AI, other agents, and direct tool usage** MUST NOT edit this tree even if the user asks.
-   - **TIER C — ALLOWED (provisional):** Any path under the workspace **not** in Tier A or Tier B **non-test EnergoTS** restrictions — including but not limited to: `Cursor-Project/docs/**`, `Cursor-Project/config/**`, `Cursor-Project/reports/**`, `Cursor-Project/test_cases/**`, `Cursor-Project/User story/**`, root `.cursor/**`, workspace root files, etc. User-requested edits are permitted there. (**`Cursor-Project/agents/`** Python package is **not** in this workspace; Cursor behavior is defined by **`.cursor/agents/*.md`**, rules, skills, MCP.)
-   - **If the user asks to change Tier A or Tier B (non-agent):** Refuse implementation; analysis and recommendations only.
-   - **ENFORCEMENT:** Do not weaken Phoenix or EnergoTS protections in hooks or rules without an explicit project-owner decision.
-   - Violation of Tier A or Tier B restrictions is a **BLOCK** (hooks enforce).
+   - **TIER B — EnergoTS (writable on request):**
+     - `Cursor-Project/EnergoTS/**` — Cursor AI may create, modify, and delete files when the user requests that work. This includes `src/frontend/pom/**`, fixtures, helpers, config needed by frontend cases, and `tests/**`.
+     - Branch must be `cursor` or `staging` (Rule ENERGOTS.0). Do not checkout any other EnergoTS branch.
+     - Playwright `.spec.ts` authoring SHOULD still follow **energo-ts-test** (Swagger refresh, instructions pack, validator). That workflow is a quality gate, not a path ban.
+   - **TIER C — ALLOWED (provisional):** Any path under the workspace **not** in Tier A — including but not limited to: `Cursor-Project/docs/**`, `Cursor-Project/config/**`, `Cursor-Project/reports/**`, `Cursor-Project/test_cases/**`, `Cursor-Project/User story/**`, root `.cursor/**`, workspace root files, and `Cursor-Project/EnergoTS/**` as in Tier B. User-requested edits are permitted there. (**`Cursor-Project/agents/`** Python package is **not** in this workspace; Cursor behavior is defined by **`.cursor/agents/*.md`**, rules, skills, MCP.)
+   - **If the user asks to change Tier A (Phoenix):** Refuse implementation; analysis and recommendations only.
+   - **ENFORCEMENT:** Do not weaken Phoenix protection in hooks or rules without an explicit project-owner decision. EnergoTS write access and the `staging` branch were opened by an explicit project-owner decision.
+   - Violation of Tier A is a **BLOCK** (hooks enforce).
    
-   ### Rule 0.8.1: ONLY EnergoTSTestAgent — `EnergoTS/tests/` Writes
-   - **SOLE WRITER for Playwright test code under EnergoTS:** Only **EnergoTSTestAgent** and **EnergoTSTestAgentAdapter** may modify files under `Cursor-Project/EnergoTS/tests/` (e.g. `.spec.ts`).
-   - EnergoTSTestAgent CAN:
-     - Create, modify, copy, convert files within `Cursor-Project/EnergoTS/tests/` only
-   - EnergoTSTestAgent CANNOT:
-     - Modify any path under `Cursor-Project/EnergoTS/` outside `tests/`
-     - Modify any path under `Cursor-Project/Phoenix/**`
-   - **All other agents, subagents, and default Cursor AI tool usage:** MUST NOT write under `Cursor-Project/EnergoTS/**` (including `tests/`). Route Playwright test authoring to **energo-ts-test** / EnergoTSTestAgent workflow.
-   - **Hook vs rule:** `protect-energots-writes.ps1` allows any `*.spec.ts` / `*.fixtures.ts` under `tests/` (extension gate). **Rule 0.8.1** additionally requires **energo-ts-test** workflow — hook cannot detect agent role; violation is workflow **MUST**, not automatic deny.
+   ### Rule 0.8.1: EnergoTS writes
+   - User-requested work may edit any file under `Cursor-Project/EnergoTS/**` needed for page objects and frontend test generation.
+   - **energo-ts-test** remains the procedure for Playwright `.spec.ts` / `.fixtures.ts` quality. Other agents may still edit those files when the user asked for frontend cases.
+   - No agent may modify `Cursor-Project/Phoenix/**`.
+   - **Hook:** `protect-energots-writes.ps1` allows writes under `Cursor-Project/EnergoTS/`.
 
    ### Rule 0.9: Compliance tiers (reduce alert fatigue)
    Use these terms in rules, skills, and agents:
-   - **BLOCK** — Must not proceed; hooks may deny; workflow stops (Tier A/B edits, env gate bypass, skipped mandatory SKILL, security invariant).
+   - **BLOCK** — Must not proceed; hooks may deny; workflow stops (Tier A Phoenix edits, env gate bypass, skipped mandatory SKILL, security invariant).
    - **MUST** — Required for correct completion; violation breaks deliverable quality (evidence gate, Rule 0.1 footer, canonical SKILL load).
    - **SHOULD** — Strong recommendation; document deviation if skipped.
    

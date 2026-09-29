@@ -1,6 +1,6 @@
 # block-energots-branch-requests.ps1
 # Hook: beforeSubmitPrompt
-# Purpose: Block prompts that request branch switching in EnergoTS to branches other than 'cursor'
+# Purpose: Block prompts that request EnergoTS branch switches other than cursor or staging
 # Rule: ENERGOTS.0 - EnergoTS Branch Restriction
 
 $jsonInput = [Console]::In.ReadToEnd()
@@ -39,8 +39,7 @@ try {
         "energo"
     )
     
-    # Branch names that are NOT allowed (anything except 'cursor')
-    # We'll detect if a specific branch name is mentioned
+    # Branch names that are NOT allowed (anything except 'cursor' and 'staging')
     $hasBranchSwitchKeyword = $false
     $hasSyncKeyword = $false
     $hasEnergoTSKeyword = $false
@@ -83,7 +82,7 @@ try {
     # Check if a specific branch name is mentioned (common branch names)
     $commonBranches = @(
         "main", "master", "dev", "develop", "development",
-        "test", "testing", "staging", "prod", "production",
+        "test", "testing", "prod", "production",
         "feature", "fix", "bugfix", "hotfix", "release"
     )
     
@@ -103,7 +102,7 @@ try {
         # Pattern: "checkout <branch>" or "switch to <branch>" (forbidden)
         if ($promptLower -match "(?:checkout|switch\s+to|change\s+to|go\s+to)\s+['""]?([a-z0-9_-]+)['""]?") {
             $mentionedBranch = $matches[1]
-            if ($mentionedBranch -ne "cursor") {
+            if ($mentionedBranch -ne "cursor" -and $mentionedBranch -ne "staging") {
                 $hasForbiddenBranch = $true
             }
         }
@@ -115,8 +114,8 @@ try {
         $response = @{
             continue = $false
             block = $true
-            user_message = "[HOOK BLOCKED] EnergoTS project is locked to 'cursor' branch only. Cannot switch to '$mentionedBranch'. Request blocked. To update cursor from main, use: 'Update cursor branch from main' or 'Merge main into cursor'."
-            agent_message = "CRITICAL: Prompt blocked. Rule ENERGOTS.0 states that EnergoTS project must remain on 'cursor' branch only. Attempted to switch to '$mentionedBranch'. Use sync operations (merge, pull, fetch) to update cursor from main instead."
+            user_message = "[HOOK BLOCKED] EnergoTS may use only the 'cursor' or 'staging' branch. Cannot switch to '$mentionedBranch'. Request blocked."
+            agent_message = "CRITICAL: Prompt blocked. Rule ENERGOTS.0 allows only 'cursor' and 'staging' under EnergoTS. Attempted to switch to '$mentionedBranch'."
         }
     } else {
         $response = @{ continue = $true }
