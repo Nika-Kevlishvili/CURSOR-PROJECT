@@ -37,5 +37,10 @@ $enc = [uri]::EscapeDataString($Cql)
 $uri = "$($wiki.TrimEnd('/'))/rest/api/content/search?cql=$enc&limit=$Limit"
 $r = Invoke-RestMethod -Uri $uri -Headers $headers -Method Get
 $json = $r | ConvertTo-Json -Depth 10
-if ($OutFile) { $json | Set-Content -LiteralPath $OutFile -Encoding UTF8; Write-Host "Wrote $OutFile" }
+if ($OutFile) {
+    . (Join-Path $PSScriptRoot 'resolve-scratch-outfile.ps1')
+    $OutFile = Resolve-ScratchOutFile -RequestedPath $OutFile
+    $json | Set-Content -LiteralPath $OutFile -Encoding UTF8
+    Write-Host "Wrote $OutFile"
+}
 else { Write-Output $json }

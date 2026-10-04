@@ -18,6 +18,7 @@ globs:
     - `reports/` - Report files (.md) under **`Cursor-Project/reports/`** → **`Chat reports/`**, **`Feedback/`**, each with **`YYYY/<english-month>/<DD>/`** before the filename — see **`Cursor-Project/reports/README.md`**
     - `test_cases/` - **Test cases (MANDATORY layout)** – `Backend/` for TC-BE-N; `Frontend/` for TC-FE-N **only when TC-FRONTEND-ASK.0 = Yes**. Same topic name per folder when both are generated. See `.cursor/rules/workspace/test_cases_structure.mdc`. Path: `Cursor-Project/test_cases/`
     - `Phoenix/` - Phoenix Java project files (git submodules, READ-ONLY)
+    - `Cursor-Project/config/tmp/` — local scratch only (ticket dumps, extracts, probes). Gitignored and hidden in the explorer. Do not write scratch files in the workspace root or next to scripts in `config/jira/` or `config/confluence/`.
     
     **Process:**
     1. Identify file type and match to directory

@@ -69,7 +69,11 @@ catch {
 }
 
 if (-not $OutFile) {
-    $OutFile = Join-Path $PSScriptRoot "$IssueKey-full.json"
+    $scratch = Join-Path $PSScriptRoot '..\tmp\jira'
+    if (-not (Test-Path -LiteralPath $scratch)) {
+        New-Item -ItemType Directory -Path $scratch -Force | Out-Null
+    }
+    $OutFile = Join-Path $scratch "$IssueKey-full.json"
 }
 $issue | ConvertTo-Json -Depth 100 | Out-File -Encoding utf8 $OutFile
 

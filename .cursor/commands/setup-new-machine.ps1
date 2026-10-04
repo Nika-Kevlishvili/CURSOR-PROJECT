@@ -35,6 +35,7 @@ $userMcpPath = Join-Path $env:USERPROFILE '.cursor\mcp.json'
 $esScriptPath = Join-Path $cursorProjectPath 'scripts\elasticsearch_mcp_server.py'
 $esScriptRelativePath = 'Cursor-Project/scripts/elasticsearch_mcp_server.py'
 $esRequirementsPath = Join-Path $cursorProjectPath 'scripts\elasticsearch-requirements.txt'
+$pgMcpDir = Join-Path $cursorProjectPath 'config\mcp\postgres-server'
 $envTargetProject = Join-Path $cursorProjectPath '.env'
 $envTargetEnergo = Join-Path (Join-Path $cursorProjectPath 'EnergoTS') '.env'
 
@@ -415,13 +416,8 @@ function Clear-UserLevelMcpConfig {
 
     $knownServers = @(
         'Confluence', 'Jira',
-<<<<<<< Updated upstream
-        'PostgreSQLTest', 'PostgreSQLDev', 'PostgreSQLDev2', 'PostgreSQLPreProd', 'PostgreSQLProd',
-        'ElasticsearchDev', 'ElasticsearchExperiment', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd'
-=======
         'PostgreSQLTest', 'PostgreSQLDev', 'PostgreSQLDev2', 'PostgreSQLPreProd', 'PostgreSQLProd', 'PostgreSQLExperiment',
-        'ElasticsearchDev', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd'
->>>>>>> Stashed changes
+        'ElasticsearchDev', 'ElasticsearchExperiment', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd'
     )
 
     try {
@@ -450,6 +446,27 @@ function Clear-UserLevelMcpConfig {
     Write-Host "  MCP config lives only in $workspaceMcpPath" -ForegroundColor Yellow
 }
 
+function Invoke-SetupPostgresMcp {
+    Write-Step 'Phase 3b - PostgreSQL MCP local install'
+    $pkg = Join-Path $pgMcpDir 'package.json'
+    if (-not (Test-Path $pkg)) {
+        Write-Fail "Missing PostgreSQL MCP package: $pkg" -Hard
+        return
+    }
+    Push-Location $pgMcpDir
+    try {
+        & npm install --no-fund --no-audit
+        if ($LASTEXITCODE -ne 0) {
+            Write-Fail 'npm install for mcp-postgres-server failed' -Hard
+            return
+        }
+        Write-Ok 'PostgreSQL MCP package installed locally (avoids parallel npx cache races)'
+    }
+    finally {
+        Pop-Location
+    }
+}
+
 function Invoke-WriteMcpConfig {
     Write-Step 'Phase 3 - Write MCP config to workspace .cursor/mcp.json'
     if (-not (Test-Path $mcpTemplatePath)) {
@@ -457,6 +474,7 @@ function Invoke-WriteMcpConfig {
         return
     }
 
+    Invoke-SetupPostgresMcp
     $esSetup = Invoke-SetupElasticsearchMcp
     if (-not $esSetup.Ok) {
         Write-Warn 'Continuing MCP merge without Elasticsearch entries (setup failed)'
@@ -670,13 +688,8 @@ function Invoke-Verify {
             $names = @($mcp.mcpServers.PSObject.Properties.Name)
             $required = @(
                 'Confluence', 'Jira',
-<<<<<<< Updated upstream
-                'PostgreSQLTest', 'PostgreSQLDev', 'PostgreSQLDev2', 'PostgreSQLPreProd', 'PostgreSQLProd',
-                'ElasticsearchDev', 'ElasticsearchExperiment', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd'
-=======
                 'PostgreSQLTest', 'PostgreSQLDev', 'PostgreSQLDev2', 'PostgreSQLPreProd', 'PostgreSQLProd', 'PostgreSQLExperiment',
-                'ElasticsearchDev', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd'
->>>>>>> Stashed changes
+                'ElasticsearchDev', 'ElasticsearchExperiment', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd'
             )
             $missing = @($required | Where-Object { $names -notcontains $_ })
             if ($missing.Count -eq 0) {

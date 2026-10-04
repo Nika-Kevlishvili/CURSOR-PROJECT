@@ -1,4 +1,4 @@
-$j = Get-Content -Raw 'Cursor-Project/config/jira/PDT-3409-full.json' | ConvertFrom-Json
+$j = Get-Content -Raw 'Cursor-Project/config/tmp/jira/PDT-3409-full.json' | ConvertFrom-Json
 $f = $j.fields
 Write-Host '=== KEY FIELDS ==='
 Write-Host ("key: " + $j.key)
