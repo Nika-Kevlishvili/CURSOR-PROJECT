@@ -74,6 +74,117 @@ function Get-EnvFromFile([string]$EnvPath, [string]$Name) {
     return $null
 }
 
+function Set-EnvValue([string]$EnvPath, [string]$Name, [string]$Value) {
+    $lines = New-Object System.Collections.Generic.List[string]
+    if (Test-Path -LiteralPath $EnvPath) {
+        foreach ($line in Get-Content -LiteralPath $EnvPath) { $lines.Add($line) }
+    }
+    $pattern = '^\s*' + [regex]::Escape($Name) + '\s*='
+    $found = $false
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match $pattern) {
+            $lines[$i] = "$Name=$Value"
+            $found = $true
+            break
+        }
+    }
+    if (-not $found) { $lines.Add("$Name=$Value") }
+    Set-Content -LiteralPath $EnvPath -Value $lines.ToArray() -Encoding UTF8
+}
+
+function Read-SecretText([string]$Prompt) {
+    $sec = Read-Host $Prompt -AsSecureString
+    $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec)
+    try { return [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr) }
+    finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr) }
+}
+
+function Get-JiraVisibleProjects([string]$BaseUrl, [string]$Email, [string]$ApiToken) {
+    $pair = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("${Email}:${ApiToken}"))
+    $headers = @{ Authorization = "Basic $pair"; Accept = 'application/json' }
+    $root = $BaseUrl.Trim().TrimEnd('/')
+    $start = 0
+    $all = @()
+    do {
+        $uri = "$root/rest/api/3/project/search?maxResults=50&startAt=$start"
+        $resp = Invoke-RestMethod -Uri $uri -Headers $headers
+        if ($resp.values) { $all += @($resp.values) }
+        $start += 50
+        $isLast = $true
+        if ($null -ne $resp.isLast) { $isLast = [bool]$resp.isLast }
+    } while (-not $isLast)
+    return @($all | Sort-Object key)
+}
+
+function Invoke-JiraReporterGate([string]$EnvPath) {
+    Write-Host '  Required before continuing: Jira email, API token, site URL, reporter, and one board.' -ForegroundColor Yellow
+    Write-Host '  The reporter and board saved here are used every time a bug is written.' -ForegroundColor Yellow
+    while ($true) {
+        $email = Get-EnvFromFile $EnvPath 'JIRA_EMAIL'
+        if (-not $email) {
+            $email = (Read-Host 'Jira email').Trim()
+            if (-not $email) { Write-Fail 'Jira email is required'; continue }
+            Set-EnvValue $EnvPath 'JIRA_EMAIL' $email
+        }
+        $token = Get-EnvFromFile $EnvPath 'JIRA_API_TOKEN'
+        if (-not $token) {
+            $token = (Read-SecretText 'Jira API token').Trim()
+            if (-not $token) { Write-Fail 'Jira API token is required'; continue }
+            Set-EnvValue $EnvPath 'JIRA_API_TOKEN' $token
+        }
+        $base = Get-EnvFromFile $EnvPath 'JIRA_BASE_URL'
+        if (-not $base) {
+            $base = (Read-Host 'Jira site URL (example https://your-site.atlassian.net)').Trim().TrimEnd('/')
+            if (-not $base) { Write-Fail 'Jira site URL is required'; continue }
+            Set-EnvValue $EnvPath 'JIRA_BASE_URL' $base
+        }
+        $reporter = Get-EnvFromFile $EnvPath 'JIRA_REPORTER_EMAIL'
+        if (-not $reporter) {
+            $entered = (Read-Host "Reporter email (blank = $email)").Trim()
+            if (-not $entered) { $reporter = $email } else { $reporter = $entered }
+            Set-EnvValue $EnvPath 'JIRA_REPORTER_EMAIL' $reporter
+        }
+        $projects = $null
+        try {
+            $projects = Get-JiraVisibleProjects -BaseUrl $base -Email $email -ApiToken $token
+        } catch {
+            Write-Fail 'Jira did not accept the email, token, or site URL. Enter them again.'
+            Set-EnvValue $EnvPath 'JIRA_EMAIL' ''
+            Set-EnvValue $EnvPath 'JIRA_API_TOKEN' ''
+            Set-EnvValue $EnvPath 'JIRA_BASE_URL' ''
+            continue
+        }
+        if (-not $projects -or $projects.Count -eq 0) {
+            Write-Fail 'Jira returned no visible projects for this user.'
+            return $false
+        }
+        $existing = Get-EnvFromFile $EnvPath 'JIRA_PROJECT_KEY'
+        if ($existing) {
+            $known = @($projects | Where-Object { $_.key -eq $existing })
+            if ($known.Count -eq 1) {
+                $keep = Read-Host "Saved board is $existing. Keep it? [Y/n]"
+                if ([string]::IsNullOrWhiteSpace($keep) -or $keep -match '^[Yy]') {
+                    Write-Ok "Jira profile saved. Board $existing. Reporter $reporter."
+                    return $true
+                }
+            }
+        }
+        for ($i = 0; $i -lt $projects.Count; $i++) {
+            Write-Host ("  {0,3}  {1} - {2}" -f ($i + 1), $projects[$i].key, $projects[$i].name)
+        }
+        $pick = Read-Host 'Board number'
+        $n = 0
+        if (-not [int]::TryParse($pick, [ref]$n) -or $n -lt 1 -or $n -gt $projects.Count) {
+            Write-Fail 'Pick a number from the list.'
+            continue
+        }
+        $key = [string]$projects[$n - 1].key
+        Set-EnvValue $EnvPath 'JIRA_PROJECT_KEY' $key
+        Write-Ok "Jira profile saved. Board $key. Reporter $reporter."
+        return $true
+    }
+}
+
 function Sanitize-Id([string]$raw) {
     $s = ($raw -replace '[^a-zA-Z0-9]', '')
     if ([string]::IsNullOrWhiteSpace($s)) { $s = 'Env' }
@@ -302,7 +413,7 @@ if ($startStep -le 5 -and -not $script:QuitRequested) {
     Write-Step 'Phase 5 - HARD GATE: fill .env before GitLab'
     Write-Host "  Open and fill: $envPath" -ForegroundColor Yellow
     Write-Host '  Required for clone: GITLAB_BASE_URL, GITLAB_TOKEN' -ForegroundColor Yellow
-    Write-Host '  Recommended: JIRA_EMAIL, JIRA_API_TOKEN, JIRA_BASE_URL, CONFLUENCE_URL' -ForegroundColor Gray
+    Write-Host '  Required for bugs: Jira email, API token, site URL, reporter, and one board.' -ForegroundColor Yellow
     if ($SkipClone) {
         Write-Warn 'SkipClone set — GitLab keys not required this run'
     } else {
@@ -324,10 +435,9 @@ if ($startStep -le 5 -and -not $script:QuitRequested) {
             Write-Fail 'GITLAB_BASE_URL and/or GITLAB_TOKEN still empty — fill .env and try again'
         }
     }
-    $jEmail = Get-EnvFromFile $envPath 'JIRA_EMAIL'
-    $jTok = Get-EnvFromFile $envPath 'JIRA_API_TOKEN'
-    if (-not $jEmail -or -not $jTok) {
-        Write-Warn 'Jira credentials empty — REST fallback will not work until filled'
+    if (-not (Invoke-JiraReporterGate -EnvPath $envPath)) {
+        Write-Fail 'Jira reporter profile was not saved. Setup stops here.' -Hard
+        exit 1
     }
     Save-WizardStep $TargetPath 5
     if ($SkipClone) {

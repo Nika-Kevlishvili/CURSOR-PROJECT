@@ -20,7 +20,7 @@ Onboard any project with the portable **QA AI Toolkit** (generic rules/skills/ag
 
 ## Wizard flow
 
-Preconditions → copy `.cursor` → project name → environments → write `.env` → **fill `.env` (hard gate)** → GitLab select/clone → DB MCP prompts → merge `mcp.json` → extensions → verify.
+Preconditions → copy `.cursor` → project name → environments → write `.env` → **fill `.env` (hard gate: GitLab keys, then Jira email, API token, site URL, reporter, and one board)** → GitLab select/clone → DB MCP prompts → merge `mcp.json` → extensions → verify.
 
 After each step: `Proceed to next step? [Y/n/q]`.
 

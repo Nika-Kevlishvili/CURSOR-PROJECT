@@ -249,7 +249,9 @@ Store **`bugClass`** for the review file and Step 5a.
 
 #### External project selection (MANDATORY when `bugClass` = External)
 
-**Do not** default to GB or any project. Store **`externalProjectKey`** and **`externalProjectSource`**. Filter using the **denylist** in **`.cursor/rules/integrations/phoenix_bug_reporter.mdc`**; Experiments → `jira-bug`.
+**Do not** guess a board. Store **`externalProjectKey`** and **`externalProjectSource`**. Filter using the **denylist** in **`.cursor/rules/integrations/phoenix_bug_reporter.mdc`**; Experiments → `jira-bug`.
+
+A board saved by toolkit setup is an explicit choice, not a guess. Read `JIRA_PROJECT_KEY` from the project `.env`. The reporter is always `JIRA_REPORTER_EMAIL` from that same file.
 
 **Map to a project key:**
 - Token equal to a Jira project key (e.g. `GB`, `PDT`, `PHN`)
@@ -261,7 +263,8 @@ Store **`bugClass`** for the review file and Step 5a.
 
 1. **Current user message** — explicit key or URL. Store `externalProjectSource` = `user message`.
 2. **This chat** — a ticket, board/project URL, or issue fetched earlier **that this external bug is being reported against**. Newest first. Store `externalProjectSource` e.g. `this chat (PHN-4050 project.key)` or `this chat (board URL)`.
-3. **Otherwise AskQuestion** — build options from live Jira (never a hardcoded allowlist).
+3. **Saved setup profile** — `JIRA_PROJECT_KEY` in the project `.env` (written by the toolkit installer). Store `externalProjectSource` = `setup .env JIRA_PROJECT_KEY`. Skip this source when the key is on the denylist or is Experiments.
+4. **Otherwise AskQuestion** — build options from live Jira (never a hardcoded allowlist).
 
 **AskQuestion construction:**
 1. Call **`getVisibleJiraProjects`** (`cloudId` `ad451d5c-7331-46f8-9a47-f51dc8e6bbde`, `action`: `create`). Paginate until `isLast`.
@@ -274,7 +277,7 @@ If source 1 or 2 resolves to a **denylist** key → refuse (do not create). If *
 
 **If `getVisibleJiraProjects` fails:** retry once; then ask the user to type a project key; refuse denylist/Experiments; do not invent keys.
 
-**Never** auto-select GB when it is the only remaining option — still AskQuestion unless sources 1–2 already set a key.
+**Never** auto-select GB when it is the only remaining option — still AskQuestion unless sources 1–3 already set a key.
 
 ---
 
@@ -310,7 +313,7 @@ If source 1 or 2 resolves to a **denylist** key → refuse (do not create). If *
 
 **When `bugClass` = External:**
 
-- Complete **External project selection** above before Step 1 (skip AskQuestion only when source 1 or 2 already set a non-excluded `externalProjectKey`).
+- Complete **External project selection** above before Step 1 (skip AskQuestion only when source 1, 2, or 3 already set a non-excluded `externalProjectKey`).
 - **Assignee** = empty unless user specifies one for the external project.
 - Optional parent key in the message is **context only** — do **not** set Jira `parent` on create.
 
@@ -1487,7 +1490,7 @@ Reason: <1-2 sentences>
 | No screenshot provided by the user | Normal path — no **5c** on screenshot grounds, no screenshot criterion at **5d**, no warning, nothing about screenshots in the final response. Screenshots are **optional** and never block bug creation |
 | `customfield_10103` rejected at Step 5c | Log the error; warn: `⚠️ Could not populate the "Description formatted" field (customfield_10103) — please verify the ticket's Key details panel.` |
 | `getVisibleJiraProjects` fails (External class) | Retry once; then ask user to type a project key; refuse denylist (rule file) and Experiments |
-| External class but `externalProjectKey` unset after sources 1–2 | **AskQuestion** from visible projects minus denylist; **BLOCK** create until set |
+| External class but `externalProjectKey` unset after sources 1–3 | **AskQuestion** from visible projects minus denylist; **BLOCK** create until set |
 | User selects or names a denylist project | Refuse; cite **External excluded project keys** in `phoenix_bug_reporter.mdc` |
 | `getJiraProjectIssueTypesMetadata` has no exact `Bug` | **AskQuestion** with `"{name} — {id}"` from metadata; never guess |
 | Createmeta required field (Epic, Fix version, other) has no value | **AskQuestion**; never guess field id or value |

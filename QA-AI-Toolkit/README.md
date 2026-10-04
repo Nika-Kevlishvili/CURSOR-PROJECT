@@ -15,7 +15,7 @@ Or from Cursor chat: run the **`/setup-qa-ai-toolkit`** command.
 
 1. Each phase runs, then asks **Proceed to next step? [Y/n/q]**.
 2. Phases that need answers use prompts (`project name`, env count, GitLab selection, DB fields).
-3. **`.env` must be filled before any GitLab API/clone** (hard gate).
+3. **`.env` hard gate:** GitLab keys before clone, and Jira email, API token, site URL, reporter, and one chosen board before the wizard continues. The saved reporter and board are used on every bug.
 4. GitLab repos are **chosen at clone time** — not a permanent inventory. Re-run from step 6 later to add more.
 5. Quit anytime with `q`; progress is kept (`wizardLastCompletedStep`). Resume with `-FromStep N`.
 
