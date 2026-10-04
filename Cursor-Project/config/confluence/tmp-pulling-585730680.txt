@@ -1,0 +1,27 @@
+﻿TITLE: Phase 2 - Rules for pulling
+ID: 585730680
+
+ Rules for billing if POD is deactivated in one contract and „period to“ in billing data is greater than the deactivation date:
+If billing data exists, but POD is deactivated in current contract
+one contract before period end date of the billing data and POD is not activated in another contract/another contract version: return error for the invoice slot 
+If billing data exists, POD is deactivated in one contract before period end date of the billing data, but POD is activated in another contract and there is no gap between POD activation/deactivation dates in both contracts [TK1]   [TK2]   [TK3]   [TK4]   (ignore billing run initial filters):
+·        if applicable level is customer, contract - Exact contract versions should be taken and should be invoiced all PODs from another contract version. Recheck this logic for newly added PODs from new contract versions; If applicable level is POD – should take only selected POD ; 
+·        If pod deactivation date is more than max date and billing data is received until max date should return an error 
+If there is not contract valid version for defined period which is covered by billing data by profile/scale with both types of price components (by scales, by profile) should distribute volumes in both contracts according activation/deactivation dates (considering group of price component to intersect billing data period) 
+In all other cases invoice in latest contract all billing data from all old contracts
+Interim deduction/generation should discuss
+If billing data by profile will be splitted or merged and it has error condition(point1) – original header should be error in chain(overrides, merged data)
+All conditions should work after merging and splitting
+Before pulling contract should be checked POD measurement type
+General rule for billing data 
+Within one billing run if for POD there is different measurement type in initial or pulled contracts should return warning message for all billing data for this POD and skip all billing data, invoice slots in which this POD is added will not be failed;
+o   Should apply this check after invoice slot generation
+o   Reversing pulling logic should be done also for regular pulling
+o   in SLP flow before new contracts pulling should check for all PODs measurement types between old contracts and new pulled contracts  and if it is different from existing ones shouldn’t pull this contracts , return warning message for old contracts ;
+§  Fail whole chain of pulling contracts
+§  Check again initial contract data and unlock incorrectly locked PODs
+[TK1] Wihtout gaps
+[TK2] Pull contract which covers POD act/deact periods
+[TK3] Exact contract versions should be taken and should be invoiced all PODs from another contract. Recheck this logic for newly added contract versions
+[TK4] If pod deactivation date is more than max date and billing data is received until max date should return an error
+

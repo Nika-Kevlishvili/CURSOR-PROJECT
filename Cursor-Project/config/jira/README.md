@@ -31,6 +31,6 @@ CURSOR_WORKSPACE=D:\path\to\git\workspace\root
 
 ## Local exports and `.gitignore`
 
-By default **`config/jira/attachments/`** is ignored by Git under `Cursor-Project/.gitignore` to avoid committing PII and large JSON exports.
+By default **`config/jira/attachments/`** is ignored by Git. Ticket JSON dumps and other scratch files go in **`Cursor-Project/config/tmp/`** (gitignored, hidden in the explorer), not in this folder.
 
 If you need **redacted fixtures** for tests or demos, use a dedicated path such as `config/jira/samples/` with manually redacted JSON and **do not** put live tokens or personal data in the repo. Adjust `.gitignore` only with team agreement.

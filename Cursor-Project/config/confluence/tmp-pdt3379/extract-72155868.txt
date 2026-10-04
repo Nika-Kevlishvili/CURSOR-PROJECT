@@ -1,0 +1,29 @@
+﻿TITLE=Request for disconnection of the power supply - Create
+ID=72155868
+SPACE=Phoenix
+WEBUI=/spaces/Phoenix/pages/72155868/Request+for+disconnection+of+the+power+supply+-+Create
+LEN=28272
+CHILDREN=
+=== EXCERPT ===
+ Process flow https://app.diagrams.net/#G1IuUFVOhGtcjb1BynQdmBhu5BAqWt8P83#{"pageId"%3A"QYkEY6YkH-_MGkGUIUQI"} Charge fee process https://app.diagrams.net/?splash=0#G1Lnk3MdD3DByEpPN8s1-BCLJC3H4yxrr2#{"pageId"%3A"JsA6_ep1HPjiPbuoDtFs"} User Story As a system user I want to be able to create Request for disconnection of the power supply object in the system So that I will have possibility to timely terminate PODs and inform grid operator and respective customer about the supply disconnection Design: Request for disconnection of the power supply (adobe.com) Acceptance criteria: Creating a Request for disconnection of the power supply is possible from Request for disconnection of the power supply's listing page by clicking on a 'Plus' button Clicking on a Plus button will open Request for disconnection of the power supply's creation page Check system user permissions to be able to create a new request for disconnection of the power supply For creating such object, user should have any permissions listed here: Create Request for disconnection of the power supply as a Draft Enables to create object only as a draft and do not start disconnection process Create Request for disconnection of the power supply as Execute Enables to create object and it is possible to start disconnection process Enable Plus button when user has one of the permissions Disable Plus button when user does not have any of the mentioned permissions Default state of the Request for disconnection of the power supply object contains fields: Basic Parameter’s tab: Number Always disabled Empty on creation page Text field After creating an object, system should display its number with the following logic: Disconnection-ID of newly created object (For example, Disconnection-56) In the given example, Disconnection is hardcoded prefix for number and 56 is ID of an object Date Always disabled Date picker Format: DD.MM.YYYY By default, should set current day of the creation Supplier type Mandatory Radio buttons with two hardcoded values: Current Previous Status Mandatory Always disabled Empty on creation page Three hardcoded values: Draft Executed Fee Charged System should automatically set a value according to the status of the object. If it is saved as a draft should set Draft If it is saved and executed should be set Executed If taxes are created should be set to Fee charged Grid operator Mandatory Single select dropdown List is manageable from nomenclature Active values will be returned from nomen
+=== KEYWORD HITS ===
+--- HIT 'Charge Fee' ---
+ Process flow https://app.diagrams.net/#G1IuUFVOhGtcjb1BynQdmBhu5BAqWt8P83#{"pageId"%3A"QYkEY6YkH-_MGkGUIUQI"} Charge fee process https://app.diagrams.net/?splash=0#G1Lnk3MdD3DByEpPN8s1-BCLJC3H4yxrr2#{"pageId"%3A"JsA6_ep1HPjiPbuoDtFs"} User Story As a system user I want to be able to create Request for disconnection of the power supply object in the system So that I will have possibility to timely terminate PODs and 
+
+--- HIT 'billing group' ---
+Personal Number. When Supplier type is Current, the system should not apply the Previous exclusions. Searching is possible: All Customer identifier Customer number Contract number Billing group number POD Identifier Liability number Outgoing document number Listing includes columns: Customer Mandatory System should display each selected respective customer separately in the listing Customer should be displayed with i
+
+--- HIT 'product contract' ---
+es dropdown values should be filtered according to the chosen variable with the following logic: If Contract is selected as a variable, system should display two hardcoded values: Product Contract Service Contract If Product is selected as a variable, system should display all the product list in the dropdown with its name System shouldn't display deleted product in the dropdown It should be possible to search produc
+
+--- HIT 'liabilities in' ---
+otal volumes and liabilities without such volumes, the system should determine highest consumption from the invoice total volumes only If there are multiple invoices linked to the liabilities in the billing group, the system should sum the total volumes for each POD across those invoices and mark YES for the POD with the highest sum; if the sums are equal, the system should display the POD with the biggest ID Ð¡ase 1
+
+--- HIT 'Liabilities in' ---
+otal volumes and liabilities without such volumes, the system should determine highest consumption from the invoice total volumes only If there are multiple invoices linked to the liabilities in the billing group, the system should sum the total volumes for each POD across those invoices and mark YES for the POD with the highest sum; if the sums are equal, the system should display the POD with the biggest ID Ð¡ase 1
+
+--- HIT 'newest' ---
+d be opened with one single select dropdown: In the dropdown Reminder for disconnection of the power supply objects should be displayed with its name and ordered by creation date (newest first) Do not display Deleted objects. Display only Executed objects. Do not display Reminder for disconnection object if all it’s PODS are checked in the Executed Request for disconnection. It is possible to search object by its nam
+
+--- HIT 'Executed' ---
+he creation Supplier type Mandatory Radio buttons with two hardcoded values: Current Previous Status Mandatory Always disabled Empty on creation page Three hardcoded values: Draft Executed Fee Charged System should automatically set a value according to the status of the object. If it is saved as a draft should set Draft If it is saved and executed should be set Executed If taxes are created should be set to Fee char

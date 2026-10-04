@@ -1,0 +1,29 @@
+﻿TITLE=Phase 2 - Disconnection of the power supply - Create (2)
+ID=585698196
+SPACE=Phoenix
+WEBUI=/spaces/Phoenix/pages/585698196/Phase+2+-+Disconnection+of+the+power+supply+-+Create+2
+LEN=19114
+CHILDREN=
+=== EXCERPT ===
+ User Story As a system user I want to be able to create Disconnection of the power supply object So that I will be able to manage POD disconnection process in a flexible and correct way Design: Disconnection_Of_The_Power_Supply (adobe.com) New design: https://www.figma.com/design/rdEFquUpErpUGFXdQt7vmV/Energo-Pro?node-id=5412-1463 Acceptance criteria: Creating a Disconnection of the power supply is possible from its listing page by clicking on a 'Plus' button A Disconnection of the power supply object with all required information can also be created via EMEP. Manual creation from the listing page remains available (same create flow as today).(1) Clicking on a Plus button will open Disconnection of the power supply's creation page Check system user permissions to be able to create a new Disconnection of the power supply For creating such object, user should have any of the permissions listed here: Create Disconnection of the power supply as a Draft Allows to create object only as a draft and do not start process Create Disconnection of the power supply as Execute Allows to create object and it is possible to start process for tax cancellation and generation Enable Plus button when user has one of the permissions Disabled Plus button when user does not have any of the mentioned permissions Default state of the Disconnection of the power supply object contains fields: Number Mandatory Always disabled Empty on creation page Text field After creating an object, system should display its number with the following logic: Disconnection-ID of newly created object (for example, Disconnection-56) In the given example, Disconnection is hardcoded prefix for number and 56 is ID of an object Date Mandatory Always disabled Date picker Format: DD.MM.YYYY By default, should set current day of the creation Status Mandatory Always disabled Empty on creation page Two hardcoded values: Draft Executed System should automatically set a value according to the status of the object If it is as a draft should set Draft If it is saved and executed should be set Executed Import button Enabled for Executed objects. Disabled for Drafts. When clicking on a modal window for import should be opened with two buttons - Import and Cancel Fields in the modal window: File for import Optional Enabled if Request for disconnection is linked When file is selected and user clicks button Import the system should process the file and mark the checkbox and fill Disconnection date and Type of disconnec
+=== KEYWORD HITS ===
+--- HIT 'Charge Fee' ---
+layed in the dropdown. Single select dropdown After selecting a POD, the “Type of Disconnection” dropdown becomes mandatory. If pod is not selected, this dropdown is disable. If a charge fee did not occur for a disconnection request, this field should be empty. The dropdown should display grid operator taxes with the following conditions: Only nomenclatures with the same supplier type and grid operator as those selec
+
+--- HIT 'reconnection tax' ---
+object is created with status Executed, the system creates an express reconnection invoice with document type Proforma Invoice (status Real) for each selected POD when the express reconnection tax amount from Taxes for the grid operator is greater than 0. If the amount is 0, no proforma is created. One active express proforma per POD per disconnect cycle. Proforma number starts with 3 (proforma invoice counter); pref
+
+--- HIT 'billing group' ---
+ue null customer ID Customer on Disconnection POD row (from linked Request for disconnection). Same as main disconnection tax invoice contract_order ID Product contract from POD / billing group context — same resolution as main disconnection tax invoice and AS-IS express reconnection tax invoice . Display: contract number + creation date, e.g. EPES2312000189/06.12.2023. Click opens contract detail page (respective ve
+
+--- HIT 'express' ---
+celled and system should create a new tax with the correct amount for the respective customer After the disconnection object is created with status Executed, the system creates an express reconnection invoice with document type Proforma Invoice (status Real) for each selected POD when the express reconnection tax amount from Taxes for the grid operator is greater than 0. If the amount is 0, no proforma is created. On
+
+--- HIT 'product contract' ---
+interest on overdue debt Value null customer ID Customer on Disconnection POD row (from linked Request for disconnection). Same as main disconnection tax invoice contract_order ID Product contract from POD / billing group context — same resolution as main disconnection tax invoice and AS-IS express reconnection tax invoice . Display: contract number + creation date, e.g. EPES2312000189/06.12.2023. Click opens contrac
+
+--- HIT 'Executed' ---
+ways disabled Date picker Format: DD.MM.YYYY By default, should set current day of the creation Status Mandatory Always disabled Empty on creation page Two hardcoded values: Draft Executed System should automatically set a value according to the status of the object If it is as a draft should set Draft If it is saved and executed should be set Executed Import button Enabled for Executed objects. Disabled for Drafts. 
+
+--- HIT 'grid operator tax' ---
+mes mandatory. If pod is not selected, this dropdown is disable. If a charge fee did not occur for a disconnection request, this field should be empty. The dropdown should display grid operator taxes with the following conditions: Only nomenclatures with the same supplier type and grid operator as those selected in the request for disconnection should appear in the list. Additional case: In the disconnection of the p

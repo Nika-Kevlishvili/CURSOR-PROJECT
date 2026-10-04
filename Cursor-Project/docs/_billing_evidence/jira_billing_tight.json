@@ -1,0 +1,655 @@
+﻿[
+    {
+        "Key":  "REG-107",
+        "Summary":  "Periodic Billing run",
+        "Status":  "To Do",
+        "IssueType":  "Task",
+        "Parent":  "REG-55",
+        "Theme":  "01_Periodic_Start",
+        "Chain":  "REG-107\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-960",
+        "Summary":  "Overtime Periodical (For Product contract) - Happy path",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "01_Periodic_Start",
+        "Chain":  "REG-960"
+    },
+    {
+        "Key":  "REG-961",
+        "Summary":  "Overtime Periodical (For Service contract) - Happy path",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "01_Periodic_Start",
+        "Chain":  "REG-961"
+    },
+    {
+        "Key":  "REG-977",
+        "Summary":  "Billing run - Over time one time",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "01_Periodic_Start",
+        "Chain":  "REG-977"
+    },
+    {
+        "Key":  "REG-1008",
+        "Summary":  "For volumes - SLP regular flow ",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "02_For_Volumes",
+        "Chain":  "REG-1008"
+    },
+    {
+        "Key":  "REG-1009",
+        "Summary":  "For volumes - Price component with restriction Aplication Based on volume (with percentage)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "02_For_Volumes",
+        "Chain":  "REG-1009"
+    },
+    {
+        "Key":  "REG-1013",
+        "Summary":  "For volumes - Scale with tariff - Splitting with \"Calculation for number of days\"",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "02_For_Volumes",
+        "Chain":  "REG-1013"
+    },
+    {
+        "Key":  "REG-1029",
+        "Summary":  "For Volumes - Price Profile flow ",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "02_For_Volumes",
+        "Chain":  "REG-1029"
+    },
+    {
+        "Key":  "REG-1030",
+        "Summary":  "For volumes - SLP flow with Price Profile",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "02_For_Volumes",
+        "Chain":  "REG-1030"
+    },
+    {
+        "Key":  "REG-1037",
+        "Summary":  "For volumes - splitting when total amount of scale codes is zero and  \"Number or days\" checkbox does not selected",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "02_For_Volumes",
+        "Chain":  "REG-1037"
+    },
+    {
+        "Key":  "REG-106",
+        "Summary":  "Billing Run",
+        "Status":  "QA Failed",
+        "IssueType":  "Task",
+        "Parent":  "REG-55",
+        "Theme":  "02_For_Volumes",
+        "Chain":  "REG-106\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-1064",
+        "Summary":  "Price Conditions",
+        "Status":  "To Do",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106",
+        "Theme":  "02_For_Volumes",
+        "Chain":  "REG-1064\u003eREG-106\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-558",
+        "Summary":  "For volumes",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106",
+        "Theme":  "02_For_Volumes",
+        "Chain":  "REG-558\u003eREG-106\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-713",
+        "Summary":  "For volumes - simple settlement flow | happy pass",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "02_For_Volumes",
+        "Chain":  "REG-713"
+    },
+    {
+        "Key":  "REG-873",
+        "Summary":  "For volumes - Scale with scale code | happy pass",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "02_For_Volumes",
+        "Chain":  "REG-873"
+    },
+    {
+        "Key":  "REG-962",
+        "Summary":  "For volumes - data by profile all type",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "02_For_Volumes",
+        "Chain":  "REG-962"
+    },
+    {
+        "Key":  "REG-963",
+        "Summary":  "For volumes - vat base case",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "02_For_Volumes",
+        "Chain":  "REG-963"
+    },
+    {
+        "Key":  "REG-964",
+        "Summary":  "Pulling",
+        "Status":  "Done",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106",
+        "Theme":  "02_For_Volumes",
+        "Chain":  "REG-964\u003eREG-106\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-974",
+        "Summary":  "For volumes - combined flow (profile and scale doesn\u0027t match)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "02_For_Volumes",
+        "Chain":  "REG-974"
+    },
+    {
+        "Key":  "REG-965",
+        "Summary":  "Pulling - pod has no gaps ",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "03_Pulling",
+        "Chain":  "REG-965"
+    },
+    {
+        "Key":  "REG-966",
+        "Summary":  "Pulling - customer, contract, pod level",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "03_Pulling",
+        "Chain":  "REG-966"
+    },
+    {
+        "Key":  "REG-967",
+        "Summary":  "Pulling - pod has gaps",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "03_Pulling",
+        "Chain":  "REG-967"
+    },
+    {
+        "Key":  "REG-968",
+        "Summary":  "Pulling - one pod has gap, second one doesn\u0027t",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "03_Pulling",
+        "Chain":  "REG-968"
+    },
+    {
+        "Key":  "REG-969",
+        "Summary":  "Pulling - pod has different measurement types in 2 contracts",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "03_Pulling",
+        "Chain":  "REG-969"
+    },
+    {
+        "Key":  "REG-970",
+        "Summary":  "Pulling - one chain fails another chain",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "03_Pulling",
+        "Chain":  "REG-970"
+    },
+    {
+        "Key":  "REG-971",
+        "Summary":  "Pulling - pod has no gaps (data by scale flow)",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "03_Pulling",
+        "Chain":  "REG-971"
+    },
+    {
+        "Key":  "REG-972",
+        "Summary":  "Pulling - 3 contracts, 2 pulling chains",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "03_Pulling",
+        "Chain":  "REG-972"
+    },
+    {
+        "Key":  "REG-559",
+        "Summary":  "Over time periodical",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106",
+        "Theme":  "04_OverTime",
+        "Chain":  "REG-559\u003eREG-106\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-560",
+        "Summary":  "Over time one time",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106",
+        "Theme":  "04_OverTime",
+        "Chain":  "REG-560\u003eREG-106\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-561",
+        "Summary":  "Per piece",
+        "Status":  "Done",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106",
+        "Theme":  "05_PerPiece_Orders",
+        "Chain":  "REG-561\u003eREG-106\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-973",
+        "Summary":  "Per Piece - happy path ",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "05_PerPiece_Orders",
+        "Chain":  "REG-973"
+    },
+    {
+        "Key":  "REG-1172",
+        "Summary":  "Feedback - For volumes with electricity, electricity Deactivated POD should not be included invoice ",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "06_With_Electricity",
+        "Chain":  "REG-1172"
+    },
+    {
+        "Key":  "REG-563",
+        "Summary":  "With electricity invoice",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106",
+        "Theme":  "06_With_Electricity",
+        "Chain":  "REG-563\u003eREG-106\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-991",
+        "Summary":  "Standard Billing run - For volumes with electricity - POD level",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "06_With_Electricity",
+        "Chain":  "REG-991"
+    },
+    {
+        "Key":  "REG-992",
+        "Summary":  "For Volumes - Scale with tariff - Splitting with \"Scale for active electricity\"",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "06_With_Electricity",
+        "Chain":  "REG-992"
+    },
+    {
+        "Key":  "REG-1046",
+        "Summary":  "Standard Billing run - Interim with \u0027From previous invoice\u0027 separate billing runs",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "07_Interim",
+        "Chain":  "REG-1046"
+    },
+    {
+        "Key":  "REG-1047",
+        "Summary":  "Standard Billing run - Interim with \u0027From previous invoice\u0027 but previous invoice missing (service contract)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "07_Interim",
+        "Chain":  "REG-1047"
+    },
+    {
+        "Key":  "REG-1154",
+        "Summary":  "Interim with From previous invoice but previous invoice found (product contract)",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "07_Interim",
+        "Chain":  "REG-1154"
+    },
+    {
+        "Key":  "REG-562",
+        "Summary":  "Interim and advance payments",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106",
+        "Theme":  "07_Interim",
+        "Chain":  "REG-562\u003eREG-106\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-716",
+        "Summary":  "Standard billing run - interim invoice simple case | happy pass",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "07_Interim",
+        "Chain":  "REG-716"
+    },
+    {
+        "Key":  "REG-718",
+        "Summary":  "Standard billing run - interim deduction (from same period)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "07_Interim",
+        "Chain":  "REG-718"
+    },
+    {
+        "Key":  "REG-975",
+        "Summary":  "Standard Billing run - Interim with price component",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "07_Interim",
+        "Chain":  "REG-975"
+    },
+    {
+        "Key":  "REG-976",
+        "Summary":  "Standard Billing run - Interim with \u0027From previous invoice\u0027",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "07_Interim",
+        "Chain":  "REG-976"
+    },
+    {
+        "Key":  "REG-978",
+        "Summary":  "Standard Billing run - Interim with \u0027From previous invoice\u0027 but previous invoice missing (product contract)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "07_Interim",
+        "Chain":  "REG-978"
+    },
+    {
+        "Key":  "REG-1050",
+        "Summary":  "Discount",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106",
+        "Theme":  "08_Discount",
+        "Chain":  "REG-1050\u003eREG-106\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-1051",
+        "Summary":  "Discount - for volumes (50%, whole month)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "08_Discount",
+        "Chain":  "REG-1051"
+    },
+    {
+        "Key":  "REG-1019",
+        "Summary":  "invoice slot splitting",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106",
+        "Theme":  "09_Slot_Splitting",
+        "Chain":  "REG-1019\u003eREG-106\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-1020",
+        "Summary":  "invoice slot splitting - split by price component",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "09_Slot_Splitting",
+        "Chain":  "REG-1020"
+    },
+    {
+        "Key":  "REG-1021",
+        "Summary":  "invoice slot splitting - split by billing group",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "09_Slot_Splitting",
+        "Chain":  "REG-1021"
+    },
+    {
+        "Key":  "REG-1022",
+        "Summary":  "invoice slot splitting - split by separate invoice for each pod checkbox",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "09_Slot_Splitting",
+        "Chain":  "REG-1022"
+    },
+    {
+        "Key":  "REG-1035",
+        "Summary":  "Invoice Correction - Price Change flow | add new price with different invoice slot",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "10_Correction",
+        "Chain":  "REG-1035"
+    },
+    {
+        "Key":  "REG-566",
+        "Summary":  "Correction",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106",
+        "Theme":  "10_Correction",
+        "Chain":  "REG-566\u003eREG-106\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-633",
+        "Summary":  "Invoice Correction - price change flow",
+        "Status":  "QA Failed",
+        "IssueType":  "Task",
+        "Parent":  "",
+        "Theme":  "10_Correction",
+        "Chain":  "REG-633",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-635",
+        "Summary":  "Invoice Correction - volume change flow",
+        "Status":  "QA Failed",
+        "IssueType":  "Task",
+        "Parent":  "",
+        "Theme":  "10_Correction",
+        "Chain":  "REG-635",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-636",
+        "Summary":  "Invoice Correction - Price Change flow | case 1 (happy pass)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "10_Correction",
+        "Chain":  "REG-636"
+    },
+    {
+        "Key":  "REG-637",
+        "Summary":  "Invoice Correction - Price Change flow | add new price with existing invoice slot",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "10_Correction",
+        "Chain":  "REG-637"
+    },
+    {
+        "Key":  "REG-703",
+        "Summary":  "Invoice Correction - volume Change flow | case 1 (happy pass)",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "10_Correction",
+        "Chain":  "REG-703"
+    },
+    {
+        "Key":  "REG-714",
+        "Summary":  "Reversal - Standard invoice reversal with correction debit/credit notes",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "10_Correction",
+        "Chain":  "REG-714"
+    },
+    {
+        "Key":  "REG-565",
+        "Summary":  "Reversal",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106",
+        "Theme":  "11_Reversal",
+        "Chain":  "REG-565\u003eREG-106\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-706",
+        "Summary":  "Reversal - Manual invoice reversal | happy pass",
+        "Status":  "Done",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "11_Reversal",
+        "Chain":  "REG-706"
+    },
+    {
+        "Key":  "REG-707",
+        "Summary":  "Reversal - Standard invoice reversal",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "11_Reversal",
+        "Chain":  "REG-707"
+    },
+    {
+        "Key":  "REG-715",
+        "Summary":  "Reversal - deducted invoice reversal",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "11_Reversal",
+        "Chain":  "REG-715"
+    },
+    {
+        "Key":  "REG-1059",
+        "Summary":  "Invoice Cancellation Test Cases (PDT-2437)",
+        "Status":  "QA Failed",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-109",
+        "Theme":  "12_Cancellation",
+        "Chain":  "REG-1059\u003eREG-109\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-1068",
+        "Summary":  "Invoice cancellation - Manual invoice(credit note type) -\u003e All reverse process on receivable side (all possible object links)",
+        "Status":  "QA Failed",
+        "IssueType":  "Test Case",
+        "Parent":  "",
+        "Theme":  "12_Cancellation",
+        "Chain":  "REG-1068"
+    },
+    {
+        "Key":  "REG-109",
+        "Summary":  "Invoice Cancellation",
+        "Status":  "QA Failed",
+        "IssueType":  "Task",
+        "Parent":  "REG-55",
+        "Theme":  "12_Cancellation",
+        "Chain":  "REG-109\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-110",
+        "Summary":  "Accounting Periods",
+        "Status":  "To Do",
+        "IssueType":  "Task",
+        "Parent":  "REG-55",
+        "Theme":  "14_Accounting_Period",
+        "Chain":  "REG-110\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-564",
+        "Summary":  "Manual billing run",
+        "Status":  "To Do",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106",
+        "Theme":  "15_Conditions_ManualBR",
+        "Chain":  "REG-564\u003eREG-106\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-993",
+        "Summary":  "Conditions",
+        "Status":  "Done",
+        "IssueType":  "Subtask",
+        "Parent":  "REG-106",
+        "Theme":  "15_Conditions_ManualBR",
+        "Chain":  "REG-993\u003eREG-106\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-108",
+        "Summary":  "Invoices",
+        "Status":  "To Do",
+        "IssueType":  "Task",
+        "Parent":  "REG-55",
+        "Theme":  "16_CrossCutting",
+        "Chain":  "REG-108\u003eREG-55",
+        "IsContainer":  true
+    },
+    {
+        "Key":  "REG-55",
+        "Summary":  "Billing",
+        "Status":  "QA Failed",
+        "IssueType":  "Epic",
+        "Parent":  "",
+        "Theme":  "16_CrossCutting",
+        "Chain":  "REG-55",
+        "IsContainer":  true
+    }
+]

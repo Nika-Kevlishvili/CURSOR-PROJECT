@@ -1,0 +1,381 @@
+﻿TITLE: Billing changes (general splitting 21.10)
+ID: 193003556
+
+ Requirements for changes in billing 
+New optional checkbox By number of days should be added in scales nomenclature. Splitting tariff scales according to scale code subperiods before calculation should be corrected – volumes for each subperiod in tariff scales with By number of days NOT checked should be calculated according volumes in scale code subperiods, not according number of days.
+If billing data by profile includes more than one month it should be splitted in the way that in each split should include only data for one calendar month
+Example:
+Period in billing data by profile: 01.01.2024 – 10.02.2024
+The system should divide it into two subperiods:
+01.01.2024 – 31.01.2024
+01.02.2024 – 10.02.2024
+The system should combine separate records for billing data by profile if they include data for the same month
+Example:
+Period in billing data by profile: 01.01.2024 – 10.01.2024
+Period in billing data by profile: 11.01.2024 – 31.01.2024
+The system should combine them in one subperiod:
+01.01.2024 – 31.01.2024
+After calculation of the invoice the system should splits all price components which use billing data by scales according all other price components which use billing data by scales using logic for number of days . The system also should calculate old and new meter readings, but mark them with * symbol. In the splitting process the system should ignore discounts (discount should be included in the same split as the price component with which the discount is connected). For price components with discount the system should combine volumes from all rows for the period and present them as one row with Volumes, Single price and Value.
+For all other price components the system should not split anything.
+For all price components with application model Over time and level Point of Delivery should record row for each POD in detailed invoice data
+Calculation over time should consider billing group invocie number (1-4) 
+Partial invoicing new logic for profiles splitting/merging flow
+Discount row should be ordered after its price component for each period for each POD
+POD → Block for billing check 
+For examples, please check SubPeriodsV2.xlsx 
+1 6 false none list true Questions : 
+Priority 
+Topic 
+Question 
+Answer 
+Creation Date 
+Resolve date 
+Highest
+Scales /tariff splitting 
+How to split tariff scales when periods are different in scale codes and also tarif scale
+When has partial intersection
+When scale code has gaps
+When scale codes have intersection between each other
+Partial splitting not valid and data will have already exact periods. if no - return an error for billing 
+Should be checked correction and override records also and if any record is invalid should ignore all records for this periods 
+Splitting dates for all scales (scale code) should be exactly the same, else error. It is possible not to have data for all sub-periods for all scales.
+Tariff period should exactly cover whole scale sub-period (one or more), else error.
+gaps shouldn't exist for scale codes (in all scale codes should be checked gaps, not for each scale code)
+This validation must be done after scale correction/override flow
+22 oct
+28 oct
+low
+Scales nomenclature
+scale nomenclature - Calculation For Number Of Days - checkbox
+if scale code is added should be disabled this checkbox
+24 oct
+24 oct
+Highest
+Scales /tariff splitting 
+Rounding logic for tariff scales / when to round
+Only for tarif/scale splitting rounding should be done by volumes or by number of days and after that always by number of days 
+24 oct
+28 oct
+Highest
+Scales /tariff splitting 
+When to start this splitting 
+after correction flow, before application model 
+24 oct
+28 oct
+Highest
+Scales /tariff splitting 
+Application Model flow (dates)
+When should be splitted by dates
+When to remove unselected scales / tariffs 
+after tariff scale splitting should be to remove unselected tariff scales and then to split by dates
+24 oct
+28 oct
+Low
+Change 1
+This checkbox should work only for tariffs or also for scale codes?
+Should work only for tariffs
+24 oct
+24 oct
+Highest
+Change 1
+How to handle price change splitting by month in scales
+should be splitted before restriction
+24 oct
+28 oct
+Highest
+Change 2
+profile Split by month - should be done before overlap splitting or after? 
+24 oct
+Highest
+Change 3 
+How to combine different dimensions
+24 oct
+Highest
+Change 3 
+When to combine? 
+24 oct
+Highest
+Change 5
+What is this topic?
+24 oct
+Highest
+Change 6
+When POD is not part of invoice for over time how to display PODs rows
+When separate billing run is created for over time how to display
+How to order such rows
+24 oct
+Highest
+Discounts
+When and how to calculate discounts
+Change1
+New optional checkbox By number of days should be added in scales nomenclature. 
+When in nomenclature Tariff scale is filled checkbox should be enabled
+When in nomenclature scale code is filled checkbox should be disabled
+Splitting tariff scales according to scale code subperiods before calculation should be corrected – volumes for each subperiod in tariff scales with By number of days NOT checked should be calculated according volumes in scale code subperiods, not according number of days.
+Case1: 
+scale code/tariff scale 
+start 
+End 
+By number of days 
+Volume 
+Formula 
+code1
+1 Sep
+10 Sep
+-
+10
+code1
+11 Sep
+20 Sep
+-
+20
+code2
+1 Sep
+10 Sep
+-
+10
+code2
+11 Sep
+20 Sep
+-
+20
+tariff1
+1 Sep
+20 Sep
+YES
+200
+formula (YES) = (tariff scale volume /number of days tariff scale )* number of days for each splitted period
+tariff scale volume = 200
+number of days tariff scale = 20 Sep -1 Sep+1
+number of days splitted period 1= 10 Sep-1 sep+1
+number of days splitted period 2= 20 Sep-11 sep+1
+volume for Period1 = 200/20*10= 50
+volume for Period2 = 200/20*10= 50
+tariff2
+1 Sep
+20 Sep
+NO
+200
+formula(NO) = (tariff scale volume /sum of all scale codes from all periods) * sum of scale codes volumes for each period 
+number of days tariff scale )* number of days for each splitted period
+tariff scale volume = 100
+sum of all scale codes from all periods = 60
+sum of scale codes volumes for period1 =20
+sum of scale codes volumes for period2=40
+volume for Period1 = 200/60*20= 66.6667
+volume for Period2 = 100/20*40= 133.3333
+scale code/tariff scale 
+start 
+End 
+By number of days 
+Volume 
+code1
+1 Sep
+10 Sep
+-
+10
+code2
+11 Sep
+20 Sep
+-
+20
+tariff1
+1 Sep
+10 Sep
+YES
+100
+tariff1
+11 Sep
+20 Sep
+YES
+100
+tariff2
+1 Sep
+10 Sep
+NO
+66.6667
+tariff2
+11 Sep
+20 Sep
+NO
+133.3333
+scale code/tariff scale 
+start 
+End 
+By number of days 
+Volume 
+Result 
+code1
+1 Sep
+10 Sep
+-
+10
+code25
+15 Sep 
+15 Sep 
+tarif1
+1 Sep
+20 Sep
+-
+20
+1 Sep - 10 Sep 
+11 Sep -14 Sep 
+15 Sep -15 Sep 
+16 Sep -20 Sep 
+scale code/tariff scale 
+start 
+End 
+By number of days 
+Volume 
+Formula 
+code1
+1 Sep
+10 Sep
+-
+10
+code1
+11 Sep
+20 Sep
+-
+20
+code2
+5 Sep
+15 Sep
+-
+10
+code2
+21 Sep
+30 Sep
+-
+20
+tariff1
+1 Sep
+28 Sep
+YES
+200
+Change2
+If billing data by profile includes more than one month it should be splitted in the way that in each split should include only data for one calendar month
+Splitting for each month shouldn’t happen for billing data by scales 
+Splitting of billing data by profile should be performed from the beginning of process
+Take active contract versions 
+Take POD activation and deactivation date
+Find all not invoiced/partially invoiced billing data by profiles which has intersection
+Check overlap records for billing data by profiles and if there is different dimension return an error for those records skip them from calculation and continue process for others. For each period latest billing data by profile record should be used 
+Check if billing data by profile and if it is more than 1 month make splits for each month 
+Change3
+The system should combine separate records for billing data by profile if they include data for the same month
+Combine separate records shouldn’t be performed for billing data by scales 
+After calculating splits based on Change2.e then should be done following checks: 
+Check for each month for each POD with same billing data by profile → profile type and with same dimension if there are periods which doesn’t have gaps and if found such records combine as one row 
+If there is a gap should leave as it is and continue process (splitting by price component groups)
+POD 
+Profile ID 
+Date from (header) 
+Date to (header) 
+Type 
+Created time 
+POD1
+1
+1 Sep
+30 Oct
+15 Min
+5 Nov
+POD1
+2
+1 oct
+5 Oct
+15 Min
+6 Nov
+POD1
+3
+1 Nov
+5 Nov
+15 Min
+6 Nov
+POD1
+4
+7 Nov
+10 Nov
+15 Min
+6 Nov
+POD1
+5
+11 Nov
+15 Nov
+15 Min
+6 Nov
+Result After splitting considering overlaps: 
+POD 
+Profile ID 
+Date from (header) 
+Date to (header) 
+Type 
+Created time 
+POD1
+1
+1 Sep
+30 Sep
+15 Min
+5 Nov
+POD1
+1
+6 Oct
+30 Oct
+15 Min
+5 Nov
+POD1
+2
+1 oct
+5 Oct
+15 Min
+6 Nov
+POD1
+3
+1 Nov
+5 Nov
+15 Min
+6 Nov
+POD1
+4
+7 Nov
+10 Nov
+15 Min
+6 Nov
+POD1
+5
+11 Nov
+15 Nov
+15 Min
+6 Nov
+Result After combining rows 
+POD 
+Profile ID 
+Date from (header) 
+Date to (header) 
+Type 
+Created time 
+POD1
+1
+1 Sep
+30 Sep
+15 Min
+5 Nov
+POD1
+1,2
+1 oct
+30 Oct
+15 Min
+5 Nov
+POD1
+3
+1 Nov
+5 Nov
+15 Min
+6 Nov
+POD1
+4,5
+7 Nov
+15 Nov
+15 Min
+6 Nov
+

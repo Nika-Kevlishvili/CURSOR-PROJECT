@@ -26,6 +26,7 @@ Ensures new files are saved in the correct directories (Rule 31 under `workspace
 | Reports | **`Cursor-Project/reports/`** → `Chat reports/`, `Feedback/` | See `reports/README.md` |
 | Test cases | **`Cursor-Project/test_cases/Backend/<Topic>.md`** always; **`Frontend/<Topic>.md`** when TC-FRONTEND scope includes UI | Per `test_cases_structure.mdc` |
 | Phoenix code | `Cursor-Project/Phoenix/**` | AI: read-only (Rule 0.8) |
+| Local scratch | `Cursor-Project/config/tmp/` | Ticket dumps, extracts, probes. Gitignored and hidden. Not the workspace root, and not beside scripts. |
 
 **Optional Python agent package:** If `Cursor-Project/agents/` is reintroduced later, organize per project owner — it is **not** present in this workspace now.
 

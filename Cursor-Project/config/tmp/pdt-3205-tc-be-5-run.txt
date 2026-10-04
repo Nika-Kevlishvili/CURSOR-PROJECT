@@ -1,0 +1,60 @@
+﻿
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [main] ΓÇ║ tests\cursor\PDT-3205-copy-easypay-to-virtual-pos.spec.ts:283:7 ΓÇ║ [PDT-3205]: Copy EasyPay functionality in another collection channel ΓÇ║ [PDT-3205] TC-BE-5: Confirm DATE drives payment-package date and accounting period (EasyPay spec) @receivableManagement @payment @virtualpos @easypay @pdt-3205 @dev
+[1A[2K[main] ΓÇ║ tests\cursor\PDT-3205-copy-easypay-to-virtual-pos.spec.ts:283:7 ΓÇ║ [PDT-3205]: Copy EasyPay functionality in another collection channel ΓÇ║ [PDT-3205] TC-BE-5: Confirm DATE drives payment-package date and accounting period (EasyPay spec) @receivableManagement @payment @virtualpos @easypay @pdt-3205 @dev
+
+TEST: [PDT-3205] TC-BE-5: Confirm DATE drives payment-package date and accounting period (EasyPay spec)
+[API responses] {
+  "customer": [
+    "https://devapps.energo-pro.bg/app/phoenix1-dev/customers/preview/basic?id=6084539"
+  ],
+  "customerLiability": [
+    "https://devapps.energo-pro.bg/app/phoenix1-dev/customer-liabilities/preview?id=89499"
+  ],
+  "collectionChannel": [
+    "https://devapps.energo-pro.bg/app/phoenix1-dev/collection-channel/preview?id=5649",
+    "https://devapps.energo-pro.bg/app/phoenix1-dev/collection-channel/preview?id=5649"
+  ]
+}
+
+[1A[2K  1) [main] ΓÇ║ tests\cursor\PDT-3205-copy-easypay-to-virtual-pos.spec.ts:283:7 ΓÇ║ [PDT-3205]: Copy EasyPay functionality in another collection channel ΓÇ║ [PDT-3205] TC-BE-5: Confirm DATE drives payment-package date and accounting period (EasyPay spec) @receivableManagement @payment @virtualpos @easypay @pdt-3205 @dev 
+
+    Error: 
+            [PDT-3205] TC-BE-5: Confirm DATE drives payment-package date and accounting period (EasyPay spec) Γ¥î Failed 
+            Endpoint: http://10.236.20.11:8091/http://10.236.20.11:9091/virtualpos/confirm-pay?DATE=20260615120000&TYPE=BILLING&MERCHANTID=7000006&IDN=6000150093&TOTAL=5113&TID=20260821171137077118100020&CHECKSUM=903ea909d4d78133414f48e81eceb4e1e8142ee4
+            Method: GET
+            Payload: undefined
+            Status: 400
+            Response: {
+      "errorCode": "APPLICATION_ERROR",
+      "exceptionId": "ClientException",
+      "message": "paymentDate-PaymentDate is outside the accounting period with id [1044];paymentPackageId-Provided payment package with id [6610] is not applicable for selected payment date and collection channel;"
+    }
+
+       at cursor\pdt-3205-copy-easypay-to-virtual-pos.fixtures.ts:518
+
+      516 |   }
+      517 |   const res = await fx.Request.get(url);
+    > 518 |   await expect(res).CheckResponse();
+          |                     ^
+      519 |   return res.json();
+      520 | }
+      521 |
+        at callVirtualPosConfirmPay (C:\Users\N.kevlishvili\Cursor\Cursor-Project\EnergoTS\tests\cursor\pdt-3205-copy-easypay-to-virtual-pos.fixtures.ts:518:21)
+        at C:\Users\N.kevlishvili\Cursor\Cursor-Project\EnergoTS\tests\cursor\PDT-3205-copy-easypay-to-virtual-pos.spec.ts:340:29
+        at withVirtualPosChannelLock (C:\Users\N.kevlishvili\Cursor\Cursor-Project\EnergoTS\tests\cursor\pdt-3205-copy-easypay-to-virtual-pos.fixtures.ts:202:12)
+        at C:\Users\N.kevlishvili\Cursor\Cursor-Project\EnergoTS\tests\cursor\PDT-3205-copy-easypay-to-virtual-pos.spec.ts:315:22
+
+
+
+npx : [1A[2K(node:24308) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At C:\Users\N.kevlishvili\AppData\Local\Temp\ps-script-f33a3b9b-c494-43ff-8aac-26ef7e11e370.ps1:77 char:45
++ ... 0.11:8091"; npx playwright test "tests/cursor/PDT-3205-copy-easypay-t ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([1A[2K(node:2... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1A[2K  1 failed
+    [main] ΓÇ║ tests\cursor\PDT-3205-copy-easypay-to-virtual-pos.spec.ts:283:7 ΓÇ║ [PDT-3205]: Copy EasyPay functionality in another collection channel ΓÇ║ [PDT-3205] TC-BE-5: Confirm DATE drives payment-package date and accounting period (EasyPay spec) @receivableManagement @payment @virtualpos @easypay @pdt-3205 @dev 

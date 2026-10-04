@@ -25,7 +25,7 @@ globs:
 | Test | PostgreSQLTest |
 | PreProd | PostgreSQLPreProd |
 | Prod | PostgreSQLProd (read-only) |
-| Experiments | PostgreSQLexperiments |
+| Experiments | PostgreSQLExperiment |
 
 **ALWAYS** use the exact environment the user requests. Never switch.
 

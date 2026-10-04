@@ -1,0 +1,394 @@
+﻿==== 49381450 | Collection channel - Create | hits: Exclude liabilities by amount, Less than, Greater than, 0-9, 1- 10 ====
+ invoice bases will be included.
+
+ 
+ 
+- Exclude liabilities by amount 
+ - This section includes two related fields:
+ - Less than 
+ - Optional
+
+- Text field
+
+- Allowed symbols: 0-9 . ,
+
+- Length: 1- 10 characters, 2 digits after the decimal point 
+
+- Less than <= Greater than
+
+ 
+- Greater than 
+ - Optional
+
+- Text field
+
+- Allowed symbols: 0-9 . ,
+
+- Length: 1- 10 characters, 2 digits after the decimal point 
+
+- Greater than >= Less than
+
+ 
+- Amounts defined in this section should be taken into account within the selected Currency in this object 
+
+ 
+ 
+- Priority of liabilities by prefix 
+ - Optional
+
+- Multi select dropdown 
+
+- List of values should be displayed from the Prefix nomenclature 
+
+- In this text box user should define prefix value according to the prefix nomenclature, in order to give priority to the liabilities which were created based on defined prefix connected invoice/debit note
+ - For example, customer has 10 invoices - 5 of them are product contract based and 5 of them are service contract based. In this text box user has defined prefix for the product contract invoices and document type selected in the object is liability. As a result, system should give priority to the product contract based liabilities. 
+
+ 
+ 
+- Type of File 
+ - Mandatory when type is Offline
+
+- System shouldn’t display Type of File dropdown at all, when object’s type is Online
+
+- Single select dropdown
+
+- Hardcoded values
+ - Payment Partner
+
+- Bank Partner
+
+ 
+ 
+- BANK 
+ - Mandatory when type is Bank partner 
+
+- Disabled and empty when type is Payment partner 
+
+- Text box (All options should be included) 
+
+- Nomenclature 
+
+- Enable and mandatory when type of file is bank partner 
+
+- multi select dropdown 
+
+ 
+- Data sending schedule 
+ - Optional
+
+- Text field
+
+- All symbols are allowed
+
+==== 49446980 | Collection channel - Edit | hits:  ====
+(no Exclude-by-amount / Less than window)
+
+==== 49381470 | Collection channel - Preview | hits:  ====
+(no Exclude-by-amount / Less than window)
+
+==== 49446990 | Collection channel - Listing | hits: minimum ====
+(no Exclude-by-amount / Less than window)
+
+==== 49381460 | Collection channel - Delete | hits:  ====
+(no Exclude-by-amount / Less than window)
+
+==== 98009168 | Collection channel - Conditions | hits:  ====
+(no Exclude-by-amount / Less than window)
+
+==== 219217932 | change version -  Collection channel - Conditions | hits:  ====
+(no Exclude-by-amount / Less than window)
+
+==== 49348664 | Collection Channel | hits:  ====
+(no Exclude-by-amount / Less than window)
+
+==== 585697551 | Phase 2 - Collection channel - Create (2) | hits: Exclude liabilities by amount, Less than, Greater than, 0-9, 1- 10 ====
+ invoice bases will be included.
+
+ 
+ 
+- Exclude liabilities by amount 
+ - This section includes two related fields:
+ - Less than 
+ - Optional
+
+- Text field
+
+- Allowed symbols: 0-9 . ,
+
+- Length: 1- 10 characters, 2 digits after the decimal point 
+
+- Less than <= Greater than
+
+ 
+- Greater than 
+ - Optional
+
+- Text field
+
+- Allowed symbols: 0-9 . ,
+
+- Length: 1- 10 characters, 2 digits after the decimal point 
+
+- Greater than >= Less than
+
+ 
+- Amounts defined in this section should be taken into account within the selected Currency in this object 
+
+ 
+ 
+- Priority of liabilities by prefix 
+ - Optional
+
+- Multi select dropdown 
+
+- List of values should be displayed from the Prefix nomenclature 
+
+- In this text box user should define prefix value according to the prefix nomenclature, in order to give priority to the liabilities which were created based on defined prefix connected invoice/debit note
+ - For example, customer has 10 invoices - 5 of them are product contract based and 5 of them are service contract based. In this text box user has defined prefix for the product contract invoices and document type selected in the object is liability. As a result, system should give priority to the product contract based liabilities. 
+
+ 
+ 
+- Type of File 
+ - Mandatory when type is Offline
+
+- System shouldn’t display Type of File dropdown at all, when object’s type is Online
+
+- Single select dropdown
+
+- Hardcoded values
+ - Payment Partner
+
+- Bank Partner
+
+ 
+ 
+- BANK 
+ - Mandatory when type is Bank partner 
+
+- Disabled and empty when type is Payment partner 
+
+- Text box (All options should be included) 
+
+- Nomenclature 
+
+- Enable and mandatory when type of file is bank partner 
+
+- multi select dropdown 
+
+ 
+- Data sending schedule 
+ - Optional
+
+- Text field
+
+- All symbols are allowed
+
+==== 585697584 | Phase 2 - Collection channel - Edit (2) | hits:  ====
+(no Exclude-by-amount / Less than window)
+
+==== 585697623 | Phase 2 - Collection channel - Preview (2) | hits:  ====
+(no Exclude-by-amount / Less than window)
+
+==== 585697597 | Phase 2 - Collection channel - Listing (2) | hits: minimum ====
+(no Exclude-by-amount / Less than window)
+
+==== 585697540 | Phase 2 - Collection Channel (2) | hits:  ====
+(no Exclude-by-amount / Less than window)
+
+==== 80904210 | Export Liabilities JOB | hits: Exclude liabilities by amount, numeric ====
+nel’s Exclude liabilities by prefix and exclude liabilities by amount fields
+
+ if they filled
+ Find all liability which current amount is more/equal then “less then” field and less/equal then “Greater then” field , end date of waiting payment less then process start date , Prefix isn’t equal to any of value from “exclude liabilities by prefix” field (value separator is comma) 
+
+ 
+ if they are empty
+ Find all liability which current amount is more then 0 and end date of waiting payment less then process start date 
+
+ 
+ Check all liability’s product’s payment method limitations field and if there is checked the same collection channel skip this liability from exporting process
+ Connection: Liability → Invoice → Product 
+
+ Connection type Version
+
+ 
+ Check in collection channel conditions of customer 
+ All customer
+ Shouldn’t filter anything
+
+ 
+ Customer conditions 
+ Contract
+ Expected values:
+ service contract
+
+ product contract
+
+ 
+ Value should be taken from contract.
+
+ Connection: Liability→ Invoice → Contract
+
+ Connection type is ID
+
+ 
+ Product
+ Active product list
+
+ Value should be taken product
+
+ Connection: Liability→ Invoice → Product
+
+ Connection type is ID
+
+ 
+ Service
+ Expected values
+ Active service list
+
+ 
+ Value should be taken from service
+
+ Connection: Liability→ Invoice → Service
+
+ Connection type is ID
+
+ 
+ Product type
+ Expected values 
+ All active values from the Product Type nomenclature
+
+ 
+ Value should be taken from product
+
+ Connection: Liability→ Invoice → Product
+
+ Connection type is ID
+
+ 
+ Service type
+ Expected values
+ All active values from the Service Type nomenclature
+
+ 
+ Value should be taken from service
+
+ Connection: Liability→ Invoice → Service
+
+ Connection type is ID
+
+ 
+ Customer type
+ Expected values: 
+ private
+
+ legal
+
+ 
+ Value should be
+
+==== 156041566 | Export Liabilities - JOB | hits:  ====
+(no Exclude-by-amount / Less than window)
+
+==== 585697313 | Phase 2 - Export Liabilities JOB (2) | hits: Exclude liabilities by amount, numeric ====
+nel’s Exclude liabilities by prefix and exclude liabilities by amount fields
+
+ if they filled
+ Find all liability which current amount is more/equal then “less then” field and less/equal then “Greater then” field , end date of waiting payment less then process start date , Prefix isn’t equal to any of value from “exclude liabilities by prefix” field (value separator is comma)
+
+ 
+ if they are empty
+ Find all liability which current amount is more then 0 and end date of waiting payment less then process start date 
+
+ 
+ Check all liability’s product’s payment method limitations field and if there is checked the same collection channel skip this liability from exporting process
+ Connection: Liability → Invoice → Product 
+
+ Connection type Version
+
+ 
+ Check in collection channel conditions of customer 
+ All customer
+ Shouldn’t filter anything
+
+ 
+ Customer conditions 
+ Contract
+ Expected values:
+ service contract
+
+ product contract
+
+ 
+ Value should be taken from contract.
+
+ Connection: Liability→ Invoice → Contract
+
+ Connection type is ID
+
+ 
+ Product
+ Active product list
+
+ Value should be taken product
+
+ Connection: Liability→ Invoice → Product
+
+ Connection type is ID
+
+ 
+ Service
+ Expected values
+ Active service list
+
+ 
+ Value should be taken from service
+
+ Connection: Liability→ Invoice → Service
+
+ Connection type is ID
+
+ 
+ Product type
+ Expected values 
+ All active values from the Product Type nomenclature
+
+ 
+ Value should be taken from product
+
+ Connection: Liability→ Invoice → Product
+
+ Connection type is ID
+
+ 
+ Service type
+ Expected values
+ All active values from the Service Type nomenclature
+
+ 
+ Value should be taken from service
+
+ Connection: Liability→ Invoice → Service
+
+ Connection type is ID
+
+ 
+ Customer type
+ Expected values: 
+ private
+
+ legal
+
+ 
+ Value should be 
+
+==== 585699003 | Phase 2 - Export Liabilities - JOB (2) | hits:  ====
+(no Exclude-by-amount / Less than window)
+
+==== 49807485 | Payment | hits:  ====
+(no Exclude-by-amount / Less than window)
+
+==== 81133985 | Import offline payment JOB | hits:  ====
+(no Exclude-by-amount / Less than window)
+
+

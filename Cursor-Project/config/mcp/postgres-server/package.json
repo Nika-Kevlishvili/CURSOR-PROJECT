@@ -1,0 +1,8 @@
+﻿{
+  "name": "phoenix-mcp-postgres",
+  "private": true,
+  "description": "Pinned local install of mcp-postgres-server so parallel PostgreSQL MCP processes do not race on the shared npx cache.",
+  "dependencies": {
+    "mcp-postgres-server": "0.3.1"
+  }
+}

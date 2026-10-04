@@ -1,0 +1,578 @@
+﻿[
+    {
+        "CaseId":  "DIAG-Accounting-Period-SO1",
+        "CaseTitle":  "Save: On the first day of the month system should automatically create an accounting period",
+        "Theme":  "14_Accounting_Period",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Accounting Period.semantic.md",
+        "EvidenceQuote":  "On the first day of the month system should automatically create an accounting period",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-Compensation-DP2",
+        "CaseTitle":  "Decision: Compensation Currency",
+        "Theme":  "13_Compensation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Compensation.semantic.md",
+        "EvidenceQuote":  "Compensation Currency",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-Compensation-DP3",
+        "CaseTitle":  "Decision: Offset Result",
+        "Theme":  "13_Compensation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Compensation.semantic.md",
+        "EvidenceQuote":  "Offset Result",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-Compensation-SO4",
+        "CaseTitle":  "Save: Update Compensation Index to +1 than it is now",
+        "Theme":  "13_Compensation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Compensation.semantic.md",
+        "EvidenceQuote":  "Update Compensation Index to +1 than it is now",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-Compensation-SO5",
+        "CaseTitle":  "Save: Grouping and summed different POD amounts by the same period to show them in summary data in invoice and create receivable liabilities",
+        "Theme":  "13_Compensation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Compensation.semantic.md",
+        "EvidenceQuote":  "Grouping and summed different POD amounts by the same period to show them in summary data in invoice and create receivable liabilities",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-Compensation-SO6",
+        "CaseTitle":  "Save: Update invoice doc with regenerated invoice",
+        "Theme":  "13_Compensation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Compensation.semantic.md",
+        "EvidenceQuote":  "Update invoice doc with regenerated invoice",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-Compensation-SO7",
+        "CaseTitle":  "Save: Create liability for recipient for each created receivable for customer (customer which will mean government). outgoing document should be the invoice",
+        "Theme":  "13_Compensation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Compensation.semantic.md",
+        "EvidenceQuote":  "Create liability for recipient for each created receivable for customer (customer which will mean government). outgoing document should be the invoice",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-Compensation-SO8",
+        "CaseTitle":  "Save: Update Invoice sub object Current Compensation with new compensations",
+        "Theme":  "13_Compensation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Compensation.semantic.md",
+        "EvidenceQuote":  "Update Invoice sub object Current Compensation with new compensations",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-Compensation-SO9",
+        "CaseTitle":  "Save: Create Receivable(s) as many as period groups for the summed amounts. outgoing document should be the invoice",
+        "Theme":  "13_Compensation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Compensation.semantic.md",
+        "EvidenceQuote":  "Create Receivable(s) as many as period groups for the summed amounts. outgoing document should be the invoice",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-Compensation-SO10",
+        "CaseTitle":  "Save: Create Liability for Customer and Receivable for Recipient with same initial amount + current amount should be same as initial amount",
+        "Theme":  "13_Compensation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Compensation.semantic.md",
+        "EvidenceQuote":  "Create Liability for Customer and Receivable for Recipient with same initial amount + current amount should be same as initial amount",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-Create-One-Time-Billing-Run-DP11",
+        "CaseTitle":  "Decision: Check what is the type of Process Periodicity object",
+        "Theme":  "01_Periodic_Start",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Create One-Time Billing Run.semantic.md",
+        "EvidenceQuote":  "Check what is the type of Process Periodicity object",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-Create-One-Time-Billing-Run-SO12",
+        "CaseTitle":  "Save: If defined date is today, then system should create one-time billing run and billing run process will be started when the time comes (Exact Date JOB)",
+        "Theme":  "01_Periodic_Start",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Create One-Time Billing Run.semantic.md",
+        "EvidenceQuote":  "If defined date is today, then system should create one-time billing run and billing run process will be started when the time comes (Exact Date JOB)",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-Create-One-Time-Billing-Run-SO13",
+        "CaseTitle":  "Save: After user creates new Periodic Billing Run (Clicking on Save button), it is mandatory to check if it is possible to create one-time billing run immediately",
+        "Theme":  "01_Periodic_Start",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Create One-Time Billing Run.semantic.md",
+        "EvidenceQuote":  "After user creates new Periodic Billing Run (Clicking on Save button), it is mandatory to check if it is possible to create one-time billing run immediately",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-Create-One-Time-Billing-Run-SO14",
+        "CaseTitle":  "Save: If defined date is in the future (compared to the current day), system should ignore such Process Periodicity object and shouldn\u0027t create one-time billing run. It will be created by the Periodic Billing Run JOB",
+        "Theme":  "01_Periodic_Start",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Create One-Time Billing Run.semantic.md",
+        "EvidenceQuote":  "If defined date is in the future (compared to the current day), system should ignore such Process Periodicity object and shouldn\u0027t create one-time billing run. It will be created by the Periodic Billing Run JOB",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP15",
+        "CaseTitle":  "Decision: is there more then 1 profile selected in price component-\u003e application model?",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "is there more then 1 profile selected in price component-\u003e application model?",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP16",
+        "CaseTitle":  "Decision: User should see 4th tab to see generated PDF document. Does the user confirm to create real pro forma invocie?",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "User should see 4th tab to see generated PDF document. Does the user confirm to create real pro forma invocie?",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP17",
+        "CaseTitle":  "Decision: check all filtered price components. application model type is price application model over time and application type is one time",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "check all filtered price components. application model type is price application model over time and application type is one time",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP18",
+        "CaseTitle":  "Decision: Check which level is selected in application Model",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Check which level is selected in application Model",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP19",
+        "CaseTitle":  "Decision: Is in filtered billing data by scales override?",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Is in filtered billing data by scales override?",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP20",
+        "CaseTitle":  "Decision: User should see 5th tab to see generated PDF document. Does the user confirm to create real pro forma invocie?",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "User should see 5th tab to see generated PDF document. Does the user confirm to create real pro forma invocie?",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP21",
+        "CaseTitle":  "Decision: Should Update Service order status as Paid and should generate real invoice based on Pro forma invoice",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Should Update Service order status as Paid and should generate real invoice based on Pro forma invoice",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP22",
+        "CaseTitle":  "Decision: check all filtered price components. application model type is price application model per piece",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "check all filtered price components. application model type is price application model per piece",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP23",
+        "CaseTitle":  "Decision: check price formula in price component is price profile or price parameter used ?",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "check price formula in price component is price profile or price parameter used ?",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP24",
+        "CaseTitle":  "Decision: Should Update Goods order status as Paid and should generate real invoice based on Pro forma invoice",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Should Update Goods order status as Paid and should generate real invoice based on Pro forma invoice",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP25",
+        "CaseTitle":  "Decision: check invoice correction 1st page Is price change checkbox marked?",
+        "Theme":  "10_Correction",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "check invoice correction 1st page Is price change checkbox marked?",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP26",
+        "CaseTitle":  "Decision: Check Permission to create an invoice. If user doesn\u0027t have permission - disable \u0027Issue an invoice\u0027 button",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Check Permission to create an invoice. If user doesn\u0027t have permission - disable \u0027Issue an invoice\u0027 button",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP27",
+        "CaseTitle":  "Decision: Is Filled (Listing Or Mass Import)",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Is Filled (Listing Or Mass Import)",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP28",
+        "CaseTitle":  "Decision: Billing Data Type",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Billing Data Type",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP29",
+        "CaseTitle":  "Decision: Check if service order status is Awaiting Payment and Payment term is filled",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Check if service order status is Awaiting Payment and Payment term is filled",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP30",
+        "CaseTitle":  "Decision: Check if goods order status is Awaiting Payment and Payment term is filled",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Check if goods order status is Awaiting Payment and Payment term is filled",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP31",
+        "CaseTitle":  "Decision: Check Permission to create Pro forma invoice. If user doesn\u0027t have permission - disable \u0027Issue a pro-forma invoice\u0027 button",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Check Permission to create Pro forma invoice. If user doesn\u0027t have permission - disable \u0027Issue a pro-forma invoice\u0027 button",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP32",
+        "CaseTitle":  "Decision: check filtered billing data by scales, Is any of them correction or override",
+        "Theme":  "10_Correction",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "check filtered billing data by scales, Is any of them correction or override",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP33",
+        "CaseTitle":  "Decision: Does such billing data exist?",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Does such billing data exist?",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP34",
+        "CaseTitle":  "Decision: Validate New Billing Datas",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Validate New Billing Datas",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP35",
+        "CaseTitle":  "Decision: Check which profile are selected in application model and are all this profile matches our filtered billing data by profile for calculated period?",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Check which profile are selected in application model and are all this profile matches our filtered billing data by profile for calculated period?",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP36",
+        "CaseTitle":  "Decision: Is contract type combined and at least one selected profile is",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Is contract type combined and at least one selected profile is",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP37",
+        "CaseTitle":  "Decision: Is Empty",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Is Empty",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP38",
+        "CaseTitle":  "Decision: Is already created invoice for selected price component for selected contract?",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Is already created invoice for selected price component for selected contract?",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP39",
+        "CaseTitle":  "Decision: is price profile or/and price parameter same or bigger dimension then billing data by profile?",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "is price profile or/and price parameter same or bigger dimension then billing data by profile?",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP40",
+        "CaseTitle":  "Decision: check if restriction is selected in application model",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "check if restriction is selected in application model",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP41",
+        "CaseTitle":  "Decision: check price component 1st tab, is discount checkbox marked?",
+        "Theme":  "08_Discount",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "check price component 1st tab, is discount checkbox marked?",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP42",
+        "CaseTitle":  "Decision: Check which profile are selected in application model and are this profile matches our filtered billing data by profile?",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Check which profile are selected in application model and are this profile matches our filtered billing data by profile?",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP43",
+        "CaseTitle":  "Decision: is in price component, in price formula, price profile/price parameter used?",
+        "Theme":  "05_PerPiece_Orders",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "is in price component, in price formula, price profile/price parameter used?",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-EPRO-Splitting-Final-create-invo-DP44",
+        "CaseTitle":  "Decision: Reversal",
+        "Theme":  "11_Reversal",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "EPRO - Splitting Final  - create invoice for product contract-Price application model for volumes-Goods order.semantic.md",
+        "EvidenceQuote":  "Reversal",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-Invoice-cancelation-new-DP45",
+        "CaseTitle":  "Decision: Check connected receivable",
+        "Theme":  "12_Cancellation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Invoice cancelation -new.semantic.md",
+        "EvidenceQuote":  "Check connected receivable",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-Invoice-cancelation-new-DP46",
+        "CaseTitle":  "Decision: Check invoice document type",
+        "Theme":  "12_Cancellation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Invoice cancelation -new.semantic.md",
+        "EvidenceQuote":  "Check invoice document type",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-Invoice-cancelation-new-DP47",
+        "CaseTitle":  "Decision: Billing Run Type",
+        "Theme":  "12_Cancellation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Invoice cancelation -new.semantic.md",
+        "EvidenceQuote":  "Billing Run Type",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-Invoice-cancelation-new-DP48",
+        "CaseTitle":  "Decision: Liability is connected to payment",
+        "Theme":  "12_Cancellation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Invoice cancelation -new.semantic.md",
+        "EvidenceQuote":  "Liability is connected to payment",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-Invoice-cancelation-new-DP49",
+        "CaseTitle":  "Decision: Invoice Document Type",
+        "Theme":  "12_Cancellation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Invoice cancelation -new.semantic.md",
+        "EvidenceQuote":  "Invoice Document Type",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-Invoice-cancelation-new-SO50",
+        "CaseTitle":  "Save: Create Receivable with deducted amount (Service for Creating Receivable due to debit note)",
+        "Theme":  "12_Cancellation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Invoice cancelation -new.semantic.md",
+        "EvidenceQuote":  "Create Receivable with deducted amount (Service for Creating Receivable due to debit note)",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-Invoice-cancelation-new-SO51",
+        "CaseTitle":  "Save: Delete Billing Data By Profile in DB (which was made from Scales)",
+        "Theme":  "12_Cancellation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Invoice cancelation -new.semantic.md",
+        "EvidenceQuote":  "Delete Billing Data By Profile in DB (which was made from Scales)",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-Invoice-cancelation-new-ER52",
+        "CaseTitle":  "Error: Liability cancelation",
+        "Theme":  "12_Cancellation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Invoice cancelation -new.semantic.md",
+        "EvidenceQuote":  "Liability cancelation",
+        "Kind":  "ER"
+    },
+    {
+        "CaseId":  "DIAG-Invoice-cancelation-new-ER53",
+        "CaseTitle":  "Error: Service For Creating Liability due to Credit Note Cancelation",
+        "Theme":  "12_Cancellation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Invoice cancelation -new.semantic.md",
+        "EvidenceQuote":  "Service For Creating Liability due to Credit Note Cancelation",
+        "Kind":  "ER"
+    },
+    {
+        "CaseId":  "DIAG-Invoice-cancelation-new-ER54",
+        "CaseTitle":  "Error: Processes from where should start cancelation",
+        "Theme":  "12_Cancellation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Invoice cancelation -new.semantic.md",
+        "EvidenceQuote":  "Processes from where should start cancelation",
+        "Kind":  "ER"
+    },
+    {
+        "CaseId":  "DIAG-Invoice-cancelation-new-ER55",
+        "CaseTitle":  "Error: Service For Creating Receivable due to debit Note Cancelation",
+        "Theme":  "12_Cancellation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Invoice cancelation -new.semantic.md",
+        "EvidenceQuote":  "Service For Creating Receivable due to debit Note Cancelation",
+        "Kind":  "ER"
+    },
+    {
+        "CaseId":  "DIAG-Invoice-cancelation-new-ER56",
+        "CaseTitle":  "Error: Process Triger should be invoice status change to cancelled",
+        "Theme":  "12_Cancellation",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Invoice cancelation -new.semantic.md",
+        "EvidenceQuote":  "Process Triger should be invoice status change to cancelled",
+        "Kind":  "ER"
+    },
+    {
+        "CaseId":  "DIAG-Periodic-billing-run-DP57",
+        "CaseTitle":  "Decision: Check what is the type of Periodic object",
+        "Theme":  "01_Periodic_Start",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Periodic billing run.semantic.md",
+        "EvidenceQuote":  "Check what is the type of Periodic object",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-Periodic-billing-run-DP58",
+        "CaseTitle":  "Decision: Check what is the selected option",
+        "Theme":  "01_Periodic_Start",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Periodic billing run.semantic.md",
+        "EvidenceQuote":  "Check what is the selected option",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-Periodic-billing-run-DP59",
+        "CaseTitle":  "Decision: Check change to settings",
+        "Theme":  "01_Periodic_Start",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Periodic billing run.semantic.md",
+        "EvidenceQuote":  "Check change to settings",
+        "Kind":  "DP"
+    },
+    {
+        "CaseId":  "DIAG-Periodic-billing-run-SO60",
+        "CaseTitle":  "Save: System should create one-time billing run for tomorrow",
+        "Theme":  "01_Periodic_Start",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Periodic billing run.semantic.md",
+        "EvidenceQuote":  "System should create one-time billing run for tomorrow",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-Periodic-billing-run-SO61",
+        "CaseTitle":  "Save: Shouldn\u0027t create billing run",
+        "Theme":  "01_Periodic_Start",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Periodic billing run.semantic.md",
+        "EvidenceQuote":  "Shouldn\u0027t create billing run",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-Periodic-billing-run-SO62",
+        "CaseTitle":  "Save: system should create one-time billing run",
+        "Theme":  "01_Periodic_Start",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Periodic billing run.semantic.md",
+        "EvidenceQuote":  "system should create one-time billing run",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-Periodic-billing-run-SO63",
+        "CaseTitle":  "Save: If Exclude options are not selected and it should be created for tomorrow, then system should create one-time billing run",
+        "Theme":  "01_Periodic_Start",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Periodic billing run.semantic.md",
+        "EvidenceQuote":  "If Exclude options are not selected and it should be created for tomorrow, then system should create one-time billing run",
+        "Kind":  "SO"
+    },
+    {
+        "CaseId":  "DIAG-Periodic-billing-run-SO64",
+        "CaseTitle":  "Save: System should ignore such Process Periodicity object and shouldn\u0027t create one-time billing run",
+        "Theme":  "01_Periodic_Start",
+        "EvidenceType":  "Diagram",
+        "EvidenceCitation":  "Periodic billing run.semantic.md",
+        "EvidenceQuote":  "System should ignore such Process Periodicity object and shouldn\u0027t create one-time billing run",
+        "Kind":  "SO"
+    }
+]

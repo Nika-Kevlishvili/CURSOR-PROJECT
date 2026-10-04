@@ -25,7 +25,7 @@ This will:
 
 - Clone / init all submodules (EnergoTS + Phoenix repos)
 - Create `Cursor-Project/.env` and `Cursor-Project/EnergoTS/.env` from `Cursor Setup/env.example`
-- Write MCP servers into `%USERPROFILE%\.cursor\mcp.json` from `Cursor Setup/mcp_content.txt`
+- Write MCP servers into **workspace** `.cursor/mcp.json` from `Cursor Setup/mcp_content.txt` (user-level `%USERPROFILE%\.cursor\mcp.json` is cleared if it duplicates workspace MCP)
 - Install marketplace extensions listed under `scriptInstall`
 - Verify layout, remotes, env, MCP, and extensions
 
@@ -38,7 +38,7 @@ Full options: [`.cursor/commands/setup-new-machine.md`](../../.cursor/commands/s
 
 ## After setup
 
-1. Restart Cursor and confirm MCP (Confluence, Jira, PostgreSQL*).
+1. Restart Cursor and confirm workspace MCP in `.cursor/mcp.json`.
 2. Review both `.env` files (portal, Jira, Slack, client credentials).
 3. Optional: `git config core.hooksPath Cursor-Project/scripts/git-hooks`
 

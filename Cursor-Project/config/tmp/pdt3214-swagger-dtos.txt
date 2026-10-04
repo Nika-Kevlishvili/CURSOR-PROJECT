@@ -1,0 +1,169 @@
+==== PaymentPackageCreateRequest ====
+required: ['accountingPeriodId', 'channelId', 'lockStatus', 'paymentDate']
+  lockStatus: type=string enum=['LOCKED', 'UNLOCKED']
+  channelId: type=integer
+  accountingPeriodId: type=integer
+  paymentDate: type=string
+  type: type=string enum=['ONLINE', 'OFFLINE']
+==== CreatePaymentRequest ====
+required: ['accountPeriodId', 'collectionChannelId', 'currencyId', 'customerId', 'initialAmount', 'paymentDate', 'paymentPackageId']
+  paymentDate: type=string
+  initialAmount: type=number
+  currencyId: type=integer
+  collectionChannelId: type=integer
+  paymentPackageId: type=integer
+  accountPeriodId: type=integer
+  paymentPurpose: type=string
+  paymentInfo: type=string
+  blockedForOffsetting: type=boolean
+  blockedForOffsettingFromDate: type=string
+  blockedForOffsettingToDate: type=string
+  blockedForOffsettingBlockingReasonId: type=integer
+  blockedForOffsettingAdditionalInfo: type=string
+  customerId: type=integer
+  contractBillingGroupId: type=integer
+  outgoingDocumentType: type=string enum=['INVOICE', 'LATE_PAYMENT_FINE', 'DEPOSIT', 'ACTION']
+  invoiceId: type=integer
+  latePaymentFineId: type=integer
+  customerDepositId: type=integer
+  actionId: type=integer
+  fromPaymentCancel: type=boolean
+  outgoingDocumentFromExternalSystem: type=string
+  additionalOutgoingDocuments: type=array ref=#/components/schemas/PaymentAdditionalDocumentsRequest
+  invoiceCancellation: type=boolean
+==== CustomerReceivableResponse ====
+required: None
+  id: type=integer
+  number: type=string
+  accountingPeriodResponse: type=None ref=#/components/schemas/AccountingPeriodsResponse
+  creationDate: type=string
+  dateOfFullOffset: type=string
+  occurrenceDate: type=string
+  dueDate: type=string
+  initialAmount: type=number
+  initialAmountInOtherCurrency: type=number
+  currentAmount: type=number
+  currentAmountInOtherCurrency: type=number
+  currencyResponse: type=None ref=#/components/schemas/ShortResponse
+  outgoingDocumentFromAnExternalSystem: type=string
+  basisForIssuing: type=string
+  numberOfIncomeAccount: type=string
+  costCenterControllingOrder: type=string
+  directDebit: type=boolean
+  bankResponse: type=None ref=#/components/schemas/BankResponse
+  bankAccount: type=string
+  blockedForLiabilitiesOffsetting: type=boolean
+  blockedFromDate: type=string
+  blockedToDate: type=string
+  reason: type=None ref=#/components/schemas/ShortResponse
+  blockedForPaymentAdditionalInformation: type=string
+  additionalInformation: type=string
+  customerResponse: type=None ref=#/components/schemas/CustomerDetailsShortResponse
+  billingGroupResponse: type=None ref=#/components/schemas/BillingGroupListingResponse
+  alternativeRecipientOfAnInvoiceResponse: type=None ref=#/components/schemas/CustomerDetailsShortResponse
+  outgoingDocumentType: type=string enum=['CREDIT_NOTE', 'LATE_PAYMENT_FINE', 'DEPOSIT', 'PAYMENT']
+  status: type=string enum=['ACTIVE', 'DELETED', 'REVERSED']
+  invoiceResponse: type=None ref=#/components/schemas/InvoiceShortResponse
+  actionId: type=integer
+  creationType: type=string enum=['AUTOMATIC', 'MANUAL']
+  customerOffsettingResponseList: type=array ref=#/components/schemas/CustomerOffsettingResponse
+  latePaymentFineShortResponse: type=None ref=#/components/schemas/ShortResponse
+  depositShortResponse: type=None ref=#/components/schemas/ShortResponse
+  paymentShortResponse: type=None ref=#/components/schemas/ShortResponse
+==== CustomerLiabilityResponse ====
+required: None
+  id: type=integer
+  number: type=string
+  accountPeriodId: type=integer
+  accountingPeriodName: type=string
+  accountingPeriodStatus: type=string enum=['OPEN', 'CLOSED']
+  dueDate: type=string
+  fullOffsetDate: type=string
+  applicableInterestRate: type=None ref=#/components/schemas/InterestRateShortResponse
+  interestDateFrom: type=string
+  interestDateTo: type=string
+  initialAmount: type=number
+  initialAmountInOtherCurrency: type=number
+  currentAmount: type=number
+  currentAmountInOtherCurrency: type=number
+  currencyResponse: type=None ref=#/components/schemas/CurrencyShortResponse
+  outgoingDocumentFromExternalSystem: type=string
+  basisForIssuing: type=string
+  numberOfIncomeAccount: type=string
+  costCenterControllingOrder: type=string
+  directDebit: type=boolean
+  bankResponse: type=None ref=#/components/schemas/BankResponse
+  iban: type=string
+  blockedForPayment: type=boolean
+  blockedForPaymentFromDate: type=string
+  blockedForPaymentToDate: type=string
+  blockedForPaymentReason: type=None ref=#/components/schemas/ShortResponse
+  blockedForPaymentAdditionalInfo: type=string
+  blockedForReminderLetters: type=boolean
+  blockedForReminderLettersFromDate: type=string
+  blockedForReminderLettersToDate: type=string
+  blockedForReminderLettersReason: type=None ref=#/components/schemas/ShortResponse
+  blockedForReminderLettersAdditionalInfo: type=string
+  blockedForCalculationOfLatePayment: type=boolean
+  blockedForCalculationOfLatePaymentFromDate: type=string
+  blockedForCalculationOfLatePaymentToDate: type=string
+  blockedForCalculationOfLatePaymentReason: type=None ref=#/components/schemas/ShortResponse
+  blockedForCalculationOfLatePaymentAdditionalInfo: type=string
+  blockedForLiabilitiesOffsetting: type=boolean
+  blockedForLiabilitiesOffsettingFromDate: type=string
+  blockedForLiabilitiesOffsettingToDate: type=string
+  blockedForLiabilitiesOffsettingReason: type=None ref=#/components/schemas/ShortResponse
+  blockedForLiabilitiesOffsettingAdditionalInfo: type=string
+  blockedForSupplyTermination: type=boolean
+  blockedForSupplyTerminationFromDate: type=string
+  blockedForSupplyTerminationToDate: type=string
+  blockedForSupplyTerminationReason: type=None ref=#/components/schemas/ShortResponse
+  blockedForSupplyTerminationAdditionalInfo: type=string
+  customerResponse: type=None ref=#/components/schemas/CustomerDetailsShortResponse
+  invoiceResponse: type=None ref=#/components/schemas/InvoiceShortResponse
+  reschedulingShortResponse: type=None ref=#/components/schemas/ShortResponse
+  latePaymentFineShortResponse: type=None ref=#/components/schemas/ShortResponse
+  depositShortResponse: type=None ref=#/components/schemas/ShortResponse
+  actionShortResponse: type=None ref=#/components/schemas/ShortResponse
+  billingGroupResponse: type=None ref=#/components/schemas/BillingGroupListingResponse
+  alternativeInvoiceRecipientCustomerResponse: type=None ref=#/components/schemas/CustomerDetailsShortResponse
+  outgoingDocumentType: type=string enum=['INVOICE', 'LATE_PAYMENT_FINE', 'DEPOSIT', 'RESCHEDULING', 'ACTION', 'DEBIT_NOTE']
+  status: type=string enum=['ACTIVE', 'DELETED', 'REVERSED']
+  creationType: type=string enum=['AUTOMATIC', 'MANUAL']
+  additionalInfo: type=string
+  customerLiabilityOffsettingReponseList: type=array ref=#/components/schemas/CustomerOffsettingResponse
+  creationDate: type=string
+  amountWithoutInterest: type=number
+  amountWithoutInterestInOtherCurrency: type=number
+  occurrenceDate: type=string
+==== PaymentResponse ====
+required: None
+  id: type=integer
+  paymentNumber: type=string
+  paymentDate: type=string
+  fullOffsetDate: type=string
+  initialAmount: type=number
+  currentAmount: type=number
+  currencyId: type=None ref=#/components/schemas/CurrencyShortResponse
+  collectionChannelId: type=None ref=#/components/schemas/CollectionChannelShortResponse
+  paymentPackageId: type=integer
+  accountPeriodId: type=None ref=#/components/schemas/AccountingPeriodsResponse
+  paymentPurpose: type=string
+  paymentInfo: type=string
+  blockedForOffsetting: type=boolean
+  blockedForOffsettingFromDate: type=string
+  blockedForOffsettingToDate: type=string
+  blockedForOffsettingBlockingReasonId: type=None ref=#/components/schemas/BlockingReasonShortResponse
+  blockedForOffsettingAdditionalInfo: type=string
+  customerId: type=None ref=#/components/schemas/CustomerShortResponse
+  contractBillingGroupId: type=None ref=#/components/schemas/ContractBillingGroupShortResponse
+  outgoingDocumentType: type=string enum=['INVOICE', 'LATE_PAYMENT_FINE', 'DEPOSIT', 'ACTION']
+  invoiceId: type=None ref=#/components/schemas/InvoiceShortResponse
+  latePaymentFineId: type=None ref=#/components/schemas/LatePaymentFineShortResponse
+  customerDepositId: type=None ref=#/components/schemas/DepositShortResponse
+  actionId: type=None ref=#/components/schemas/ActionShortResponse
+  offsettingResponseList: type=array ref=#/components/schemas/CustomerOffsettingResponse
+  status: type=string enum=['ACTIVE', 'DELETED', 'REVERSED']
+  creationType: type=string enum=['AUTOMATIC', 'MANUAL']
+  isOnlinePayment: type=boolean
+  additionalOutgoingDocuments: type=array ref=#/components/schemas/OutgoingDocument

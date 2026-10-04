@@ -25,7 +25,7 @@ Single map from **rule / topic** to the **primary procedural** file(s). When `wo
 | 44 Jira analysis + Confluence | Ticket analysis must include linked Confluence reads | `.cursor/skills/jira-evidence/SKILL.md` § linked Confluence; `workflow_rules.mdc` Rule 44 |
 | PHOENIX-SWITCH.0 | Align Phoenix repos | **`.cursor/skills/phoenix-branch-switching/SKILL.md`**, `.cursor/rules/integrations/phoenix_branch_switching.mdc` (summary), `.cursor/commands/switch-phoenix-branches.ps1` |
 | JIRA.0 | Experiments board bugs only | `.cursor/rules/integrations/jira_bug_agent.mdc`, `.cursor/skills/jira-bug-template/SKILL.md` |
-| PHOENIX-BUG.0 | Phoenix Phase 2 Internal Bug reporting with mandatory approval gate; board resolution from parent ticket; REJECT loop (edit, never delete); priority AI-determined | `.cursor/rules/integrations/phoenix_bug_reporter.mdc`, `.cursor/skills/phoenix-bug-reporter/SKILL.md`, `.cursor/agents/phoenix-bug-reporter.md` |
+| PHOENIX-BUG.0 | Phoenix Phase 2 Internal/External Bug reporting; Step 3.5 pre-create validation; hook (Internal Bug + Bug) + `.active-bugreview` sidecar; mandatory approval gate | `.cursor/rules/integrations/phoenix_bug_reporter.mdc`, `.cursor/skills/phoenix-bug-reporter/SKILL.md`, `.cursor/agents/phoenix-bug-reporter.md` |
 | PDR.0 | Production DB read | `.cursor/skills/production-data-reader/SKILL.md` |
 | Reporting / Slack | Paths and uploads | `Cursor-Project/config/template/Slack_reporting_paths.md`, `.cursor/rules/workflows/playwright_detailed_reporting.mdc` |
 | File layout | Stories, reports, test_cases | `.cursor/rules/workspace/file_organization_rules.mdc`, `.cursor/rules/workspace/test_cases_structure.mdc` |

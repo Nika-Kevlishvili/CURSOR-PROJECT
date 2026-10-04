@@ -1,0 +1,23 @@
+{
+  "endpoint": "GET http://10.236.20.11:9091/virtualpos/confirm-pay",
+  "query": {
+    "DATE": "20260821090012",
+    "TYPE": "BILLING",
+    "MERCHANTID": "7000006",
+    "IDN": "6000150073",
+    "TOTAL": "5113",
+    "TID": "20260821170012077118100020",
+    "CHECKSUM": "2612a2c16c3d96c72c8b01e9a72781fe299787af"
+  },
+  "fullUrl": "http://10.236.20.11:9091/virtualpos/confirm-pay?DATE=20260821090012&TYPE=BILLING&MERCHANTID=7000006&IDN=6000150073&TOTAL=5113&TID=20260821170012077118100020&CHECKSUM=2612a2c16c3d96c72c8b01e9a72781fe299787af",
+  "context": {
+    "customerId": 6084519,
+    "customerNumber": "6000150073",
+    "tid": "20260821170012077118100020",
+    "amount": 5113,
+    "initStatus": "00",
+    "checkStatus": "00",
+    "merchantId": "7000006",
+    "onlinePaymentUrl": "http://10.236.20.11:9091/"
+  }
+}
