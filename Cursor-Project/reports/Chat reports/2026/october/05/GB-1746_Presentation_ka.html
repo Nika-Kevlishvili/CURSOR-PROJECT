@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>GB-1746 — პრეზენტაცია</title>
+<style>
+  :root {
+    --bg: #0b1c28;
+    --bg-soft: #122a3a;
+    --panel: #f7f4ef;
+    --ink: #14212b;
+    --muted: #5a6a76;
+    --accent: #c45c26;
+    --line: rgba(20, 33, 43, 0.12);
+    --ok: #1f7a4c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: "SF Georgian", "Arial Unicode MS", "Noto Sans Georgian", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+  .deck {
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: none;
+    padding: clamp(2rem, 5vw, 4.5rem) clamp(2rem, 7vw, 6rem);
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(196, 92, 38, 0.18), transparent 55%),
+      radial-gradient(900px 500px at -10% 110%, rgba(47, 122, 160, 0.16), transparent 50%),
+      linear-gradient(160deg, #0b1c28 0%, #143049 55%, #0f2433 100%);
+    color: #f4efe8;
+  }
+
+  .slide.active { display: grid; align-content: center; }
+
+  .slide-inner {
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(244, 239, 232, 0.7);
+    margin-bottom: 1.4rem;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 1.6rem;
+    height: 2px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+    line-height: 1.08;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    font-size: clamp(1.8rem, 3.8vw, 2.8rem);
+    line-height: 1.15;
+    font-weight: 700;
+    margin-bottom: 1.4rem;
+    letter-spacing: -0.02em;
+  }
+
+  .lead {
+    font-size: clamp(1.15rem, 2vw, 1.45rem);
+    line-height: 1.45;
+    color: rgba(244, 239, 232, 0.88);
+    max-width: 38ch;
+  }
+
+  .meta {
+    margin-top: 2rem;
+    font-size: 0.95rem;
+    color: rgba(244, 239, 232, 0.55);
+  }
+
+  .meta a { color: #f0c3a5; text-decoration: none; border-bottom: 1px solid rgba(240, 195, 165, 0.4); }
+
+  .panel {
+    background: var(--panel);
+    color: var(--ink);
+    border-radius: 18px;
+    padding: clamp(1.4rem, 3vw, 2.2rem);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  }
+
+  .panel h2 { color: var(--ink); margin-bottom: 1.1rem; }
+
+  .panel p, .panel li {
+    font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+    line-height: 1.5;
+  }
+
+  .panel ul, .panel ol {
+    margin-left: 1.2rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .panel li::marker { color: var(--accent); }
+
+  .result {
+    margin-top: 1.2rem;
+    padding: 0.95rem 1.1rem;
+    border-left: 4px solid var(--accent);
+    background: #efe8df;
+    border-radius: 0 10px 10px 0;
+    font-size: 1.05rem;
+  }
+
+  .quote {
+    margin-top: 1.2rem;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.15rem 1.2rem;
+    min-height: 9rem;
+  }
+
+  .card-num {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.55rem;
+    font-weight: 700;
+  }
+
+  .card strong {
+    display: block;
+    font-size: 1.15rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .card p {
+    color: var(--muted);
+    font-size: 0.98rem !important;
+  }
+
+  .scope {
+    margin-top: 1rem;
+    color: var(--muted);
+    font-size: 1rem !important;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.8rem 0 0.4rem;
+    font-size: 1.05rem;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 0.75rem 0.85rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  th {
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  td:last-child { font-weight: 700; color: var(--ok); }
+
+  .badge {
+    display: inline-block;
+    background: #e5f4eb;
+    color: var(--ok);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    margin-bottom: 0.8rem;
+  }
+
+  .benefits {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .benefit {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.9rem;
+    align-items: start;
+    background: #fff;
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--line);
+  }
+
+  .dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    margin-top: 0.45rem;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .done-list {
+    display: grid;
+    gap: 0.7rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .done-item {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+    font-size: 1.1rem;
+  }
+
+  .check {
+    color: var(--ok);
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  .nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.4rem 1.2rem;
+    background: linear-gradient(to top, rgba(8, 18, 26, 0.92), transparent);
+    color: rgba(244, 239, 232, 0.85);
+    font-size: 0.9rem;
+  }
+
+  .nav-btns { display: flex; gap: 0.55rem; }
+
+  button {
+    appearance: none;
+    border: 1px solid rgba(244, 239, 232, 0.25);
+    background: rgba(255, 255, 255, 0.06);
+    color: #f4efe8;
+    border-radius: 999px;
+    padding: 0.55rem 1rem;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  button:hover { background: rgba(255, 255, 255, 0.14); }
+  button:disabled { opacity: 0.35; cursor: default; }
+
+  .progress {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+  }
+
+  .progress span {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: rgba(244, 239, 232, 0.28);
+  }
+
+  .progress span.on { background: var(--accent); width: 1.1rem; border-radius: 999px; }
+
+  .hint {
+    position: fixed;
+    top: 1rem;
+    right: 1.2rem;
+    z-index: 20;
+    font-size: 0.8rem;
+    color: rgba(244, 239, 232, 0.45);
+  }
+
+  code {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.88em;
+    background: rgba(20, 33, 43, 0.08);
+    padding: 0.1em 0.35em;
+    border-radius: 5px;
+  }
+
+  .slide.title-slide .slide-inner { max-width: 900px; }
+
+  @media (max-width: 860px) {
+    .grid-3 { grid-template-columns: 1fr; }
+    .slide { padding: 1.4rem 1.2rem 5rem; }
+    .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="hint">← → ან Space</div>
+  <div class="deck" id="deck">
+
+    <section class="slide title-slide active" data-i="0">
+      <div class="slide-inner">
+        <div class="eyebrow">GB-1746 · AI თასქი</div>
+        <h1>AI ახლა კითხულობს<br>Confluence-ის კომენტარებსაც</h1>
+        <p class="lead">არა მხოლოდ გვერდის ტექსტს — იმავე გვერდის footer და inline comments.</p>
+        <p class="meta">
+          <a href="https://oppa-support.atlassian.net/browse/GB-1746" target="_blank" rel="noopener">oppa-support / GB-1746</a>
+          · commit <code>a83b76f4</code>
+          · ~5–7 წთ
+        </p>
+      </div>
+    </section>
+
+    <section class="slide" data-i="1">
+      <div class="slide-inner">
+        <div class="eyebrow">პრობლემა</div>
+        <div class="panel">
+          <h2>რა იყო არასწორი</h2>
+          <ul>
+            <li>წესებში ეწერა: წაიკითხე გვერდის კომენტარები</li>
+            <li>MCP-ში ეს tool-ები რეალურად <strong>არ იყო</strong></li>
+            <li>აგენტი კითხულობდა მხოლოდ <strong>page body</strong>-ს</li>
+          </ul>
+          <div class="result">შედეგი: გარკვევები კომენტარში — AI-სთვის უხილავი იყო.</div>
+          <p class="quote">„დოკუმენტაცია კარგია, მაგრამ მნიშვნელოვანი ნაწილი ხშირად კომენტარშია.“</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i="2">
+      <div class="slide-inner">
+        <div class="eyebrow">გადაწყვეტა</div>
+        <div class="panel">
+          <h2>რა გავაკეთეთ</h2>
+          <div class="grid-3">
+            <div class="card">
+              <div class="card-num">01</div>
+              <strong>REST helper</strong>
+              <p><code>get-confluence-page-comments-rest.ps1</code> — footer + inline</p>
+            </div>
+            <div class="card">
+              <div class="card-num">02</div>
+              <strong>სავალდებულო ჩართვა</strong>
+              <p>Bug validation, Jira ანალიზი, Phoenix Q&A, cross-dep</p>
+            </div>
+            <div class="card">
+              <div class="card-num">03</div>
+              <strong>არ იგონებს</strong>
+              <p>ცარიელი → <code>none_or_unavailable</code></p>
+            </div>
+          </div>
+          <p class="scope"><strong>სკოპი:</strong> მხოლოდ იმავე Confluence გვერდი — არა მთელი wiki, არა Jira კომენტარები.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i="3">
+      <div class="slide-inner">
+        <div class="eyebrow">დემო</div>
+        <div class="panel">
+          <div class="badge">PASS</div>
+          <h2>შემოწმება რეალურ გვერდზე</h2>
+          <p style="margin-bottom:0.6rem;color:var(--muted)">
+            <a href="https://asterbit.atlassian.net/wiki/spaces/Phoenix/pages/779517953/get+product+list" target="_blank" rel="noopener" style="color:inherit">get product list</a>
+            · page <code>779517953</code>
+          </p>
+          <table>
+            <thead><tr><th>შემოწმება</th><th>შედეგი</th></tr></thead>
+            <tbody>
+              <tr><td>Page body</td><td>წაიკითხა</td></tr>
+              <tr><td>Footer comments</td><td>0</td></tr>
+              <tr><td>Inline comments</td><td>1 — „Product“</td></tr>
+              <tr><td>Body hydration</td><td>OK</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i="4">
+      <div class="slide-inner">
+        <div class="eyebrow">სარგებელი</div>
+        <div class="panel">
+          <h2>რატომ აქვს მნიშვნელობა</h2>
+          <div class="benefits">
+            <div class="benefit"><span class="dot"></span><div>უფრო სრული evidence — bug validation, HandsOff, Phoenix Q&A</div></div>
+            <div class="benefit"><span class="dot"></span><div>ნაკლები შეცდომა, როცა მნიშვნელოვანი ინფო მხოლოდ კომენტარშია</div></div>
+            <div class="benefit"><span class="dot"></span><div>სხვა AI თასქებსაც ეხმარება — უკეთესი წყარო = უკეთესი პასუხი</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i="5">
+      <div class="slide-inner">
+        <div class="eyebrow">დასკვნა</div>
+        <div class="panel">
+          <h2>გაკეთებულია</h2>
+          <div class="done-list">
+            <div class="done-item"><span class="check">✓</span><span>REST სკრიპტი + skill/წესებში ჩართვა</span></div>
+            <div class="done-item"><span class="check">✓</span><span>შემოწმება რეალურ გვერდზე</span></div>
+            <div class="done-item"><span class="check">✓</span><span>Jira Done summary კომენტარი</span></div>
+            <div class="done-item"><span class="check">✓</span><span>Commit <code>a83b76f4</code></span></div>
+          </div>
+          <p class="quote">ადრე AI მხოლოდ სტატიას ხედავდა. ახლა იმავე გვერდის კომენტარებსაც კითხულობს.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="nav">
+    <div class="progress" id="dots"></div>
+    <div id="counter">1 / 6</div>
+    <div class="nav-btns">
+      <button type="button" id="prev" aria-label="წინა">← უკან</button>
+      <button type="button" id="next" aria-label="შემდეგი">წინ →</button>
+    </div>
+  </div>
+
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  const dots = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  let i = 0;
+
+  slides.forEach((_, idx) => {
+    const s = document.createElement('span');
+    if (idx === 0) s.classList.add('on');
+    dots.appendChild(s);
+  });
+
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((el, idx) => el.classList.toggle('active', idx === i));
+    [...dots.children].forEach((d, idx) => d.classList.toggle('on', idx === i));
+    counter.textContent = `${i + 1} / ${slides.length}`;
+    prevBtn.disabled = i === 0;
+    nextBtn.disabled = i === slides.length - 1;
+  }
+
+  prevBtn.addEventListener('click', () => show(i - 1));
+  nextBtn.addEventListener('click', () => show(i + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) {
+      e.preventDefault();
+      show(i + 1);
+    } else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) {
+      e.preventDefault();
+      show(i - 1);
+    } else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+  });
+
+  show(0);
+</script>
+</body>
+</html>
