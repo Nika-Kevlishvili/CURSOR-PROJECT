@@ -1,0 +1,37 @@
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Secrets — never commit (security.md §4.2)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials.json
+serviceAccountKey.json
+secrets/
+
+# Agent event log, subagent registry and compaction log (ADR-0006, ADR-0008) — per machine, may hold paths and commands
+.cursor/logs/
+# Claude Code's local files: the engine runs in Cursor (ADR-0008); a .claude/ folder here would
+# also be loaded by Cursor's third-party import and run a second set of hooks
+.claude/
+
+# Runtime state written by plugins (oh-my-claudecode) — changes constantly, never project content
+.omc/
+
+# Obsidian — per-device UI state (vault content itself IS committed)
+.obsidian/workspace*.json
+.obsidian/cache
+
+# Whatever the product turns out to be
+__pycache__/
+.venv/
+node_modules/
+dist/
+build/

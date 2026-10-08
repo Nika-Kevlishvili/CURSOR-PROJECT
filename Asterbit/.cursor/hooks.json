@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      { "command": "python3 .cursor/hooks/cursor_adapter.py session-start", "timeout": 15 }
+    ],
+    "beforeShellExecution": [
+      { "command": "python3 .cursor/hooks/cursor_adapter.py shell", "timeout": 90, "failClosed": true }
+    ],
+    "preToolUse": [
+      { "command": "python3 .cursor/hooks/cursor_adapter.py tool", "matcher": "Shell|Write|Delete|Read|Grep", "timeout": 15, "failClosed": true }
+    ],
+    "postToolUse": [
+      { "command": "python3 .cursor/hooks/cursor_adapter.py post-tool", "timeout": 10 }
+    ],
+    "postToolUseFailure": [
+      { "command": "python3 .cursor/hooks/cursor_adapter.py tool-failure", "timeout": 10 }
+    ],
+    "preCompact": [
+      { "command": "python3 .cursor/hooks/cursor_adapter.py pre-compact", "timeout": 10 }
+    ],
+    "subagentStart": [
+      { "command": "python3 .cursor/hooks/cursor_adapter.py subagent-start", "timeout": 10 }
+    ],
+    "subagentStop": [
+      { "command": "python3 .cursor/hooks/cursor_adapter.py subagent-stop", "timeout": 10 }
+    ]
+  }
+}

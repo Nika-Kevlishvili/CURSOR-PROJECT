@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(git:status*)",
+      "Shell(git:diff*)",
+      "Shell(git:log*)",
+      "Shell(git:show*)",
+      "Shell(git:branch*)",
+      "Shell(git:switch*)",
+      "Shell(git:fetch*)",
+      "Shell(git:pull*)",
+      "Shell(git:add*)",
+      "Shell(git:commit*)",
+      "Shell(git:push*)",
+      "Shell(python3:sdlc/checks/*)",
+      "Shell(gitleaks)",
+      "Shell(gh:pr view*)",
+      "Shell(gh:pr list*)",
+      "Shell(gh:pr create*)",
+      "Shell(gh:pr checks*)",
+      "Shell(gh:run list*)",
+      "Shell(gh:run view*)"
+    ],
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Write(.env)",
+      "Write(.env.*)",
+      "Write(**/*.pem)",
+      "Write(**/*.key)",
+      "Shell(rm:-rf*)",
+      "Shell(rm:-fr*)",
+      "Shell(git:reset --hard*)",
+      "Shell(git:clean -f*)",
+      "Shell(git:push --force*)",
+      "Shell(git:push -f*)"
+    ]
+  }
+}
