@@ -1,0 +1,67 @@
+# Engine knowledge zones. This graph is not Phoenix or EnergoTS evidence.
+# Neo4j password comes from NEO4J_PASSWORD in the environment, not from this file.
+
+zones:
+  rules:
+    label: "rules"
+    description: "Cursor rules for this engine (.cursor/rules). Not product code."
+    node_types:
+      - Rule
+    sources:
+      - type: markdown
+        paths:
+          - ".cursor/rules"
+    color: "#0047FF"
+
+  skills_and_agents:
+    label: "skills and agents"
+    description: "Cursor skills and agents (.cursor/skills, .cursor/agents)."
+    node_types:
+      - Skill
+      - Agent
+    sources:
+      - type: markdown
+        paths:
+          - ".cursor/skills"
+          - ".cursor/agents"
+    color: "#FFD000"
+
+  memory_and_handoff:
+    label: "memory and handoff"
+    description: "Session memory and handoffs (memory/)."
+    node_types:
+      - MemoryNote
+    sources:
+      - type: markdown
+        paths:
+          - "memory"
+    color: "#00C853"
+
+  sdlc_docs:
+    label: "SDLC docs"
+    description: "Engine SDLC documents (docs/ and sdlc/design)."
+    node_types:
+      - Document
+    sources:
+      - type: markdown
+        paths:
+          - "docs"
+          - "sdlc/design"
+    color: "#FF5722"
+
+staleness:
+  check_on_query: true
+  max_age_hours: 24
+  hash_algorithm: "sha256"
+
+llm:
+  base_url: "http://localhost:1234/v1"
+  model: "qwen2.5-3b-instruct"
+  embed_model: "text-embedding-nomic-embed-text-v1.5"
+  temperature: 0.1
+  max_tokens: 2048
+
+neo4j:
+  uri: "bolt://localhost:7687"
+  user: "neo4j"
+  database: "neo4j"

@@ -2,6 +2,13 @@
 
 This repo holds (1) a phase-gated SDLC engine for building software with Cursor, on Claude models (ADR-0007, ADR-0008), and (2), later, the product built with it. The product is not chosen yet — Phase 1 decides it. This file holds the rules every AI agent follows here; Cursor loads it into every chat. Owner's guide (Georgian): README.md. Working agreement (Georgian): PROCESS.md — it must say the same as this file; report any mismatch as a defect. Work log: PROGRESS.md. Collaborator guide: CONTRIBUTING.md. File map: docs/FILES.md.
 
+## Precedence
+Should_touch rules, skills, and agents (`.cursor/rules/`, `.cursor/skills/` other than `sdlc-*`, `.cursor/agents/` other than advisor, architect, auditor, scout, and verifier) win when they disagree with this file or an Asterbit hook.
+- If a Should_touch rule, skill, or agent disagrees with AGENTS.md or an Asterbit hook, follow Should_touch.
+- Chat language follows Rule 0.7 (the user’s language). New project files stay English. Existing Georgian engine docs stay as they are.
+- Rule 0.8 path tiers beat Asterbit’s “no product code before `docs/plan.md` is approved.” Phoenix stays read-only. EnergoTS writes stay limited to the test agent under `tests/`. Other user-requested edits outside those trees stay allowed.
+- Asterbit guards that match Should_touch safety stay: no force-push, no push onto `main`, no `rm -rf`, no secret commit, no GitLab or Confluence writes. `control-git-push.ps1` stays unwired, as on Should_touch.
+
 ## People
 - Owner (GitHub: tornikebolokadze1-cyber): writes Georgian, does not read code, learns by building. Answer in Georgian prose; keep technical terms but gloss each on first use; explain what and why before how.
 - Collaborators (listed in CONTRIBUTING.md) clone the repo and work on their own branches; their changes reach main only through a pull request. Answer every person in the language they write in.
@@ -86,7 +93,7 @@ A checkpoint — right after a compaction, or at a natural pause in a long sessi
 End with four Georgian lines: Done / In progress / Next / Blocked. After a compaction, say plainly what the summary may have lost.
 
 ## Safety — these rules travel with the repo
-The owner's personal global rules exist only on the owner's machine; every other machine gets only what is written here. Where a user-level rule differs from this file — commits, subagents, models, reviews — this file and the engine's skills win in this repo (owner, 2026-10-08).
+The owner's personal global rules exist only on the owner's machine; every other machine gets only what is written here. Where a user-level rule differs from this file — commits, subagents, models, reviews — this file and the engine's skills win in this repo (owner, 2026-10-08), except where the Precedence section says a Should_touch rule, skill, or agent wins.
 - Work on a branch and push working branches freely (ADR-0005); never push to main — main changes only through a pull request that the owner approves and merges.
 - Ask the person you work with before you install anything or fetch from the internet. Changes to permissions, hooks, settings or CI affect everyone, so they need the owner's yes. The hook holds installs (brew, pip, npm, npx), fetches (curl, wget) and `gh pr merge` for a yes; a Cursor hook cannot hold a file edit for approval, so changes to .cursor/hooks.json, .cursor/hooks/ or .github/ rest on your word and the owner's PR review.
 - In Cursor, .cursor/hooks.json enforces the rules below through .cursor/hooks/cursor_adapter.py (guard.py, commit_secrets.py); "ask first" commands come as a Cursor approval prompt. Other agents (Codex, Kilo, Gemini CLI) keep these rules on their word; CI runs on every pull request. If a hook blocks you, explain why and ask — never work around a hook. Stage and commit in separate commands so the secret scan sees the staged files; pass long commit or PR texts as files (`git commit -F`, `gh pr create --body-file`).

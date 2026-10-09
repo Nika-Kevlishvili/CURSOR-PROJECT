@@ -1,0 +1,42 @@
+node.BlueBusiness {
+  color: #0047FF;
+  border-color: #001A80;
+  text-color-internal: #FFFFFF;
+  diameter: 90px;
+  caption: '{title}';
+}
+
+node.YellowAPI {
+  color: #FFD000;
+  border-color: #7A5A00;
+  text-color-internal: #000000;
+  diameter: 50px;
+  caption: '{title}';
+}
+
+node.RedTests {
+  color: #FF0000;
+  border-color: #7A0000;
+  text-color-internal: #FFFFFF;
+  diameter: 90px;
+  caption: '{title}';
+}
+
+node.GreenPlaywright {
+  color: #00C853;
+  border-color: #00662A;
+  text-color-internal: #000000;
+  diameter: 90px;
+  caption: '{title}';
+}
+
+node {
+  caption: '{title}';
+}
+
+relationship {
+  color: #78909C;
+  shaft-width: 2px;
+  caption: '{type}';
+  font-size: 10px;
+}

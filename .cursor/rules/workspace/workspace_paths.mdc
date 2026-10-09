@@ -1,0 +1,13 @@
+---
+description: "Repo-root Phoenix/ and EnergoTS/ are the same trees as Cursor-Project/Phoenix and Cursor-Project/EnergoTS. Rule 0.8 applies to both layouts."
+alwaysApply: true
+---
+
+# Workspace path layouts
+
+On this branch Phoenix and EnergoTS live at the repository root. Older rules and commands still say `Cursor-Project/Phoenix/` and `Cursor-Project/EnergoTS/`. Those two layouts are the same trees:
+
+- `Phoenix/` and `Cursor-Project/Phoenix/`
+- `EnergoTS/` and `Cursor-Project/EnergoTS/`
+
+Rule 0.8 applies to both spellings. Phoenix stays read-only. EnergoTS writes stay limited to the test agent under `tests/`.

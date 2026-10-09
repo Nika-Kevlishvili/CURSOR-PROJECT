@@ -1,0 +1,29 @@
+name: Validate Cursor rules
+
+on:
+  pull_request:
+    paths:
+      - '.cursor/**'
+      - 'Cursor-Project/scripts/validate-cursor*.ps1'
+      - '.github/workflows/validate-cursor-rules.yml'
+  push:
+    branches: [main, master, Do-not-touch]
+    paths:
+      - '.cursor/**'
+      - 'Cursor-Project/scripts/validate-cursor*.ps1'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run validate-cursor-rules.ps1
+        shell: pwsh
+        run: |
+          ./Cursor-Project/scripts/validate-cursor-rules.ps1
+
+      - name: Run validate-cursor-consistency.ps1
+        shell: pwsh
+        run: |
+          ./Cursor-Project/scripts/validate-cursor-consistency.ps1

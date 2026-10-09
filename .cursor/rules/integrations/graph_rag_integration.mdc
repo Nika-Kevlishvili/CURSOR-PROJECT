@@ -1,0 +1,48 @@
+---
+description: "Graph RAG for this engine. graph_query returns pointers to rules, skills, agents, memory, and SDLC docs. The graph is not Phoenix or EnergoTS evidence."
+alwaysApply: true
+---
+
+# GRAPH RAG INTEGRATION [SHOULD]
+
+**Fill / graph shape:** Rule **GRAPH.1** — `.cursor/rules/integrations/graph_rag_ingest.mdc` and `graph-rag/INGEST.md`. GRAPH.0 does not define how to populate Neo4j.
+
+## Rule GRAPH.0: Query the engine graph
+
+**Intent:** When the Graph RAG MCP server is available, agents SHOULD call `graph_query` for questions about this engine (rules, skills, agents, memory, handoff, SDLC docs). The graph is an index of those files. It is not evidence about Phoenix or EnergoTS.
+
+**When to use `graph_query`:**
+- Questions about Cursor rules, skills, or agents
+- Questions about memory, handoff, or SDLC documents (`docs/`, `sdlc/design`)
+
+**When NOT to use `graph_query`:**
+- Phoenix or EnergoTS behavior, APIs, billing, contracts, or tests. Read those trees (and Confluence, when the QA rules require it) directly. Do not cite graph nodes as product evidence.
+- Swagger or test-case coverage of the product
+- Git status, trivial Q&A, or when the user says to skip the graph
+
+## Workflow [MUST after a successful `graph_query`]
+
+1. Call `graph_query` with argument **`question`** and `use_llm_synthesis: false`.
+2. Open every returned `source_path` that you cite. Graph `description` text is a pointer, not a spec.
+3. If the question is about Phoenix or EnergoTS, ignore product-sounding graph text and use the live trees instead.
+4. Counts (`nodes found`, `stale_count`) come from this turn’s tool result.
+
+## Tools (GraphRAG MCP)
+
+| Tool | Purpose |
+|------|---------|
+| `graph_query` | Engine `source_path` pointers. Argument: **`question`**. |
+| `graph_update` | Save a verified engine fact after the user says yes |
+| `graph_index_topic` | Re-index engine zones after the user says yes |
+| `graph_status` | Zone counts and health |
+
+Server command: `python3 graph-rag/server/mcp_server.py`. `NEO4J_PASSWORD` comes from the environment, not from git.
+
+## Ask before fill [MUST]
+
+Do not call `graph_index_topic`, `graph_update`, or run ingest until the user agrees in this chat. The proposal names what would change, which engine files it comes from, and which node types would be written. It does not propose Phoenix, EnergoTS, or Swagger ingest.
+
+## Compliance tier
+
+- **SHOULD** — Call `graph_query` for engine questions when MCP is available.
+- **MUST** — Do not treat the graph as Phoenix or EnergoTS evidence. Open engine `source_path` files before citing them.

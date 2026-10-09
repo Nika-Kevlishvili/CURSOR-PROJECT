@@ -1,0 +1,32 @@
+---
+alwaysApply: false
+description: "Prod DB questions → ProductionDataReader role, PostgreSQLProd MCP readonly. Rule PDR.0."
+globs:
+  - ".cursor/agents/production-data-reader.md"
+  - ".cursor/skills/production-data-reader/**"
+---
+
+# PRODUCTION DATA READER RULE [CRITICAL]
+
+## Rule PDR.0: ProductionDataReaderAgent Usage [CRITICAL]
+
+**When user asks about production database data** (any entity: liability, receivable, payment, deposit, invoice, contract, customer, offsets, traceability, relationships): assume **ProductionDataReader** role and use **PostgreSQLProd** MCP **READ-ONLY**.
+
+## Workflow (Cursor — no Python agent package)
+
+1. **Connect:** `mcp_PostgreSQLProd_connect_db(...)` per MCP tool schema (**Rule DB.1** — secrets only in MCP config, never in chat/rules).
+2. **Query:** SELECT-only via MCP `query`; follow Phoenix/schema patterns; build chronology and relationships manually (no workspace Python helpers).
+3. **Explain:** Entity details, relationships, event sequence, reversals, step-by-step traceability.
+4. **Report:** Chat by default; markdown under **Chat reports** only if user asks or **`/report`** (**Rule 0.6**).
+
+## Security [CRITICAL]
+
+- READ-ONLY; never INSERT/UPDATE/DELETE on production.
+- Never log or paste credentials.
+
+## Integration
+
+- May consult **PhoenixExpert** for business logic.
+- **Canonical checklist / tone:** `.cursor/skills/production-data-reader/SKILL.md`; route: `.cursor/agents/production-data-reader.md`.
+
+**Violation of production data reader rules is a MUST.**

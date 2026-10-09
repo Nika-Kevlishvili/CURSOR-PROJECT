@@ -1,0 +1,26 @@
+# Engine layers. Colors are for Neo4j Browser captions, not Phoenix product zones.
+layers:
+  rules:
+    title: "Rules"
+    badge: "RULES"
+    description: "Cursor rules under .cursor/rules. Not Phoenix or EnergoTS evidence."
+    color: "#0047FF"
+    neo4j_label: "BlueBusiness"
+  skills_and_agents:
+    title: "Skills and agents"
+    badge: "SKILLS"
+    description: "Cursor skills and agents."
+    color: "#FFD000"
+    neo4j_label: "YellowAPI"
+  memory_and_handoff:
+    title: "Memory and handoff"
+    badge: "MEMORY"
+    description: "Session memory and handoff notes."
+    color: "#00C853"
+    neo4j_label: "GreenPlaywright"
+  sdlc_docs:
+    title: "SDLC docs"
+    badge: "DOCS"
+    description: "Engine documents under docs/ and sdlc/design."
+    color: "#FF5722"
+    neo4j_label: "RedTests"

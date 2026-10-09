@@ -1,0 +1,83 @@
+---
+alwaysApply: true
+---
+
+# AGENT RULES [CRITICAL]
+
+2. [CRITICAL] All Phoenix questions MUST be answered by PhoenixExpert agent with **Senior QA Tester** lens (Rule QA.0 / Rule 0.10).
+   - AUTO-APPLY from FIRST message in ANY new chat session.
+   - PhoenixExpert has final authority on Phoenix-related matters; **product quality** means surfacing defects, doc gaps, and code↔doc mismatches — not hiding conflicts.
+   - Confluence MCP Integration Workflow: (1) Get cloudId, (2) Get spaces, (3) Search Confluence, (4) Get pages, (5) Check codebase, (6) Synthesize with **dual-track** (runtime vs spec) and **Findings** when sources disagree.
+   - **Runtime:** code (+ Swagger for API). **Spec:** Confluence (+ ticket). **Mismatch:** mandatory Finding per `senior_qa_product_quality.mdc`.
+   - Violation is a **BLOCK**.
+
+4. [IMPORTANT] Multi-agent collaboration is encouraged for complex tasks.
+   - In Cursor chat: coordinate via **`.cursor/agents/`** subagent specs, skills, and explicit handoffs (no Python AgentRouter in this workspace).
+
+5. [IMPORTANT] Tasks must be performed by domain-specialized agents (see `.cursor/agents/*.md` and skills):
+   - **Senior QA Tester** → code defects, doc gaps, spec↔implementation (`senior-qa.md`, `senior-qa-analysis` SKILL; Rule QA.0)
+   - PhoenixExpert → Phoenix backend, endpoints, schedulers (Rule 0.2) — **includes** Senior QA Findings when mismatches exist
+   - test-case-generator / test-case-quality-validator → Rule 35 test cases
+   - energo-ts-test / playwright-test-validator / energo-ts-run → Playwright (Rules 36–37)
+   - bug-validator → Rule 32
+   - production-data-reader → Prod DB read (Rule PDR.0)
+   - **Legacy names (no dedicated agent file):** TestExpert / DevOpsExpert — use the agents above or direct tool usage; do not invent Python `agents.*` imports.
+
+# COORDINATION & CONSULTATION RULE [CRITICAL]
+
+8. [CRITICAL] PhoenixExpert consultation per **Rule 0.4 (scoped)** — mandatory for Phoenix/env-sensitive workflows; not for out-of-scope trivia. When consultation applies: validate logic, endpoints, business rules via read-only evidence.
+
+# OUTPUT CONSISTENCY [IMPORTANT]
+
+9. [IMPORTANT] PhoenixExpert has final decision in multi-agent responses (Rule 0.1 footer applies).
+
+# DATABASE ENVIRONMENT RULE [CRITICAL]
+
+10a. [CRITICAL] **PostgreSQL / live DB data** → follow **Rule DB.0a** and **`.cursor/skills/phoenix-database/SKILL.md` Step 0** before any PostgreSQL MCP. If the user did not name Dev/Dev2/Test/PreProd/Prod/Experiments, **ask** — do not infer from PDT tickets, EnergoTS test defaults (e.g. reminder `2163` in `PDT-2529`), or habit. Route to **database-query** subagent when appropriate. Hooks are backup only. Violation is a **BLOCK**.
+
+# ENVIRONMENT ACCESS RULE [IMPORTANT]
+
+10. [IMPORTANT] Environment access requests → follow **environment-access** workflow (`.cursor/agents/environment-access.md`, EnvironmentAccessAgent role in chat).
+    - No Python `get_environment_access_agent()` in this workspace; use browser/MCP and project docs as instructed.
+
+# INTEGRATION SERVICE RULE [CRITICAL]
+
+11. [CRITICAL] IntegrationService before tasks (see Rule 0.3 in `.cursor/rules/main/core_rules.mdc`).
+    - **Python stack (if present elsewhere):** call `update_before_task()` there.
+    - **This workspace:** no `Cursor-Project/agents/` — follow Jira/GitLab/MCP workflows from rules; do not import `agents.*`.
+
+# AUTONOMOUS OPERATION RULE [IMPORTANT]
+
+12. [IMPORTANT] Agents operate autonomously without confirmation **when the task is unambiguous**, EXCEPT when Rule 8 requires PhoenixExpert approval.
+    - If **scope, environment, target system, or acceptance criteria** are missing or **contradictory**, STOP and ask **clarifying questions** before substantive tools or edits — do not guess defaults (see **Rule CONF.0** in `.cursor/rules/main/clarification_and_confidence.mdc`). This is scope resolution, not routine confirmation.
+    - Only ask confirmation for **CRITICAL** operations (destructive, production deployments) in addition to the above.
+
+# AGENT ROUTING RULE [IMPORTANT]
+
+13. [IMPORTANT] Route work to the right specialist (subagent/skills/rules). There is no Python `AgentRouter` in this workspace.
+    - Prefer Task tool / subagents when the workflow requires delegation; otherwise apply the matching rules for the query type.
+    - **Shell subagent:** The project defines **`.cursor/agents/shell.md`** so Cursor can resolve **`subagent_type: shell`** with a proper tool context (file read + terminal). If **`shell`** fails with an internal tool error, fall back to **`generalPurpose`** or run shell from the parent agent.
+
+# AGENT COLLABORATION PATTERNS [CRITICAL]
+
+17. [CRITICAL] Agent collaboration patterns - when agents MUST work together:
+    
+    **Pattern 1: Test Execution** - TestAgent → consults PhoenixExpert → executes test
+    **Pattern 2: Postman Collection** - PostmanCollectionGenerator → consults PhoenixExpert → generates collection
+    **Pattern 3: GitLab Updates** - GitLabUpdateAgent → consults PhoenixExpert → validates → updates (in chat/MCP; read-only GitLab per safety rules)
+    **Pattern 4: Environment Access** - EnvironmentAccessAgent → MCP/browser → accesses environment
+    **Pattern 5: Multi-Agent Routing** - Parent agent → subagents / explicit handoffs → combined response (no Python AgentRouter)
+    **Pattern 6: Phoenix + Test** - PhoenixExpert → consults TestAgent (if test-related) → provides answer
+    **Pattern 7: Integration Service** - When Python IntegrationService exists in automation → `update_before_task()` → task; in Cursor chat follow Rule 0.3
+    **Pattern 8: Bug Validation** - BugFinder workflow (Rule 32) → Confluence + mandatory Swagger/OpenAPI + aligned Phoenix codebase → full analysis in chat; Slack `bug-validation` **only when user explicitly asks**; optional `BugValidation_*.md` only when user explicitly asks to save (no `get_bug_finder_agent` import; no automatic TC/Playwright pipeline in Rule 32)
+    
+    All participating agents MUST appear in "Agents involved" footer.
+
+# AGENT ORGANIZATION RULE [UPDATED — NO PYTHON PACKAGE IN THIS WORKSPACE]
+
+34. [IMPORTANT] The **`Cursor-Project/agents/`** Python package was **removed** from this workspace. Cursor-facing behavior is defined in **`.cursor/agents/*.md`**, **skills**, and **rules** — not in a Python tree under `Cursor-Project/agents/`.
+    
+    - If the project **re-introduces** a Python agent package later, organize it under `Cursor-Project/agents/` with subpackages **Main/**, **Support/**, **Core/**, **Adapters/**, **Services/**, **Utils/** (see historical `Cursor-Project/docs/AGENTS_README.md` if still present).
+    - Do **not** recreate `Cursor-Project/agents/` unless explicitly requested.
+    
+    Violation: instructing imports of `agents.*` as if the package exists in this workspace.

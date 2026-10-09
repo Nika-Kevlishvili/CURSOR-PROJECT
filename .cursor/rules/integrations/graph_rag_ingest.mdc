@@ -1,0 +1,49 @@
+---
+description: "How the engine Graph RAG index is filled. Rules, skills, agents, memory, and SDLC docs only. Not Phoenix, EnergoTS, or Swagger."
+globs:
+  - "graph-rag/**"
+alwaysApply: true
+---
+
+# GRAPH RAG FILL [SHOULD]
+
+## Rule GRAPH.1: How this graph is filled
+
+**Intent:** The graph indexes this engine. `graph-rag/` is at the repository root. Workspace root is the parent of `graph-rag/`.
+
+**Playbook:** `graph-rag/INGEST.md`  
+**Query-time use:** Rule GRAPH.0 in `graph_rag_integration.mdc`.
+
+## 1. Zones
+
+| Zone | Source | Node types |
+|------|--------|------------|
+| `rules` | `.cursor/rules` | Rule |
+| `skills_and_agents` | `.cursor/skills`, `.cursor/agents` | Skill, Agent |
+| `memory_and_handoff` | `memory/` | MemoryNote |
+| `sdlc_docs` | `docs/`, `sdlc/design` | Document |
+
+`n.zone` is one of those four labels.
+
+## 2. Default pipeline
+
+`graph-rag/ingest/pipeline.py` reads only the paths above.
+
+- Do not call `swagger_extractor.py` or `testcase_extractor.py` from the default pipeline. The files stay in the tree.
+- Do not run `ingest_zip_codes.py`.
+- Do not index `Phoenix/`, `EnergoTS/`, or Swagger.
+
+## 3. Password and runtime
+
+`NEO4J_PASSWORD` is an environment variable. Do not commit it. This change does not start Docker and does not install Python packages.
+
+## 4. Do not put in the graph
+
+- Phoenix or EnergoTS source
+- Swagger specs or product test cases as if they were engine docs
+- Secrets, tokens, or database passwords
+
+## Compliance tier
+
+- **SHOULD** — Keep fills inside the four engine zones.
+- **MUST** — Do not tell agents that graph nodes are Phoenix or EnergoTS evidence.

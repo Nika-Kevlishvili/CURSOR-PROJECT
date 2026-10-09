@@ -1,6 +1,7 @@
 # OS / editor
 .DS_Store
-.vscode/
+.vscode/*
+!.vscode/settings.json
 .idea/
 
 # Secrets — never commit (security.md §4.2)
@@ -35,3 +36,17 @@ __pycache__/
 node_modules/
 dist/
 build/
+
+# Phoenix Backend Toolkit secrets (tokens, GitLab URL overrides)
+Cursor-Project/toolkits/phoenix-backend/.env
+Cursor-Project/toolkits/phoenix-backend/.env.local
+Cursor-Project/toolkits/phoenix-backend/.env.*.local
+
+# Jira local exports (attachments, issue dumps)
+Cursor-Project/config/jira/attachments/
+Cursor-Project/config/jira/_pdt*
+Cursor-Project/config/jira/out.txt
+
+# Reports (generated per session — regenerable)
+Cursor-Project/reports/
+Cursor-Project/reports/Bug Reports/.active-bugreview

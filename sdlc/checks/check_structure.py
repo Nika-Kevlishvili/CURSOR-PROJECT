@@ -21,8 +21,11 @@ REQUIRED_FILES = (
     "memory/README.md", "memory/now.md",
     ".cursor/hooks.json", ".cursor/hooks/cursor_adapter.py", ".cursor/cli.json",
 )
-EXPECTED_SKILLS = 11
+EXPECTED_SKILLS = 11  # the sdlc-* skills; QA skills may sit beside them
 EXPECTED_AGENTS = 5  # auditor, architect, verifier, scout and advisor (ADR-0007, ADR-0008)
+ENGINE_AGENTS = {"advisor", "architect", "auditor", "scout", "verifier"}
+# Reference copies. The file map does not have to list them as engine files.
+REFERENCE_TREES = ("Phoenix/", "EnergoTS/")
 SKILL_DESCRIPTION_MAX = 1024  # Cursor's limit for a skill description
 AGENT_MODELS = {"claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"}  # ADR-0007, option A
 AGENT_MODEL = re.compile(r"^(claude-(?:opus|sonnet|haiku)-5-5)(?:\[[\w=,.-]*\])?$")  # Cursor's syntax, e.g. claude-opus-5-5[effort=high]
@@ -89,8 +92,9 @@ def repo_files(root: Path, report: Report) -> list[str] | None:
 
 def check_skills(root: Path, report: Report) -> list[Path]:
     skills = sorted((root / ".cursor/skills").glob("*/SKILL.md"))
-    report.check(len(skills) == EXPECTED_SKILLS, f"expected {EXPECTED_SKILLS} skills, found {len(skills)}")
-    for skill in skills:
+    engine = [skill for skill in skills if skill.parent.name.startswith("sdlc-")]
+    report.check(len(engine) == EXPECTED_SKILLS, f"expected {EXPECTED_SKILLS} skills, found {len(engine)}")
+    for skill in engine:
         fields = front_matter(skill)
         rel = skill.relative_to(root)
         report.check(fields is not None, f"{rel}: no front matter")
@@ -101,7 +105,9 @@ def check_skills(root: Path, report: Report) -> list[Path]:
 
 
 def check_links_and_file_map(root: Path, files: list[str], report: Report) -> None:
-    for rel in (f for f in files if f.endswith(".md") and not f.startswith(STORED_DATA)):
+    # Phoenix/ and EnergoTS/ are reference trees, not engine pages, so their links are not listed here.
+    for rel in (f for f in files if f.endswith(".md") and not f.startswith(STORED_DATA)
+                and not f.startswith(REFERENCE_TREES)):
         page = root / rel
         for target in LINK.findall(page.read_text(encoding="utf-8")):
             if target.startswith(("http://", "https://", "#", "mailto:")):
@@ -119,6 +125,8 @@ def check_links_and_file_map(root: Path, files: list[str], report: Report) -> No
                 # a link to a folder (memory/episodic/handoffs/) covers the files that accumulate in it
                 (folders.append(rel_target + "/") if resolved.is_dir() else linked.add(rel_target))
     for rel in files:
+        if rel.startswith(REFERENCE_TREES):
+            continue
         report.check(rel in linked or any(rel.startswith(folder) for folder in folders),
                      f"docs/FILES.md does not list {rel}")
 
@@ -137,23 +145,28 @@ def check_cursor(root: Path, report: Report) -> None:
             hooks = config.get("hooks") if isinstance(config.get("hooks"), dict) else {}
             for event in GUARD_EVENTS:
                 entries = hooks.get(event) or []
-                report.check(bool(entries) and all(e.get("failClosed") is True for e in entries),
+                adapter = [e for e in entries if "cursor_adapter.py" in e.get("command", "")]
+                report.check(bool(adapter) and all(e.get("failClosed") is True for e in adapter),
                              f".cursor/hooks.json: {event} must be wired and fail closed (failClosed: true)")
             for entries in hooks.values():
                 for entry in entries:
                     for script in re.findall(r"(\.cursor/hooks/[\w.-]+\.py)", entry.get("command", "")):
                         report.check((root / script).exists(), f".cursor/hooks.json hook script missing: {script}")
-    agents = sorted((root / ".cursor/agents").glob("*.md"))
-    report.check(len(agents) == EXPECTED_AGENTS, f"expected {EXPECTED_AGENTS} agents, found {len(agents)}")
+    agents = sorted(p for p in (root / ".cursor/agents").glob("*.md") if p.name != "README.md")
+    engine_agents = [agent for agent in agents if agent.stem in ENGINE_AGENTS]
+    report.check(len(engine_agents) == EXPECTED_AGENTS, f"expected {EXPECTED_AGENTS} agents, found {len(engine_agents)}")
     for agent in agents:
         fields = front_matter(agent) or {}
         rel = agent.relative_to(root)
         report.check(fields.get("name") == agent.stem, f"{rel}: name != file name")
         report.check(bool(fields.get("description")), f"{rel}: missing 'description'")
-        model = AGENT_MODEL.match(fields.get("model", ""))
-        report.check(bool(model) and model.group(1) in AGENT_MODELS,
-                     f"{rel}: model {fields.get('model')} is not a pinned Claude 5.5 model (ADR-0007)")
-        report.check(fields.get("readonly") == "true", f"{rel}: engine agents run read-only (readonly: true)")
+        if agent.stem in ENGINE_AGENTS:
+            model = AGENT_MODEL.match(fields.get("model", ""))
+            report.check(bool(model) and model.group(1) in AGENT_MODELS,
+                         f"{rel}: model {fields.get('model')} is not a pinned Claude 5.5 model (ADR-0007)")
+            report.check(fields.get("readonly") == "true", f"{rel}: engine agents run read-only (readonly: true)")
+        else:
+            report.check(fields.get("model") == "inherit", f"{rel}: QA agents keep model: inherit")
     for rule in sorted((root / ".cursor/rules").glob("*.mdc")):
         fields = front_matter(rule) or {}
         report.check(bool(fields.get("description")) and ("alwaysApply" in fields or "globs" in fields),

@@ -14,6 +14,7 @@
 - [`AGENTS.md`](../AGENTS.md) — აგენტის სამუშაო წესები ინგლისურად; Cursor მას ყოველ ჩატში სრულად და ავტომატურად ტვირთავს, ამიტომ განზრახ მოკლეა (200 ხაზამდე — `check_structure.py` ამოწმებს). შიგნით წერია: ვინ არის მფლობელი და ვინ თანამშრომელი; კარიბჭის წესები; ADR-ების წესები; მოდელების როლები და როგორ ირჩევა ისინი Cursor-ში; „მზადაა" მხოლოდ ნაჩვენები შედეგით; მეხსიერების წესები; checkpoint-ის თანმიმდევრობა; უსაფრთხოების წესები, რომლებიც ყველა კომპიუტერზე მოქმედებს. 2026-10-08-მდე ეს წესები `CLAUDE.md`-ში იყო ([ADR-0008](decisions/0008-cursor-support.md)); Codex-ისა და სხვა აგენტებიც ამ ფაილს კითხულობენ.
 - [`env.example`](../env.example) — საიდუმლო პარამეტრების ნიმუში: მხოლოდ სახელები, მნიშვნელობების გარეშე. ყველა მას საკუთარ კომპიუტერზე `.env`-ად აკოპირებს და იქ ავსებს; `.env` git-ში არ შედის. ახლა ცარიელია — ჯერ არცერთი გასაღები არ გვჭირდება. სახელში წერტილი განზრახ არ არის: წესები `.env.*`-ზე ნამდვილ საიდუმლო ფაილებს იცავს.
 - [`.gitignore`](../.gitignore) — ფაილები, რომლებიც git-ში არასდროს უნდა მოხვდეს: საიდუმლოებები (`.env`, გასაღებები), კომპიუტერისა და რედაქტორის ნაგავი, აგენტის მოვლენების ჟურნალი (`.cursor/logs/`), სხვა ხელსაწყოების ლოკალური ფაილები (`.claude/`, `.omc/`), Obsidian-ის ფანჯრების მდგომარეობა და მომავალი build-ის ნაგავი.
+- [`.DS_Store`](../.DS_Store) — Finder-ის უკვე ჩაწერილი ნაგავი რეპოს ძირში. `.gitignore` ახალ ასეთ ფაილს იგნორებს; ეს ერთი ჩანაწერი ძველი ისტორიიდან რჩება.
 - [`.obsidian/app.json`](../.obsidian/app.json) — Obsidian-ის ორი პარამეტრი: ახალი ბმულები ჩვეულებრივი markdown ფორმატით და ფარდობითი გზით იქმნება, ამიტომ ისინი Obsidian-ში, Cursor-სა და GitHub-ზე ერთნაირად მუშაობს.
 
 ## `.cursor/` — ძრავა Cursor-ში ([ADR-0008](decisions/0008-cursor-support.md))
@@ -140,6 +141,21 @@ Subagent (დამხმარე აგენტი) ცალკე აგე
 - [`claude-models-2026-10.md`](../sdlc/research/claude-models-2026-10.md) — ვებ-კვლევა (2026-10-07) ოფიციალური Anthropic-ის გვერდებიდან: Fable 5.1, Opus 5.5, Sonnet 5.5, Haiku 5.5 (ID, ფასი, effort), advisor-ის წყვილები და ფასი, ქვეაგენტის `model`/`effort` და `usage.iterations`-ის სწორი წაკითხვა Claude Code-ში.
 - [`anthropic-guidance-2026-10.md`](../sdlc/research/anthropic-guidance-2026-10.md) — ვებ-კვლევა (2026-10-07, 65 ოფიციალური გვერდი): Anthropic-ის მაშინდელი რჩევები AI-native SDLC-სა და Claude Code-ზე 241 პუნქტად (MUST / SHOULD / OPTIONAL, წყარო და თარიღი თითოეულთან) 12 თემაზე.
 - [`engine-assessment-2026-10.md`](../sdlc/research/engine-assessment-2026-10.md) — ძრავის დამოუკიდებელი შეფასება ამ რჩევებით (auditor, 2026-10-08, უცვლელად): 6 პუნქტი, რომელიც საცდელ გაშვებას ბლოკავდა (A1–A6), 11 რეკომენდებული (B1–B11), 8 კითხვა საცდელი გაშვებისთვის (C1–C8).
+
+## Should_touch QA engine, scripts, and Graph RAG (2026-10-09)
+
+Should_touch-ის წესები, skill-ები, აგენტები, ბრძანებები და PowerShell hook-ები Asterbit-ის ფაილების გვერდით დგას. თუ ისინი `AGENTS.md`-ს არ ემთხვევა, Should_touch იმარჯვებს (Precedence). `Phoenix/` და `EnergoTS/` საცნობარო ხეებია და ეს რუკა მათ ფაილებს ძრავის ფაილებად არ თვლის. Graph RAG (`graph-rag/`) ძრავის დოკუმენტებს ინდექსავს, არა Phoenix-ს ან EnergoTS-ს.
+
+- [`.cursor/rules/`](../.cursor/rules/) — QA წესები, მათ შორის ყოველთვის ჩართული `core_rules.mdc`, `safety_rules.mdc`, ბილიკის შენიშვნა `workspace/workspace_paths.mdc` და Graph RAG-ის ორი წესი `integrations/graph_rag_integration.mdc`, `integrations/graph_rag_ingest.mdc`.
+- [`.cursor/skills/`](../.cursor/skills/) — 11 `sdlc-*` skill, QA skill-ები და `pom`.
+- [`.cursor/agents/`](../.cursor/agents/) — ხუთი Asterbit-ის აგენტი და QA აგენტები (`model: inherit`). `README.md` აგენტად არ ითვლება.
+- [`.cursor/commands/`](../.cursor/commands/) — QA ბრძანებები (markdown და `.ps1`).
+- [`.cursor/hooks/`](../.cursor/hooks/) — Python ადაპტერი და Should_touch-ის PowerShell hook-ები. `control-git-push.ps1` ფაილად დევს და `hooks.json`-ში ჩართული არ არის. `beforeShellExecution`-ზე PowerShell ჩანაწერი პირველია; `failClosed` მხოლოდ `cursor_adapter.py`-ზეა.
+- [`.cursor/mcp.json`](../.cursor/mcp.json) — Confluence, Jira, Elasticsearch, Postgres (საიდუმლოები ცარიელია, ბრძანება `python3`), Playwright MCP და GraphRAG (`python3 graph-rag/server/mcp_server.py`). პაროლი გარემოდან მოდის, git-იდან არა.
+- [`Cursor-Project/`](../Cursor-Project/) — `scripts/` (ვალიდატორები, Elasticsearch MCP, git hook-ები), `docs/RULES_CANONICAL_INDEX.md` და config-ის სკრიპტები, რომლებსაც წესები იძახებს (Confluence, Jira, Slack, diagrams, templates, Playwright instructions). ქეშები, attachment-ები და ცოცხალი ტოკენები არ არის.
+- [`graph-rag/`](../graph-rag/) — Neo4j Graph RAG რეპოს ძირში. ზონები: rules, skills and agents, memory and handoff, SDLC docs. ნაგულისხმევი pipeline არ იძახებს Swagger/testcase extractor-ებს და არ უშვებს `ingest_zip_codes.py`.
+- [`.vscode/settings.json`](../.vscode/settings.json) — workspace-ის git პარამეტრები.
+- [`.github/workflows/validate-cursor-rules.yml`](../.github/workflows/validate-cursor-rules.yml) — QA წესების CI (`pwsh`).
 
 ## რა არ არის რეპოში
 

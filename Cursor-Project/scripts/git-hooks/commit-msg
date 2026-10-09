@@ -1,0 +1,13 @@
+#!/bin/sh
+# Conventional Commits hook
+# Types: feat fix docs chore refactor test ci
+# Format: <type>(<scope>): <description 5+ chars>
+# Exceptions: Merge, Revert prefixes
+MSG=$(head -1 "$1")
+if echo "$MSG" | grep -qE '^(Merge|Revert) '; then exit 0; fi
+if ! echo "$MSG" | grep -qE '^(feat|fix|docs|chore|refactor|test|ci)(\(.+\))?: .{5,}$'; then
+  echo "ERROR: commit message must match: <type>(<scope>): <description>"
+  echo "  Types: feat fix docs chore refactor test ci"
+  echo "  Example: docs(rules): consolidate PhoenixExpert references"
+  exit 1
+fi

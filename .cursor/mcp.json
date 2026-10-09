@@ -1,0 +1,208 @@
+{
+  "mcpServers": {
+    "Confluence": {
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/sse"
+    },
+    "Jira": {
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/sse"
+    },
+    "ElasticsearchDev": {
+      "command": "python3",
+      "args": [
+        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+      ],
+      "env": {
+        "ES_HOST": "https://10.236.20.13:9200",
+        "ES_API_KEY": "",
+        "ES_VERIFY_SSL": "false",
+        "ES_SERVER_NAME": "ElasticsearchDev",
+        "ES_ENVIRONMENTS": "dev,dev2"
+      }
+    },
+    "ElasticsearchExperiment": {
+      "command": "python3",
+      "args": [
+        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+      ],
+      "env": {
+        "ES_HOST": "https://10.236.20.13:9200",
+        "ES_API_KEY": "",
+        "ES_VERIFY_SSL": "false",
+        "ES_SERVER_NAME": "ElasticsearchExperiment",
+        "ES_ENVIRONMENTS": "experiments,experiment",
+        "ES_FILTER_APP_NAME": "phoenix-billing-run",
+        "ES_FILTER_ENVIRONMENT_KEYWORD": "experiment"
+      }
+    },
+    "ElasticsearchTest": {
+      "command": "python3",
+      "args": [
+        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+      ],
+      "env": {
+        "ES_HOST": "http://10.236.20.27:9200",
+        "ES_API_KEY": "",
+        "ES_VERIFY_SSL": "false",
+        "ES_SERVER_NAME": "ElasticsearchTest",
+        "ES_ENVIRONMENTS": "test,preprod",
+        "ES_READ_ONLY": "true"
+      }
+    },
+    "ElasticsearchTest2ES": {
+      "command": "python3",
+      "args": [
+        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+      ],
+      "env": {
+        "ES_HOST": "http://10.236.20.27:9200",
+        "ES_API_KEY": "",
+        "ES_VERIFY_SSL": "false",
+        "ES_SERVER_NAME": "ElasticsearchTest2ES",
+        "ES_ENVIRONMENTS": "test2es",
+        "ES_FILTER_APP_NAME": "phoenix2",
+        "ES_FILTER_ENVIRONMENT_KEYWORD": "test",
+        "ES_READ_ONLY": "true"
+      }
+    },
+    "ElasticsearchTest2SLR": {
+      "command": "python3",
+      "args": [
+        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+      ],
+      "env": {
+        "ES_HOST": "http://10.236.20.27:9200",
+        "ES_API_KEY": "",
+        "ES_VERIFY_SSL": "false",
+        "ES_SERVER_NAME": "ElasticsearchTest2SLR",
+        "ES_ENVIRONMENTS": "test2slr",
+        "ES_FILTER_APP_NAME": "phoenix2",
+        "ES_FILTER_ENVIRONMENT_KEYWORD": "testi2",
+        "ES_READ_ONLY": "true"
+      }
+    },
+    "ElasticsearchProd": {
+      "command": "python3",
+      "args": [
+        "Cursor-Project/scripts/elasticsearch_mcp_server.py"
+      ],
+      "env": {
+        "ES_HOST": "https://10.236.20.69:9200",
+        "ES_API_KEY": "",
+        "ES_VERIFY_SSL": "false",
+        "ES_SERVER_NAME": "ElasticsearchProd",
+        "ES_ENVIRONMENTS": "prod",
+        "ES_READ_ONLY": "true"
+      }
+    },
+    "PostgreSQLDev": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-postgres-server"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "",
+        "MCP_SERVER_NAME": "PostgreSQLDev",
+        "POSTGRES_HOST": "10.236.20.21",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": ""
+      }
+    },
+    "PostgreSQLDev2": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-postgres-server"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "",
+        "MCP_SERVER_NAME": "PostgreSQLDev2",
+        "POSTGRES_HOST": "10.236.20.22",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": ""
+      }
+    },
+    "PostgreSQLTest": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-postgres-server"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "",
+        "MCP_SERVER_NAME": "PostgreSQLTest",
+        "POSTGRES_HOST": "10.236.20.24",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": ""
+      }
+    },
+    "PostgreSQLPreProd": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-postgres-server"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "",
+        "MCP_SERVER_NAME": "PostgreSQLPreProd",
+        "POSTGRES_HOST": "10.236.20.76",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": ""
+      }
+    },
+    "PostgreSQLProd": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-postgres-server"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "",
+        "MCP_SERVER_NAME": "PostgreSQLProd",
+        "POSTGRES_HOST": "10.236.20.78",
+        "POSTGRES_PORT": "5000",
+        "POSTGRES_DB": "phoenix",
+        "POSTGRES_USER": "readonly_user",
+        "POSTGRES_PASSWORD": ""
+      }
+    },
+    "PostgreSQLExperiment": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-postgres-server"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "",
+        "MCP_SERVER_NAME": "PostgreSQLExperiment",
+        "POSTGRES_HOST": "10.236.20.85",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "postgres",
+        "POSTGRES_USER": "readonly_user",
+        "POSTGRES_PASSWORD": ""
+      }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ]
+    },
+    "GraphRAG": {
+      "command": "python3",
+      "args": [
+        "graph-rag/server/mcp_server.py"
+      ]
+    }
+  }
+}

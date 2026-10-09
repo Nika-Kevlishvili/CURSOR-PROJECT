@@ -4,7 +4,23 @@
     "sessionStart": [
       { "command": "python3 .cursor/hooks/cursor_adapter.py session-start", "timeout": 15 }
     ],
+    "beforeSubmitPrompt": [
+      { "command": "pwsh -NoProfile -File .cursor/hooks/block-jira-phoenix-delivery.ps1" },
+      { "command": "pwsh -NoProfile -File .cursor/hooks/remind-test-case-env-first.ps1" },
+      { "command": "pwsh -NoProfile -File .cursor/hooks/block-energots-branch-requests.ps1" }
+    ],
+    "afterFileEdit": [
+      { "command": "pwsh -NoProfile -File .cursor/hooks/protect-phoenix-code.ps1" },
+      { "command": "pwsh -NoProfile -File .cursor/hooks/protect-energots-writes.ps1" },
+      { "command": "pwsh -NoProfile -File .cursor/hooks/warn-phoenix-code-edit.ps1" }
+    ],
+    "beforeMCPExecution": [
+      { "command": "pwsh -NoProfile -File .cursor/hooks/block-confluence-write.ps1" },
+      { "command": "pwsh -NoProfile -File .cursor/hooks/control-database-write.ps1" },
+      { "command": "pwsh -NoProfile -File .cursor/hooks/block-bugreview-unapproved-jira.ps1" }
+    ],
     "beforeShellExecution": [
+      { "command": "pwsh -NoProfile -File .cursor/hooks/block-energots-branch-switch.ps1" },
       { "command": "python3 .cursor/hooks/cursor_adapter.py shell", "timeout": 90, "failClosed": true }
     ],
     "preToolUse": [
@@ -24,6 +40,9 @@
     ],
     "subagentStop": [
       { "command": "python3 .cursor/hooks/cursor_adapter.py subagent-stop", "timeout": 10 }
+    ],
+    "afterAgentResponse": [
+      { "command": "pwsh -NoProfile -File .cursor/hooks/validate-confidence-format.ps1" }
     ]
   }
 }

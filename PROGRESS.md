@@ -5,6 +5,7 @@
 
 ## Current State (მიმდინარე მდგომარეობა)
 - **Phase:** 0 — Engine setup — IN PROGRESS (ძრავა v1 და v2, `AGENTS.md`, `env.example`, შეფასება, A1–A6 და `commit_secrets`-ის საქაღალდის გასწორება `main`-შია — PR #2–#8)
+- **2026-10-09:** `cursor-engine` — Should_touch QA engine და engine Graph RAG ერთ ხეშია. Phoenix/ და EnergoTS/ არ შეცვლილა. commit ამ ნაბიჯში არ გაკეთებულა.
 - **Branch:** `main` (`566fd00`, PR #8); `engine/cursor-support` — Cursor-ზე გადასვლა, Claude Code-ის ფაილების წაშლა და PR #10-ის გადმოტანა, **მხოლოდ ლოკალურად** (GitHub-ზე არ ატვირთულა) · **GitHub:** `tornikebolokadze1-cyber/Asterbit` — **public** (2026-10-08-ს, ამ სესიის გარეთ გახდა საჯარო; დილით private იყო). gitleaks-მა მთელი ისტორია შეამოწმა (`--all`, 34 commit): „no leaks found" · **გუნდი:** მფლობელი + თანამშრომელი lashavamleti (წერის უფლება, მოწვევა მიღებულია)
 - **Decisions:** ADR-0004 accepted; ADR-0001…0003 და ADR-0005…0009 proposed (0008 — მხოლოდ Cursor; 0009 — sandbox, ვარიანტი ღიაა. PR #10 sandbox-ს 0008-ად ნომრავდა)
 - **Owner's decisions (2026-10-08, PR #10, აქ ლოკალურად გადმოტანილია):** საცდელი გაშვება არ ტარდება — Phase 0-ის კარიბჭე auditor-ის შემოწმებითა და მფლობელის დამტკიცებით დაიხურება; ყოველ `rm`-სა და `git rm`-ზე hook ჯერ კითხულობს; გრძელი handoff-ის თავი და ბოლო რჩება; Codex იშლება, CodeRabbit-ს მფლობელი მოგვიანებით განიხილავს
@@ -135,11 +136,20 @@
 - შემოწმებები: სტრუქტურა — 402, PASS (94 ფაილი); წვრთნა — 191 შემთხვევა, ARMED (1 გამოტოვებული — gitleaks აქ არ დგას); „უმოქმედო" hook-ით — DEAD
 - ატვირთვა არ მომხდარა
 
+### 2026-10-09 — Should_touch QA engine და Graph RAG `cursor-engine`-ზე
+- Should_touch-ის წესები, skill-ები, აგენტები, ბრძანებები და PowerShell hook-ები `.cursor/`-ში დაბრუნდა. Asterbit-ის Python hook-ები, `sdlc-*` skill-ები, ხუთი ძრავის აგენტი და `cli.json` დარჩა. `pom` skill commit `bcd9416`-დანაა.
+- `hooks.json` ორივე ძრავას აერთიანებს. PowerShell hook-ები `pwsh`-ით ეშვება და `beforeShellExecution`-ზე პირველია. `control-git-push.ps1` ჩართული არ არის. `cursor_adapter.py` სესიაზე, shell-ზე, pre-tool-ზე, post-tool-ზე, pre-compact-ზე და ქვეაგენტის დასაწყის/დასასრულზე რჩება.
+- Phoenix/EnergoTS დაცვის hook-ები რეპოს ძირის `Phoenix/` და `EnergoTS/` ბილიკებსაც ემთხვევა. AGENTS.md და PROCESS.md Precedence-ს ამბობს: უთანხმოებისას Should_touch იმარჯვებს.
+- `Cursor-Project/scripts`, `RULES_CANONICAL_INDEX.md` და config-ის სკრიპტები (Confluence, Jira, Slack, diagrams) დაბრუნდა. ქეშები, attachment-ები, ცოცხალი ტოკენები და `.gitmodules` არა. `.gitignore` ინახავს `.env` იგნორს და ამატებს report, Jira cache და toolkit `.env` იგნორებს. `.vscode/settings.json` და `validate-cursor-rules.yml` დაემატა.
+- `.cursor/mcp.json`: Confluence, Jira, Elasticsearch, Postgres ცარიელი საიდუმლოებით და `python3`-ით, პლუს Playwright MCP და GraphRAG. Elasticsearch API key და ბაზის პაროლები Should_touch-იდან არ გადმოწერილა.
+- `origin/GraphRag`-ის `graph-rag` რეპოს ძირშია. ინდექსი: `.cursor/rules`, `.cursor/skills`, `.cursor/agents`, `memory/`, `docs/`, `sdlc/design`. Phoenix, EnergoTS და Swagger არ ინდექსდება. `swagger_extractor.py` და `testcase_extractor.py` ხეშია, ნაგულისხმევი pipeline მათ არ იძახებს. `ingest_zip_codes.py` არ გაშვებულა. Neo4j-ის პაროლი გარემოდანაა, git-იდან არა. Docker არ გაშვებულა და პაკეტები არ დაყენებულა.
+- `check_structure.py` 11 `sdlc-*` skill-სა და 5 ძრავის აგენტს ძველი წესით ამოწმებს; QA skill/აგენტი დასაშვებია (`model: inherit`); `failClosed` მხოლოდ `cursor_adapter.py`-ზეა; `Phoenix/` და `EnergoTS/` ფაილების რუკის შემოწმებიდან ამოღებულია.
+- შემოწმებები: `check_structure.py` — 751, PASS (1300 ფაილი); `drill_hooks.py` — 191 შემთხვევა, ARMED (exit 0, gitleaks გამოტოვებულია); `ASTERBIT_DRILL_STUB=1` — DEAD (exit 1). `pwsh` 7.6.1 ამ მანქანაზე დგას. `drill_cursor.py` ცალკე გამშვებს არ აქვს; მისი wiring და fail-open შემთხვევები `drill_hooks.py`-მ გაუშვა და გავიდა.
+
 ## In Progress (მიმდინარე)
-- `engine/cursor-support` (ლოკალური branch) — მხოლოდ Cursor (ADR-0008) და PR #10-ის გადმოტანა; მფლობელის განხილვას ელოდება; ატვირთვა და PR — მხოლოდ თანხმობით
+- `cursor-engine` — Should_touch QA engine და engine-ზე მიმართული Graph RAG ერთ ხეშია დაბრუნებული (2026-10-09). Phoenix/ და EnergoTS/ არ შეცვლილა. commit ამ ნაბიჯში არ გაკეთებულა.
 
 ## Next Steps (შემდეგი ნაბიჯები)
-1. მფლობელი: `engine/cursor-support`-ის განხილვა — ის Claude Code-ის მხარდაჭერას მთელი გუნდისთვის აუქმებს; თანხმობის შემთხვევაში ატვირთვა და PR. PR #10 GitHub-ზე კვლავ ღიაა და ამ branch-ში არ შერწყმულა
-2. Cursor-ში `Asterbit` საქაღალდედ გახსნა → ახალი ჩატი Claude Sonnet 5.5-ით → ASTERBIT-RUNTIME ხაზის ჩანაწერი აქ; პირველ სესიაში `tasks/todo.md`-ის ხუთი Cursor-ის შემოწმება
-3. მფლობელი: `/sdlc-wrap`-ის ლოგიკისა (B8) და მეხსიერების ცრუ განგაშის გასწორების (B6) შეთანხმება; ADR-0009-ის ვარიანტის არჩევა
-4. Phase 0-ის კარიბჭე: auditor მთელ ძრავაზე → ADR-0001…0003, ADR-0005…0009 და PROCESS.md-ის დამტკიცება; მერე, როცა მფლობელი იდეას აირჩევს — `/sdlc-intent`. C1–C8 პირველ ნამდვილ ეტაპებზე პასუხდება (`sdlc/research/engine-assessment-2026-10.md`)
+1. მფლობელი: `cursor-engine`-ზე დაბრუნებული QA engine-ისა და Graph RAG-ის განხილვა. commit და ატვირთვა მხოლოდ თანხმობით.
+2. თუ ამ მანქანაზე `pwsh` არ დგას, PowerShell hook-ები ვერ გაეშვება, სანამ ის არ დაყენდება.
+3. Phase 0-ის კარიბჭე: auditor მთელ ძრავაზე → ADR-0001…0003, ADR-0005…0009 და PROCESS.md-ის დამტკიცება; მერე, როცა მფლობელი იდეას აირჩევს — `/sdlc-intent`.
