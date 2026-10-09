@@ -1,0 +1,19 @@
+{
+  "defaultLanguage" : "en_US",
+  "configs": {
+    "bg_BG": {
+      "fallbackLanguage": "en_US",
+      "resources": [
+        "/lang/bg/permissions_bg_BG.properties",
+        "/lang/bg/errors_bg_BG.properties"
+      ]
+    },
+    "en_US": {
+      "fallbackLanguage": null,
+      "resources": [
+        "/lang/en/permissions_en_US.properties",
+        "/lang/en/errors_en_US.properties"
+      ]
+    }
+  }
+}

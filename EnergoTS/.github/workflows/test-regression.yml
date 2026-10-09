@@ -1,0 +1,110 @@
+name: Test Regression
+
+on:
+  workflow_dispatch:
+    inputs:
+      individual:
+        description: 'Send report individually to Slack'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+        default: 'false'
+
+jobs:
+  run-tests:
+    runs-on: [self-hosted, runner1]
+    timeout-minutes: 120
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repository
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config --global --add safe.directory '*'
+          if [ ! -d .git ]; then
+            git init
+            git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          fi
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --force --depth=1 origin "${GITHUB_SHA}" || git fetch --force --depth=1 origin "${GITHUB_REF}"
+          git checkout --force --detach "${GITHUB_SHA}"
+          git reset --hard "${GITHUB_SHA}"
+          git config --global core.longPaths true
+          git clean -ffdx -e node_modules -e test-results || true
+          git log -1 --oneline
+          git remote set-url origin "https://github.com/${GITHUB_REPOSITORY}.git"
+
+      - name: Run global setup
+        id: setup
+        continue-on-error: true
+        env:
+          DEVAUTHAPI: ${{ secrets.DEVAUTHAPI }}
+          TESTAUTHAPI: ${{ secrets.TESTAUTHAPI }}
+          PORTAL_USER: ${{ secrets.PORTAL_USER }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          GRANT_TYPE: ${{ secrets.GRANT_TYPE }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          BASE_URL: 'https://testapps.energo-pro.bg/backend/phoenix-epres'
+        run: |
+          echo "Running global setup for test..."
+          npx playwright test --project=setup --workers=1
+
+      - name: Run all tests
+        if: steps.setup.outcome == 'success'
+        continue-on-error: true
+        env:
+          DEVAUTHAPI: ${{ secrets.DEVAUTHAPI }}
+          TESTAUTHAPI: ${{ secrets.TESTAUTHAPI }}
+          PORTAL_USER: ${{ secrets.PORTAL_USER }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          GRANT_TYPE: ${{ secrets.GRANT_TYPE }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          BASE_URL: 'https://testapps.energo-pro.bg/backend/phoenix-epres'
+        run: |
+          PLAYWRIGHT_BLOB_OUTPUT_NAME=main.zip npx playwright test --project=main --grep-invert "@bigData" --workers=8 --reporter=blob
+
+      - name: Run SLP tests
+        if: steps.setup.outcome == 'success'
+        continue-on-error: true
+        env:
+          DEVAUTHAPI: ${{ secrets.DEVAUTHAPI }}
+          TESTAUTHAPI: ${{ secrets.TESTAUTHAPI }}
+          PORTAL_USER: ${{ secrets.PORTAL_USER }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          GRANT_TYPE: ${{ secrets.GRANT_TYPE }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          BASE_URL: 'https://testapps.energo-pro.bg/backend/phoenix-epres'
+        run: |
+          PWTEST_BLOB_DO_NOT_REMOVE=1 PLAYWRIGHT_BLOB_OUTPUT_NAME=additional.zip npx playwright test --project="additional billing tests" --workers=1 --reporter=blob
+
+      - name: Combine Playwright reports
+        if: always()
+        run: |
+          if ls blob-report/*.zip >/dev/null 2>&1; then
+            npx playwright merge-reports -c playwright.config.ts ./blob-report
+          else
+            echo "No blob reports found; skipping merge."
+          fi
+
+      - name: Merge reports
+        if: always()
+        run: node src/backend/scripts/mergeReports.js test
+
+      - name: Send report
+        if: always()
+        env:
+          SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
+          REGRESSION: true
+          INDIVIDUAL: ${{ inputs.individual }}
+          BASE_URL: 'https://testapps.energo-pro.bg/backend/phoenix-epres'
+          ENV_NAME: test
+        run: npx playwright test --project="send report" --reporter=line

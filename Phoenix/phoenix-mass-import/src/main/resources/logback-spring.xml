@@ -1,0 +1,85 @@
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <springProperty scope="context" name="app_name" source="spring.application.name"/>
+    <springProperty scope="context" name="environment" source="spring.profiles.active"/>
+    <springProperty scope="context" name="logstash_destination"
+                    source="logstash.destination"
+                    defaultValue="10.236.20.13:5000"/>
+
+    <!--
+      This appender is ALREADY asynchronous - do not wrap it in an AsyncAppender.
+      LogstashTcpSocketAppender extends AsyncDisruptorAppender, so it hands events to a background thread
+      via an LMAX Disruptor ring buffer (default ringBufferSize=8192), and it extends
+      UnsynchronizedAppenderBase, so appending takes no per-event lock. Its appendTimeout defaults to 0,
+      meaning events are dropped immediately if the ring buffer is full rather than blocking the caller -
+      the same trade-off ASYNC_CONSOLE below makes explicit with neverBlock. Wrapping it would add a second
+      queue and an extra thread hop for no benefit.
+
+      Tune it with <ringBufferSize> (buffer depth) and <appendTimeout> (-1 blocks until space is free,
+      0 drops immediately, >0 retries for that long) rather than by adding another appender.
+    -->
+    <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>${logstash_destination}</destination>
+        <writeBufferSize>2048</writeBufferSize>
+        <!--
+          Raised from the default 8192. appendTimeout stays at its default of 0, meaning a full buffer drops
+          events rather than blocking the caller - the right trade for a RabbitMQ consumer thread, but it does
+          mean log lines go missing exactly when load is highest. The deeper buffer makes that less likely;
+          keeping log levels down on the hot path matters more.
+        -->
+        <ringBufferSize>16384</ringBufferSize>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <!--
+              Every Phoenix service ships to the same Logstash endpoint, and nothing in the JSON said which one a
+              document came from - only logger_name. app_name/environment were declared above and then never used.
+              These make "app" and "env" filterable fields.
+
+              "instance" matters as much: LogstashEncoder has no hostname provider (its default set is timestamp,
+              message, logger_name, thread_name, level, MDC, custom fields and arguments), so without this there
+              is no per-container field at all and multi-instance queries cannot be written. HOSTNAME is a context
+              property Logback populates on its own.
+            -->
+            <customFields>{"app":"${app_name}","env":"${environment}","instance":"${HOSTNAME}"}</customFields>
+        </encoder>
+    </appender>
+
+    <!--
+      CONSOLE (from Boot's base.xml) is a synchronous appender: every event takes a lock that is shared by
+      all RabbitMQ listener threads. On high-volume queues that lock, not the I/O, is the bottleneck.
+      Wrapping it in an AsyncAppender hands events to a background thread instead.
+
+      neverBlock=true means that if the queue fills the application drops events rather than stalling the
+      consumer threads - throughput is preferred over log completeness on this service.
+      discardingThreshold=0 keeps INFO/DEBUG events instead of dropping everything below WARN once the
+      queue is 80% full (the default behaviour).
+    -->
+    <appender name="ASYNC_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>8192</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <neverBlock>true</neverBlock>
+        <appender-ref ref="CONSOLE"/>
+    </appender>
+
+    <!--
+      NOTE: this file previously declared three <logger> elements whose names literally began with
+      "logging.level." (e.g. name="logging.level.bg.energo.phoenix"). Those matched no real logger and had
+      no effect. Log levels for this service are set in application-{profile}.properties; they are not
+      duplicated here on purpose, so there is a single place to change them.
+    -->
+
+    <!-- dev/prod ship to Logstash; destination comes from the logstash.destination
+         property (or LOGSTASH_DESTINATION env var), defaulting to the dev host. -->
+    <springProfile name="dev,prod,test">
+        <root level="INFO">
+            <appender-ref ref="logstash"/>
+            <appender-ref ref="ASYNC_CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!-- all other profiles (local, preProd, test, ...) log to console only -->
+    <springProfile name="!dev &amp; !prod &amp; !test">
+        <root level="INFO">
+            <appender-ref ref="ASYNC_CONSOLE"/>
+        </root>
+    </springProfile>
+</configuration>

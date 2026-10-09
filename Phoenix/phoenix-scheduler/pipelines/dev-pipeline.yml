@@ -1,0 +1,54 @@
+stages:
+  - dependencies
+  - build
+  - build-docker
+  - deploy
+
+variables:
+  DOCKER_DRIVER: overlay
+  IMAGE_NAME: git.domain.internal/asterbit/phoenix-scheduler
+  CONTAINER_PORT: 8095
+  APP_NAME: phoenix-scheduler-app
+  serverUrl: http://10.236.20.11:8098
+  profile: dev
+
+build:
+  # image: gradle:7.3.3-jdk17-alpine
+
+  stage: build
+  before_script:
+    - sudo chown gitlab-runner:gitlab-runner /home/gitlab-runner/builds -R
+  script:
+    - echo "Clean the code..."
+    - sudo sh $CI_PROJECT_DIR/gradlew clean --no-daemon
+    - echo "Compiling the code..."
+    - sudo sh $CI_PROJECT_DIR/gradlew build --no-daemon  -x test
+    - sudo chown gitlab-runner:gitlab-runner /home/gitlab-runner/builds -R
+  artifacts:
+    paths:
+      - build/libs/phoenix-scheduler-0.0.1-SNAPSHOT.jar
+    expire_in: 1 week
+  tags:
+    #  - dev-runner-docker
+    - core-builder
+  needs: [ "choose_env" ]
+
+build-docker:
+  stage: build-docker
+  script:
+    - sudo ip a
+    - sudo docker build -t $IMAGE_NAME .
+  tags:
+    - dev-runner-shell
+  needs: [ "build" ]
+
+container-deploy:
+  stage: deploy
+  script:
+    - sudo docker rm -f $APP_NAME > /dev/null 2>&1
+    - sudo docker run -m 7g --memory-swap 10g -v /data2:/data -v /phoenix/xenergy:/usr/share/xEnergie/reports -v /data:/data -v /Phxsign_140:/Phxsign_140 -v /phoenix/cert/:/usr/share/certs/ -v /phoenix/jsingpdf/:/usr/share/jsingpdf/ -v /usr/share/fonts:/usr/share/fonts --env serverUrl=$serverUrl --env profile=$profile
+      -p $CONTAINER_PORT:8080 -d --restart unless-stopped  --name $APP_NAME $IMAGE_NAME
+    - sudo docker system prune -f
+  tags:
+    - dev-runner-shell
+  needs: [ "build-docker" ]

@@ -1,0 +1,50 @@
+stages:
+  - dependencies
+  - build
+  - build-docker
+  - deploy
+
+variables:
+  DOCKER_DRIVER: overlay
+  IMAGE_NAME: git.domain.internal/asterbit/phoenix-core-test
+  CONTAINER_PORT: 8091
+  APP_NAME: phoenix-core-test
+  serverUrl: http://10.236.20.31:8091
+  profile: test
+
+build:
+  # image: gradle:7.3.3-jdk17-alpine
+
+  stage: build
+  script:
+    - echo "Clean the code..."
+    - sudo sh $CI_PROJECT_DIR/gradlew clean --no-daemon
+    - echo "Compiling the code..."
+    - sudo sh $CI_PROJECT_DIR/gradlew build -Pprofile=test --no-daemon
+  artifacts:
+    paths:
+      - build/libs/sales-portal-0.0.1-SNAPSHOT.jar
+    expire_in: 1 week
+  tags:
+    #  - test-runner-docker
+#    - test-runner-shell
+    - core-builder
+  needs: [ "choose_env" ]
+
+build-docker:
+  stage: build-docker
+  script:
+    - sudo docker build -t $IMAGE_NAME .
+  tags:
+    - test-runner-shell
+  needs: [ "build" ]
+
+container-deploy:
+  stage: deploy
+  script:
+    - sudo docker rm -f $APP_NAME > /dev/null 2>&1
+    - sudo docker run -v /phoenix/xenergy:/usr/share/xEnergie/reports  -v /data2:/data -v /Phxsign_140:/Phxsign_140 -v /phoenix/cert/:/usr/share/certs/ -v /phoenix/jsingpdf/:/usr/share/jsingpdf/ -v /usr/share/fonts:/usr/share/fonts --env serverUrl=$serverUrl --env profile=$profile -d --restart unless-stopped --name $APP_NAME -p $CONTAINER_PORT:8080 $IMAGE_NAME
+    - sudo docker system prune -f
+  tags:
+    - test-runner-shell
+  needs: [ "build-docker" ]

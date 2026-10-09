@@ -1,0 +1,48 @@
+package bg.energo.phoenix.virtualpos.model.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.math.BigDecimal;
+
+@Entity
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "virtual_pos_payment_details", schema = "online_payment")
+public class VirtualPosPaymentDetailsEntity {
+
+    @Id
+    @SequenceGenerator(
+            name = "virtual_pos_payment_details_id_seq",
+            sequenceName = "online_payment.virtual_pos_payment_details_id_seq",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "virtual_pos_payment_details_id_seq"
+    )
+    private Long id;
+
+    @Column(name = "virtual_pos_payment_id", nullable = false)
+    private Long virtualPosPaymentId;
+
+    @Column(name = "liability_id", nullable = false)
+    private Long liabilityId;
+
+    @Column(name = "amount", nullable = false)
+    private BigDecimal amount;
+
+    @Column(name = "lfp_amount")
+    private BigDecimal lfpAmount;
+
+    @Column(name = "total_amount", nullable = false)
+    private BigDecimal totalAmount;
+
+    @Column(name = "total_amount_in_coins")
+    private Long totalAmountInCoins;
+}
+
+

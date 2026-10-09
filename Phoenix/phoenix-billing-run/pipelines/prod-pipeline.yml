@@ -1,0 +1,49 @@
+stages:
+  - dependencies
+  - build
+  - build-docker
+  - deploy
+
+variables:
+  DOCKER_DRIVER: overlay
+  IMAGE_NAME: git.domain.internal/asterbit/phoenix-billing-run-prod
+  CONTAINER_PORT: 7097
+  APP_NAME: phoenix-billing-run-prod
+  serverUrl: http://10.236.20.67:7097
+  profile: prod
+
+build:
+  stage: build
+  before_script:
+    - sudo chown gitlab-runner:gitlab-runner /home/gitlab-runner/builds -R
+  script:
+    - echo "Clean the code..."
+    - sudo sh $CI_PROJECT_DIR/gradlew clean --no-daemon
+    - echo "Compiling the code..."
+    - sudo sh $CI_PROJECT_DIR/gradlew build -Pprofile=prod --no-daemon
+    - sudo chown gitlab-runner:gitlab-runner /home/gitlab-runner/builds -R
+  artifacts:
+    paths:
+      - build/libs/phoenix-billing-run-0.0.1-SNAPSHOT.jar
+    expire_in: 1 week
+  tags:
+    - production_billing
+  needs: [ "choose_env" ]
+
+build-docker:
+  stage: build-docker
+  script:
+    - sudo docker build -t $IMAGE_NAME .
+  tags:
+    - production_billing
+  needs: [ "build" ]
+
+container-deploy:
+  stage: deploy
+  script:
+    - sudo docker rm -f $APP_NAME > /dev/null 2>&1
+    - sudo docker run -v /usr/share/fonts:/usr/share/fonts -v /data2:/data --env serverUrl=$serverUrl --env vault_secret=$vault_secret --env profile=$profile -d --restart unless-stopped --name $APP_NAME $IMAGE_NAME
+    - sudo docker system prune -f
+  tags:
+    - production_billing
+  needs: [ "build-docker" ]

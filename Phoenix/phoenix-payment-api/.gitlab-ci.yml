@@ -1,0 +1,47 @@
+stages:
+    - choose_env
+    - approve_stage
+    - dependencies
+    - build
+    - build-docker
+    - deploy
+
+choose_env:
+  stage: choose_env
+  before_script:
+    - sudo chown gitlab-runner:gitlab-runner /home/gitlab-runner/builds -R
+  script:
+    - echo "approved"
+  tags:
+    - dev-runner-shell
+
+include:
+     - local: 'pipelines/dev-pipeline.yml'
+       rules:
+         - if: '$CI_COMMIT_BRANCH == "dev"'
+
+     - local: 'pipelines/dev2-pipeline.yml'
+       rules:
+         - if: '$CI_COMMIT_BRANCH == "dev2"'
+
+     - local: 'pipelines/test-pipeline.yml'
+       rules:
+         - if: '$CI_COMMIT_BRANCH =~ /^test\// || $CI_COMMIT_BRANCH == "test"'
+
+
+
+     - local: 'pipelines/prod-pipeline.yml'
+       rules:
+         - if: '$CI_COMMIT_BRANCH == "main"'
+
+
+
+     - local: 'pipelines/prod-pipeline.yml'
+       rules:
+         - if: '$CI_COMMIT_BRANCH =~ /^release\//'
+
+
+
+     - local: 'pipelines/feature-pipeline.yml'
+       rules:
+         - if: '$CI_COMMIT_BRANCH =~ /^feature\//'

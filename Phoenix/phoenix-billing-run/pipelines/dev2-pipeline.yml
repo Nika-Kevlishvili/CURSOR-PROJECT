@@ -1,0 +1,53 @@
+stages:
+  - dependencies
+  - build
+  - build-docker
+  - deploy
+
+variables:
+  DOCKER_DRIVER: overlay
+  IMAGE_NAME: git.domain.internal/asterbit/phoenix-billing-run2
+  CONTAINER_PORT: 8197
+  APP_NAME: phoenix-billing-run2
+  serverUrl: http://10.236.20.11:8097
+  profile: dev
+#  profile: local
+
+build:
+  stage: build
+  before_script:
+    - sudo chown gitlab-runner:gitlab-runner /home/gitlab-runner/builds -R
+  script:
+    - echo "Clean the code..."
+    - sudo sh $CI_PROJECT_DIR/gradlew clean --no-daemon
+    - echo "Compiling the code..."
+    - echo "$JAVA_HOME"
+    - sudo sh $CI_PROJECT_DIR/gradlew build --no-daemon -x test
+    - sudo chown gitlab-runner:gitlab-runner /home/gitlab-runner/builds -R
+  artifacts:
+    paths:
+      - build/libs/phoenix-billing-run-0.0.1-SNAPSHOT.jar
+    expire_in: 1 week
+  tags:
+    - core-builder
+  needs: [ "choose_env" ]
+
+build-docker:
+  stage: build-docker
+  script:
+    - sudo ip a
+    - sudo docker build -t $IMAGE_NAME .
+  tags:
+    - dev-runner-shell
+  needs: [ "build" ]
+
+container-deploy:
+  stage: deploy
+  script:
+    - sudo docker rm -f $APP_NAME > /dev/null 2>&1
+    - sudo docker run -v /data2:/data -v /Phxsign_140:/Phxsign_140 -v /phoenix/cert/:/usr/share/certs/ -v /phoenix/jsingpdf/:/usr/share/jsingpdf/ -v /usr/share/fonts:/usr/share/fonts --env serverUrl=$serverUrl --env profile=$profile -d --restart unless-stopped --name $APP_NAME $IMAGE_NAME
+    - echo "Exposed on $serverUrl"
+    - sudo docker system prune -f
+  tags:
+    - dev-runner-shell
+  needs: [ "build-docker" ]

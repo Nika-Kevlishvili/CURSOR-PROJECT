@@ -1,0 +1,146 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.2'
+	id 'io.spring.dependency-management' version '1.1.5'
+}
+
+group = 'bg.energo'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+def profile = project.hasProperty('profile') ? project.getProperty('profile') : 'dev'
+def devVersion = '1.39.85-SNAPSHOT'
+def testVersion = '0.0.26'
+
+//java {
+//	toolchain {
+//		languageVersion = JavaLanguageVersion.of(17)
+//	}
+//}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+ext {
+	liquibaseGradlePluginVersion = '2.1.1'
+	postgresqlVersion = '42.5.1'
+	liquibaseCore = '4.16.1'
+	lombokVersion = '1.18.24'
+	openApiVersion = '2.5.0'
+	springCloudVersion = '2023.0.2'
+	iban4jVersion = '3.2.3-RELEASE'
+	coreLibVersion = (profile in ['test', 'preProd']) ? testVersion : devVersion
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+		mavenBom "org.springframework.boot:spring-boot-dependencies:3.3.2"
+	}
+}
+
+repositories {
+	mavenCentral()
+	mavenLocal()
+	maven {
+		url "http://nexus.domain.internal:8081/repository/epro-maven-snapshots/"
+		allowInsecureProtocol = true
+	}
+	maven {
+		url "http://nexus.domain.internal:8081/repository/epro-maven-releases/"
+		allowInsecureProtocol = true
+	}
+	maven {
+		url "https://releases.aspose.com/java/repo/"
+		allowInsecureProtocol = true
+	}
+}
+
+dependencies {
+	implementation group: "bg.energo", name: "phoenix-core-lib2", version: "${coreLibVersion}"
+//	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
+//	implementation 'com.sun.xml.bind:jaxb-impl:4.0.1'
+//	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+//	implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final'
+//	implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+//	implementation group: "com.fasterxml.jackson.core", name: "jackson-core"
+//	implementation group: "com.fasterxml.jackson.core", name: "jackson-annotations"
+//	implementation group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-joda"
+//	implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310'
+//	implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml'
+//	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
+//	implementation 'org.springframework.boot:spring-boot-starter-web'
+//	implementation 'org.springframework.boot:spring-boot-starter-cache'
+//	implementation 'org.apache.groovy:groovy'
+//	implementation 'org.springframework.cloud:spring-cloud-starter-vault-config'
+//	implementation group: 'org.springframework.cloud', name: 'spring-cloud-vault-config-databases', version: '4.1.3'
+//	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.1.3'
+//	implementation "org.postgresql:postgresql:${postgresqlVersion}"
+//	compileOnly 'org.projectlombok:lombok'
+//	implementation 'com.oracle.database.jdbc:ojdbc10:19.20.0.0'
+//	annotationProcessor 'org.projectlombok:lombok'
+//	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+//	testImplementation 'org.springframework.security:spring-security-test'
+//	testImplementation 'org.testcontainers:junit-jupiter'
+//	testImplementation 'com.playtika.testcontainers:embedded-postgresql:2.3.2'
+//	testImplementation 'org.testcontainers:vault'
+//	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+//	implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.3'
+//	implementation 'org.hibernate:hibernate-core:6.2.13.Final'
+//	implementation 'org.hibernate:hibernate-jcache:6.2.13.Final'
+//	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	testImplementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+	testImplementation 'org.springframework.cloud:spring-cloud-starter'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'com.playtika.testcontainers:embedded-postgresql:2.3.2'
+	testImplementation group: 'org.wiremock', name: 'wiremock-standalone', version: '3.2.0'
+
+	compileOnly 'org.projectlombok:lombok'
+
+	testAnnotationProcessor "org.projectlombok:lombok"
+
+	testCompileOnly 'org.projectlombok:lombok'
+
+	annotationProcessor 'org.projectlombok:lombok'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+tasks.register('clearDependencyCache') {
+	doLast {
+		def startNames = []
+		fileTree("${rootProject.gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/bg.energo").visit { details ->
+			startNames << details.file.path
+		}
+		println("startNames ${startNames}")
+
+		project.delete("${rootProject.gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/bg.energo/phoenix-core-lib2")
+		println("${rootProject.gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/bg.energo/phoenix-core-lib2")
+		def names = []
+		fileTree("${rootProject.gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/bg.energo").visit { details ->
+			names << details.file.path
+		}
+		println("names ${names}")
+	}
+}
+
+tasks.named('build').configure {
+	finalizedBy 'clearDependencyCache'
+}
+
+tasks.named('clean').configure {
+	finalizedBy 'clearDependencyCache'
+}
+

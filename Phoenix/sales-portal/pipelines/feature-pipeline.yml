@@ -1,0 +1,27 @@
+stages:
+  - dependencies
+  - build
+
+variables:
+  DOCKER_DRIVER: overlay
+  IMAGE_NAME: git.domain.internal/asterbit/phoenix-core-dev
+  CONTAINER_PORT: 8090
+  APP_NAME: phoenix-core-dev
+  profile: dev
+
+build:
+  stage: build
+  before_script:
+    - sudo chown gitlab-runner:gitlab-runner /home/gitlab-runner/builds -R
+  script:
+    - echo "Clean the code..."
+    - sudo sh $CI_PROJECT_DIR/gradlew clean --no-daemon
+    - echo "Compiling the code..."
+    - sudo sh $CI_PROJECT_DIR/gradlew build --no-daemon
+  artifacts:
+    paths:
+      - build/libs/sales-portal-0.0.1-SNAPSHOT.jar
+    expire_in: 1 week
+  tags: 
+    - core-builder
+  needs: ["choose_env"]

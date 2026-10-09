@@ -1,0 +1,101 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.4'
+    id 'io.spring.dependency-management' version '1.1.5'
+}
+
+group = 'bg.energo'
+version = '0.0.1-SNAPSHOT'
+
+def eproSnapshotDomain = "https://nexus.energo-pro.bg//repository/epro-maven-snapshots/"
+def eproReleaseDomain = "https://nexus.energo-pro.bg/repository/epro-maven-releases/"
+def profile = project.hasProperty('profile') ? project.getProperty('profile') : 'dev'
+def devVersion = '1.39.85-SNAPSHOT'
+def testVersion = '0.0.26'
+
+println "Profile: ${profile}"
+ext {
+    coreLibVersion = (profile in ['test', 'preProd','prod']) ? testVersion : devVersion
+}
+
+println "CoreLibVersion: ${coreLibVersion}"
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        url eproSnapshotDomain
+    }
+    maven {
+        url eproReleaseDomain
+    }
+    maven {
+        url "https://releases.aspose.com/java/repo/"
+        allowInsecureProtocol = true
+    }
+}
+
+dependencies {
+    implementation group: "bg.energo", name: "phoenix-core-lib2", version: "${coreLibVersion}"
+    implementation 'org.springframework.boot:spring-boot-starter'
+
+    implementation("org.springframework.cloud:spring-cloud-starter-vault-config:4.2.1")
+    implementation("org.springframework.cloud:spring-cloud-vault-config-databases:4.2.1")
+    implementation("org.springframework.cloud:spring-cloud-starter-bootstrap:4.2.1")
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.named('build').configure {
+    finalizedBy 'clearDependencyCache'
+}
+
+tasks.named('clean').configure {
+    finalizedBy 'clearDependencyCache'
+}
+
+tasks.register('clearDependencyCache') {
+    doLast {
+        def startNames = []
+        fileTree("${rootProject.gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/bg.energo").visit { FileVisitDetails details ->
+            startNames << details.file.path
+        }
+        println("startNames ${startNames}")
+
+        project.delete("${rootProject.gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/bg.energo/phoenix-core-lib")
+        println("${rootProject.gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/bg.energo/phoenix-core-lib")
+        def names = []
+        fileTree("${rootProject.gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/bg.energo").visit { FileVisitDetails details ->
+            names << details.file.path
+        }
+        println("names ${names}")
+    }
+}
+
+jar {
+    archiveBaseName = 'phoenix-billing-run'
+}
+
+bootJar {
+    archiveBaseName = 'phoenix-billing-run'
+}
+

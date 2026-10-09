@@ -1,0 +1,84 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.2'
+	id 'io.spring.dependency-management' version '1.1.5'
+}
+
+group = 'bg.energo'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+
+def eproSnapshotDomain = "https://nexus.energo-pro.bg//repository/epro-maven-snapshots/"
+def eproReleaseDomain = "https://nexus.energo-pro.bg/repository/epro-maven-releases/"
+def profile = project.hasProperty('profile') ? project.getProperty('profile') : 'dev'
+def devVersion = '1.39.85-SNAPSHOT'
+def testVersion = '0.0.27'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+ext {
+	liquibaseGradlePluginVersion = '2.1.1'
+	postgresqlVersion = '42.5.1'
+	liquibaseCore = '4.16.1'
+	lombokVersion = '1.18.24'
+	openApiVersion = '2.5.0'
+	openhtmlVersion = '1.0.5'
+	iban4jVersion = '3.2.3-RELEASE'
+	springCloudVersion = '2023.0.2'
+	coreLibVersion = (profile in ['test', 'preProd','prod']) ? testVersion : devVersion
+}
+println "Profile: ${profile}"
+println "CoreLibVersion: ${coreLibVersion}"
+repositories {
+	mavenCentral()
+	mavenLocal()
+	maven {
+		url eproSnapshotDomain
+	}
+	maven {
+		url eproReleaseDomain
+	}
+	maven {
+		url "https://releases.aspose.com/java/repo/"
+		allowInsecureProtocol = true
+	}
+
+}
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+		mavenBom "org.springframework.boot:spring-boot-dependencies:3.3.2"
+	}
+}
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation (group: "bg.energo", name: "phoenix-core-lib2", version: "${coreLibVersion}")
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+jar {
+    archiveBaseName = 'phoenix-mass-import'
+}
+
+bootJar {
+    archiveBaseName = 'phoenix-mass-import'
+}

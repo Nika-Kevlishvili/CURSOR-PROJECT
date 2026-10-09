@@ -1,0 +1,49 @@
+stages:
+  - dependencies
+  - build
+  - build-docker
+  - deploy
+
+variables:
+  DOCKER_DRIVER: overlay
+  IMAGE_NAME: git.domain.internal/asterbit/phoenix-mass-import-pre
+  CONTAINER_PORT: 8099
+  APP_NAME: phoenix-mass-import-pre-app
+  serverUrl: http://10.236.20.31:8099
+  profile: preProd
+
+build:
+  # image: gradle:7.3.3-jdk17-alpine
+
+  stage: build
+  script:
+    - echo "Clean the code..."
+    - sudo sh $CI_PROJECT_DIR/gradlew clean --no-daemon
+    - echo "Compiling the code..."
+    - sudo sh $CI_PROJECT_DIR/gradlew build -Pprofile=preProd --no-daemon
+  artifacts:
+    paths:
+      - build/libs/phoenix-mass-import-0.0.1-SNAPSHOT.jar
+    expire_in: 1 week
+  tags:
+    #  - test-runner-docker
+    - test-runner-shell
+  needs: [ "choose_env" ]
+
+build-docker:
+  stage: build-docker
+  script:
+    - sudo docker build -t $IMAGE_NAME .
+  tags:
+    - test-runner-shell
+  needs: [ "build" ]
+
+container-deploy:
+  stage: deploy
+  script:
+    - sudo docker rm -f $APP_NAME > /dev/null 2>&1
+    - sudo docker run -v /phoenix/xenergy:/usr/share/xEnergie/reports -v /Phxsign_140:/Phxsign_140 -v /phoenix/cert/:/usr/share/certs/ -v /phoenix/jsingpdf/:/usr/share/jsingpdf/ -v /usr/share/fonts:/usr/share/fonts --env serverUrl=$serverUrl --env profile=$profile -d --restart unless-stopped --name $APP_NAME  $IMAGE_NAME
+    - sudo docker system prune -f
+  tags:
+    - test-runner-shell
+  needs: [ "build-docker" ]

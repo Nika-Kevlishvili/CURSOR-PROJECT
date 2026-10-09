@@ -1,0 +1,309 @@
+name: Pipeline workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      BASE_URL:
+        description: 'Override API base URL'
+        required: true
+      CHANGED_FILES:
+        description: 'Comma-separated list of changed files from GitLab'
+        required: false
+        default: ''
+      PHOENIX_CORE_VERSION:
+        description: 'Phoenix-core version that triggered this run'
+        required: false
+        default: ''
+      COMMIT_AUTHOR:
+        description: 'Author who changed build.gradle'
+        required: false
+        default: ''
+
+jobs:
+  detect-lib-changes:
+    runs-on: [self-hosted, runner1]
+    if: ${{ github.event.inputs.PHOENIX_CORE_VERSION != '' }}
+    timeout-minutes: 120
+    outputs:
+      changed_files: ${{ steps.find_changes.outputs.changed_files }}
+      test_tags: ${{ steps.find_changes.outputs.test_tags }}
+      
+    defaults:
+      run:
+        shell: bash 
+    
+    steps:
+      - name: Checkout repository
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config --global --add safe.directory '*'
+          if [ ! -d .git ]; then
+            git init
+            git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          fi
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --force --depth=1 origin "${GITHUB_SHA}" || git fetch --force --depth=1 origin "${GITHUB_REF}"
+          git checkout --force --detach "${GITHUB_SHA}"
+          git reset --hard "${GITHUB_SHA}"
+          git config --global core.longPaths true
+          git clean -ffdx -e node_modules -e test-results || true
+          git log -1 --oneline
+          git remote set-url origin "https://github.com/${GITHUB_REPOSITORY}.git"
+      
+      - name: Find phoenix-core-lib changes via GitLab Pipelines API
+        id: find_changes
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          PHOENIX_CORE_LIB_PROJECT_ID: ${{ secrets.PHOENIX_CORE_LIB_PROJECT_ID }}
+          GITLAB_URL: "https://git.domain.internal"
+        run: |
+          # Find changed files in GitLab phoenix-core-lib
+          CHANGED_FILES=$(.github/scripts/find-gitlab-changes.sh \
+            "${{ github.event.inputs.PHOENIX_CORE_VERSION }}" \
+            "${{ github.event.inputs.COMMIT_AUTHOR }}" \
+            "$GITLAB_TOKEN" \
+            "$PHOENIX_CORE_LIB_PROJECT_ID" \
+            "$GITLAB_URL" \
+            "${{ github.event.inputs.BASE_URL }}")
+          
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "changed_files=" >> $GITHUB_OUTPUT
+            echo "test_tags=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Map changed files to test tags
+          TEST_TAGS=$(.github/scripts/map-tags.sh "$CHANGED_FILES")
+          
+          if [ "$TEST_TAGS" = "SKIP" ]; then
+            echo "No matching test tags found"
+            echo "test_tags=SKIP" >> $GITHUB_OUTPUT
+          else
+            echo "Test tags from phoenix-core-lib: $TEST_TAGS"
+            echo "test_tags=$TEST_TAGS" >> $GITHUB_OUTPUT
+          fi
+          
+          # Save changed files for reference
+          echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+
+  run-tests:
+    runs-on: [self-hosted, runner1]
+    needs: [detect-lib-changes]
+    if: always() && (needs.detect-lib-changes.result == 'skipped' || needs.detect-lib-changes.outputs.test_tags != 'SKIP')
+    timeout-minutes: 120
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repository
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config --global --add safe.directory '*'
+          if [ ! -d .git ]; then
+            git init
+            git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          fi
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --force --depth=1 origin "${GITHUB_SHA}" || git fetch --force --depth=1 origin "${GITHUB_REF}"
+          git checkout --force --detach "${GITHUB_SHA}"
+          git reset --hard "${GITHUB_SHA}"
+          git config --global core.longPaths true
+          git clean -ffdx -e node_modules -e test-results || true
+          git log -1 --oneline
+          git remote set-url origin "https://github.com/${GITHUB_REPOSITORY}.git"
+      
+      - name: Wait for application to be ready
+        run: .github/scripts/wait-for-app.sh "${{ github.event.inputs.BASE_URL }}"
+        
+      - name: Display workflow trigger info
+        run: |
+          if [ -n "${{ github.event.inputs.PHOENIX_CORE_VERSION }}" ]; then
+            echo "Triggered by phoenix-core version bump"
+            echo "Version: ${{ github.event.inputs.PHOENIX_CORE_VERSION }}"
+            echo "Author: ${{ github.event.inputs.COMMIT_AUTHOR }}"
+            echo "Changed files from phoenix-core-lib:"
+            echo "${{ needs.detect-lib-changes.outputs.changed_files }}" | tr ',' '\n'
+          elif [ -n "${{ github.event.inputs.CHANGED_FILES }}" ]; then
+            echo "Triggered by phoenix-core direct changes"
+            echo "Changed files:"
+            echo "${{ github.event.inputs.CHANGED_FILES }}" | tr ',' '\n'
+          else
+            echo "Manual trigger - running all tests"
+          fi
+      
+      - name: Display changed files
+        if: ${{ github.event.inputs.CHANGED_FILES != '' }}
+        run: |
+          echo "Changed files from GitLab deployment:"
+          echo "${{ github.event.inputs.CHANGED_FILES }}" | tr ',' '\n'
+      
+      - name: Parse changed files and determine test tags
+        id: parse_tags
+        if: ${{ github.event.inputs.CHANGED_FILES != '' && github.event.inputs.PHOENIX_CORE_VERSION == '' }}
+        run: |
+          CHANGED_FILES="${{ github.event.inputs.CHANGED_FILES }}"
+          
+          # Use script to map changed files to test tags
+          TEST_TAGS=$(.github/scripts/map-tags.sh "$CHANGED_FILES")
+          
+          if [ "$TEST_TAGS" = "SKIP" ]; then
+            echo "No matching test tags found for changed files."
+            echo "Terminating pipeline - no tests to run."
+            echo "test_tags=SKIP" >> $GITHUB_OUTPUT
+          else
+            echo "Test tags to run: $TEST_TAGS"
+            echo "test_tags=$TEST_TAGS" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Check if tests should run
+        id: should_run
+        run: |
+          # Check if we have any test tags or changed files
+          if [ -n "${{ needs.detect-lib-changes.outputs.test_tags }}" ] && [ "${{ needs.detect-lib-changes.outputs.test_tags }}" != "SKIP" ]; then
+            echo "Tests will run based on phoenix-core-lib changes"
+            echo "run_tests=true" >> $GITHUB_OUTPUT
+          elif [ -n "${{ steps.parse_tags.outputs.test_tags }}" ] && [ "${{ steps.parse_tags.outputs.test_tags }}" != "SKIP" ]; then
+            echo "Tests will run based on direct changes"
+            echo "run_tests=true" >> $GITHUB_OUTPUT
+          elif [ -n "${{ github.event.inputs.CHANGED_FILES }}" ] || [ -n "${{ github.event.inputs.PHOENIX_CORE_VERSION }}" ]; then
+            echo "Changes provided but no matching test tags found - skipping tests"
+            echo "run_tests=false" >> $GITHUB_OUTPUT
+          else
+            echo "No changes provided - skipping tests (manual trigger without inputs)"
+            echo "run_tests=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Notify Slack - Pipeline Started
+        if: ${{ steps.should_run.outputs.run_tests == 'true' }}
+        env:
+          SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
+          BASE_URL: ${{ github.event.inputs.BASE_URL }}
+        run: |
+          curl -X POST https://slack.com/api/chat.postMessage \
+            -H "Authorization: Bearer $SLACK_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"channel\": \"C0AN5UQ6TQW\",
+              \"text\": \"Pipeline started\\n\\nEnvironment: \`$BASE_URL\`\\nWorkflow: Main Pipeline\"
+            }"
+
+      - name: Run global setup (1 worker)
+        id: setup
+        if: ${{ steps.should_run.outputs.run_tests == 'true' }}
+        env:
+          DEVAUTHAPI: ${{ secrets.DEVAUTHAPI }}
+          TESTAUTHAPI: ${{ secrets.TESTAUTHAPI }}
+          PORTAL_USER: ${{ secrets.PORTAL_USER }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          GRANT_TYPE: ${{ secrets.GRANT_TYPE }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          BASE_URL: ${{ github.event.inputs.BASE_URL }}
+          CHANGED_FILES: ${{ github.event.inputs.CHANGED_FILES }}
+        run: |
+          echo "Running global setup with 1 worker..."
+          npx playwright test --project=setup --workers=1
+
+      - name: Run main tests with parallel workers
+        if: steps.setup.outcome == 'success'  # Only run if setup succeeds
+        continue-on-error: true
+        env:
+          DEVAUTHAPI: ${{ secrets.DEVAUTHAPI }}
+          TESTAUTHAPI: ${{ secrets.TESTAUTHAPI }}
+          PORTAL_USER: ${{ secrets.PORTAL_USER }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          GRANT_TYPE: ${{ secrets.GRANT_TYPE }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          BASE_URL: ${{ github.event.inputs.BASE_URL }}
+          CHANGED_FILES: ${{ github.event.inputs.CHANGED_FILES }}
+        run: |
+          # Determine which test tags to use
+          if [ -n "${{ needs.detect-lib-changes.outputs.test_tags }}" ] && [ "${{ needs.detect-lib-changes.outputs.test_tags }}" != "SKIP" ]; then
+            # Use tags from phoenix-core-lib detection
+            TEST_TAGS="${{ needs.detect-lib-changes.outputs.test_tags }}"
+            echo "Using test tags from phoenix-core-lib: $TEST_TAGS"
+          else
+            # Use tags from direct CHANGED_FILES
+            TEST_TAGS="${{ steps.parse_tags.outputs.test_tags }}"
+            echo "Using test tags from direct changes: $TEST_TAGS"
+          fi
+          
+          echo "Running tests with tags: $TEST_TAGS"
+          # Build grep pattern: @tag1|@tag2|@tag3
+          GREP_PATTERN=$(echo "$TEST_TAGS" | sed 's/ /|/g')
+          echo "Grep pattern: $GREP_PATTERN"
+          echo "GREP_PATTERN=$GREP_PATTERN" >> "$GITHUB_ENV"
+          PLAYWRIGHT_BLOB_OUTPUT_NAME=main.zip npx playwright test --project=main --grep "$GREP_PATTERN" --grep-invert "@bigData" --workers=8 --reporter=blob
+
+      - name: Run SLP tests
+        if: steps.setup.outcome == 'success'
+        continue-on-error: true
+        env:
+          DEVAUTHAPI: ${{ secrets.DEVAUTHAPI }}
+          TESTAUTHAPI: ${{ secrets.TESTAUTHAPI }}
+          PORTAL_USER: ${{ secrets.PORTAL_USER }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          GRANT_TYPE: ${{ secrets.GRANT_TYPE }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          BASE_URL: ${{ github.event.inputs.BASE_URL }}
+          CHANGED_FILES: ${{ github.event.inputs.CHANGED_FILES }}
+        run: |
+          PWTEST_BLOB_DO_NOT_REMOVE=1 PLAYWRIGHT_BLOB_OUTPUT_NAME=additional.zip npx playwright test --project="additional billing tests" --reporter=blob --grep "$GREP_PATTERN" --grep-invert "@bigData" --workers=1
+
+      - name: Refresh setup for sales portal
+        id: setup-sales-portal
+        if: steps.setup.outcome == 'success'
+        continue-on-error: true
+        env:
+          DEVAUTHAPI: ${{ secrets.DEVAUTHAPI }}
+          TESTAUTHAPI: ${{ secrets.TESTAUTHAPI }}
+          PORTAL_USER: ${{ secrets.PORTAL_USER }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          GRANT_TYPE: ${{ secrets.GRANT_TYPE }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          BASE_URL: ${{ github.event.inputs.BASE_URL }}
+        run: |
+          echo "Re-running global setup to refresh the sales portal token..."
+          npx playwright test --project=setup --workers=1
+
+      - name: Run sales portal tests
+        if: steps.setup-sales-portal.outcome == 'success'
+        continue-on-error: true
+        env:
+          DEVAUTHAPI: ${{ secrets.DEVAUTHAPI }}
+          TESTAUTHAPI: ${{ secrets.TESTAUTHAPI }}
+          PORTAL_USER: ${{ secrets.PORTAL_USER }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          GRANT_TYPE: ${{ secrets.GRANT_TYPE }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          BASE_URL: ${{ github.event.inputs.BASE_URL }}
+        run: |
+          PWTEST_BLOB_DO_NOT_REMOVE=1 PLAYWRIGHT_BLOB_OUTPUT_NAME=sales-portal.zip npx playwright test --project="sales portal" --no-deps --reporter=blob --grep "$GREP_PATTERN" --grep-invert "@bigData" --workers=1
+
+      - name: Combine Playwright reports
+        if: steps.setup.outcome == 'success'
+        run: |
+          if ls blob-report/*.zip >/dev/null 2>&1; then
+            npx playwright merge-reports -c playwright.config.ts ./blob-report
+          else
+            echo "No blob reports found; skipping merge."
+          fi
+
+      - name: Send report project (after reporters flushed)
+        if: steps.setup.outcome == 'success'
+        env:
+          SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          INDIVIDUAL: 'true'
+        run: npx playwright test --project="send report" --reporter=line

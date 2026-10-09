@@ -1,0 +1,41 @@
+name: Update Jira Statuses
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"  # 6:00 AM Georgian time (UTC+4)
+
+jobs:
+  update-jira:
+    runs-on: [self-hosted, runner1]
+    timeout-minutes: 60
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repository
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config --global --add safe.directory '*'
+          if [ ! -d .git ]; then
+            git init
+            git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          fi
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --force --depth=1 origin "${GITHUB_SHA}" || git fetch --force --depth=1 origin "${GITHUB_REF}"
+          git checkout --force --detach "${GITHUB_SHA}"
+          git reset --hard "${GITHUB_SHA}"
+          git config --global core.longPaths true
+          git clean -ffdx -e node_modules -e test-results || true
+          git log -1 --oneline
+          git remote set-url origin "https://github.com/${GITHUB_REPOSITORY}.git"
+
+      - name: Update Jira statuses from merged environment results
+        env:
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        run: npx playwright test --project="update jira" --reporter=line --output=pw --trace=off --retries=0
