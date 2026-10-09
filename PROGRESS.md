@@ -9,9 +9,16 @@
 - **Branch:** `main` (`566fd00`, PR #8); `engine/cursor-support` — Cursor-ზე გადასვლა, Claude Code-ის ფაილების წაშლა და PR #10-ის გადმოტანა, **მხოლოდ ლოკალურად** (GitHub-ზე არ ატვირთულა) · **GitHub:** `tornikebolokadze1-cyber/Asterbit` — **public** (2026-10-08-ს, ამ სესიის გარეთ გახდა საჯარო; დილით private იყო). gitleaks-მა მთელი ისტორია შეამოწმა (`--all`, 34 commit): „no leaks found" · **გუნდი:** მფლობელი + თანამშრომელი lashavamleti (წერის უფლება, მოწვევა მიღებულია)
 - **Decisions:** ADR-0004 accepted; ADR-0001…0003 და ADR-0005…0009 proposed (0008 — მხოლოდ Cursor; 0009 — sandbox, ვარიანტი ღიაა. PR #10 sandbox-ს 0008-ად ნომრავდა)
 - **Owner's decisions (2026-10-08, PR #10, აქ ლოკალურად გადმოტანილია):** საცდელი გაშვება არ ტარდება — Phase 0-ის კარიბჭე auditor-ის შემოწმებითა და მფლობელის დამტკიცებით დაიხურება; ყოველ `rm`-სა და `git rm`-ზე hook ჯერ კითხულობს; გრძელი handoff-ის თავი და ბოლო რჩება; Codex იშლება, CodeRabbit-ს მფლობელი მოგვიანებით განიხილავს
-- **Not built yet:** Phase 0-ის კარიბჭე; პროდუქტის იდეა არ არის არჩეული
+- **Not built yet:** Phase 0-ის კარიბჭე. სამუშაო სივრცე QA პროექტია Phoenix-სა და EnergoTS-ისთვის; ფაზები ძრავის დოკუმენტებს ეხება.
 
 ## Completed (დასრულებული)
+
+### 2026-10-09 — QA ძრავის წესები cursor-engine-ზე
+- პასუხი მომხმარებლის ენაზეა; ხელოვნური ინტელექტის ახალი ფაილი ინგლისურად იწერება.
+- Phoenix და ბაზის პროცედურები ხელშეუხებელია. EnergoTS-ში წერს მხოლოდ ტესტ-აგენტი, მხოლოდ `Cursor-Project/EnergoTS/src/tests/`-ში, მხოლოდ `cursor` ბრენჩზე.
+- Phoenix და EnergoTS დაბრუნდა `Cursor-Project/`-ის ქვეშ, რომ წესებისა და სკრიპტების ბილიკები ემთხვეოდეს რეალურ საქაღალდეებს.
+- Phoenix-ის ჩაწერა იჭერება ჩაწერამდეც და ჩაწერის შემდეგაც. `main`-სა და GitLab-ზე push იბლოკება; სხვა git ჩაწერა კითხულობს ნებართვას.
+- `ingest_zip_codes.py` გაშვებისას ჩერდება და Phoenix-ს არ ავსებს.
 
 ### 2026-10-06 — Phase 0.1: კვლევა
 - Anthropic-ის „AI-native SDLC playbook" (2026-08-21) სრულად წავიკითხე → `sdlc/research/playbook-notes.md`

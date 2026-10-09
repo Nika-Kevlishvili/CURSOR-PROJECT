@@ -18,9 +18,26 @@ $warnings = @()
 function Add-Failure([string]$Msg) { $script:failures += $Msg }
 function Add-Warning([string]$Msg) { $script:warnings += $Msg }
 
-$helperPath = Join-Path $RepoRoot 'Cursor-Project\EnergoTS\tests\cursor\shared\manual-verification-links.fixtures.ts'
-$summaryPath = Join-Path $RepoRoot 'Cursor-Project\EnergoTS\tests\cursor\shared\test-run-summary.fixtures.ts'
-$cursorFixturesPath = Join-Path $RepoRoot 'Cursor-Project\EnergoTS\tests\cursor\cursor-test.fixtures.ts'
+function Resolve-EnergoFile([string[]]$RelativePaths) {
+    foreach ($rel in $RelativePaths) {
+        $full = Join-Path $RepoRoot $rel
+        if (Test-Path -LiteralPath $full) { return $full }
+    }
+    return (Join-Path $RepoRoot $RelativePaths[0])
+}
+
+$helperPath = Resolve-EnergoFile @(
+    'Cursor-Project\EnergoTS\src\tests\cursor\shared\manual-verification-links.fixtures.ts',
+    'Cursor-Project\EnergoTS\tests\cursor\shared\manual-verification-links.fixtures.ts'
+)
+$summaryPath = Resolve-EnergoFile @(
+    'Cursor-Project\EnergoTS\src\tests\cursor\shared\test-run-summary.fixtures.ts',
+    'Cursor-Project\EnergoTS\tests\cursor\shared\test-run-summary.fixtures.ts'
+)
+$cursorFixturesPath = Resolve-EnergoFile @(
+    'Cursor-Project\EnergoTS\src\tests\cursor\cursor-test.fixtures.ts',
+    'Cursor-Project\EnergoTS\tests\cursor\cursor-test.fixtures.ts'
+)
 
 if (-not (Test-Path -LiteralPath $summaryPath)) {
     Add-Failure 'Missing: Cursor-Project/EnergoTS/tests/cursor/shared/test-run-summary.fixtures.ts'

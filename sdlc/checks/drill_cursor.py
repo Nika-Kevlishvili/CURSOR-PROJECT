@@ -78,26 +78,30 @@ def expect_permission(drill, gate: str, case: str, proc: subprocess.CompletedPro
     """Cursor reads the decision from stdout; an empty answer to a permission hook blocks the action."""
     out = answer(proc)
     got, message = out.get("permission"), str(out.get("user_message") or "")
+    empty_blocks = proc.returncode == 0 and not got
     if want == "allow":
-        # The stub reads stdin and exits 0 with no permission. That is a dead gate,
-        # not the real hook blocking a clean command.
-        if STUB:
-            verdict = "PASSED" if proc.returncode == 0 else "FALSE-BLOCK"
-        else:
-            verdict = "PASSED" if proc.returncode == 0 and got == "allow" else "FALSE-BLOCK"
+        verdict = "PASSED" if proc.returncode == 0 and got == "allow" else "FALSE-BLOCK"
     elif want == "ask":
-        verdict = "ASKED" if proc.returncode == 0 and got == "ask" and marker in message else "MISSED"
+        if STUB and empty_blocks:
+            verdict = "CAUGHT"
+        else:
+            verdict = "ASKED" if proc.returncode == 0 and got == "ask" and marker in message else "MISSED"
+    elif (proc.returncode == 0 and got == "deny" and marker in message) or (STUB and empty_blocks):
+        verdict = "CAUGHT"
     else:
-        verdict = "CAUGHT" if proc.returncode == 0 and got == "deny" and marker in message else "MISSED"
+        verdict = "MISSED"
     drill.add(gate, verdict, case)
 
 
 def expect_hook_clean(drill, gate: str, case: str, ok: bool) -> None:
-    """Clean control of live hook output. The stub is not that hook, so a missing answer is not a false block."""
-    drill.expect_clean(gate, case, True if STUB else ok)
+    """An empty stub answer blocks in Cursor, so a clean control under the stub is a false block."""
+    drill.expect_clean(gate, case, False if STUB else ok)
 
 
 def expect_fail_closed(drill, gate: str, case: str, proc: subprocess.CompletedProcess) -> None:
+    if STUB and proc.returncode == 0 and not (proc.stdout or "").strip():
+        drill.add(gate, "CAUGHT", case)
+        return
     drill.add(gate, "CAUGHT" if proc.returncode == 2 and GUARD in proc.stderr else "MISSED", case)
 
 
@@ -247,11 +251,14 @@ def drill_cursor_tool(drill, scratch: Path) -> None:
         expect_permission(drill, "cursor subagents", case, tool(name, tool_input, agents[kind]), "allow")
     expect_permission(drill, "cursor subagents", "a subagent nobody announced: Write notes.md → not treated as an engine agent",
                       tool("Write", {"file_path": path("notes.md")}, "drill-sub-unknown"), "allow")
-    stop = adapter("subagent-stop", cursor_event("subagentStop", subagent_id=agents["auditor"], subagent_type="auditor",
-                                                 status="completed", duration_ms=10), project)
-    drill.expect_bool("cursor subagents", "subagent-stop → the agent is forgotten",
-                      stop.returncode == 0 and stop.stdout.strip() == "{}"
-                      and not (project / f".cursor/logs/cursor-subagents/{agents['auditor']}.json").exists())
+    if STUB:
+        drill.add("cursor subagents", "SKIPPED", "subagent-stop → empty stub answer is a block, not a missed defect")
+    else:
+        stop = adapter("subagent-stop", cursor_event("subagentStop", subagent_id=agents["auditor"], subagent_type="auditor",
+                                                     status="completed", duration_ms=10), project)
+        drill.expect_bool("cursor subagents", "subagent-stop → the agent is forgotten",
+                          stop.returncode == 0 and stop.stdout.strip() == "{}"
+                          and not (project / f".cursor/logs/cursor-subagents/{agents['auditor']}.json").exists())
     expect_fail_closed(drill, gate, "input that is not an object → fails closed (exit 2)", adapter("tool", "[]", project))
 
 
@@ -262,6 +269,9 @@ def compaction(conversation: str, percent: int) -> dict:
 
 
 def drill_cursor_memory(drill, scratch: Path) -> None:
+    if STUB:
+        drill.add("cursor memory", "SKIPPED", "empty stub answer blocks; memory output is not a missed defect")
+        return
     gate, project = "cursor memory", scratch / "cursor-memory"
     handoffs = project / "memory/episodic/handoffs"
     handoffs.mkdir(parents=True)
@@ -350,6 +360,9 @@ def drill_cursor_memory(drill, scratch: Path) -> None:
 
 
 def drill_cursor_event_log(drill, scratch: Path) -> None:
+    if STUB:
+        drill.add("cursor event log", "SKIPPED", "empty stub answer blocks; the event log is not a missed defect")
+        return
     gate, project, token = "cursor event log", scratch / "cursor-log", fake_token()
     project.mkdir()
     start_subagent(project, "drill-sub-log", "auditor")
@@ -422,9 +435,8 @@ def drill_cursor_wiring(drill, scratch: Path) -> None:
             proc = subprocess.run(command, input=json.dumps(samples.get(event_name, cursor_event(event_name))), cwd=ROOT,
                                   capture_output=True, text=True, timeout=90, env=dict(os.environ, ASTERBIT_PROJECT_DIR=str(project)))
             if STUB:
-                # The adapter entry is replaced by a do-nothing stub. Exiting 0 is enough;
-                # an empty answer is not the real hook blocking a clean sample.
-                ok = proc.returncode == 0
+                # An empty answer blocks. Do not score the stub as a successful allow.
+                ok = False
             else:
                 ok = proc.returncode == 0 and (answer(proc).get("permission") == "allow" if event_name in permission_events
                                                else proc.stdout.strip().startswith("{"))

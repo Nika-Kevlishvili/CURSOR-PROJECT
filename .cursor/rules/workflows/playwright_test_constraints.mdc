@@ -3,6 +3,8 @@ description: "Rule 40: Playwright test constraints — no beforeAll for precondi
 alwaysApply: false
 globs:
   - "Cursor-Project/EnergoTS/tests/**/*.spec.ts"
+  - "Cursor-Project/EnergoTS/src/tests/**/*.spec.ts"
+  - "EnergoTS/src/tests/**/*.spec.ts"
   - ".cursor/agents/energo-ts-test.md"
   - ".cursor/agents/playwright-test-validator.md"
   - "Cursor-Project/config/playwright_generation/**/*.md"

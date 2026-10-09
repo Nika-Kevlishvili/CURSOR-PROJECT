@@ -1,0 +1,42 @@
+{
+  "baseUrl": "http://10.236.20.11:8080/",
+  "discoveredAt": "2026-07-07T12:55:35.868Z",
+  "routes": {
+    "Customers::Customers": {
+      "section": "Customers",
+      "subItem": "Customers",
+      "path": "/customers",
+      "method": "route-map"
+    },
+    "Customers::Unwanted Customers": {
+      "section": "Customers",
+      "subItem": "Unwanted Customers",
+      "path": "/unwanted-customers",
+      "method": "route-map"
+    },
+    "Customers::Groups of Connected Customers": {
+      "section": "Customers",
+      "subItem": "Groups of Connected Customers",
+      "path": "/groups-of-connected-customers",
+      "method": "route-map"
+    },
+    "Points of Delivery::Points of Delivery": {
+      "section": "Points of Delivery",
+      "subItem": "Points of Delivery",
+      "path": "/points-of-delivery",
+      "method": "direct-url"
+    },
+    "Contracts and Orders::Energy Product Contracts": {
+      "section": "Contracts and Orders",
+      "subItem": "Energy Product Contracts",
+      "path": "/energy-product-contracts",
+      "method": "direct-url"
+    },
+    "Billing::Billing Runs": {
+      "section": "Billing",
+      "subItem": "Billing Runs",
+      "path": "/billing-run",
+      "method": "direct-url"
+    }
+  }
+}

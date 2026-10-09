@@ -1,7 +1,23 @@
 {
-  "git.autoRepositoryDetection": true,
-  "git.repositoryScanMaxDepth": 10,
+  "git.enabled": true,
+  "git.autoRepositoryDetection": "subFolders",
+  "git.repositoryScanMaxDepth": 4,
   "git.detectSubmodules": true,
+  "git.openRepositoryInParentFolders": "always",
   "git.autofetch": false,
-  "git.fetchOnPull": false
+  "git.fetchOnPull": false,
+  "git.scanRepositories": [
+    "Cursor-Project/EnergoTS",
+    "Cursor-Project/Phoenix/mfe-poc-with-nx",
+    "Cursor-Project/Phoenix/phoenix-api-gateway",
+    "Cursor-Project/Phoenix/phoenix-billing-run",
+    "Cursor-Project/Phoenix/phoenix-core",
+    "Cursor-Project/Phoenix/phoenix-core-lib",
+    "Cursor-Project/Phoenix/phoenix-mass-import",
+    "Cursor-Project/Phoenix/phoenix-migration",
+    "Cursor-Project/Phoenix/phoenix-payment-api",
+    "Cursor-Project/Phoenix/phoenix-scheduler",
+    "Cursor-Project/Phoenix/phoenix-ui",
+    "Cursor-Project/Phoenix/sales-portal"
+  ]
 }

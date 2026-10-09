@@ -21,7 +21,13 @@ $targetBranch = $branchMap[$Environment]
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $workspaceRoot = Split-Path -Parent (Split-Path -Parent $scriptDir)
-$phoenixRoot = Join-Path (Join-Path $workspaceRoot 'Cursor-Project') 'Phoenix'
+$phoenixNested = Join-Path (Join-Path $workspaceRoot 'Cursor-Project') 'Phoenix'
+$phoenixAtRoot = Join-Path $workspaceRoot 'Phoenix'
+if (Test-Path -LiteralPath $phoenixNested) {
+    $phoenixRoot = $phoenixNested
+} else {
+    $phoenixRoot = $phoenixAtRoot
+}
 $lockPath = Join-Path $workspaceRoot '.cursor\.phoenix_switch.lock'
 $logDir = Join-Path $workspaceRoot '.cursor\logs'
 if ([string]::IsNullOrWhiteSpace($LogPath)) {

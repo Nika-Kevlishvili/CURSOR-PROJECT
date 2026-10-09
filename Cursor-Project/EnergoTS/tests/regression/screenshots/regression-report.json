@@ -1,0 +1,451 @@
+{
+  "config": {
+<<<<<<< Updated upstream
+    "configFile": "C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\playwright.regression.config.ts",
+    "rootDir": "C:/Users/N.kevlishvili/Cursor/Cursor-Project/EnergoTS/tests/regression",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\setup.ts",
+=======
+    "configFile": "C:\\Users\\g.kikriashvili\\Desktop\\CURSOR-PROJECT\\Cursor-Project\\EnergoTS\\tests\\regression\\playwright.regression.config.ts",
+    "rootDir": "C:/Users/g.kikriashvili/Desktop/CURSOR-PROJECT/Cursor-Project/EnergoTS/tests/regression",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "C:\\Users\\g.kikriashvili\\Desktop\\CURSOR-PROJECT\\Cursor-Project\\EnergoTS\\tests\\regression\\setup.ts",
+>>>>>>> Stashed changes
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+<<<<<<< Updated upstream
+          "outputFile": "C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\screenshots\\regression-report.json"
+=======
+          "outputFile": "C:\\Users\\g.kikriashvili\\Desktop\\CURSOR-PROJECT\\Cursor-Project\\EnergoTS\\tests\\regression\\screenshots\\regression-report.json"
+>>>>>>> Stashed changes
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+<<<<<<< Updated upstream
+        "outputDir": "C:/Users/N.kevlishvili/Cursor/Cursor-Project/EnergoTS/test-results",
+=======
+        "outputDir": "C:/Users/g.kikriashvili/Desktop/CURSOR-PROJECT/Cursor-Project/EnergoTS/test-results",
+>>>>>>> Stashed changes
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "visual-regression",
+        "name": "visual-regression",
+<<<<<<< Updated upstream
+        "testDir": "C:/Users/N.kevlishvili/Cursor/Cursor-Project/EnergoTS/tests/regression",
+=======
+        "testDir": "C:/Users/g.kikriashvili/Desktop/CURSOR-PROJECT/Cursor-Project/EnergoTS/tests/regression",
+>>>>>>> Stashed changes
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+<<<<<<< Updated upstream
+      "title": "modules\\02-customers.spec.ts",
+      "file": "modules/02-customers.spec.ts",
+=======
+      "title": "recorded\\dev-create-unwanted-customer-ui.spec.ts",
+      "file": "recorded/dev-create-unwanted-customer-ui.spec.ts",
+>>>>>>> Stashed changes
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+<<<<<<< Updated upstream
+          "title": "@section-customers Customers",
+          "file": "helpers/create-section-tests.ts",
+          "line": 47,
+          "column": 8,
+          "specs": [
+            {
+              "title": "Customers — visual regression",
+              "ok": true,
+              "tags": [
+                "section-customers"
+              ],
+              "tests": [
+                {
+                  "timeout": 300000,
+=======
+          "title": "[DEV-DATA]: Unwanted Customer UI create",
+          "file": "recorded/dev-create-unwanted-customer-ui.spec.ts",
+          "line": 44,
+          "column": 6,
+          "specs": [
+            {
+              "title": "[DEV-DATA]: Create Unwanted Customer via Phoenix UI (Dev)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+>>>>>>> Stashed changes
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "visual-regression",
+                  "projectName": "visual-regression",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+<<<<<<< Updated upstream
+                      "duration": 27139,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "  ✓ Shared session ready — one login, same tab for all sub-items\n"
+                        },
+                        {
+                          "text": "\n📍 [Customers] → Customers\n"
+                        },
+                        {
+                          "text": "\n🧭 Navigate: [Customers] → Customers\n"
+                        },
+                        {
+                          "text": "  → Strategy: ui-two-level (reference flow)\n"
+                        },
+                        {
+                          "text": "  ✗ Sidebar not available after single burger click\n"
+                        },
+                        {
+                          "text": "  → Strategy: direct-url http://10.236.20.11:8080/customers\n"
+                        },
+                        {
+                          "text": "  ✓ Listing API: http://10.236.20.11:8091/customer/list\n"
+                        },
+                        {
+                          "text": "  ✅ Reached listing via route-map: http://10.236.20.11:8080/customers\n"
+                        },
+                        {
+                          "text": "  → Listing interactions: filter/search/sort content checks\n"
+                        },
+                        {
+                          "text": "  ✓ Search \"Legal\": 25/25 rows contain token\n"
+                        },
+                        {
+                          "text": "  ✓ Sort \"Date of creation\": desc — [07.07.2026 | 07.07.2026 | 07.07.2026 | 07.07.2026 | 07.07.2026]\n"
+                        },
+                        {
+                          "text": "\n📸 Screenshots saved to: C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\screenshots\\2026-07-07T12-53-27\\02-customers\\01-customers\n"
+                        },
+                        {
+                          "text": "   listing/ → 5 file(s)\n"
+                        },
+                        {
+                          "text": "   object/  → 1 file(s)\n"
+                        },
+                        {
+                          "text": "📋 Manifest: C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\screenshots\\2026-07-07T12-53-27\\02-customers\\01-customers\\manifest.json\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "(node:14904) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                        },
+                        {
+                          "text": "  ⚠ Could not pick filter option for Status\n"
+                        },
+                        {
+                          "text": "  ⚠ Could not pick filter option for Type\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2026-07-07T12:53:27.541Z",
+=======
+                      "duration": 45481,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[DEV-DATA] Unwanted Customer UI create OK — identificationNumber=900021510, name=AUTO UNWANTED 1786100021511, id=52025, status=201\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Precondition: inject JWT into browser storage",
+                          "duration": 45
+                        },
+                        {
+                          "title": "Open Unwanted Customers listing",
+                          "duration": 20411
+                        },
+                        {
+                          "title": "Open create form",
+                          "duration": 2492
+                        },
+                        {
+                          "title": "Fill mandatory fields",
+                          "duration": 12594
+                        },
+                        {
+                          "title": "Save and assert POST /unwanted-customer succeeds",
+                          "duration": 1531
+                        },
+                        {
+                          "title": "Verify created row appears in listing search",
+                          "duration": 4524
+                        }
+                      ],
+                      "startTime": "2026-08-07T10:53:37.246Z",
+>>>>>>> Stashed changes
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+<<<<<<< Updated upstream
+              "id": "e0e64f4410e20f581a19-f4ee6e4e1fb4aa06cff4",
+              "file": "helpers/create-section-tests.ts",
+              "line": 65,
+              "column": 11
+            },
+            {
+              "title": "Unwanted Customers — visual regression",
+              "ok": true,
+              "tags": [
+                "section-customers"
+              ],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "visual-regression",
+                  "projectName": "visual-regression",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 30300,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n📍 [Customers] → Unwanted Customers\n"
+                        },
+                        {
+                          "text": "\n🧭 Navigate: [Customers] → Unwanted Customers\n"
+                        },
+                        {
+                          "text": "  → Strategy: ui-two-level (reference flow)\n"
+                        },
+                        {
+                          "text": "  ✗ Sidebar not available after single burger click\n"
+                        },
+                        {
+                          "text": "  → Strategy: direct-url http://10.236.20.11:8080/unwanted-customers\n"
+                        },
+                        {
+                          "text": "  ✅ Reached listing via route-map: http://10.236.20.11:8080/unwanted-customers\n"
+                        },
+                        {
+                          "text": "  → Listing interactions: filter/search/sort content checks\n"
+                        },
+                        {
+                          "text": "  ✓ Search \"Заведено\": 25/25 rows contain token\n"
+                        },
+                        {
+                          "text": "  ⚠ Sort \"Name\": not verified — [02 МЕДИЯ ЕООД | 0301 ООД | 1000 БАНИ | 1001 ТОРТИ ЕООД | 100 ЛЕТА ООД]\n"
+                        },
+                        {
+                          "text": "\n📸 Screenshots saved to: C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\screenshots\\2026-07-07T12-53-27\\02-customers\\02-unwanted-customers\n"
+                        },
+                        {
+                          "text": "   listing/ → 5 file(s)\n"
+                        },
+                        {
+                          "text": "   object/  → 1 file(s)\n"
+                        },
+                        {
+                          "text": "📋 Manifest: C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\screenshots\\2026-07-07T12-53-27\\02-customers\\02-unwanted-customers\\manifest.json\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "  ⚠ Could not pick filter option for Reason\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2026-07-07T12:54:22.265Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e0e64f4410e20f581a19-85552850792e32fd1c5d",
+              "file": "helpers/create-section-tests.ts",
+              "line": 65,
+              "column": 11
+            },
+            {
+              "title": "Groups of Connected Customers — visual regression",
+              "ok": false,
+              "tags": [
+                "section-customers"
+              ],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "visual-regression",
+                  "projectName": "visual-regression",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 242469,
+                      "error": {
+                        "message": "Error: locator.click: Target page, context or browser has been closed",
+                        "stack": "Error: locator.click: Target page, context or browser has been closed\n    at C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\helpers\\navigation.ts:104:52\n    at PhoenixNavigation.openFirstListPreview (C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\helpers\\navigation.ts:104:9)\n    at runSubmenuVisualFlow (C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\helpers\\page-flow.ts:46:25)\n    at C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\helpers\\create-section-tests.ts:79:9",
+                        "location": {
+                          "file": "C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\helpers\\navigation.ts",
+                          "column": 52,
+                          "line": 104
+                        },
+                        "snippet": "   at helpers\\navigation.ts:104\n\n  102 |       const row = this.page.locator(selector).first();\n  103 |       if (await row.isVisible({ timeout: 3000 }).catch(() => false)) {\n> 104 |         await row.dblclick().catch(async () => row.click());\n      |                                                    ^\n  105 |         await this.page.waitForLoadState('networkidle');\n  106 |         await this.page.waitForTimeout(1200);\n  107 |         return true;"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\helpers\\navigation.ts",
+                            "column": 52,
+                            "line": 104
+                          },
+                          "message": "Error: locator.click: Target page, context or browser has been closed\n\n   at helpers\\navigation.ts:104\n\n  102 |       const row = this.page.locator(selector).first();\n  103 |       if (await row.isVisible({ timeout: 3000 }).catch(() => false)) {\n> 104 |         await row.dblclick().catch(async () => row.click());\n      |                                                    ^\n  105 |         await this.page.waitForLoadState('networkidle');\n  106 |         await this.page.waitForTimeout(1200);\n  107 |         return true;\n    at C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\helpers\\navigation.ts:104:52\n    at PhoenixNavigation.openFirstListPreview (C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\helpers\\navigation.ts:104:9)\n    at runSubmenuVisualFlow (C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\helpers\\page-flow.ts:46:25)\n    at C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\helpers\\create-section-tests.ts:79:9"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "\n📍 [Customers] → Groups of Connected Customers\n"
+                        },
+                        {
+                          "text": "\n🧭 Navigate: [Customers] → Groups of Connected Customers\n"
+                        },
+                        {
+                          "text": "  → Strategy: ui-two-level (reference flow)\n"
+                        },
+                        {
+                          "text": "  ✗ Sidebar not available after single burger click\n"
+                        },
+                        {
+                          "text": "  → Strategy: direct-url http://10.236.20.11:8080/groups-of-connected-customers\n"
+                        },
+                        {
+                          "text": "  ✅ Reached listing via route-map: http://10.236.20.11:8080/groups-of-connected-customers\n"
+                        },
+                        {
+                          "text": "  → Listing interactions: filter/search/sort content checks\n"
+                        },
+                        {
+                          "text": "  ✓ Search \"Правна\": 25/25 rows contain token\n"
+                        },
+                        {
+                          "text": "  ✓ Sort \"Type of connections\": asc — [Правна | Правна | Правна | Правна | Правна]\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "  ⚠ Could not pick filter option for Type\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2026-07-07T12:54:52.582Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\test-results\\modules-02-customers--sect-b5b94-stomers-—-visual-regression-visual-regression\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\N.kevlishvili\\Cursor\\Cursor-Project\\EnergoTS\\tests\\regression\\helpers\\navigation.ts",
+                        "column": 52,
+                        "line": 104
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "e0e64f4410e20f581a19-b345a9de68d8cedaf556",
+              "file": "helpers/create-section-tests.ts",
+              "line": 65,
+              "column": 11
+=======
+              "id": "9e4ec2a0a1c26e21b8a3-121ba34145453bdcb85c",
+              "file": "recorded/dev-create-unwanted-customer-ui.spec.ts",
+              "line": 48,
+              "column": 7
+>>>>>>> Stashed changes
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+<<<<<<< Updated upstream
+    "startTime": "2026-07-07T12:53:26.283Z",
+    "duration": 329757.643,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 1,
+=======
+    "startTime": "2026-08-07T10:53:32.818Z",
+    "duration": 54156.691,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+>>>>>>> Stashed changes
+    "flaky": 0
+  }
+}

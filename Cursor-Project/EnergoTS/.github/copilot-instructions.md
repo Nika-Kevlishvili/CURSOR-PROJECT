@@ -176,7 +176,7 @@ The `reportGenerator.setLinksToResponses()` method converts entity IDs to clicka
 - Jira: Separate project (WIP) - updates ticket statuses based on test pass/fail
 
 **Environment Variables**: 
-- `BASE_URL`: API base URL (default: `https://devapps.energo-pro.bg/backend/phoenix1-dev/`)
+- `BASE_URL`: API base URL (default: `http://10.236.20.11:8091/`)
 - `AUTHAPI`, `PORTAL_USER`, `PASSWORD`: Authentication credentials
 - `SAVE_OBJECT_LINKS`: Enable clickable links in reports (used in `extension.yml` workflow)
 

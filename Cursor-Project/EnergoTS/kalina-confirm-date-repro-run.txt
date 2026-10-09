@@ -1,0 +1,36 @@
+Kalina EasyPay confirm DATE live repro — PDT-3215 LPF "due is today" (Sofia 00:15)
+================================================================================
+Environment: Test
+BASE_URL: https://testapps.energo-pro.bg/backend/phoenix-epres
+Branch: cursor
+Spec: tests/cursor/PDT-3215-lpf-due-date-timezone-gap.spec.ts
+Command: npx playwright test tests/cursor/PDT-3215-lpf-due-date-timezone-gap.spec.ts --grep "due is today" --project=main --workers=1
+Note: User asked --grep "due today"; Playwright title is "due is today" (no contiguous "due today"), so grep used "due is today".
+Setup: npx playwright test --project=setup (TESTAUTHAPI) — passed before main run
+Run time (Sofia context): sofiaHour=13, sofiaMinute=51, todaySofia=2026-09-10
+
+RESULT: PASSED (1 passed, ~3.1m)
+
+Confirm DATE used: 20260910001500
+  (today Sofia yyyyMMdd + 001500 = 2026-09-10 00:15 Europe/Sofia)
+
+IDs from TestRunSummary:
+  customerNumber: 6099432845
+  identifier: 17890375197929126
+  customer id: 6039456
+  tid: 20260910145200077118100020
+  merchantId: 7000005
+  paymentId: 297792
+  sourceLiabilityId: 317502
+  interestRateId: 1247
+  confirmStatus: 00
+  initAmountRaw / principalCoins: 10000 / 10000
+  latePaymentFine totalElements: 0 (no LPF — expected for due=today)
+
+Checks:
+  1. PASSED — EasyPay init-pay AMOUNT equals principal (due = today, no LPF) STATUS=00 AMOUNT=10000
+  2. PASSED — EasyPay confirm-pay DATE today 00:15 when due is today STATUS=00 DATE=20260910001500
+  3. PASSED — No LPF when due is today and DATE is Sofia 00:15 totalElements=0
+
+Console log: Cursor-Project/EnergoTS/kalina-confirm-date-repro-run-console.log
+This summary: Cursor-Project/EnergoTS/kalina-confirm-date-repro-run.txt

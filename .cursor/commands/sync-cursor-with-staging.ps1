@@ -11,7 +11,13 @@ $ErrorActionPreference = "Stop"
 # Get the script directory and navigate to EnergoTS
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $workspaceRoot = Split-Path -Parent (Split-Path -Parent $scriptDir)
-$energotsPath = Join-Path $workspaceRoot "Cursor-Project\EnergoTS"
+$energotsNested = Join-Path $workspaceRoot "Cursor-Project\EnergoTS"
+$energotsAtRoot = Join-Path $workspaceRoot "EnergoTS"
+if (Test-Path -LiteralPath $energotsNested) {
+    $energotsPath = $energotsNested
+} else {
+    $energotsPath = $energotsAtRoot
+}
 
 if (-not (Test-Path $energotsPath)) {
     Write-Error "EnergoTS directory not found at: $energotsPath"

@@ -15,7 +15,13 @@ $ErrorActionPreference = "Stop"
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $workspaceRoot = Split-Path -Parent (Split-Path -Parent $scriptDir)
 $cursorProjectPath = Join-Path $workspaceRoot "Cursor-Project"
-$energotsPath = Join-Path $cursorProjectPath "EnergoTS"
+$energotsNested = Join-Path $cursorProjectPath "EnergoTS"
+$energotsAtRoot = Join-Path $workspaceRoot "EnergoTS"
+if (Test-Path -LiteralPath $energotsNested) {
+    $energotsPath = $energotsNested
+} else {
+    $energotsPath = $energotsAtRoot
+}
 $detailedGenerator = Join-Path $cursorProjectPath "config\playwright\generate-detailed-report.mjs"
 
 if (-not (Test-Path $energotsPath)) {

@@ -12,7 +12,7 @@ Analyze visual regression screenshots from EnergoTS Playwright tests against Con
 
 ## Input
 
-- Path to screenshots folder: `EnergoTS/tests/regression/screenshots/{run-id}/{section}/{sub-item}/`
+- Path to screenshots folder: `Cursor-Project/Cursor-Project/EnergoTS/tests/regression/screenshots/{run-id}/{section}/{sub-item}/`
 - Structure mirrors Phoenix sidebar menu (`menu-structure.json`):
   - `listing/` — list view screenshots (filters, search, table)
   - `object/` — preview/detail/create form screenshots
@@ -34,7 +34,7 @@ Extract:
 
 Check for checklist file in the test folder:
 ```
-EnergoTS/tests/regression/{module}/{submodule}/checklist.md
+Cursor-Project/EnergoTS/tests/regression/{module}/{submodule}/checklist.md
 ```
 
 ### Step 3: For Each Screenshot
@@ -129,7 +129,7 @@ When `confluenceRef` is provided:
 
 ## Example Usage
 
-User: `გააანალიზე რეგრესიის screenshots: EnergoTS/tests/regression/screenshots/2024-07-03T14-30-22/product-contracts/`
+User: `გააანალიზე რეგრესიის screenshots: Cursor-Project/EnergoTS/tests/regression/screenshots/2024-07-03T14-30-22/product-contracts/`
 
 Agent:
 1. Reads `manifest.json`
@@ -145,6 +145,6 @@ Analysis is provided in chat response. If user requests, save to:
 
 ## Related Files
 
-- Screenshots: `EnergoTS/tests/regression/screenshots/`
-- Checklists: `EnergoTS/tests/regression/{module}/{submodule}/checklist.md`
-- Playwright config: `EnergoTS/tests/regression/playwright.regression.config.ts`
+- Screenshots: `Cursor-Project/EnergoTS/tests/regression/screenshots/`
+- Checklists: `Cursor-Project/EnergoTS/tests/regression/{module}/{submodule}/checklist.md`
+- Playwright config: `Cursor-Project/EnergoTS/tests/regression/playwright.regression.config.ts`

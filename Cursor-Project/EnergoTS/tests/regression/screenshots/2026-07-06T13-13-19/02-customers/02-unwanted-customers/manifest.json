@@ -1,0 +1,246 @@
+{
+  "runId": "2026-07-06T13-13-19",
+  "environment": "dev",
+  "baseUrl": "http://10.236.20.11:8080/",
+  "section": "Customers",
+  "subItem": "Unwanted Customers",
+  "sectionIndex": 1,
+  "subItemIndex": 1,
+  "startTime": "2026-07-06T13:14:58.775Z",
+  "listing": [
+    {
+      "filename": "01-02-02-customers-unwanted-customers-list-full.png",
+      "stepName": "02-02-customers-unwanted-customers-list",
+      "description": "Customers / Unwanted Customers — list view",
+      "checkItems": [
+        "Page loaded (not blank)",
+        "Listing or main content visible",
+        "Table/grid or form area rendered",
+        "Action buttons visible if applicable"
+      ],
+      "timestamp": "2026-07-06T13:14:42.937Z",
+      "scrollPosition": "full",
+      "kind": "listing",
+      "relativePath": "listing/01-02-02-customers-unwanted-customers-list-full.png"
+    },
+    {
+      "filename": "02-02-02-customers-unwanted-customers-list-scroll-left.png",
+      "stepName": "02-02-customers-unwanted-customers-list-scroll (left)",
+      "description": "Unwanted Customers — horizontal scroll",
+      "checkItems": [
+        "Wide table/content captured left and right"
+      ],
+      "timestamp": "2026-07-06T13:14:44.131Z",
+      "scrollPosition": "left",
+      "kind": "listing",
+      "relativePath": "listing/02-02-02-customers-unwanted-customers-list-scroll-left.png"
+    },
+    {
+      "filename": "03-02-02-customers-unwanted-customers-list-scroll-right.png",
+      "stepName": "02-02-customers-unwanted-customers-list-scroll (right)",
+      "description": "Unwanted Customers — horizontal scroll",
+      "checkItems": [],
+      "timestamp": "2026-07-06T13:14:44.131Z",
+      "scrollPosition": "right",
+      "kind": "listing",
+      "relativePath": "listing/03-02-02-customers-unwanted-customers-list-scroll-right.png"
+    },
+    {
+      "filename": "04-02-02-customers-unwanted-customers-filter-01-reason-viewport.png",
+      "stepName": "02-02-customers-unwanted-customers-filter-01-reason",
+      "description": "Unwanted Customers — filter open: Reason",
+      "checkItems": [
+        "Filter dropdown opened",
+        "Options/checkboxes visible",
+        "Label matches UI"
+      ],
+      "timestamp": "2026-07-06T13:14:45.813Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/04-02-02-customers-unwanted-customers-filter-01-reason-viewport.png"
+    },
+    {
+      "filename": "05-02-02-customers-unwanted-customers-search-viewport.png",
+      "stepName": "02-02-customers-unwanted-customers-search",
+      "description": "Unwanted Customers — search applied: \"IVRWGCYNRJ\"",
+      "checkItems": [
+        "Search text entered",
+        "Table shows filtered rows or empty state",
+        "Search UI intact"
+      ],
+      "timestamp": "2026-07-06T13:14:50.592Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/05-02-02-customers-unwanted-customers-search-viewport.png"
+    },
+    {
+      "filename": "06-02-02-customers-unwanted-customers-sort-name-viewport.png",
+      "stepName": "02-02-customers-unwanted-customers-sort-name",
+      "description": "Unwanted Customers — sort by \"Name\"",
+      "checkItems": [
+        "Sortable column header clicked",
+        "Sort arrow or row order may change",
+        "First row changed after sort"
+      ],
+      "timestamp": "2026-07-06T13:14:54.610Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/06-02-02-customers-unwanted-customers-sort-name-viewport.png"
+    }
+  ],
+  "object": [
+    {
+      "filename": "01-02-02-customers-unwanted-customers-preview-top.png",
+      "stepName": "02-02-customers-unwanted-customers-preview (top)",
+      "description": "Unwanted Customers — preview/detail",
+      "checkItems": [
+        "Detail/preview opened",
+        "Header or title visible",
+        "Main fields/sections visible",
+        "Tabs or sub-panels if applicable",
+        "Action buttons state"
+      ],
+      "timestamp": "2026-07-06T13:14:57.707Z",
+      "scrollPosition": "top",
+      "kind": "object",
+      "relativePath": "object/01-02-02-customers-unwanted-customers-preview-top.png"
+    },
+    {
+      "filename": "02-02-02-customers-unwanted-customers-preview-middle.png",
+      "stepName": "02-02-customers-unwanted-customers-preview (middle)",
+      "description": "Unwanted Customers — preview/detail",
+      "checkItems": [],
+      "timestamp": "2026-07-06T13:14:57.707Z",
+      "scrollPosition": "middle",
+      "kind": "object",
+      "relativePath": "object/02-02-02-customers-unwanted-customers-preview-middle.png"
+    },
+    {
+      "filename": "03-02-02-customers-unwanted-customers-preview-bottom.png",
+      "stepName": "02-02-customers-unwanted-customers-preview (bottom)",
+      "description": "Unwanted Customers — preview/detail",
+      "checkItems": [],
+      "timestamp": "2026-07-06T13:14:57.707Z",
+      "scrollPosition": "bottom",
+      "kind": "object",
+      "relativePath": "object/03-02-02-customers-unwanted-customers-preview-bottom.png"
+    }
+  ],
+  "screenshots": [
+    {
+      "filename": "01-02-02-customers-unwanted-customers-list-full.png",
+      "stepName": "02-02-customers-unwanted-customers-list",
+      "description": "Customers / Unwanted Customers — list view",
+      "checkItems": [
+        "Page loaded (not blank)",
+        "Listing or main content visible",
+        "Table/grid or form area rendered",
+        "Action buttons visible if applicable"
+      ],
+      "timestamp": "2026-07-06T13:14:42.937Z",
+      "scrollPosition": "full",
+      "kind": "listing",
+      "relativePath": "listing/01-02-02-customers-unwanted-customers-list-full.png"
+    },
+    {
+      "filename": "02-02-02-customers-unwanted-customers-list-scroll-left.png",
+      "stepName": "02-02-customers-unwanted-customers-list-scroll (left)",
+      "description": "Unwanted Customers — horizontal scroll",
+      "checkItems": [
+        "Wide table/content captured left and right"
+      ],
+      "timestamp": "2026-07-06T13:14:44.131Z",
+      "scrollPosition": "left",
+      "kind": "listing",
+      "relativePath": "listing/02-02-02-customers-unwanted-customers-list-scroll-left.png"
+    },
+    {
+      "filename": "03-02-02-customers-unwanted-customers-list-scroll-right.png",
+      "stepName": "02-02-customers-unwanted-customers-list-scroll (right)",
+      "description": "Unwanted Customers — horizontal scroll",
+      "checkItems": [],
+      "timestamp": "2026-07-06T13:14:44.131Z",
+      "scrollPosition": "right",
+      "kind": "listing",
+      "relativePath": "listing/03-02-02-customers-unwanted-customers-list-scroll-right.png"
+    },
+    {
+      "filename": "04-02-02-customers-unwanted-customers-filter-01-reason-viewport.png",
+      "stepName": "02-02-customers-unwanted-customers-filter-01-reason",
+      "description": "Unwanted Customers — filter open: Reason",
+      "checkItems": [
+        "Filter dropdown opened",
+        "Options/checkboxes visible",
+        "Label matches UI"
+      ],
+      "timestamp": "2026-07-06T13:14:45.813Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/04-02-02-customers-unwanted-customers-filter-01-reason-viewport.png"
+    },
+    {
+      "filename": "05-02-02-customers-unwanted-customers-search-viewport.png",
+      "stepName": "02-02-customers-unwanted-customers-search",
+      "description": "Unwanted Customers — search applied: \"IVRWGCYNRJ\"",
+      "checkItems": [
+        "Search text entered",
+        "Table shows filtered rows or empty state",
+        "Search UI intact"
+      ],
+      "timestamp": "2026-07-06T13:14:50.592Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/05-02-02-customers-unwanted-customers-search-viewport.png"
+    },
+    {
+      "filename": "06-02-02-customers-unwanted-customers-sort-name-viewport.png",
+      "stepName": "02-02-customers-unwanted-customers-sort-name",
+      "description": "Unwanted Customers — sort by \"Name\"",
+      "checkItems": [
+        "Sortable column header clicked",
+        "Sort arrow or row order may change",
+        "First row changed after sort"
+      ],
+      "timestamp": "2026-07-06T13:14:54.610Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/06-02-02-customers-unwanted-customers-sort-name-viewport.png"
+    },
+    {
+      "filename": "01-02-02-customers-unwanted-customers-preview-top.png",
+      "stepName": "02-02-customers-unwanted-customers-preview (top)",
+      "description": "Unwanted Customers — preview/detail",
+      "checkItems": [
+        "Detail/preview opened",
+        "Header or title visible",
+        "Main fields/sections visible",
+        "Tabs or sub-panels if applicable",
+        "Action buttons state"
+      ],
+      "timestamp": "2026-07-06T13:14:57.707Z",
+      "scrollPosition": "top",
+      "kind": "object",
+      "relativePath": "object/01-02-02-customers-unwanted-customers-preview-top.png"
+    },
+    {
+      "filename": "02-02-02-customers-unwanted-customers-preview-middle.png",
+      "stepName": "02-02-customers-unwanted-customers-preview (middle)",
+      "description": "Unwanted Customers — preview/detail",
+      "checkItems": [],
+      "timestamp": "2026-07-06T13:14:57.707Z",
+      "scrollPosition": "middle",
+      "kind": "object",
+      "relativePath": "object/02-02-02-customers-unwanted-customers-preview-middle.png"
+    },
+    {
+      "filename": "03-02-02-customers-unwanted-customers-preview-bottom.png",
+      "stepName": "02-02-customers-unwanted-customers-preview (bottom)",
+      "description": "Unwanted Customers — preview/detail",
+      "checkItems": [],
+      "timestamp": "2026-07-06T13:14:57.707Z",
+      "scrollPosition": "bottom",
+      "kind": "object",
+      "relativePath": "object/03-02-02-customers-unwanted-customers-preview-bottom.png"
+    }
+  ]
+}

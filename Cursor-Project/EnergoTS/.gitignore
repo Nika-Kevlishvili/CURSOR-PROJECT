@@ -1,7 +1,6 @@
 node_modules/
 /test-results/
 /playwright-report/
-/src/backend/playwright-report/
 /blob-report/
 /playwright/.cache/
 *.xlsx
@@ -11,10 +10,17 @@ actions-runner/
 actions-runner2/
 .DS_Store
 playwright-report.json
-src/backend/playwright-report.json
+# JSON-derived machine report (same folder as playwright-report.json)
+playwright-report-detailed.md
 token.json
 envVariables.json
 miscellaneous
 stashedResponses
 salesPortalToken.json
-/src/backend/mass-imports/output
+src/backend/playwright-report/index.html
+
+# Local Playwright / agent stdout dumps (repo root only)
+/*-stdout.txt
+/*-run-out.txt
+/pdt-*-rerun*.txt
+/pdt-*-test-*.txt

@@ -7,12 +7,19 @@ $jsonInput = [Console]::In.ReadToEnd()
 try {
     $hookInput = $jsonInput | ConvertFrom-Json
     $filePath = $hookInput.file_path
+    if (-not $filePath -and $hookInput.tool_input) {
+        $filePath = $hookInput.tool_input.file_path
+    }
+    if (-not $filePath) {
+        @{ permission = "allow" } | ConvertTo-Json -Compress
+        return
+    }
 
     $normalizedPathLower = ($filePath -replace '\\', '/').ToLower()
 
     # Cursor-Project/EnergoTS/ (historical) and repo-root EnergoTS/ (this branch) are the same tree.
     $isEnergoTSPath = ($normalizedPathLower -match "(^|/)cursor-project/energots/") -or ($normalizedPathLower -match "(^|/)energots/")
-    $isTestsPath = ($normalizedPathLower -match "(^|/)cursor-project/energots/tests/") -or ($normalizedPathLower -match "(^|/)energots/tests/")
+    $isTestsPath = ($normalizedPathLower -match "(^|/)energots/src/tests/") -or ($normalizedPathLower -match "(^|/)cursor-project/energots/src/tests/") -or ($normalizedPathLower -match "(^|/)cursor-project/energots/tests/") -or ($normalizedPathLower -match "(^|/)energots/tests/")
 
     $allowedTestSuffixes = @('.spec.ts', '.fixtures.ts')
     $isAllowedTestArtifact = $false
@@ -27,7 +34,7 @@ try {
         $response = @{
             permission = "deny"
             user_message = "[HOOK BLOCKED] EnergoTS edits outside tests/ are forbidden (Rule 0.8 Tier B). File: $filePath"
-            agent_message = "BLOCK: Only EnergoTSTestAgent may write under Cursor-Project/EnergoTS/tests/ (*.spec.ts, *.fixtures.ts). File '$filePath' is outside tests/."
+            agent_message = "BLOCK: Only EnergoTSTestAgent may write under EnergoTS/src/tests/ (*.spec.ts, *.fixtures.ts) on the cursor branch. File '$filePath' is outside src/tests/."
         }
     } elseif ($isTestsPath -and -not $isAllowedTestArtifact) {
         $response = @{

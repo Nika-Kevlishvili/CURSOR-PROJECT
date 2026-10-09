@@ -30,23 +30,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          git config --global --add safe.directory '*'
-          if [ ! -d .git ]; then
-            git init
-            git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
-          fi
-          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git fetch --force --depth=1 origin "${GITHUB_SHA}" || git fetch --force --depth=1 origin "${GITHUB_REF}"
-          git checkout --force --detach "${GITHUB_SHA}"
-          git reset --hard "${GITHUB_SHA}"
-          git config --global core.longPaths true
-          git clean -ffdx -e node_modules -e test-results || true
-          git log -1 --oneline
-          git remote set-url origin "https://github.com/${GITHUB_REPOSITORY}.git"
+        uses: actions/checkout@v4
 
       - name: Run global setup
         id: setup
@@ -55,9 +39,6 @@ jobs:
           TESTAUTHAPI: ${{ secrets.TESTAUTHAPI }}
           PORTAL_USER: ${{ secrets.PORTAL_USER }}
           PASSWORD: ${{ secrets.PASSWORD }}
-          GRANT_TYPE: ${{ secrets.GRANT_TYPE }}
-          CLIENT_ID: ${{ secrets.CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           BASE_URL: ${{ github.event.inputs.BASE_URL }}
         run: |
           echo "Running global setup with 1 worker..."
@@ -70,9 +51,6 @@ jobs:
           TESTAUTHAPI: ${{ secrets.TESTAUTHAPI }}
           PORTAL_USER: ${{ secrets.PORTAL_USER }}
           PASSWORD: ${{ secrets.PASSWORD }}
-          GRANT_TYPE: ${{ secrets.GRANT_TYPE }}
-          CLIENT_ID: ${{ secrets.CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           BASE_URL: ${{ github.event.inputs.BASE_URL }}
           SAVE_OBJECT_LINKS: ${{ github.event.inputs.save_links }}
         run: |

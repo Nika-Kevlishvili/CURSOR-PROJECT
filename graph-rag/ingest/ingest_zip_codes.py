@@ -11,6 +11,14 @@ import sys
 _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, _root)
 
+if __name__ == "__main__":
+    print(
+        "Stopped. ingest_zip_codes.py does not ingest Phoenix or Swagger. "
+        "Fill graph-rag/ from engine files only (.cursor/rules, .cursor/skills, "
+        ".cursor/agents, memory/, docs/, sdlc/design) after an explicit yes."
+    )
+    raise SystemExit(2)
+
 from core.graph_client import GraphClient
 from core.llm_client import LLMClient, preload_embed_model
 from core.staleness import compute_content_hash, compute_file_hash
@@ -389,70 +397,12 @@ PLACEHOLDER_UIDS = (
 
 
 def main() -> None:
-    workspace = os.environ.get("GRAPH_RAG_WORKSPACE") or os.path.abspath(
-        os.path.join(_root, "..")
-    )
-    swagger = "Cursor-Project/config/swagger/dev/swagger-spec.json"
-    print(f"Workspace: {workspace}")
-    print("Extracting Swagger...")
-    results = extract_swagger(swagger, workspace)
-
-    all_nodes, all_edges = [], []
-    for r in results:
-        all_nodes.extend(r.get("nodes", []))
-        all_edges.extend(r.get("edges", []))
-
-    zip_nodes = [n for n in all_nodes if _is_zip_node(n)]
-    for n in zip_nodes:
-        _apply_zip_display(n)
-    keep = {n["uid"] for n in zip_nodes}
-    zip_edges = [
-        e for e in all_edges if e["from_uid"] in keep and e["to_uid"] in keep
-    ]
-    marker_nodes, marker_edges = _domain_layer(zip_nodes)
-    zip_nodes.extend(marker_nodes)
-    zip_edges.extend(marker_edges)
-    for n in zip_nodes:
-        path = n.get("source_path") or ""
-        if not path or n.get("source_hash"):
-            continue
-        if path.startswith("http://") or path.startswith("https://"):
-            n["source_hash"] = compute_content_hash(path)
-        else:
-            hashed = compute_file_hash(os.path.join(workspace, path))
-            if hashed:
-                n["source_hash"] = hashed
-
-    print(f"Zip-code nodes: {len(zip_nodes)}, edges: {len(zip_edges)}")
-    for n in zip_nodes:
-        print(f"  {n['node_type']:12} {n.get('title') or n['name']}")
-
-    print("Preloading embeddings...")
-    preload_embed_model()
-    graph = GraphClient()
-    llm = LLMClient()
-    summary = {"nodes_created": 0, "edges_created": 0, "errors": []}
-    try:
-        graph.setup_schema()
-        _upsert_result(
-            graph,
-            llm,
-            {"nodes": zip_nodes, "edges": zip_edges},
-            summary,
-            verbose=True,
-        )
-        for uid in PLACEHOLDER_UIDS:
-            graph.run_query("MATCH (n {uid: $uid}) DETACH DELETE n", {"uid": uid})
-    finally:
-        graph.close()
-
     print(
-        f"Done. Upserted nodes={summary['nodes_created']} "
-        f"edges={summary['edges_created']} errors={len(summary['errors'])}"
+        "Stopped. ingest_zip_codes.py does not ingest Phoenix or Swagger. "
+        "Fill graph-rag/ from engine files only (.cursor/rules, .cursor/skills, "
+        ".cursor/agents, memory/, docs/, sdlc/design) after an explicit yes."
     )
-    if summary["errors"]:
-        for err in summary["errors"][:5]:
-            print(f"  ERR {err}")
+    raise SystemExit(2)
 
 
 if __name__ == "__main__":

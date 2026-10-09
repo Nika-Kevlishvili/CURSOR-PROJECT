@@ -1,0 +1,178 @@
+{
+  "runId": "2026-07-06T13-48-42",
+  "environment": "dev",
+  "baseUrl": "http://10.236.20.11:8080/",
+  "section": "Customers",
+  "subItem": "Customers",
+  "sectionIndex": 1,
+  "subItemIndex": 0,
+  "startTime": "2026-07-06T13:50:51.674Z",
+  "listing": [
+    {
+      "filename": "01-02-01-customers-customers-list-full.png",
+      "stepName": "02-01-customers-customers-list",
+      "description": "Customers / Customers — list view",
+      "checkItems": [
+        "Page loaded (not blank)",
+        "Listing or main content visible",
+        "Table/grid or form area rendered",
+        "Action buttons visible if applicable"
+      ],
+      "timestamp": "2026-07-06T13:50:31.650Z",
+      "scrollPosition": "full",
+      "kind": "listing",
+      "relativePath": "listing/01-02-01-customers-customers-list-full.png"
+    },
+    {
+      "filename": "02-02-01-customers-customers-list-scroll-left.png",
+      "stepName": "02-01-customers-customers-list-scroll (left)",
+      "description": "Customers — horizontal scroll",
+      "checkItems": [
+        "Wide table/content captured left and right"
+      ],
+      "timestamp": "2026-07-06T13:50:32.881Z",
+      "scrollPosition": "left",
+      "kind": "listing",
+      "relativePath": "listing/02-02-01-customers-customers-list-scroll-left.png"
+    },
+    {
+      "filename": "03-02-01-customers-customers-list-scroll-right.png",
+      "stepName": "02-01-customers-customers-list-scroll (right)",
+      "description": "Customers — horizontal scroll",
+      "checkItems": [],
+      "timestamp": "2026-07-06T13:50:32.881Z",
+      "scrollPosition": "right",
+      "kind": "listing",
+      "relativePath": "listing/03-02-01-customers-customers-list-scroll-right.png"
+    },
+    {
+      "filename": "04-02-01-customers-customers-search-check-viewport.png",
+      "stepName": "02-01-customers-customers-search-check",
+      "description": "Customers — search \"Active\"",
+      "checkItems": [
+        "Search token: \"Active\"",
+        "Content mismatch: 15/25 rows contain token",
+        "Non-matching rows (sample): 17833322062741607 New Legal Entity AUTOMATION Водоснабдяване и канализация stand | 17831071556116554 New Legal Entity AUTOMATION Водоснабдяване и канализация stand | 17831070666731617 New Legal Entity AUTOMATION Водоснабдяване и канализация stand"
+      ],
+      "timestamp": "2026-07-06T13:50:39.771Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/04-02-01-customers-customers-search-check-viewport.png"
+    },
+    {
+      "filename": "05-02-01-customers-customers-sort-name-unverified-viewport.png",
+      "stepName": "02-01-customers-customers-sort-name-unverified",
+      "description": "Customers — sort on \"Name\"",
+      "checkItems": [
+        "Column \"Name\" sorted NOT verified",
+        "Values check: 1 АД → 100ЯН - ЕНЕВА ЕООД → 104-ТО ОСНОВНО УЧИЛИЩЕ ЗАХАРИ СТОЯНОВ → 124124 ООД → 124124 ООД → 132 СРЕДНО УЧИЛИЩЕ ВАНЯ ВОЙНОВА → 148 ОСНОВНО УЧИЛИЩЕ ПРОФ. Д-Р ЛЮБОМИР МИЛЕТИЧ → 163 ОСНОВНО УЧИЛИЩЕ ЧЕРНОРИЗЕЦ ХРАБЪР → 18-ТО СУ УИЛЯМ ГЛАДСТОН → 1-ВО НАЧАЛНО УЧИЛИЩЕ ХР.СМИРНЕНСКИ",
+        "Sort order could not be confirmed from cell values"
+      ],
+      "timestamp": "2026-07-06T13:50:47.990Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/05-02-01-customers-customers-sort-name-unverified-viewport.png"
+    }
+  ],
+  "object": [
+    {
+      "filename": "01-02-01-customers-customers-preview-full.png",
+      "stepName": "02-01-customers-customers-preview",
+      "description": "Customers — preview/detail",
+      "checkItems": [
+        "Detail/preview opened",
+        "Header or title visible",
+        "Main fields/sections visible",
+        "Tabs or sub-panels if applicable",
+        "Action buttons state"
+      ],
+      "timestamp": "2026-07-06T13:50:50.620Z",
+      "scrollPosition": "full",
+      "kind": "object",
+      "relativePath": "object/01-02-01-customers-customers-preview-full.png"
+    }
+  ],
+  "screenshots": [
+    {
+      "filename": "01-02-01-customers-customers-list-full.png",
+      "stepName": "02-01-customers-customers-list",
+      "description": "Customers / Customers — list view",
+      "checkItems": [
+        "Page loaded (not blank)",
+        "Listing or main content visible",
+        "Table/grid or form area rendered",
+        "Action buttons visible if applicable"
+      ],
+      "timestamp": "2026-07-06T13:50:31.650Z",
+      "scrollPosition": "full",
+      "kind": "listing",
+      "relativePath": "listing/01-02-01-customers-customers-list-full.png"
+    },
+    {
+      "filename": "02-02-01-customers-customers-list-scroll-left.png",
+      "stepName": "02-01-customers-customers-list-scroll (left)",
+      "description": "Customers — horizontal scroll",
+      "checkItems": [
+        "Wide table/content captured left and right"
+      ],
+      "timestamp": "2026-07-06T13:50:32.881Z",
+      "scrollPosition": "left",
+      "kind": "listing",
+      "relativePath": "listing/02-02-01-customers-customers-list-scroll-left.png"
+    },
+    {
+      "filename": "03-02-01-customers-customers-list-scroll-right.png",
+      "stepName": "02-01-customers-customers-list-scroll (right)",
+      "description": "Customers — horizontal scroll",
+      "checkItems": [],
+      "timestamp": "2026-07-06T13:50:32.881Z",
+      "scrollPosition": "right",
+      "kind": "listing",
+      "relativePath": "listing/03-02-01-customers-customers-list-scroll-right.png"
+    },
+    {
+      "filename": "04-02-01-customers-customers-search-check-viewport.png",
+      "stepName": "02-01-customers-customers-search-check",
+      "description": "Customers — search \"Active\"",
+      "checkItems": [
+        "Search token: \"Active\"",
+        "Content mismatch: 15/25 rows contain token",
+        "Non-matching rows (sample): 17833322062741607 New Legal Entity AUTOMATION Водоснабдяване и канализация stand | 17831071556116554 New Legal Entity AUTOMATION Водоснабдяване и канализация stand | 17831070666731617 New Legal Entity AUTOMATION Водоснабдяване и канализация stand"
+      ],
+      "timestamp": "2026-07-06T13:50:39.771Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/04-02-01-customers-customers-search-check-viewport.png"
+    },
+    {
+      "filename": "05-02-01-customers-customers-sort-name-unverified-viewport.png",
+      "stepName": "02-01-customers-customers-sort-name-unverified",
+      "description": "Customers — sort on \"Name\"",
+      "checkItems": [
+        "Column \"Name\" sorted NOT verified",
+        "Values check: 1 АД → 100ЯН - ЕНЕВА ЕООД → 104-ТО ОСНОВНО УЧИЛИЩЕ ЗАХАРИ СТОЯНОВ → 124124 ООД → 124124 ООД → 132 СРЕДНО УЧИЛИЩЕ ВАНЯ ВОЙНОВА → 148 ОСНОВНО УЧИЛИЩЕ ПРОФ. Д-Р ЛЮБОМИР МИЛЕТИЧ → 163 ОСНОВНО УЧИЛИЩЕ ЧЕРНОРИЗЕЦ ХРАБЪР → 18-ТО СУ УИЛЯМ ГЛАДСТОН → 1-ВО НАЧАЛНО УЧИЛИЩЕ ХР.СМИРНЕНСКИ",
+        "Sort order could not be confirmed from cell values"
+      ],
+      "timestamp": "2026-07-06T13:50:47.990Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/05-02-01-customers-customers-sort-name-unverified-viewport.png"
+    },
+    {
+      "filename": "01-02-01-customers-customers-preview-full.png",
+      "stepName": "02-01-customers-customers-preview",
+      "description": "Customers — preview/detail",
+      "checkItems": [
+        "Detail/preview opened",
+        "Header or title visible",
+        "Main fields/sections visible",
+        "Tabs or sub-panels if applicable",
+        "Action buttons state"
+      ],
+      "timestamp": "2026-07-06T13:50:50.620Z",
+      "scrollPosition": "full",
+      "kind": "object",
+      "relativePath": "object/01-02-01-customers-customers-preview-full.png"
+    }
+  ]
+}

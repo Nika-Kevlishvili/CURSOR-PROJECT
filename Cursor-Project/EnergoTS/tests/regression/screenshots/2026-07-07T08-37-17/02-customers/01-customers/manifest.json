@@ -1,0 +1,178 @@
+{
+  "runId": "2026-07-07T08-37-17",
+  "environment": "dev",
+  "baseUrl": "http://10.236.20.11:8080/",
+  "section": "Customers",
+  "subItem": "Customers",
+  "sectionIndex": 1,
+  "subItemIndex": 0,
+  "startTime": "2026-07-07T08:38:49.459Z",
+  "listing": [
+    {
+      "filename": "01-02-01-customers-customers-list-full.png",
+      "stepName": "02-01-customers-customers-list",
+      "description": "Customers / Customers — list view",
+      "checkItems": [
+        "Page loaded (not blank)",
+        "Listing or main content visible",
+        "Table/grid or form area rendered",
+        "Action buttons visible if applicable"
+      ],
+      "timestamp": "2026-07-07T08:38:27.716Z",
+      "scrollPosition": "full",
+      "kind": "listing",
+      "relativePath": "listing/01-02-01-customers-customers-list-full.png"
+    },
+    {
+      "filename": "02-02-01-customers-customers-list-scroll-left.png",
+      "stepName": "02-01-customers-customers-list-scroll (left)",
+      "description": "Customers — horizontal scroll",
+      "checkItems": [
+        "Wide table/content captured left and right"
+      ],
+      "timestamp": "2026-07-07T08:38:29.008Z",
+      "scrollPosition": "left",
+      "kind": "listing",
+      "relativePath": "listing/02-02-01-customers-customers-list-scroll-left.png"
+    },
+    {
+      "filename": "03-02-01-customers-customers-list-scroll-right.png",
+      "stepName": "02-01-customers-customers-list-scroll (right)",
+      "description": "Customers — horizontal scroll",
+      "checkItems": [],
+      "timestamp": "2026-07-07T08:38:29.008Z",
+      "scrollPosition": "right",
+      "kind": "listing",
+      "relativePath": "listing/03-02-01-customers-customers-list-scroll-right.png"
+    },
+    {
+      "filename": "04-02-01-customers-customers-search-verified-viewport.png",
+      "stepName": "02-01-customers-customers-search-verified",
+      "description": "Customers — search \"AUTOMATION\"",
+      "checkItems": [
+        "Search token: \"AUTOMATION\"",
+        "Content verified: all 25 visible rows contain \"AUTOMATION\"",
+        "All rows match"
+      ],
+      "timestamp": "2026-07-07T08:38:37.161Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/04-02-01-customers-customers-search-verified-viewport.png"
+    },
+    {
+      "filename": "05-02-01-customers-customers-sort-name-unverified-viewport.png",
+      "stepName": "02-01-customers-customers-sort-name-unverified",
+      "description": "Customers — sort on \"Name\"",
+      "checkItems": [
+        "Column \"Name\" sorted NOT verified",
+        "Values check: 1 АД → 100ЯН - ЕНЕВА ЕООД → 104-ТО ОСНОВНО УЧИЛИЩЕ ЗАХАРИ СТОЯНОВ → 124124 ООД → 124124 ООД → 132 СРЕДНО УЧИЛИЩЕ ВАНЯ ВОЙНОВА → 148 ОСНОВНО УЧИЛИЩЕ ПРОФ. Д-Р ЛЮБОМИР МИЛЕТИЧ → 163 ОСНОВНО УЧИЛИЩЕ ЧЕРНОРИЗЕЦ ХРАБЪР → 18-ТО СУ УИЛЯМ ГЛАДСТОН → 1-ВО НАЧАЛНО УЧИЛИЩЕ ХР.СМИРНЕНСКИ",
+        "Sort order could not be confirmed from cell values"
+      ],
+      "timestamp": "2026-07-07T08:38:45.604Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/05-02-01-customers-customers-sort-name-unverified-viewport.png"
+    }
+  ],
+  "object": [
+    {
+      "filename": "01-02-01-customers-customers-preview-full.png",
+      "stepName": "02-01-customers-customers-preview",
+      "description": "Customers — preview/detail",
+      "checkItems": [
+        "Detail/preview opened",
+        "Header or title visible",
+        "Main fields/sections visible",
+        "Tabs or sub-panels if applicable",
+        "Action buttons state"
+      ],
+      "timestamp": "2026-07-07T08:38:48.329Z",
+      "scrollPosition": "full",
+      "kind": "object",
+      "relativePath": "object/01-02-01-customers-customers-preview-full.png"
+    }
+  ],
+  "screenshots": [
+    {
+      "filename": "01-02-01-customers-customers-list-full.png",
+      "stepName": "02-01-customers-customers-list",
+      "description": "Customers / Customers — list view",
+      "checkItems": [
+        "Page loaded (not blank)",
+        "Listing or main content visible",
+        "Table/grid or form area rendered",
+        "Action buttons visible if applicable"
+      ],
+      "timestamp": "2026-07-07T08:38:27.716Z",
+      "scrollPosition": "full",
+      "kind": "listing",
+      "relativePath": "listing/01-02-01-customers-customers-list-full.png"
+    },
+    {
+      "filename": "02-02-01-customers-customers-list-scroll-left.png",
+      "stepName": "02-01-customers-customers-list-scroll (left)",
+      "description": "Customers — horizontal scroll",
+      "checkItems": [
+        "Wide table/content captured left and right"
+      ],
+      "timestamp": "2026-07-07T08:38:29.008Z",
+      "scrollPosition": "left",
+      "kind": "listing",
+      "relativePath": "listing/02-02-01-customers-customers-list-scroll-left.png"
+    },
+    {
+      "filename": "03-02-01-customers-customers-list-scroll-right.png",
+      "stepName": "02-01-customers-customers-list-scroll (right)",
+      "description": "Customers — horizontal scroll",
+      "checkItems": [],
+      "timestamp": "2026-07-07T08:38:29.008Z",
+      "scrollPosition": "right",
+      "kind": "listing",
+      "relativePath": "listing/03-02-01-customers-customers-list-scroll-right.png"
+    },
+    {
+      "filename": "04-02-01-customers-customers-search-verified-viewport.png",
+      "stepName": "02-01-customers-customers-search-verified",
+      "description": "Customers — search \"AUTOMATION\"",
+      "checkItems": [
+        "Search token: \"AUTOMATION\"",
+        "Content verified: all 25 visible rows contain \"AUTOMATION\"",
+        "All rows match"
+      ],
+      "timestamp": "2026-07-07T08:38:37.161Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/04-02-01-customers-customers-search-verified-viewport.png"
+    },
+    {
+      "filename": "05-02-01-customers-customers-sort-name-unverified-viewport.png",
+      "stepName": "02-01-customers-customers-sort-name-unverified",
+      "description": "Customers — sort on \"Name\"",
+      "checkItems": [
+        "Column \"Name\" sorted NOT verified",
+        "Values check: 1 АД → 100ЯН - ЕНЕВА ЕООД → 104-ТО ОСНОВНО УЧИЛИЩЕ ЗАХАРИ СТОЯНОВ → 124124 ООД → 124124 ООД → 132 СРЕДНО УЧИЛИЩЕ ВАНЯ ВОЙНОВА → 148 ОСНОВНО УЧИЛИЩЕ ПРОФ. Д-Р ЛЮБОМИР МИЛЕТИЧ → 163 ОСНОВНО УЧИЛИЩЕ ЧЕРНОРИЗЕЦ ХРАБЪР → 18-ТО СУ УИЛЯМ ГЛАДСТОН → 1-ВО НАЧАЛНО УЧИЛИЩЕ ХР.СМИРНЕНСКИ",
+        "Sort order could not be confirmed from cell values"
+      ],
+      "timestamp": "2026-07-07T08:38:45.604Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/05-02-01-customers-customers-sort-name-unverified-viewport.png"
+    },
+    {
+      "filename": "01-02-01-customers-customers-preview-full.png",
+      "stepName": "02-01-customers-customers-preview",
+      "description": "Customers — preview/detail",
+      "checkItems": [
+        "Detail/preview opened",
+        "Header or title visible",
+        "Main fields/sections visible",
+        "Tabs or sub-panels if applicable",
+        "Action buttons state"
+      ],
+      "timestamp": "2026-07-07T08:38:48.329Z",
+      "scrollPosition": "full",
+      "kind": "object",
+      "relativePath": "object/01-02-01-customers-customers-preview-full.png"
+    }
+  ]
+}

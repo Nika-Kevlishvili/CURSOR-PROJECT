@@ -15,7 +15,7 @@ phase: 0 — engine setup
 ## მოქმედი გადაწყვეტილებები
 - ADR-0004 `accepted`: გრაფი — მხოლოდ Obsidian vault; ჯერ grep, QMD ზღვარზე; შეცვლილი აზრი = ADR + git + wrap. შეკუმშვა 65%-ზე Cursor-ში არ ყენდება (ADR-0008).
 - ADR-0005 (proposed): დაბალანსებული ავტონომია (სამუშაო branch-ის push თავისით, `main` — არასდროს); რვა პრინციპი `memory/README.md`-ში; CI ყოველ PR-ზე. hook-ების ადგილი ახლა `.cursor/`-ია (ADR-0008).
-- ADR-0006 (proposed): PRD და TRD ცალკე; Sonnet↔Opus ციკლი (`review_rounds.py`); კოდის გრაფი — კოდის გაჩენამდე გადადებულია.
+- ADR-0006 (proposed): PRD და TRD ცალკე. ორი გასწორების კოდის აუდიტი 2026-10-09-დან აღარ მოქმედებს — პროდუქტის კოდს არ ვწერთ, გარდა Playwright-ისა (3 გადაწერა).
 - ADR-0007 (proposed; ცვლის ADR-0003-ს): მხოლოდ Claude-ის მოდელები; ვარიანტი A — Sonnet 5.5 high კოდერი (Cursor-ში ხელით ირჩევა); Opus 5.5 — `advisor`, `architect`, `auditor`; Sonnet 5.5 — `verifier`; Haiku 5.5 — `scout`. აგენტებს მოდელი გამოძახებისას არ გადაეცემა.
 - ADR-0008 (proposed): Cursor-ში წესები `AGENTS.md`-შია, ბრძანებები, აგენტები და hook-ები `.cursor/`-ში; checkpoint შეკუმშვის შემდეგ იწერება.
 - ADR-0009 (proposed): sandbox — მიზანი მფლობელისაა („ოქეია, რომ ვერ წაიკითხავს"), ვარიანტს კი ჯერ ირჩევს, რადგან sandbox ჩაწერასა და ინტერნეტსაც ზღუდავს. არაფერი ჩართულა. PR #10 ამას 0008-ად ნომრავდა.

@@ -25,7 +25,12 @@ EXPECTED_SKILLS = 11  # the sdlc-* skills; QA skills may sit beside them
 EXPECTED_AGENTS = 5  # auditor, architect, verifier, scout and advisor (ADR-0007, ADR-0008)
 ENGINE_AGENTS = {"advisor", "architect", "auditor", "scout", "verifier"}
 # Reference copies. The file map does not have to list them as engine files.
-REFERENCE_TREES = ("Phoenix/", "EnergoTS/")
+REFERENCE_TREES = (
+    "Phoenix/",
+    "EnergoTS/",
+    "Cursor-Project/Phoenix/",
+    "Cursor-Project/EnergoTS/",
+)
 SKILL_DESCRIPTION_MAX = 1024  # Cursor's limit for a skill description
 AGENT_MODELS = {"claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"}  # ADR-0007, option A
 AGENT_MODEL = re.compile(r"^(claude-(?:opus|sonnet|haiku)-5-5)(?:\[[\w=,.-]*\])?$")  # Cursor's syntax, e.g. claude-opus-5-5[effort=high]

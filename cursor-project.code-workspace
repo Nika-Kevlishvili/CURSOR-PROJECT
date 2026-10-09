@@ -1,0 +1,26 @@
+{
+  "folders": [
+    { "name": "cursor-engine", "path": "." },
+    { "name": "EnergoTS", "path": "Cursor-Project/EnergoTS" },
+    { "name": "phoenix-core", "path": "Cursor-Project/Phoenix/phoenix-core" },
+    { "name": "phoenix-core-lib", "path": "Cursor-Project/Phoenix/phoenix-core-lib" },
+    { "name": "phoenix-ui", "path": "Cursor-Project/Phoenix/phoenix-ui" },
+    { "name": "phoenix-billing-run", "path": "Cursor-Project/Phoenix/phoenix-billing-run" },
+    { "name": "phoenix-scheduler", "path": "Cursor-Project/Phoenix/phoenix-scheduler" },
+    { "name": "phoenix-payment-api", "path": "Cursor-Project/Phoenix/phoenix-payment-api" },
+    { "name": "phoenix-mass-import", "path": "Cursor-Project/Phoenix/phoenix-mass-import" },
+    { "name": "sales-portal", "path": "Cursor-Project/Phoenix/sales-portal" },
+    { "name": "phoenix-api-gateway", "path": "Cursor-Project/Phoenix/phoenix-api-gateway" },
+    { "name": "mfe-poc-with-nx", "path": "Cursor-Project/Phoenix/mfe-poc-with-nx" },
+    { "name": "phoenix-migration", "path": "Cursor-Project/Phoenix/phoenix-migration" }
+  ],
+  "settings": {
+    "git.enabled": true,
+    "git.autoRepositoryDetection": "subFolders",
+    "git.repositoryScanMaxDepth": 4,
+    "git.detectSubmodules": true,
+    "git.openRepositoryInParentFolders": "always",
+    "git.autofetch": false,
+    "git.fetchOnPull": false
+  }
+}

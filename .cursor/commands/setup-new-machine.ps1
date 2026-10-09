@@ -36,7 +36,13 @@ $esScriptPath = Join-Path $cursorProjectPath 'scripts\elasticsearch_mcp_server.p
 $esScriptRelativePath = 'Cursor-Project/scripts/elasticsearch_mcp_server.py'
 $esRequirementsPath = Join-Path $cursorProjectPath 'scripts\elasticsearch-requirements.txt'
 $envTargetProject = Join-Path $cursorProjectPath '.env'
-$envTargetEnergo = Join-Path (Join-Path $cursorProjectPath 'EnergoTS') '.env'
+$energotsNested = Join-Path $cursorProjectPath 'EnergoTS'
+$energotsAtRoot = Join-Path $workspaceRoot 'EnergoTS'
+if (Test-Path -LiteralPath $energotsNested) {
+    $envTargetEnergo = Join-Path $energotsNested '.env'
+} else {
+    $envTargetEnergo = Join-Path $energotsAtRoot '.env'
+}
 
 function Write-Step {
     param([string]$Message)

@@ -1,13 +1,14 @@
 ---
-description: "Repo-root Phoenix/ and EnergoTS/ are the same trees as Cursor-Project/Phoenix and Cursor-Project/EnergoTS. Rule 0.8 applies to both layouts."
+description: "Repo-root Phoenix/ and EnergoTS/ are the live trees. Cursor-Project/Phoenix and Cursor-Project/EnergoTS are the same trees when those folders exist. Rule 0.8 applies to both layouts."
 alwaysApply: true
 ---
 
 # Workspace path layouts
 
-On this branch Phoenix and EnergoTS live at the repository root. Older rules and commands still say `Cursor-Project/Phoenix/` and `Cursor-Project/EnergoTS/`. Those two layouts are the same trees:
+The product trees live under `Cursor-Project/`:
 
-- `Phoenix/` and `Cursor-Project/Phoenix/`
-- `EnergoTS/` and `Cursor-Project/EnergoTS/`
+- Phoenix repositories: `Cursor-Project/Phoenix/` (for example `Cursor-Project/Phoenix/phoenix-core`)
+- EnergoTS: `Cursor-Project/EnergoTS/`
+- Playwright tests: `Cursor-Project/EnergoTS/src/tests/` (`*.spec.ts`, `*.fixtures.ts`)
 
-Rule 0.8 applies to both spellings. Phoenix stays read-only. EnergoTS writes stay limited to the test agent under `tests/`.
+`Cursor-Project/` also holds setup, config, docs, and scripts. A copy at the repository root (`Phoenix/`, `EnergoTS/`) is only a fallback if the `Cursor-Project/` tree is missing. Scripts and rules accept both spellings. Rule 0.8 applies to both. Phoenix stays read-only. Database stored procedures and functions stay unchanged. EnergoTS writes stay limited to the EnergoTS test agent under `src/tests/` on the `cursor` branch.

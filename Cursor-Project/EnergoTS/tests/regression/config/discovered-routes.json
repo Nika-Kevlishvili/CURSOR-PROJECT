@@ -1,0 +1,79 @@
+{
+  "discoveredAt": "2026-07-03T14:34:15.743Z",
+  "listingReached": true,
+  "finalUrl": "http://10.236.20.11:8080/customers",
+  "strategies": [
+    {
+      "id": "burger-two-level",
+      "success": false,
+      "reason": "sidebar empty after burger"
+    },
+    {
+      "id": "header-section-two-level",
+      "success": false,
+      "url": "http://10.236.20.11:8080/"
+    },
+    {
+      "id": "direct-url",
+      "success": true,
+      "url": "http://10.236.20.11:8080/customers"
+    }
+  ],
+  "networkSample": [
+    {
+      "type": "navigate",
+      "url": "http://10.236.20.11:8080/"
+    },
+    {
+      "type": "navigate",
+      "url": "http://10.236.20.11:8080/"
+    },
+    {
+      "type": "navigate",
+      "url": "http://10.236.20.11:8080/"
+    },
+    {
+      "type": "navigate",
+      "url": "http://10.236.20.11:8080/"
+    },
+    {
+      "type": "navigate",
+      "url": "http://10.236.20.11:8080/#/customers"
+    },
+    {
+      "type": "navigate",
+      "url": "http://10.236.20.11:8080/#/customers"
+    },
+    {
+      "type": "navigate",
+      "url": "http://10.236.20.11:8080/#/customer"
+    },
+    {
+      "type": "navigate",
+      "url": "http://10.236.20.11:8080/#/customer"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://10.236.20.11:8080/customers"
+    },
+    {
+      "type": "navigate",
+      "url": "http://10.236.20.11:8080/customers"
+    },
+    {
+      "type": "navigate",
+      "url": "http://10.236.20.11:8080/customers"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://10.236.20.11:8091/customer/list?page=0&size=25&customerListColumns=DATE_OF_CREATION&columnDirection=DESC"
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "url": "http://10.236.20.11:8080/assets/icons/create-customer-icons/north_arrow.svg"
+    }
+  ]
+}

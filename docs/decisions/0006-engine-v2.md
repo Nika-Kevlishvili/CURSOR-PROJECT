@@ -12,6 +12,8 @@ tags: [process, orchestration, memory, gates, observability]
 ---
 # 0006 — Engine v2
 
+> Retired in this workspace on 2026-10-09: the two-fix code review loop does not apply. Product code is Playwright tests only, and those keep a cap of 3 rewrites. The rest of this record stays as history.
+
 ## Context (კონტექსტი)
 On 2026-10-07 the owner re-sent the original engine prompt and asked to add everything the engine still lacks, agreeing first on any fragment taken from other repositories. Research: `sdlc/research/repo-study.md` (nine repos studied at code level, fragments F1–F18), `sdlc/research/models-gpu-graphs.md` (web research, 2026-10-07) and `sdlc/research/engine-v2-gaps.md` (the prompt compared with the engine, packages P1–P6). Thin-engine goal from the prompt: "not a large engine with thick layers, but a concrete, targeted, thin one".
 

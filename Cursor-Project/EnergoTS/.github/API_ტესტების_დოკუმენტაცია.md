@@ -373,7 +373,7 @@ expect(response.ok()).toBeTruthy();
 
 ```
 REG-706 ❌ Failed 
-Endpoint: https://devapps.energo-pro.bg/backend/phoenix1-dev/customer
+Endpoint: http://10.236.20.11:8091/customer
 Method: POST
 Payload: {
   "customerType": "LEGAL_ENTITY",

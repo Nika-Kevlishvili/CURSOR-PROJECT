@@ -21,6 +21,7 @@
 
 ეს საქაღალდე მხოლოდ მაშინ ჩაიტვირთება, როცა Cursor-ში `Asterbit` თავად არის გახსნილი საქაღალდე (და არა ის, რომელშიც ის დევს).
 
+- [`README.md`](../.cursor/README.md) — `.cursor/`-ის ინდექსი: წესები, აგენტები, skill-ები, hook-ები.
 - [`hooks.json`](../.cursor/hooks.json) — hook-ების ჩართვა (hook — ავტომატური ჩამრთველი, რომელიც განსაზღვრულ მომენტში თავისით ეშვება): სესიის დასაწყისი, ყოველი shell-ბრძანების წინ (`beforeShellExecution`), ყოველი ფაილის წაკითხვის, ჩაწერის, წაშლისა და shell-ის წინ (`preToolUse`), ხელსაწყოს შემდეგ, შეკუმშვამდე და ქვეაგენტის დაწყება/დასრულებისას. ორივე დამცავი მოვლენა `failClosed`-ია: თუ hook გაფუჭდა, მოქმედება იბლოკება.
 - [`cli.json`](../.cursor/cli.json) — Cursor CLI-ის (ტერმინალის ვერსიის) უფლებები: რა შეიძლება თავისით და რა აკრძალულია (საიდუმლო ფაილები, `rm -rf`, force-push…). IDE-ზე არ მოქმედებს — იქ აკრძალვას hook-ები აღასრულებს.
 
@@ -79,7 +80,7 @@ Subagent (დამხმარე აგენტი) ცალკე აგე
 ## `tasks/`
 
 - [`todo.md`](../tasks/todo.md) — მიმდინარე დავალებები. ახლა ძრავის აწყობას ემსახურება, Phase 5-ში კი პროდუქტის დავალებები ჩაიწერება. ✓ მხოლოდ მტკიცებულებით ისმება.
-- [`review-log.jsonl`](../tasks/review-log.jsonl) — Sonnet↔Opus ციკლის ჟურნალი (ADR-0006): ყოველი შემოწმება და გასწორება ერთ JSON ხაზად, ხარვეზების რაოდენობით. მხოლოდ ემატება; მას `sdlc/checks/review_rounds.py` წერს და კითხულობს.
+- [`review-log.jsonl`](../tasks/review-log.jsonl) — ძველი Sonnet↔Opus ციკლის ჟურნალი. 2026-10-09-დან აღარ იწერება: ორი გასწორების კოდის აუდიტი მოხსნილია.
 - [`lessons.md`](../tasks/lessons.md) — შესწორებების ჟურნალი: რა მოხდა, რომელი წესი აგვაცილებს თავიდან და რომელი შემოწმება იცავს. ერთი და იგივე შეცდომა მეორედ → წესი AGENTS.md-ში გადადის.
 
 ## `memory/` — მეხსიერების ფენები
@@ -94,7 +95,7 @@ Subagent (დამხმარე აგენტი) ცალკე აგე
 ## `sdlc/checks/` — ძრავის შემოწმებები
 
 - [`check_structure.py`](../sdlc/checks/check_structure.py) — ამოწმებს, რომ სავალდებულო ფაილები არსებობს, skill-ებს სწორი front matter აქვთ, აგენტებს დაფიქსირებული Claude 5.5 მოდელი და `readonly: true`, `.cursor/hooks.json` სწორია (ორივე დამცავი მოვლენა `failClosed`, ყოველ hook-ს ფაილი აქვს), ყველა ბმული მუშაობს, `docs/FILES.md` კი ყველა ფაილს ჩამოთვლის. დამტკიცებულ intent/PRD/TRD/spec/plan-ში `[NEEDS CLARIFICATION]` ნიშანს არ უშვებს და ამოწმებს კვალს: PRD-ის ყოველი must-ფუნქცია spec-ში ჩანს, spec-ის ყოველი FR/NFR — plan-ში ან `tasks/todo.md`-ში (ADR-0006). Exit 0 — PASS, 1 — ხარვეზი, 2 — ვერ შემოწმდა.
-- [`review_rounds.py`](../sdlc/checks/review_rounds.py) — Sonnet↔Opus ციკლის მთვლელი (ADR-0006): `review` და `fix` ჟურნალში წერს, `status` კი ამბობს, რა არის შემდეგი — exit 3 გაგრძელება, 0 დაიხურა, 1 მფლობელთან, 2 ჟურნალი ვერ წაიკითხა. მესამე გასწორებას, ცარიელ diff-ს, გასწორებას შემოწმებამდე ან ახალი commit-ის გარეშე, უარყოფით რიცხვს და მეორე/მესამე შემოწმებას, რომელიც ზუსტად გასწორებას არ მოიცავს, უარყოფს. ამოწმებს, რომ ყოველი SHA ნამდვილი commit-ია და დიაპაზონი ისტორიის ერთ ხაზზეა; დაზიანებულ ჟურნალზე ან როცა commit-ები ვერ შემოწმდება, INCONCLUSIVE-ს ამბობს.
+- [`review_rounds.py`](../sdlc/checks/review_rounds.py) — აღარ ითვლის რაუნდებს. გაშვება ჩერდება და ამბობს, რომ ორი გასწორების კოდის აუდიტი მოხსნილია. Playwright-სა და ტესტქეისს კვლავ 3 გადაწერის ზღვარი აქვს.
 - [`memory_hygiene.py`](../sdlc/checks/memory_hygiene.py) — მეხსიერების „ჰიგიენა": ჩამოთვლის, რა უნდა დაარქივდეს ან გადაიხედოს — 7 დღეზე ძველი handoff, 10+ სესიის შეჯამება (კონსოლიდაციის დროა), QMD-ის ზღვარი, ვადაგასული ADR, `asterbit-debt:` ნიშანი გადახედვის პირობის გარეშე. თვითონ არაფერს შლის. Exit 0 — არაფერია, 3 — მოქმედებაა საჭირო, 2 — ვერ შემოწმდა. მას `/sdlc-wrap` უშვებს.
 - [`lessons_graduate.py`](../sdlc/checks/lessons_graduate.py) — თვითგანვითარების სკრიპტი: `tasks/lessons.md`-ის გაკვეთილებს აჯგუფებს და გთავაზობს, ორ თარიღზე განმეორებული გაკვეთილი AGENTS.md-ის წესად აქციო, ხოლო „მექანიკურ" გაკვეთილს, რომელსაც შემოწმება არ აქვს, შემოწმება აუწყო. არაფერს ცვლის — ამტკიცებს მფლობელი. Exit 0 / 3 / 2.
 - [`run_gates.py`](../sdlc/checks/run_gates.py) — პროდუქტის კარიბჭეების გამშვები: `docs/gates.json`-იდან (Phase 7a-ში იქმნება) თითო კარიბჭეს უშვებს და PASS / FAIL / INCONCLUSIVE-ს ცალ-ცალკე წერს; „0 ტესტი" მწვანედ არასდროს ითვლება; არასწორი პარამეტრი (გაფუჭებული ნიმუში, ჯგუფის გარეშე, რიცხვის ნაცვლად ტექსტი) INCONCLUSIVE-ია და არა FAIL. Exit 0 — ყველა PASS, 1 — რამე FAIL, 2 — ვერაფერი დამტკიცდა.
@@ -144,14 +145,15 @@ Subagent (დამხმარე აგენტი) ცალკე აგე
 
 ## Should_touch QA engine, scripts, and Graph RAG (2026-10-09)
 
-Should_touch-ის წესები, skill-ები, აგენტები, ბრძანებები და PowerShell hook-ები Asterbit-ის ფაილების გვერდით დგას. თუ ისინი `AGENTS.md`-ს არ ემთხვევა, Should_touch იმარჯვებს (Precedence). `Phoenix/` და `EnergoTS/` საცნობარო ხეებია და ეს რუკა მათ ფაილებს ძრავის ფაილებად არ თვლის. Graph RAG (`graph-rag/`) ძრავის დოკუმენტებს ინდექსავს, არა Phoenix-ს ან EnergoTS-ს.
+Should_touch-ის წესები, skill-ები, აგენტები, ბრძანებები და PowerShell hook-ები Asterbit-ის ფაილების გვერდით დგას. თუ ისინი `AGENTS.md`-ს არ ემთხვევა, Should_touch იმარჯვებს (Precedence). `Cursor-Project/Phoenix/` და `Cursor-Project/EnergoTS/` საცნობარო ხეებია და ეს რუკა მათ ფაილებს ძრავის ფაილებად არ თვლის. Graph RAG (`graph-rag/`) ძრავის დოკუმენტებს ინდექსავს, არა Phoenix-ს ან EnergoTS-ს.
 
 - [`.cursor/rules/`](../.cursor/rules/) — QA წესები, მათ შორის ყოველთვის ჩართული `core_rules.mdc`, `safety_rules.mdc`, ბილიკის შენიშვნა `workspace/workspace_paths.mdc` და Graph RAG-ის ორი წესი `integrations/graph_rag_integration.mdc`, `integrations/graph_rag_ingest.mdc`.
 - [`.cursor/skills/`](../.cursor/skills/) — 11 `sdlc-*` skill, QA skill-ები და `pom`.
 - [`.cursor/agents/`](../.cursor/agents/) — ხუთი Asterbit-ის აგენტი და QA აგენტები (`model: inherit`). `README.md` აგენტად არ ითვლება.
 - [`.cursor/commands/`](../.cursor/commands/) — QA ბრძანებები (markdown და `.ps1`).
-- [`.cursor/hooks/`](../.cursor/hooks/) — Python ადაპტერი და Should_touch-ის PowerShell hook-ები. `control-git-push.ps1` ფაილად დევს და `hooks.json`-ში ჩართული არ არის. `beforeShellExecution`-ზე PowerShell ჩანაწერი პირველია; `failClosed` მხოლოდ `cursor_adapter.py`-ზეა.
+- [`.cursor/hooks/`](../.cursor/hooks/) — Python ადაპტერი და Should_touch-ის PowerShell hook-ები. `control-git-push.ps1` ჩართულია: `main`-სა და GitLab-ზე push იბლოკება, სხვა git ჩაწერა კითხულობს. `beforeShellExecution`-ზე PowerShell ჩანაწერი პირველია; `failClosed` მხოლოდ `cursor_adapter.py`-ზეა.
 - [`.cursor/mcp.json`](../.cursor/mcp.json) — Confluence, Jira, Elasticsearch, Postgres (საიდუმლოები ცარიელია, ბრძანება `python3`), Playwright MCP და GraphRAG (`python3 graph-rag/server/mcp_server.py`). პაროლი გარემოდან მოდის, git-იდან არა.
+- [`cursor-project.code-workspace`](../cursor-project.code-workspace) — multi-root workspace so EnergoTS and each Phoenix repo show their own git branch. Open this file if the status bar only shows `cursor-engine`.
 - [`Cursor-Project/`](../Cursor-Project/) — `scripts/` (ვალიდატორები, Elasticsearch MCP, git hook-ები), `docs/RULES_CANONICAL_INDEX.md` და config-ის სკრიპტები, რომლებსაც წესები იძახებს (Confluence, Jira, Slack, diagrams, templates, Playwright instructions). ქეშები, attachment-ები და ცოცხალი ტოკენები არ არის.
 - [`graph-rag/`](../graph-rag/) — Neo4j Graph RAG რეპოს ძირში. ზონები: rules, skills and agents, memory and handoff, SDLC docs. ნაგულისხმევი pipeline არ იძახებს Swagger/testcase extractor-ებს და არ უშვებს `ingest_zip_codes.py`.
 - [`.vscode/settings.json`](../.vscode/settings.json) — workspace-ის git პარამეტრები.

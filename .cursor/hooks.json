@@ -20,10 +20,13 @@
       { "command": "pwsh -NoProfile -File .cursor/hooks/block-bugreview-unapproved-jira.ps1" }
     ],
     "beforeShellExecution": [
+      { "command": "pwsh -NoProfile -File .cursor/hooks/control-git-push.ps1" },
       { "command": "pwsh -NoProfile -File .cursor/hooks/block-energots-branch-switch.ps1" },
       { "command": "python3 .cursor/hooks/cursor_adapter.py shell", "timeout": 90, "failClosed": true }
     ],
     "preToolUse": [
+      { "command": "pwsh -NoProfile -File .cursor/hooks/protect-phoenix-code.ps1", "matcher": "Write|Delete" },
+      { "command": "pwsh -NoProfile -File .cursor/hooks/protect-energots-writes.ps1", "matcher": "Write|Delete" },
       { "command": "python3 .cursor/hooks/cursor_adapter.py tool", "matcher": "Shell|Write|Delete|Read|Grep", "timeout": 15, "failClosed": true }
     ],
     "postToolUse": [

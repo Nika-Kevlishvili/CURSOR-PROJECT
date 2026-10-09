@@ -68,26 +68,29 @@ alwaysApply: true
    - Violation is a **MUST** when **persisted** project artifacts are not in English without an explicit project exception
    
    ### Rule 0.8: Path-Based Code Modification (Phoenix, EnergoTS, everything else)
-   - **Intent:** (1) **Phoenix** — no AI/agent edits, ever. (2) **EnergoTS** — only **EnergoTSTestAgent** (the agent that writes Playwright tests) may add/change code, and **only** under `EnergoTS/tests/`. (3) **All other paths** — Cursor AI may modify when the user requests (**provisional — Tier C**).
+   - **Intent:** (1) **Phoenix** — no AI/agent edits, ever. (2) **EnergoTS** — only **EnergoTSTestAgent** may add/change Playwright tests, and **only** under `EnergoTS/src/tests/` on the `cursor` branch. (3) **Database** — never change stored procedures or functions. (4) **All other paths** — Cursor AI may modify when the user requests (**provisional — Tier C**).
+   - **Layouts:** the live trees are `Cursor-Project/Phoenix/` and `Cursor-Project/EnergoTS/`. `Phoenix/` and `EnergoTS/` at the repo root are the same trees only when the `Cursor-Project/` copies are absent.
    - **TIER A — ABSOLUTELY FORBIDDEN (no exceptions, no agent, no user override via AI):**
-     - `Cursor-Project/Phoenix/**` — Cursor AI MUST NEVER create, modify, or delete any file here. Hooks enforce protection. ONLY read, analyze, search, recommend.
+     - `Phoenix/**` and `Cursor-Project/Phoenix/**` — Cursor AI MUST NEVER create, modify, or delete any file here. Hooks enforce protection. ONLY read, analyze, search, recommend.
+     - Database stored procedures and functions — never create, replace, or drop them.
    - **TIER B — EnergoTS (restricted):**
-     - `Cursor-Project/EnergoTS/**` **outside** `Cursor-Project/EnergoTS/tests/**` — Cursor AI MUST NOT modify (fixtures, config, app code, etc.). **No agent** may write here except as forbidden for all.
-     - `Cursor-Project/EnergoTS/tests/**` — ONLY **EnergoTSTestAgent** (and **EnergoTSTestAgentAdapter**) may create/modify/delete files here (see Rule 0.8.1). **Generic Cursor AI, other agents, and direct tool usage** MUST NOT edit this tree even if the user asks.
+     - `EnergoTS/**` and `Cursor-Project/EnergoTS/**` **outside** `src/tests/` — Cursor AI MUST NOT modify (fixtures, config, app code, page objects, etc.).
+     - `EnergoTS/src/tests/**` (and `Cursor-Project/EnergoTS/src/tests/**` or `Cursor-Project/EnergoTS/tests/**` when that tree exists) — ONLY **EnergoTSTestAgent** (and **EnergoTSTestAgentAdapter**) may create/modify/delete `*.spec.ts` and `*.fixtures.ts` here (see Rule 0.8.1). **Generic Cursor AI, other agents, and direct tool usage** MUST NOT edit this tree even if the user asks. Branch must stay `cursor`.
    - **TIER C — ALLOWED (provisional):** Any path under the workspace **not** in Tier A or Tier B **non-test EnergoTS** restrictions — including but not limited to: `Cursor-Project/docs/**`, `Cursor-Project/config/**`, `Cursor-Project/reports/**`, `Cursor-Project/test_cases/**`, `Cursor-Project/User story/**`, root `.cursor/**`, workspace root files, etc. User-requested edits are permitted there. (**`Cursor-Project/agents/`** Python package is **not** in this workspace; Cursor behavior is defined by **`.cursor/agents/*.md`**, rules, skills, MCP.)
    - **If the user asks to change Tier A or Tier B (non-agent):** Refuse implementation; analysis and recommendations only.
    - **ENFORCEMENT:** Do not weaken Phoenix or EnergoTS protections in hooks or rules without an explicit project-owner decision.
    - Violation of Tier A or Tier B restrictions is a **BLOCK** (hooks enforce).
    
-   ### Rule 0.8.1: ONLY EnergoTSTestAgent — `EnergoTS/tests/` Writes
-   - **SOLE WRITER for Playwright test code under EnergoTS:** Only **EnergoTSTestAgent** and **EnergoTSTestAgentAdapter** may modify files under `Cursor-Project/EnergoTS/tests/` (e.g. `.spec.ts`).
+   ### Rule 0.8.1: ONLY EnergoTSTestAgent — Playwright test writes
+   - **SOLE WRITER for Playwright test code under EnergoTS:** Only **EnergoTSTestAgent** and **EnergoTSTestAgentAdapter** may modify `*.spec.ts` and `*.fixtures.ts` under `EnergoTS/src/tests/` (or the same folder under `Cursor-Project/EnergoTS/` when that tree exists).
    - EnergoTSTestAgent CAN:
-     - Create, modify, copy, convert files within `Cursor-Project/EnergoTS/tests/` only
+     - Create, modify, copy, convert those Playwright files inside `src/tests/` only, on the `cursor` branch
    - EnergoTSTestAgent CANNOT:
-     - Modify any path under `Cursor-Project/EnergoTS/` outside `tests/`
-     - Modify any path under `Cursor-Project/Phoenix/**`
-   - **All other agents, subagents, and default Cursor AI tool usage:** MUST NOT write under `Cursor-Project/EnergoTS/**` (including `tests/`). Route Playwright test authoring to **energo-ts-test** / EnergoTSTestAgent workflow.
-   - **Hook vs rule:** `protect-energots-writes.ps1` allows any `*.spec.ts` / `*.fixtures.ts` under `tests/` (extension gate). **Rule 0.8.1** additionally requires **energo-ts-test** workflow — hook cannot detect agent role; violation is workflow **MUST**, not automatic deny.
+     - Modify any path under EnergoTS outside `src/tests/`
+     - Modify any path under `Phoenix/**` or `Cursor-Project/Phoenix/**`
+     - Change database stored procedures or functions
+   - **All other agents, subagents, and default Cursor AI tool usage:** MUST NOT write under EnergoTS (including `src/tests/`). Route Playwright test authoring to **energo-ts-test** / EnergoTSTestAgent workflow.
+   - **Hook vs rule:** `protect-energots-writes.ps1` allows any `*.spec.ts` / `*.fixtures.ts` under `src/tests/` (extension gate) and runs before and after the write. **Rule 0.8.1** additionally requires **energo-ts-test** workflow — hook cannot detect agent role; violation is workflow **MUST**, not automatic deny.
 
    ### Rule 0.9: Compliance tiers (reduce alert fatigue)
    Use these terms in rules, skills, and agents:

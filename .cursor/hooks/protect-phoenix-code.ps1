@@ -8,6 +8,13 @@ $jsonInput = [Console]::In.ReadToEnd()
 try {
     $hookInput = $jsonInput | ConvertFrom-Json
     $filePath = $hookInput.file_path
+    if (-not $filePath -and $hookInput.tool_input) {
+        $filePath = $hookInput.tool_input.file_path
+    }
+    if (-not $filePath) {
+        @{ permission = "allow" } | ConvertTo-Json -Compress
+        return
+    }
     
     $normalizedPathLower = ($filePath -replace '\\', '/').ToLower()
     

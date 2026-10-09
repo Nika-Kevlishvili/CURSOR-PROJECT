@@ -3,6 +3,8 @@ description: "MANDATORY: Always refresh Swagger/OpenAPI specs BEFORE generating 
 alwaysApply: false
 globs:
   - "Cursor-Project/EnergoTS/tests/**/*.spec.ts"
+  - "Cursor-Project/EnergoTS/src/tests/**/*.spec.ts"
+  - "EnergoTS/src/tests/**/*.spec.ts"
   - ".cursor/agents/energo-ts-test.md"
   - ".cursor/skills/energo-ts-test/SKILL.md"
   - ".cursor/agents/playwright-test-validator.md"

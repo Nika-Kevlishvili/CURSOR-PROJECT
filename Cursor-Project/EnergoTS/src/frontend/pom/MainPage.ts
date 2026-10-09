@@ -1,14 +1,15 @@
 import { Page } from "@playwright/test";
 
 function getFrontendUrl(): string {
-    const backendUrl = (process.env.BASE_URL || 'https://devapps.energo-pro.bg/backend/phoenix1-dev/').replace(/\/$/, '');
+    const backendUrl = (process.env.BASE_URL || 'http://10.236.20.11:8091/').replace(/\/$/, '');
 
-    if (backendUrl.startsWith('https://devapps.energo-pro.bg/backend/phoenix1-dev'))    return 'https://devapps.energo-pro.bg/app/phoenix1-dev/';
+    if (backendUrl.startsWith('http://10.236.20.11:8091'))                              return 'http://10.236.20.11:8080/';
     if (backendUrl.startsWith('http://10.236.20.81:8091'))                              return 'http://10.236.20.81:8080/';
-    if (backendUrl.startsWith('https://devapps.energo-pro.bg/backend/phoenix2-dev'))    return 'https://devapps.energo-pro.bg/app/phoenix2-dev/';
+    if (backendUrl.startsWith('https://devapps.energo-pro.bg/backend/phoenix2-dev'))    return 'https://devapps.energo-pro.bg/app/phoenix-dev2/';
     if (backendUrl.startsWith('https://testapps.energo-pro.bg/backend/phoenix-epres'))  return 'https://testapps.energo-pro.bg/app/phoenix-epres/';
     if (backendUrl.startsWith('http://10.236.20.31:'))                                  return 'http://10.236.20.31:8082/';
-    if (backendUrl.startsWith('http://10.236.20.81:8094')) return 'http://10.236.20.31:8082/';
+    if (backendUrl.startsWith('http://10.236.20.81:8094'))                             return 'http://10.236.20.31:8082/';
+
     // Explicit override still supported via DEVENV
     if (process.env.DEVENV) return process.env.DEVENV;
 

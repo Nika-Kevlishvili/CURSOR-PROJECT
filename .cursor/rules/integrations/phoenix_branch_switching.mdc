@@ -3,6 +3,7 @@ description: "Phoenix branch switching (Rule PHOENIX-SWITCH.0): align Cursor-Pro
 alwaysApply: false
 globs:
   - "Cursor-Project/Phoenix/**"
+  - "Phoenix/**"
   - ".cursor/agents/phoenix-qa.md"
   - ".cursor/agents/bug-validator.md"
   - ".cursor/agents/cross-dependency-finder.md"

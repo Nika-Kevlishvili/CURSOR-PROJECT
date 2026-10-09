@@ -1,0 +1,149 @@
+{
+  "discoveredAt": "2026-07-03T14:00:00.000Z",
+  "environment": "dev",
+  "baseUrl": "http://10.236.20.11:8080/",
+  "source": "Phoenix sidebar DOM + recording reference flow",
+  "sections": [
+    {
+      "name": "Shortcuts",
+      "index": 0,
+      "subItems": [],
+      "skip": true
+    },
+    {
+      "name": "Customers",
+      "index": 1,
+      "subItems": [
+        { "name": "Customers", "index": 0 },
+        { "name": "Unwanted Customers", "index": 1 },
+        { "name": "Groups of Connected Customers", "index": 2 }
+      ]
+    },
+    {
+      "name": "Points of Delivery",
+      "index": 2,
+      "subItems": [
+        { "name": "Points of Delivery", "index": 0 },
+        { "name": "Meters", "index": 1 },
+        { "name": "Supply Activation", "index": 2 },
+        { "name": "Supply Deactivation", "index": 3 }
+      ]
+    },
+    {
+      "name": "Customer Communication",
+      "index": 3,
+      "subItems": [
+        { "name": "SMS", "index": 0 },
+        { "name": "Email", "index": 1 }
+      ]
+    },
+    {
+      "name": "Contracts and Orders",
+      "index": 4,
+      "subItems": [
+        { "name": "Express Contract", "index": 0 },
+        { "name": "Energy Product Contracts", "index": 1 },
+        { "name": "Service Contracts", "index": 2 },
+        { "name": "Actions for Terminations and Penalties", "index": 3 },
+        { "name": "Service Order", "index": 4 },
+        { "name": "Goods Order", "index": 5 }
+      ]
+    },
+    {
+      "name": "Product and Services",
+      "index": 5,
+      "subItems": [
+        { "name": "Energy Products", "index": 0 },
+        { "name": "Services", "index": 1 },
+        { "name": "Goods", "index": 2 },
+        { "name": "Price Parameters", "index": 3 },
+        { "name": "Price Components", "index": 4 },
+        { "name": "Groups of Price Components", "index": 5 },
+        { "name": "Terms", "index": 6 },
+        { "name": "Groups of Terms", "index": 7 },
+        { "name": "Interim and Advance Payments", "index": 8 },
+        { "name": "Groups of Interim and Advance Payments", "index": 9 },
+        { "name": "Terminations", "index": 10 },
+        { "name": "Groups of Terminations", "index": 11 },
+        { "name": "Penalties", "index": 12 },
+        { "name": "Groups of Penalties", "index": 13 }
+      ]
+    },
+    {
+      "name": "Energy Data",
+      "index": 6,
+      "subItems": [
+        { "name": "Data by Profiles", "index": 0 },
+        { "name": "Data by Scales", "index": 1 },
+        { "name": "Discount from Duty to Society", "index": 2 },
+        { "name": "Government compensation", "index": 3 }
+      ]
+    },
+    {
+      "name": "Billing",
+      "index": 7,
+      "subItems": [
+        { "name": "Billing Run", "index": 0 },
+        { "name": "Periodic Billing run", "index": 1 },
+        { "name": "Invoices", "index": 2 },
+        { "name": "Invoice Cancellation", "index": 3 },
+        { "name": "Accounting Periods", "index": 4 }
+      ]
+    },
+    {
+      "name": "Receivables Management",
+      "index": 8,
+      "subItems": [
+        { "name": "Customer liabilities", "index": 0 },
+        { "name": "Customer receivables", "index": 1 },
+        { "name": "Deposits", "index": 2 },
+        { "name": "Manual liability offsetting", "index": 3 },
+        { "name": "Payments", "index": 4 },
+        { "name": "Payment Package", "index": 5 },
+        { "name": "Collection Channel", "index": 6 },
+        { "name": "Reminder", "index": 7 },
+        { "name": "Reminder for Disconnection", "index": 8 },
+        { "name": "Request for Disconnection", "index": 9 },
+        { "name": "Cancellation of Request for Disconnection", "index": 10 },
+        { "name": "Disconnection of Power Supply", "index": 11 },
+        { "name": "Reconnection of Power Supply", "index": 12 },
+        { "name": "Interest Rates", "index": 13 },
+        { "name": "Late Payment Fine", "index": 14 },
+        { "name": "Default Interest Calculation", "index": 15 },
+        { "name": "Mass Operation for Blocking", "index": 16 },
+        { "name": "Customer Assessment", "index": 17 },
+        { "name": "Rescheduling", "index": 18 },
+        { "name": "Change of Coordinator Objection", "index": 19 },
+        { "name": "Objection Withdrawal", "index": 20 }
+      ]
+    },
+    {
+      "name": "Operations Management",
+      "index": 9,
+      "subItems": [
+        { "name": "Tasks", "index": 0 },
+        { "name": "Activities", "index": 1 },
+        { "name": "Processes", "index": 2 },
+        { "name": "Process Periodicity", "index": 3 },
+        { "name": "Templates", "index": 4 },
+        { "name": "QES Signing Documents", "index": 5 }
+      ]
+    },
+    {
+      "name": "Master Data",
+      "index": 10,
+      "subItems": [
+        { "name": "Company Details", "index": 0 },
+        { "name": "Nomenclature", "index": 1 }
+      ]
+    },
+    {
+      "name": "System Settings",
+      "index": 11,
+      "subItems": [
+        { "name": "System Messages", "index": 0 },
+        { "name": "Template converter", "index": 1 }
+      ]
+    }
+  ]
+}

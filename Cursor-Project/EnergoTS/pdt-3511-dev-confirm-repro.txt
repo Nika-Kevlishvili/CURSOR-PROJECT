@@ -1,0 +1,54 @@
+﻿PDT-3511 Dev EasyPay confirm repro
+==================================
+When: 2026-09-23 ~12:54 local (+04) / Sofia ~11:54
+Branch: cursor
+BASE_URL: http://10.236.20.11:8091
+Auth: DEVAUTHAPI (Selected DEVAUTHAPI during setup)
+Setup: npx playwright test --project=setup --workers=1 — PASSED
+
+Preferred specs (blocked on Dev without code change)
+----------------------------------------------------
+1) PDT-3215-kalina-confirm-date-2355.spec.ts (today Sofia 121300)
+   - Soft-skip risk: Sofia was still before 12:13 at run start.
+   - Same hard AMOUNT===principalCoins gate as (2).
+
+2) PDT-3215-lpf-due-date-timezone-gap.spec.ts --grep "due is today" (today Sofia 001500)
+   - RESULT: FAILED before confirm
+   - confirmDate attempted: 20260923001500
+   - customerNumber: 6000155931 / customerId: 6090465 / liabilityId: 95686
+   - Error: init AMOUNT expected 10000 (BGN 100), got 5113
+   - Dev DB: receivable.customer_liabilities id=95686
+     initial_amount=100.00 current_amount=100.00
+     current_amount_in_other_ccy=51.13  ← EasyPay returned other_ccy coins
+   - Spec hard-asserts AMOUNT===10000; cannot reach confirm on Dev.
+
+Fallback that completed live confirm
+------------------------------------
+Spec: tests/cursor/PDT-3214-easypay-liabilities-receivables-accounting-period-rules.spec.ts
+Grep: GE: LPF Customer Liability AP
+Command: npx playwright test ... --grep "GE: LPF Customer Liability AP" --project=main --workers=1
+RESULT: PASSED (STATUS 00)
+
+confirmDate: 20260923045416
+  source: generateOnlinePaymentDate(4) — machine local-4h then toISOString UTC digits
+confirmStatus: 00
+tid: 20260923125415077118100020
+paymentId: 27819
+customerNumber: 6000155932
+customerId: 6090466
+identifier: 17901536550588450
+merchantId: 7000005
+initAmountRaw: 15338
+sourceLiabilityId: 95687
+secondLiabilityId: 95688
+lpfId: 4594
+lpfLiabilityId: 95689
+
+Portal:
+  customer: https://devapps.energo-pro.bg/app/phoenix1-dev/customers/preview/basic?id=6090466
+  payment package: 7218 / channel 1001
+
+DB hint for follow-up SQL (Dev):
+  SELECT id, payment_date, initial_amount, current_amount, status, create_date
+  FROM receivable.customer_payments WHERE id = 27819;
+  -- payment_date observed: 2026-09-22T20:00:00.000Z (Sofia calendar day 2026-09-23)

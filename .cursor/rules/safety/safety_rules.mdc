@@ -20,8 +20,9 @@ alwaysApply: true
    - **Conflicts:** report both sides + **Finding** (`senior_qa_product_quality.mdc`); do not silently discard Confluence when it contradicts code.
 
 7. Code modification per Rule 0.8 tiers (`.cursor/rules/main/core_rules.mdc`):
-   - **Phoenix (`Cursor-Project/Phoenix/**`):** NEVER modified by Cursor AI.
-   - **EnergoTS:** Only **EnergoTSTestAgent** may write under `EnergoTS/tests/`; rest of EnergoTS is no-write for AI.
+   - **Phoenix (`Phoenix/**` and `Cursor-Project/Phoenix/**`):** NEVER modified by Cursor AI.
+   - **Database:** NEVER create, replace, or drop stored procedures or functions.
+   - **EnergoTS:** Only **EnergoTSTestAgent** may write `*.spec.ts` and `*.fixtures.ts` under `EnergoTS/src/tests/` on the `cursor` branch. The rest of EnergoTS is no-write for AI.
    - **Elsewhere:** Allowed when user requests (provisional).
    - Violation is a **BLOCK** (hooks enforce Tier A/B).
 

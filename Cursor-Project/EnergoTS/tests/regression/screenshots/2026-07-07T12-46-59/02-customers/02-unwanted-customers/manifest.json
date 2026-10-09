@@ -1,0 +1,178 @@
+{
+  "runId": "2026-07-07T12-46-59",
+  "environment": "dev",
+  "baseUrl": "http://10.236.20.11:8080/",
+  "section": "Customers",
+  "subItem": "Unwanted Customers",
+  "sectionIndex": 1,
+  "subItemIndex": 1,
+  "startTime": "2026-07-07T12:48:31.131Z",
+  "listing": [
+    {
+      "filename": "01-02-02-customers-unwanted-customers-list-full.png",
+      "stepName": "02-02-customers-unwanted-customers-list",
+      "description": "Customers / Unwanted Customers — list view",
+      "checkItems": [
+        "Page loaded (not blank)",
+        "Listing or main content visible",
+        "Table/grid or form area rendered",
+        "Action buttons visible if applicable"
+      ],
+      "timestamp": "2026-07-07T12:48:12.284Z",
+      "scrollPosition": "full",
+      "kind": "listing",
+      "relativePath": "listing/01-02-02-customers-unwanted-customers-list-full.png"
+    },
+    {
+      "filename": "02-02-02-customers-unwanted-customers-list-scroll-left.png",
+      "stepName": "02-02-customers-unwanted-customers-list-scroll (left)",
+      "description": "Unwanted Customers — horizontal scroll",
+      "checkItems": [
+        "Wide table/content captured left and right"
+      ],
+      "timestamp": "2026-07-07T12:48:13.537Z",
+      "scrollPosition": "left",
+      "kind": "listing",
+      "relativePath": "listing/02-02-02-customers-unwanted-customers-list-scroll-left.png"
+    },
+    {
+      "filename": "03-02-02-customers-unwanted-customers-list-scroll-right.png",
+      "stepName": "02-02-customers-unwanted-customers-list-scroll (right)",
+      "description": "Unwanted Customers — horizontal scroll",
+      "checkItems": [],
+      "timestamp": "2026-07-07T12:48:13.537Z",
+      "scrollPosition": "right",
+      "kind": "listing",
+      "relativePath": "listing/03-02-02-customers-unwanted-customers-list-scroll-right.png"
+    },
+    {
+      "filename": "04-02-02-customers-unwanted-customers-search-verified-viewport.png",
+      "stepName": "02-02-customers-unwanted-customers-search-verified",
+      "description": "Unwanted Customers — search \"Заведено\"",
+      "checkItems": [
+        "Search token: \"Заведено\"",
+        "Content verified: all 25 visible rows contain \"Заведено\"",
+        "All rows match"
+      ],
+      "timestamp": "2026-07-07T12:48:19.550Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/04-02-02-customers-unwanted-customers-search-verified-viewport.png"
+    },
+    {
+      "filename": "05-02-02-customers-unwanted-customers-sort-name-unverified-viewport.png",
+      "stepName": "02-02-customers-unwanted-customers-sort-name-unverified",
+      "description": "Unwanted Customers — sort on \"Name\"",
+      "checkItems": [
+        "Column \"Name\" sorted NOT verified",
+        "Values check: 02 МЕДИЯ ЕООД → 0301 ООД → 1000 БАНИ → 1001 ТОРТИ ЕООД → 100 ЛЕТА ООД → 100 ХАДЕС ЕООД → 10Х РИЪЛ ИСТЕЙТ ЕООД → 135 КЪНСТРАКШЪН БГ ЕООД → 17-ВЕК - ПЛАМЕН ШАБАНОВ ЕТ → 17 ЯНУАРИ - НИКОЛАЙ ШОПОВ ЕТ",
+        "Sort order could not be confirmed from cell values"
+      ],
+      "timestamp": "2026-07-07T12:48:27.534Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/05-02-02-customers-unwanted-customers-sort-name-unverified-viewport.png"
+    }
+  ],
+  "object": [
+    {
+      "filename": "01-02-02-customers-unwanted-customers-preview-full.png",
+      "stepName": "02-02-customers-unwanted-customers-preview",
+      "description": "Unwanted Customers — preview/detail",
+      "checkItems": [
+        "Detail/preview opened",
+        "Header or title visible",
+        "Main fields/sections visible",
+        "Tabs or sub-panels if applicable",
+        "Action buttons state"
+      ],
+      "timestamp": "2026-07-07T12:48:30.044Z",
+      "scrollPosition": "full",
+      "kind": "object",
+      "relativePath": "object/01-02-02-customers-unwanted-customers-preview-full.png"
+    }
+  ],
+  "screenshots": [
+    {
+      "filename": "01-02-02-customers-unwanted-customers-list-full.png",
+      "stepName": "02-02-customers-unwanted-customers-list",
+      "description": "Customers / Unwanted Customers — list view",
+      "checkItems": [
+        "Page loaded (not blank)",
+        "Listing or main content visible",
+        "Table/grid or form area rendered",
+        "Action buttons visible if applicable"
+      ],
+      "timestamp": "2026-07-07T12:48:12.284Z",
+      "scrollPosition": "full",
+      "kind": "listing",
+      "relativePath": "listing/01-02-02-customers-unwanted-customers-list-full.png"
+    },
+    {
+      "filename": "02-02-02-customers-unwanted-customers-list-scroll-left.png",
+      "stepName": "02-02-customers-unwanted-customers-list-scroll (left)",
+      "description": "Unwanted Customers — horizontal scroll",
+      "checkItems": [
+        "Wide table/content captured left and right"
+      ],
+      "timestamp": "2026-07-07T12:48:13.537Z",
+      "scrollPosition": "left",
+      "kind": "listing",
+      "relativePath": "listing/02-02-02-customers-unwanted-customers-list-scroll-left.png"
+    },
+    {
+      "filename": "03-02-02-customers-unwanted-customers-list-scroll-right.png",
+      "stepName": "02-02-customers-unwanted-customers-list-scroll (right)",
+      "description": "Unwanted Customers — horizontal scroll",
+      "checkItems": [],
+      "timestamp": "2026-07-07T12:48:13.537Z",
+      "scrollPosition": "right",
+      "kind": "listing",
+      "relativePath": "listing/03-02-02-customers-unwanted-customers-list-scroll-right.png"
+    },
+    {
+      "filename": "04-02-02-customers-unwanted-customers-search-verified-viewport.png",
+      "stepName": "02-02-customers-unwanted-customers-search-verified",
+      "description": "Unwanted Customers — search \"Заведено\"",
+      "checkItems": [
+        "Search token: \"Заведено\"",
+        "Content verified: all 25 visible rows contain \"Заведено\"",
+        "All rows match"
+      ],
+      "timestamp": "2026-07-07T12:48:19.550Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/04-02-02-customers-unwanted-customers-search-verified-viewport.png"
+    },
+    {
+      "filename": "05-02-02-customers-unwanted-customers-sort-name-unverified-viewport.png",
+      "stepName": "02-02-customers-unwanted-customers-sort-name-unverified",
+      "description": "Unwanted Customers — sort on \"Name\"",
+      "checkItems": [
+        "Column \"Name\" sorted NOT verified",
+        "Values check: 02 МЕДИЯ ЕООД → 0301 ООД → 1000 БАНИ → 1001 ТОРТИ ЕООД → 100 ЛЕТА ООД → 100 ХАДЕС ЕООД → 10Х РИЪЛ ИСТЕЙТ ЕООД → 135 КЪНСТРАКШЪН БГ ЕООД → 17-ВЕК - ПЛАМЕН ШАБАНОВ ЕТ → 17 ЯНУАРИ - НИКОЛАЙ ШОПОВ ЕТ",
+        "Sort order could not be confirmed from cell values"
+      ],
+      "timestamp": "2026-07-07T12:48:27.534Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/05-02-02-customers-unwanted-customers-sort-name-unverified-viewport.png"
+    },
+    {
+      "filename": "01-02-02-customers-unwanted-customers-preview-full.png",
+      "stepName": "02-02-customers-unwanted-customers-preview",
+      "description": "Unwanted Customers — preview/detail",
+      "checkItems": [
+        "Detail/preview opened",
+        "Header or title visible",
+        "Main fields/sections visible",
+        "Tabs or sub-panels if applicable",
+        "Action buttons state"
+      ],
+      "timestamp": "2026-07-07T12:48:30.044Z",
+      "scrollPosition": "full",
+      "kind": "object",
+      "relativePath": "object/01-02-02-customers-unwanted-customers-preview-full.png"
+    }
+  ]
+}

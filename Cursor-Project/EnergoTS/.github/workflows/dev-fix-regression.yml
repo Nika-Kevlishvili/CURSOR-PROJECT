@@ -1,0 +1,65 @@
+name: Dev-Fix Regression
+
+on:
+  workflow_dispatch:
+    inputs:
+      individual:
+        description: 'Send report individually to Slack'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+        default: 'false'
+
+jobs:
+  run-tests:
+    runs-on: [self-hosted, runner1]
+    timeout-minutes: 120
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run global setup
+        id: setup
+        continue-on-error: true
+        env:
+          DEVAUTHAPI: ${{ secrets.DEVAUTHAPI }}
+          TESTAUTHAPI: ${{ secrets.TESTAUTHAPI }}
+          PORTAL_USER: ${{ secrets.PORTAL_USER }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          BASE_URL: 'http://10.236.20.81:8091/'
+        run: |
+          echo "Running global setup for dev-fix..."
+          npx playwright test --project=setup --workers=1
+
+      - name: Run all tests
+        if: steps.setup.outcome == 'success'
+        continue-on-error: true
+        env:
+          DEVAUTHAPI: ${{ secrets.DEVAUTHAPI }}
+          TESTAUTHAPI: ${{ secrets.TESTAUTHAPI }}
+          PORTAL_USER: ${{ secrets.PORTAL_USER }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          BASE_URL: 'http://10.236.20.81:8091/'
+        run: |
+          npx playwright test --project=main --grep-invert "@dev2|@bigData" --workers=4
+
+      - name: Merge reports
+        if: always()
+        run: node scripts/mergeReports.js dev-fix
+
+      - name: Send report
+        if: always()
+        env:
+          SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          REGRESSION: true
+          INDIVIDUAL: ${{ inputs.individual }}
+          BASE_URL: 'http://10.236.20.81:8091/'
+        run: npx playwright test --project="send report" --reporter=line

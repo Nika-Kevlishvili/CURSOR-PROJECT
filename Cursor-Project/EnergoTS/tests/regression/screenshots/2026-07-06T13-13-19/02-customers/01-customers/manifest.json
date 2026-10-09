@@ -1,0 +1,358 @@
+{
+  "runId": "2026-07-06T13-13-19",
+  "environment": "dev",
+  "baseUrl": "http://10.236.20.11:8080/",
+  "section": "Customers",
+  "subItem": "Customers",
+  "sectionIndex": 1,
+  "subItemIndex": 0,
+  "startTime": "2026-07-06T13:14:31.988Z",
+  "listing": [
+    {
+      "filename": "01-02-01-customers-customers-list-full.png",
+      "stepName": "02-01-customers-customers-list",
+      "description": "Customers / Customers — list view",
+      "checkItems": [
+        "Page loaded (not blank)",
+        "Listing or main content visible",
+        "Table/grid or form area rendered",
+        "Action buttons visible if applicable"
+      ],
+      "timestamp": "2026-07-06T13:14:05.378Z",
+      "scrollPosition": "full",
+      "kind": "listing",
+      "relativePath": "listing/01-02-01-customers-customers-list-full.png"
+    },
+    {
+      "filename": "02-02-01-customers-customers-list-scroll-left.png",
+      "stepName": "02-01-customers-customers-list-scroll (left)",
+      "description": "Customers — horizontal scroll",
+      "checkItems": [
+        "Wide table/content captured left and right"
+      ],
+      "timestamp": "2026-07-06T13:14:06.589Z",
+      "scrollPosition": "left",
+      "kind": "listing",
+      "relativePath": "listing/02-02-01-customers-customers-list-scroll-left.png"
+    },
+    {
+      "filename": "03-02-01-customers-customers-list-scroll-right.png",
+      "stepName": "02-01-customers-customers-list-scroll (right)",
+      "description": "Customers — horizontal scroll",
+      "checkItems": [],
+      "timestamp": "2026-07-06T13:14:06.589Z",
+      "scrollPosition": "right",
+      "kind": "listing",
+      "relativePath": "listing/03-02-01-customers-customers-list-scroll-right.png"
+    },
+    {
+      "filename": "04-02-01-customers-customers-filter-01-status-viewport.png",
+      "stepName": "02-01-customers-customers-filter-01-status",
+      "description": "Customers — filter open: Status",
+      "checkItems": [
+        "Filter dropdown opened",
+        "Options/checkboxes visible",
+        "Label matches UI"
+      ],
+      "timestamp": "2026-07-06T13:14:08.274Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/04-02-01-customers-customers-filter-01-status-viewport.png"
+    },
+    {
+      "filename": "05-02-01-customers-customers-filter-02-type-viewport.png",
+      "stepName": "02-01-customers-customers-filter-02-type",
+      "description": "Customers — filter open: Type",
+      "checkItems": [
+        "Filter dropdown opened",
+        "Options/checkboxes visible",
+        "Label matches UI"
+      ],
+      "timestamp": "2026-07-06T13:14:10.822Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/05-02-01-customers-customers-filter-02-type-viewport.png"
+    },
+    {
+      "filename": "06-02-01-customers-customers-filter-03-account-managers-viewport.png",
+      "stepName": "02-01-customers-customers-filter-03-account-managers",
+      "description": "Customers — filter open: Account Managers",
+      "checkItems": [
+        "Filter dropdown opened",
+        "Options/checkboxes visible",
+        "Label matches UI"
+      ],
+      "timestamp": "2026-07-06T13:14:13.448Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/06-02-01-customers-customers-filter-03-account-managers-viewport.png"
+    },
+    {
+      "filename": "07-02-01-customers-customers-filter-04-economic-branch-viewport.png",
+      "stepName": "02-01-customers-customers-filter-04-economic-branch",
+      "description": "Customers — filter open: Economic branch",
+      "checkItems": [
+        "Filter dropdown opened",
+        "Options/checkboxes visible",
+        "Label matches UI"
+      ],
+      "timestamp": "2026-07-06T13:14:16.038Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/07-02-01-customers-customers-filter-04-economic-branch-viewport.png"
+    },
+    {
+      "filename": "08-02-01-customers-customers-filter-05-unwanted-customers-viewport.png",
+      "stepName": "02-01-customers-customers-filter-05-unwanted-customers",
+      "description": "Customers — filter open: Unwanted Customers",
+      "checkItems": [
+        "Filter dropdown opened",
+        "Options/checkboxes visible",
+        "Label matches UI"
+      ],
+      "timestamp": "2026-07-06T13:14:18.610Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/08-02-01-customers-customers-filter-05-unwanted-customers-viewport.png"
+    },
+    {
+      "filename": "09-02-01-customers-customers-search-viewport.png",
+      "stepName": "02-01-customers-customers-search",
+      "description": "Customers — search applied: \"Active\"",
+      "checkItems": [
+        "Search text entered",
+        "Table shows filtered rows or empty state",
+        "Search UI intact"
+      ],
+      "timestamp": "2026-07-06T13:14:23.442Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/09-02-01-customers-customers-search-viewport.png"
+    },
+    {
+      "filename": "10-02-01-customers-customers-sort-status-viewport.png",
+      "stepName": "02-01-customers-customers-sort-status",
+      "description": "Customers — sort by \"Status\"",
+      "checkItems": [
+        "Sortable column header clicked",
+        "Sort arrow or row order may change",
+        "First row changed after sort"
+      ],
+      "timestamp": "2026-07-06T13:14:27.561Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/10-02-01-customers-customers-sort-status-viewport.png"
+    }
+  ],
+  "object": [
+    {
+      "filename": "01-02-01-customers-customers-preview-top.png",
+      "stepName": "02-01-customers-customers-preview (top)",
+      "description": "Customers — preview/detail",
+      "checkItems": [
+        "Detail/preview opened",
+        "Header or title visible",
+        "Main fields/sections visible",
+        "Tabs or sub-panels if applicable",
+        "Action buttons state"
+      ],
+      "timestamp": "2026-07-06T13:14:30.878Z",
+      "scrollPosition": "top",
+      "kind": "object",
+      "relativePath": "object/01-02-01-customers-customers-preview-top.png"
+    },
+    {
+      "filename": "02-02-01-customers-customers-preview-middle.png",
+      "stepName": "02-01-customers-customers-preview (middle)",
+      "description": "Customers — preview/detail",
+      "checkItems": [],
+      "timestamp": "2026-07-06T13:14:30.878Z",
+      "scrollPosition": "middle",
+      "kind": "object",
+      "relativePath": "object/02-02-01-customers-customers-preview-middle.png"
+    },
+    {
+      "filename": "03-02-01-customers-customers-preview-bottom.png",
+      "stepName": "02-01-customers-customers-preview (bottom)",
+      "description": "Customers — preview/detail",
+      "checkItems": [],
+      "timestamp": "2026-07-06T13:14:30.878Z",
+      "scrollPosition": "bottom",
+      "kind": "object",
+      "relativePath": "object/03-02-01-customers-customers-preview-bottom.png"
+    }
+  ],
+  "screenshots": [
+    {
+      "filename": "01-02-01-customers-customers-list-full.png",
+      "stepName": "02-01-customers-customers-list",
+      "description": "Customers / Customers — list view",
+      "checkItems": [
+        "Page loaded (not blank)",
+        "Listing or main content visible",
+        "Table/grid or form area rendered",
+        "Action buttons visible if applicable"
+      ],
+      "timestamp": "2026-07-06T13:14:05.378Z",
+      "scrollPosition": "full",
+      "kind": "listing",
+      "relativePath": "listing/01-02-01-customers-customers-list-full.png"
+    },
+    {
+      "filename": "02-02-01-customers-customers-list-scroll-left.png",
+      "stepName": "02-01-customers-customers-list-scroll (left)",
+      "description": "Customers — horizontal scroll",
+      "checkItems": [
+        "Wide table/content captured left and right"
+      ],
+      "timestamp": "2026-07-06T13:14:06.589Z",
+      "scrollPosition": "left",
+      "kind": "listing",
+      "relativePath": "listing/02-02-01-customers-customers-list-scroll-left.png"
+    },
+    {
+      "filename": "03-02-01-customers-customers-list-scroll-right.png",
+      "stepName": "02-01-customers-customers-list-scroll (right)",
+      "description": "Customers — horizontal scroll",
+      "checkItems": [],
+      "timestamp": "2026-07-06T13:14:06.589Z",
+      "scrollPosition": "right",
+      "kind": "listing",
+      "relativePath": "listing/03-02-01-customers-customers-list-scroll-right.png"
+    },
+    {
+      "filename": "04-02-01-customers-customers-filter-01-status-viewport.png",
+      "stepName": "02-01-customers-customers-filter-01-status",
+      "description": "Customers — filter open: Status",
+      "checkItems": [
+        "Filter dropdown opened",
+        "Options/checkboxes visible",
+        "Label matches UI"
+      ],
+      "timestamp": "2026-07-06T13:14:08.274Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/04-02-01-customers-customers-filter-01-status-viewport.png"
+    },
+    {
+      "filename": "05-02-01-customers-customers-filter-02-type-viewport.png",
+      "stepName": "02-01-customers-customers-filter-02-type",
+      "description": "Customers — filter open: Type",
+      "checkItems": [
+        "Filter dropdown opened",
+        "Options/checkboxes visible",
+        "Label matches UI"
+      ],
+      "timestamp": "2026-07-06T13:14:10.822Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/05-02-01-customers-customers-filter-02-type-viewport.png"
+    },
+    {
+      "filename": "06-02-01-customers-customers-filter-03-account-managers-viewport.png",
+      "stepName": "02-01-customers-customers-filter-03-account-managers",
+      "description": "Customers — filter open: Account Managers",
+      "checkItems": [
+        "Filter dropdown opened",
+        "Options/checkboxes visible",
+        "Label matches UI"
+      ],
+      "timestamp": "2026-07-06T13:14:13.448Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/06-02-01-customers-customers-filter-03-account-managers-viewport.png"
+    },
+    {
+      "filename": "07-02-01-customers-customers-filter-04-economic-branch-viewport.png",
+      "stepName": "02-01-customers-customers-filter-04-economic-branch",
+      "description": "Customers — filter open: Economic branch",
+      "checkItems": [
+        "Filter dropdown opened",
+        "Options/checkboxes visible",
+        "Label matches UI"
+      ],
+      "timestamp": "2026-07-06T13:14:16.038Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/07-02-01-customers-customers-filter-04-economic-branch-viewport.png"
+    },
+    {
+      "filename": "08-02-01-customers-customers-filter-05-unwanted-customers-viewport.png",
+      "stepName": "02-01-customers-customers-filter-05-unwanted-customers",
+      "description": "Customers — filter open: Unwanted Customers",
+      "checkItems": [
+        "Filter dropdown opened",
+        "Options/checkboxes visible",
+        "Label matches UI"
+      ],
+      "timestamp": "2026-07-06T13:14:18.610Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/08-02-01-customers-customers-filter-05-unwanted-customers-viewport.png"
+    },
+    {
+      "filename": "09-02-01-customers-customers-search-viewport.png",
+      "stepName": "02-01-customers-customers-search",
+      "description": "Customers — search applied: \"Active\"",
+      "checkItems": [
+        "Search text entered",
+        "Table shows filtered rows or empty state",
+        "Search UI intact"
+      ],
+      "timestamp": "2026-07-06T13:14:23.442Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/09-02-01-customers-customers-search-viewport.png"
+    },
+    {
+      "filename": "10-02-01-customers-customers-sort-status-viewport.png",
+      "stepName": "02-01-customers-customers-sort-status",
+      "description": "Customers — sort by \"Status\"",
+      "checkItems": [
+        "Sortable column header clicked",
+        "Sort arrow or row order may change",
+        "First row changed after sort"
+      ],
+      "timestamp": "2026-07-06T13:14:27.561Z",
+      "scrollPosition": "viewport",
+      "kind": "listing",
+      "relativePath": "listing/10-02-01-customers-customers-sort-status-viewport.png"
+    },
+    {
+      "filename": "01-02-01-customers-customers-preview-top.png",
+      "stepName": "02-01-customers-customers-preview (top)",
+      "description": "Customers — preview/detail",
+      "checkItems": [
+        "Detail/preview opened",
+        "Header or title visible",
+        "Main fields/sections visible",
+        "Tabs or sub-panels if applicable",
+        "Action buttons state"
+      ],
+      "timestamp": "2026-07-06T13:14:30.878Z",
+      "scrollPosition": "top",
+      "kind": "object",
+      "relativePath": "object/01-02-01-customers-customers-preview-top.png"
+    },
+    {
+      "filename": "02-02-01-customers-customers-preview-middle.png",
+      "stepName": "02-01-customers-customers-preview (middle)",
+      "description": "Customers — preview/detail",
+      "checkItems": [],
+      "timestamp": "2026-07-06T13:14:30.878Z",
+      "scrollPosition": "middle",
+      "kind": "object",
+      "relativePath": "object/02-02-01-customers-customers-preview-middle.png"
+    },
+    {
+      "filename": "03-02-01-customers-customers-preview-bottom.png",
+      "stepName": "02-01-customers-customers-preview (bottom)",
+      "description": "Customers — preview/detail",
+      "checkItems": [],
+      "timestamp": "2026-07-06T13:14:30.878Z",
+      "scrollPosition": "bottom",
+      "kind": "object",
+      "relativePath": "object/03-02-01-customers-customers-preview-bottom.png"
+    }
+  ]
+}

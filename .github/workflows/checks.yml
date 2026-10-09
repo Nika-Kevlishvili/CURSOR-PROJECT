@@ -37,16 +37,21 @@ jobs:
       - name: Hook drill (every hook must be ARMED)
         run: python3 sdlc/checks/drill_hooks.py
 
-      - name: Drill the drill (do-nothing hooks must be reported DEAD)
+      - name: Drill the drill (a do-nothing hook must not look armed)
         run: |
           set +e
-          ASTERBIT_DRILL_STUB=1 python3 sdlc/checks/drill_hooks.py
+          ASTERBIT_DRILL_STUB=1 python3 sdlc/checks/drill_hooks.py > "$RUNNER_TEMP/stub-drill.txt"
           code=$?
-          if [ "$code" -ne 1 ]; then
-            echo "The drill cannot tell a working hook from a dead one (stub mode exit $code, expected 1)."
+          cat "$RUNNER_TEMP/stub-drill.txt"
+          if [ "$code" -eq 0 ] || grep -q "RESULT: ARMED" "$RUNNER_TEMP/stub-drill.txt"; then
+            echo "The drill treated a do-nothing hook as armed (exit $code)."
             exit 1
           fi
-          echo "OK: stub mode was reported DEAD, so the drill can fail."
+          if [ "$code" -ne 1 ]; then
+            echo "Stub drill was inconclusive (exit $code)."
+            exit 1
+          fi
+          echo "OK: stub mode did not report ARMED."
 
       - name: Secret scan (whole history)
         run: gitleaks git --redact --no-banner .

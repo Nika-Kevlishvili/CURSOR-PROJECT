@@ -1,16 +1,17 @@
 # Asterbit — AI-native SDLC engine
 
-This repo holds (1) a phase-gated SDLC engine for building software with Cursor, on Claude models (ADR-0007, ADR-0008), and (2), later, the product built with it. The product is not chosen yet — Phase 1 decides it. This file holds the rules every AI agent follows here; Cursor loads it into every chat. Owner's guide (Georgian): README.md. Working agreement (Georgian): PROCESS.md — it must say the same as this file; report any mismatch as a defect. Work log: PROGRESS.md. Collaborator guide: CONTRIBUTING.md. File map: docs/FILES.md.
+This repo is a QA workspace for Phoenix and EnergoTS, plus the Asterbit engine that runs that work in Cursor. Day-to-day work is QA: bug validation, test cases, Playwright, and read-only database checks. SDLC phases govern engine documents (`docs/`, `sdlc/`, `memory/`, ADRs), not QA work on the product trees. This file holds the rules every AI agent follows here; Cursor loads it into every chat. Owner's guide (Georgian): README.md. Working agreement (Georgian): PROCESS.md — it must say the same as this file; report any mismatch as a defect. Work log: PROGRESS.md. Collaborator guide: CONTRIBUTING.md. File map: docs/FILES.md.
 
 ## Precedence
 Should_touch rules, skills, and agents (`.cursor/rules/`, `.cursor/skills/` other than `sdlc-*`, `.cursor/agents/` other than advisor, architect, auditor, scout, and verifier) win when they disagree with this file or an Asterbit hook.
-- If a Should_touch rule, skill, or agent disagrees with AGENTS.md or an Asterbit hook, follow Should_touch.
-- Chat language follows Rule 0.7 (the user’s language). New project files stay English. Existing Georgian engine docs stay as they are.
-- Rule 0.8 path tiers beat Asterbit’s “no product code before `docs/plan.md` is approved.” Phoenix stays read-only. EnergoTS writes stay limited to the test agent under `tests/`. Other user-requested edits outside those trees stay allowed.
-- Asterbit guards that match Should_touch safety stay: no force-push, no push onto `main`, no `rm -rf`, no secret commit, no GitLab or Confluence writes. `control-git-push.ps1` stays unwired, as on Should_touch.
+- Chat replies use the language the person writes in. Every file the AI creates is English. Existing Georgian engine docs stay as they are.
+- Phoenix trees (`Cursor-Project/Phoenix/`, and `Phoenix/` only if that root copy exists) are read-only. Never edit them. Never change database stored procedures or functions.
+- EnergoTS code changes are allowed only for the EnergoTS test agent, only under `Cursor-Project/EnergoTS/src/tests/` (Playwright `*.spec.ts` and `*.fixtures.ts`), and only on the `cursor` branch.
+- QA work does not wait for `docs/plan.md`. The phase gate applies to engine documents.
+- No force-push, no push onto `main`, no push to GitLab, no `rm -rf`, no secret commit, no Confluence writes. Other git writes (commit, push of a non-main branch, merge, rebase) ask first. `control-git-push.ps1` is wired.
 
 ## People
-- Owner (GitHub: tornikebolokadze1-cyber): writes Georgian, does not read code, learns by building. Answer in Georgian prose; keep technical terms but gloss each on first use; explain what and why before how.
+- Owner (GitHub: tornikebolokadze1-cyber): writes Georgian, does not read code, learns by building. Answer in the language they write in; keep technical terms but gloss each on first use; explain what and why before how.
 - Collaborators (listed in CONTRIBUTING.md) clone the repo and work on their own branches; their changes reach main only through a pull request. Answer every person in the language they write in.
 - Only the owner approves gates and merges into main. When you work with a collaborator, prepare the artifact and the pull request and leave the approval to the owner; never record an approval on someone else's behalf. You never approve your own work, and the agent that wrote something never audits it.
 
@@ -32,14 +33,14 @@ The skills live in .cursor/skills/. After release, every finding, bug or new ide
 
 Gate rules:
 - Read docs/sdlc-state.md before any phase work. Do not start phase N+1 until phase N is `approved`.
-- No product code (anything outside docs/, tasks/, memory/, sdlc/, .cursor/, .github/, .obsidian/ and the root files README.md, AGENTS.md, PROCESS.md, PROGRESS.md, CONTRIBUTING.md, env.example, .gitignore) before docs/plan.md is approved.
+- Engine documents (docs/, tasks/, memory/, sdlc/, and the root engine files) follow the phase gate. QA work on Phoenix and EnergoTS does not. Phoenix stays read-only. EnergoTS writes stay in `Cursor-Project/EnergoTS/src/tests/` and only the EnergoTS test agent may make them.
 - Before asking for approval, run the `auditor` subagent on the artifact and show its verdict.
 - Approval = the owner's explicit words. Record who and when in docs/sdlc-state.md, then commit.
 - After every phase, gate or milestone, append a dated entry to PROGRESS.md and refresh its Current State / In Progress / Next Steps. Never rewrite old entries.
 
 ## Artifacts
 - Copy templates from sdlc/templates/; never edit a template in place.
-- Headings stay in English (checks parse them; Georgian gloss in parentheses); content is written in Georgian.
+- Headings stay in English (checks parse them). Files the AI creates are English. Existing Georgian engine docs stay Georgian.
 - Unknowns go to "Open questions" — never invent an answer to fill a section. Inside PRD, TRD and spec mark them `[NEEDS CLARIFICATION: …]`; an approved artifact has none (check_structure.py enforces it).
 - Ask the owner with the AskQuestion tool when the options are clear (at most 4 questions per round, recommendation first), in plain questions when they are not.
 
@@ -65,10 +66,10 @@ Our skills name proven techniques (brainstorming, writing-plans, test-driven-dev
 ## Verification
 - "Done" means the check ran and its output is shown. No output, no claim. "Could not run" is inconclusive, never a pass.
 - Bug fix: failing test first, then the fix. Never weaken, skip or delete a test to get green.
-- Same failing check: max 3 fix attempts, then stop and explain.
-- Review loop — ADR-0006 (proposed): every auditor loop — gate audit, milestone or `[high-risk]` task — runs review → fix → review → fix → final review → the owner. Engine changes before the Phase 0 gate skip the loop (owner, 2026-10-07: build the engine lean, use its principles once it runs): only the Safety rules, `check_structure.py` (plus the hook drills when a hook changed) and CI; work run through the engine — the product — uses the full loop. The owner cancelled the engine dry run (2026-10-08). The Sonnet↔Opus code review runs at every milestone and every `[high-risk]` task. Count rounds with `python3 sdlc/checks/review_rounds.py`, never from memory (a gate audit's review 1 covers `$(git merge-base main HEAD)..HEAD` on the phase branch); reviews 2–3 cover only the fix; LOW findings never use a round; stop early when HIGH+MEDIUM do not fall. Every changed line traces to the task.
+- Same failing check: max 3 fix attempts, then stop and explain. Playwright specs and test-case quality use this same cap of 3 rewrites.
+- The two-fix code review loop (review → fix → review → fix → final review) does not apply. This workspace does not write product code except Playwright tests.
 - Adding, moving or renaming a file: update docs/FILES.md in the same change.
-- After changing engine files run `python3 sdlc/checks/check_structure.py`; after changing a hook (.cursor/hooks.json or .cursor/hooks/) also run `python3 sdlc/checks/drill_hooks.py` (must say ARMED) and the same with `ASTERBIT_DRILL_STUB=1` (must say DEAD). CI runs all three on every pull request.
+- After changing engine files run `python3 sdlc/checks/check_structure.py`; after changing a hook (.cursor/hooks.json or .cursor/hooks/) also run `python3 sdlc/checks/drill_hooks.py` (must say ARMED) and the same with `ASTERBIT_DRILL_STUB=1` (must not say ARMED; an empty hook answer is a block). CI runs all three on every pull request.
 
 ## Memory — ADR-0004 (accepted 2026-10-06), in Cursor as ADR-0008 describes
 - Cursor compacts near the end of its context window; the point cannot be set (ADR-0004's 65% does not apply in Cursor). The repo is an Obsidian vault: use standard relative Markdown links. Search = grep until the QMD trigger in ADR-0004.
@@ -94,7 +95,7 @@ End with four Georgian lines: Done / In progress / Next / Blocked. After a compa
 
 ## Safety — these rules travel with the repo
 The owner's personal global rules exist only on the owner's machine; every other machine gets only what is written here. Where a user-level rule differs from this file — commits, subagents, models, reviews — this file and the engine's skills win in this repo (owner, 2026-10-08), except where the Precedence section says a Should_touch rule, skill, or agent wins.
-- Work on a branch and push working branches freely (ADR-0005); never push to main — main changes only through a pull request that the owner approves and merges.
+- Work on a branch. Never push to `main` and never push to GitLab. Other git writes ask first. `main` changes only through a pull request that the owner approves and merges.
 - Ask the person you work with before you install anything or fetch from the internet. Changes to permissions, hooks, settings or CI affect everyone, so they need the owner's yes. The hook holds installs (brew, pip, npm, npx), fetches (curl, wget) and `gh pr merge` for a yes; a Cursor hook cannot hold a file edit for approval, so changes to .cursor/hooks.json, .cursor/hooks/ or .github/ rest on your word and the owner's PR review.
 - In Cursor, .cursor/hooks.json enforces the rules below through .cursor/hooks/cursor_adapter.py (guard.py, commit_secrets.py); "ask first" commands come as a Cursor approval prompt. Other agents (Codex, Kilo, Gemini CLI) keep these rules on their word; CI runs on every pull request. If a hook blocks you, explain why and ask — never work around a hook. Stage and commit in separate commands so the secret scan sees the staged files; pass long commit or PR texts as files (`git commit -F`, `gh pr create --body-file`).
 - Never force-push, rewrite pushed history, or run rm -rf, git reset --hard or git clean -f.

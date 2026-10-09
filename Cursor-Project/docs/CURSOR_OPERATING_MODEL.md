@@ -3,7 +3,7 @@
 **Scope:** Orchestration (`.cursor/`) **and** how it connects to deliverables under `Cursor-Project/` (test cases, EnergoTS, reports).  
 **Purpose:** Single reference for how the workspace **should** work after reconciliation (Phase 1–3).  
 **Status:** **Phase 1–3 reconciliation implemented** in repo (see [§8](#8-current-vs-target)). Residual debt: context bloat, thin router skills, hook gaps, legacy TC content — see audit notes in §11.  
-**Related:** [WORKSPACE_PATTERNS.md](WORKSPACE_PATTERNS.md) · [RULES_CANONICAL_INDEX.md](RULES_CANONICAL_INDEX.md) · [../.cursor/README.md](../.cursor/README.md) · [../config/template/Slack_reporting_paths.md](../config/template/Slack_reporting_paths.md)
+**Related:** [WORKSPACE_PATTERNS.md](WORKSPACE_PATTERNS.md) · [RULES_CANONICAL_INDEX.md](RULES_CANONICAL_INDEX.md) · [../../.cursor/README.md](../../.cursor/README.md) · [../config/template/Slack_reporting_paths.md](../config/template/Slack_reporting_paths.md)
 
 ---
 
