@@ -24,7 +24,8 @@ Skills guide the Cursor agent for this repo’s workflows. **Location:** workspa
 | **jira-evidence** | Jira ticket completeness, custom fields, attachments, linked Confluence (Rule 42/44) |
 | **jira-bug-template** | Experiments board bugs only (Rule JIRA.0) |
 | **energo-ts-run** | Rule 36; Playwright from EnergoTS `cursor` or `staging` |
-| **pom** | `/pom` only; Playwright MCP crawl of a named page, then write the EnergoTS page object |
+| **playwright-cli** | Playwright CLI command reference. Canonical copy: `.agents/skills/playwright-cli`. Linked from `.cursor/skills/playwright-cli`. |
+| **pom** | `/pom` only; Playwright CLI crawl of a named page, then write the EnergoTS page object |
 
 ## Source
 

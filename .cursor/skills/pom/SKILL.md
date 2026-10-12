@@ -1,6 +1,6 @@
 ---
 name: pom
-description: Builds and wires a Playwright Page Object Model from a live create page, adds one typed happy-path creation workflow, generates one frontend creation spec, runs it, and verifies the object was created. Use only when explicitly invoked with /pom.
+description: Builds and wires a Playwright Page Object Model from a live create page, adds one typed happy-path creation workflow, generates one frontend creation spec, runs it, and verifies the object was created. Use only when explicitly invoked with /pom. Drives the live page with playwright-cli, not Playwright MCP.
 disable-model-invocation: true
 ---
 
@@ -30,16 +30,53 @@ The user must name the page. A full URL is enough:
 - If the target is a path rather than an absolute URL, resolve the frontend origin from `Cursor-Project/EnergoTS/src/frontend/pom/MainPage.ts` using the environment the user named. If no environment was named, ask which one (dev, dev2, test, preprod, prod, experiments) and stop.
 - If no page target is present, ask for the URL or path and stop. Do not explore the app to guess the page.
 
-## Playwright MCP
+## Playwright CLI
 
-Use the Playwright MCP server (`@playwright/mcp`). Before any browser call:
+Drive the live page with `playwright-cli` only. Do not call Playwright MCP (`@playwright/mcp`, `browser_navigate`, `browser_snapshot`, or any other `browser_*` MCP tool). Do not fall back to HTML files, a recorded spec, or another browser.
 
-1. Discover the server with `GetDynamicTools` (pattern `playwright`).
-2. Choose the namespace whose tools include `browser_navigate` and `browser_snapshot`.
-3. Read each tool schema with `GetDynamicTools` before calling it. Do not guess argument names.
-4. If that server is not connected, stop and tell the user Playwright MCP is required. Do not fall back to HTML files, a recorded spec, or another browser.
+Before the first browser command:
 
-MCP element refs from `browser_snapshot` are session-only. Never store a ref such as `e12` in the POM.
+1. Confirm `playwright-cli` is on `PATH` (`playwright-cli --version`). If it is missing, stop and tell the user to install `@playwright/cli`. When a global install into `/usr/local` is not writable, the working install on this machine is `npm install -g @playwright/cli@latest --prefix "$HOME/.local"` (`~/.local/bin` is already on `PATH`).
+2. Read `.agents/skills/playwright-cli/SKILL.md`. That skill is the command reference. Cursor also loads it through `.cursor/skills/playwright-cli`.
+3. Run every `playwright-cli` command from the workspace root, so snapshots stay under the gitignored `.playwright-cli/` directory.
+
+Use one named session for the crawl: `playwright-cli -s=pom ...`. Open it headed, with the Chrome channel the installer already found. Sign in by opening the frontend root with `attachFrontendJwt`, then go to the named page. Do not open the portal login page.
+
+```bash
+playwright-cli -s=pom open "<frontend-root-with-jwt>" --browser=chrome --headed
+```
+
+Headed mode keeps the session alive for a long crawl. A headless session shuts down after an hour without a command.
+
+Refs such as `e12` come from the latest snapshot and die when the page changes. Re-snapshot before the next ref. Never store a ref in the POM.
+
+After each command, read the snapshot file the CLI prints (`.playwright-cli/page-*.yml` or the `--filename` you passed). For every settled inventory state, also save a named copy and read that file:
+
+```bash
+playwright-cli -s=pom snapshot --filename=.playwright-cli/pom/<state>.yml
+```
+
+A full snapshot file is required for the inventory. `find` only locates the next control. Do not call `webmcp-call`. Page-provided tools skip the locator inventory.
+
+`generate-locator` is how a ref becomes POM source. It does not activate the control:
+
+```bash
+playwright-cli -s=pom generate-locator e5 --raw
+```
+
+Keep the result only when it matches the locator order below. Prove it matches one element:
+
+```bash
+playwright-cli -s=pom run-code "async (page) => page.getByRole('button', { name: 'Save' }).count()" --raw
+```
+
+When the snapshot has no test id, read it without clicking:
+
+```bash
+playwright-cli -s=pom eval "el => el.getAttribute('data-testid')" e5 --raw
+```
+
+Close the crawl session before the spec run: `playwright-cli -s=pom close`.
 
 ## Required project context
 
@@ -58,44 +95,17 @@ Before writing the POM:
 
 ## Reach the page
 
-1. Open the user-supplied URL with `browser_navigate`.
-2. Wait until the screen settles (`browser_wait_for` or an equivalent ready check exposed by the server).
-3. If the Energo-Pro login page is showing (Welcome, Username, Password, Log in), sign in before doing anything else. The login page is not the POM target.
-4. After login, the portal application list opens (Administrative view). Enter dev 2 by clicking the Phoenix 2 tile before crawling. That list is not the POM target.
-5. If the user named a page inside the app and the browser is not on it yet, open that URL only after the dev 2 app has loaded.
-6. Confirm the landed URL and the visible heading match the page the user named. An error page or empty shell is not the target. If they do not match, stop and report what opened.
+Do not use the Energo-Pro portal login form, do not fill `PORTAL_USER` or `PASSWORD`, and do not click an application tile such as Phoenix 2.
 
-### Login
+The Phoenix shell consumes `?jwt=` on the frontend root, stores it, and replaces that URL. A deeper page opened with `?jwt=` still attached stays blank, so do not put the token on the named page URL.
 
-Read credentials only from `Cursor-Project/EnergoTS/.env`:
-
-- Username: `PORTAL_USER`
-- Password: `PASSWORD`
-
-Parse the file. Trim whitespace and strip one pair of surrounding single or double quotes. Do not invent credentials, and do not take them from chat, Confluence, or any other file.
-
-If either variable is missing or empty, stop and say which name is missing. Do not ask the user to paste a password.
-
-Then, using Playwright MCP:
-
-1. Snapshot the login page.
-2. Fill the Username field with `PORTAL_USER`.
-3. Fill the Password field with `PASSWORD`. Leave the Language dropdown as it is unless the user asked for another language.
-4. Click **Log in**. This is the one submit that is required. The later "do not mutate" rule does not apply to this button.
-5. Wait until the login form is gone and the portal application list is visible.
-
-### Enter dev 2
-
-On the application list, click the tile marked for dev 2:
-
-- Visible label: **EPRS Phoenix 2 End Supplier and SLR**
-- Card header tooltip: **Phoenix 2 ES/SLR FE -> phoenix2**
-
-Click the tile body itself (the phoenix logo and that label). Do not click **Other frontends**, **Administration**, search, or any other application card.
-
-If the click opens a new tab, switch to that tab. Wait until the Phoenix dev 2 app has loaded (`phoenix-dev2` or the dev 2 shell), then continue to the page the user named.
-
-Never print, log, or write the password, the username, or any token into the POM, a locator inventory, or the chat summary. If login fails, or the Phoenix 2 tile is not on the list, report only the visible error text and stop.
+1. Read the JWT from `Cursor-Project/EnergoTS/src/backend/fixtures/token.json`, field `token`. `src/tests/setup/global-setup.ts` writes that file. If the file is missing or `token` is empty, stop and tell the user to run the Playwright setup project. Do not fall back to the portal login page.
+2. Build the login URL with `attachFrontendJwt` from `Cursor-Project/EnergoTS/src/frontend/pom/MainPage.ts`, passing the frontend root from `getFrontendUrl()` (or the origin of the user-supplied URL). Shape: `https://devapps.energo-pro.bg/app/phoenix2-dev/?jwt=<token>`. Never print, log, or write the token or the full JWT URL into the POM, a locator inventory, or the chat summary.
+3. Open that root URL with `playwright-cli -s=pom open "<frontend-root-with-jwt>" --browser=chrome --headed`. If that session is already open, use `goto`. Pass the URL without echoing it.
+4. Wait until the shell is visible (`page.locator('.burger')`) and the `jwt` query parameter is gone. Use `run-code` with `waitFor` or `waitForURL`. Do not use a fixed sleep.
+5. `goto` the user-supplied page without a `jwt` parameter. Do not use `history.pushState`.
+6. If the portal login page is showing (Welcome, Username, Password, Log in), the token was rejected. Stop and report that. Do not fill credentials.
+7. Confirm the landed URL and the visible heading match the page the user named. An error page or empty shell is not the target. If they do not match, stop and report what opened.
 
 ## Crawl the page
 
@@ -103,7 +113,7 @@ Stay on this page. The goal is a complete locator inventory of the page and of U
 
 ### Inventory
 
-After each settled screen state, call `browser_snapshot`. Record every meaningful control:
+After each settled screen state, run `playwright-cli -s=pom snapshot --filename=.playwright-cli/pom/<state>.yml` and read that file. Record every meaningful control:
 
 - buttons, links, icon buttons, tabs, menus
 - text inputs, textareas, checkboxes, radios, date fields, file inputs
@@ -126,7 +136,7 @@ Open, snapshot, record, then dismiss:
 - toolbars and "more" menus
 - dialogs, drawers, and overlays opened by a button on this page
 
-Dismiss with Escape, the same toggle, or an explicit Close or Cancel control. Use `browser_navigate_back` only when a click changed the route, then continue from the original page.
+Dismiss with `press Escape`, the same toggle, or an explicit Close or Cancel control. Use `go-back` only when a click changed the route, then continue from the original page. Use `dialog-dismiss` for a native browser dialog.
 
 ### Do not mutate data during discovery
 
@@ -138,7 +148,7 @@ Record the locator, and do not activate the action, for controls that persist, d
 
 If such a control opens a dialog before any commit, snapshot the dialog, record its locators, and dismiss it. Never confirm it.
 
-This restriction applies to the MCP crawl. The generated happy-path test must submit the form later in the explicit execution phase.
+This restriction applies to the CLI crawl. The generated happy-path test must submit the form later in the explicit execution phase.
 
 ### Bounds
 
@@ -158,7 +168,7 @@ Prefer the first locator that is unique and stable:
 4. `getByTestId` when a `data-testid` (or the project's existing test id) is present
 5. A scoped CSS or id locator only when the options above are missing or not unique
 
-When `browser_generate_locator` is available, use it as a candidate and keep it only if it matches this order. When `browser_evaluate` or `browser_run_code` is available, verify the chosen locator matches exactly one element in the correct scope.
+Use `generate-locator <ref> --raw` as the candidate and keep it only if it matches this order. Verify with `run-code` that the chosen locator matches exactly one element in the correct scope. Use `eval` when a `data-testid` or other attribute is missing from the snapshot. Read `.agents/skills/playwright-cli/references/element-attributes.md` before that `eval`.
 
 Scope dialog, drawer, and menu controls to that overlay root when the same role and name also exist on the page underneath.
 
@@ -191,7 +201,7 @@ After the POM is wired:
 2. Ensure `playwright.config.ts` has a reusable frontend project that discovers `src/frontend/**/*.spec.ts`; do not hardcode the project to one filename.
 3. Use `FrontEndFixture.ts` and the registered `POM` facade. Repair missing fixture wiring when necessary.
 4. Generate unique valid arguments in the spec. Never put credentials, tokens, or environment-specific session values in source.
-5. Navigate to the supplied page and call only the POM's public creation method for the business flow. The spec may contain setup and assertions, but must not duplicate field-by-field actions.
+5. Open the creation page with `openAuthenticatedFrontendPage` from `MainPage.ts`. That helper reads `src/backend/fixtures/token.json` through `attachFrontendJwt`, waits until the frontend root has consumed `?jwt=`, then opens the creation path with `page.goto`. Do not sign in through the portal, do not click an application tile, do not append `jwt` to the creation path, and do not use `history.pushState`. Then call only the POM's public creation method for the business flow. The spec may contain setup and assertions, but must not duplicate field-by-field actions.
 6. Keep one test: the minimal successful creation path. Additional field-presence, dialog, and negative tests are out of scope unless the user asks.
 7. Prove creation with at least two independent signals when the page exposes them:
    - the create/save network response succeeds;
@@ -203,9 +213,9 @@ After the POM is wired:
 
 ## Execute and repair
 
-1. Run the narrow spec with the frontend Playwright project.
-2. If it fails, use the trace, screenshot, console, network response, and visible validation messages to repair the POM or spec.
-3. Re-run after each repair, up to three focused iterations. Do not weaken assertions to make a failure pass.
+1. Close the `pom` CLI session, then run the narrow spec with the frontend Playwright project from `Cursor-Project/EnergoTS`. Set `PLAYWRIGHT_HTML_OPEN=never`.
+2. If it fails, read `.agents/skills/playwright-cli/references/playwright-tests.md` and the Heal section of `references/test-generation.md`. Re-run that spec in the background with `--debug=cli`, attach with `playwright-cli attach <session>`, and inspect the paused page with `snapshot`, `console`, `requests`, and `generate-locator`. Use the trace, screenshot, console, network response, and visible validation messages as well.
+3. Re-run after each repair, up to three focused iterations. Stop the background debug run before the next attempt. Do not weaken assertions to make a failure pass.
 4. Finish only when the test passes and creation evidence is captured.
 5. If authentication, environment availability, permissions, or product validation blocks creation, stop with the exact blocker and do not claim the workflow succeeded.
 6. Creation tests may mutate Dev, Dev2, Test, or Experiments. PreProd or Prod requires explicit user approval before execution.
@@ -229,7 +239,7 @@ Before finishing:
 
 1. Every recorded control is a locator on the POM, or an intentional exclusion (mutating action that was recorded as locator-only, repeated table row, non-interactive markup).
 2. Every panel, tab, dropdown, and dialog that was opened has its inner controls on the POM.
-3. No MCP ref, token, session value, username, or password appears in the POM.
+3. No CLI snapshot ref, token, session value, username, or password appears in the POM.
 4. Imports, constructor dependencies, and registry wiring agree when a registry exists.
 5. Format changed TypeScript consistently with nearby files.
 6. Run the narrowest available TypeScript or lint check, then a broader typecheck when practical.
