@@ -68,12 +68,12 @@ alwaysApply: true
    - Violation is a **MUST** when **persisted** project artifacts are not in English without an explicit project exception
    
    ### Rule 0.8: Path-Based Code Modification (Phoenix, EnergoTS, everything else)
-   - **Intent:** (1) **Phoenix** — no AI/agent edits, ever. (2) **EnergoTS** — user-requested edits are allowed on the `cursor` or `staging` branch, including page objects, fixtures, helpers, and frontend tests. (3) **All other paths** — Cursor AI may modify when the user requests (**provisional — Tier C**).
+   - **Intent:** (1) **Phoenix** — no AI/agent edits, ever. (2) **EnergoTS** — user-requested edits are allowed on the `cursor`, `staging`, or `cursorMerged` branch, including page objects, fixtures, helpers, and frontend tests. (3) **All other paths** — Cursor AI may modify when the user requests (**provisional — Tier C**).
    - **TIER A — ABSOLUTELY FORBIDDEN (no exceptions, no agent, no user override via AI):**
      - `Cursor-Project/Phoenix/**` — Cursor AI MUST NEVER create, modify, or delete any file here. Hooks enforce protection. ONLY read, analyze, search, recommend.
    - **TIER B — EnergoTS (writable on request):**
-     - `Cursor-Project/EnergoTS/**` — Cursor AI may create, modify, and delete files when the user requests that work. This includes `src/frontend/pom/**`, fixtures, helpers, config needed by frontend cases, and `tests/**`.
-     - Branch must be `cursor` or `staging` (Rule ENERGOTS.0). Do not checkout any other EnergoTS branch.
+     - `Cursor-Project/EnergoTS/**` — Cursor AI may create, modify, and delete files when the user requests that work. This includes `src/frontend/pom/**`, `src/backend/fixtures/**`, helpers, config needed by frontend cases, and `src/tests/**`.
+     - Branch must be `cursor`, `staging`, or `cursorMerged` (Rule ENERGOTS.0). Do not checkout any other EnergoTS branch. Playwright specs for the post-merge tree go under `src/tests/` and require `testDir: './src/tests'`. Do not switch from `cursorMerged` to `cursor`.
      - Playwright `.spec.ts` authoring SHOULD still follow **energo-ts-test** (Swagger refresh, instructions pack, validator). That workflow is a quality gate, not a path ban.
    - **TIER C — ALLOWED (provisional):** Any path under the workspace **not** in Tier A — including but not limited to: `Cursor-Project/docs/**`, `Cursor-Project/config/**`, `Cursor-Project/reports/**`, `Cursor-Project/test_cases/**`, `Cursor-Project/User story/**`, root `.cursor/**`, workspace root files, and `Cursor-Project/EnergoTS/**` as in Tier B. User-requested edits are permitted there. (**`Cursor-Project/agents/`** Python package is **not** in this workspace; Cursor behavior is defined by **`.cursor/agents/*.md`**, rules, skills, MCP.)
    - **If the user asks to change Tier A (Phoenix):** Refuse implementation; analysis and recommendations only.

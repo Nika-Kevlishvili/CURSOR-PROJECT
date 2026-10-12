@@ -18,12 +18,12 @@ Skills guide the Cursor agent for this repo’s workflows. **Location:** workspa
 | **cross-dependency-finder** | Rule 35 / 35a; output for test-case-generator |
 | **test-case-generator** | Rule 35; save to `test_cases/Backend/` (+ `Frontend/` when scope includes UI) |
 | **test-case-quality-validator** | 10-axis rubric; ≥80/100; Rule 35 Step 2.5 |
-| **energo-ts-test** | Rule 0.8.1; Playwright authoring under `EnergoTS/tests/` only |
+| **energo-ts-test** | Playwright authoring under `EnergoTS/src/tests/` (`cursorMerged` or `staging`, `testDir: ./src/tests`) |
 | **playwright-test-validator** | Spec vs TC quality gate after energo-ts-test |
 | **phoenix-safety-readonly** | GitLab/Confluence read-only; path tiers |
 | **jira-evidence** | Jira ticket completeness, custom fields, attachments, linked Confluence (Rule 42/44) |
 | **jira-bug-template** | Experiments board bugs only (Rule JIRA.0) |
-| **energo-ts-run** | Rule 36; Playwright from EnergoTS `cursor` or `staging` |
+| **energo-ts-run** | Rule 36; Playwright from EnergoTS on `cursorMerged` or `staging` (`src/tests/`) |
 | **playwright-cli** | Playwright CLI command reference. Canonical copy: `.agents/skills/playwright-cli`. Linked from `.cursor/skills/playwright-cli`. |
 | **pom** | `/pom` only; Playwright CLI crawl of a named page, then write the EnergoTS page object |
 

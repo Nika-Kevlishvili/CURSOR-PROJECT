@@ -200,7 +200,7 @@ These are the branching points in the process. Each decision leads to different 
 - <b>Agents (.cursor/agents/*.md)</b><br>Task-tool subagent specs — 18 agents total
 - phoenix-qa
 - Env resolve (PHOENIX-SWITCH.0)<br>switch-phoenix-branches.ps1
-- <b>Step 4: Playwright authoring (energo-ts-test)</b><br><br>1. Read playwright instructions pack (project-description, general-rules,<br> test-writing-rules, SKILL.md)<br>2. Swagger refresh (MANDATORY — Rule 41)<br>3. No beforeAll for preconditions (Rule 40)<br>4. Write .spec.ts under EnergoTS/tests/cursor/<br>5. Only EnergoTSTestAgent may write (Rule 0.8.1)
+- <b>Step 4: Playwright authoring (energo-ts-test)</b><br><br>1. Read playwright instructions pack (project-description, general-rules,<br> test-writing-rules, SKILL.md)<br>2. Swagger refresh (MANDATORY — Rule 41)<br>3. No beforeAll for preconditions (Rule 40)<br>4. Write .spec.ts under EnergoTS/src/tests/cursor/<br>5. Only EnergoTSTestAgent may write (Rule 0.8.1)
 - <b>Jira Bug Scope (Rule JIRA.0)</b>
 - 4. playwright-test-validator<br>STRICT 0–100 scoring<br>Pass: ≥80
 - Bug validation (Rule 32):<br>Chat only — disk only on /report or explicit save
@@ -218,20 +218,20 @@ These are the branching points in the process. Each decision leads to different 
 - Step 1: cross-dependency-finder (MANDATORY FIRST)<br>Jira-anchored analysis (Rule 35a)<br>No local merge/git — Jira + codebase + shallow Confluence
 - <b>Code Modification Tiers (Rule 0.8)</b>
 - REST fallback (Rule 43)<br>get-confluence-page-rest.ps1<br>Confluence Cloud REST
-- 1. PhoenixExpert is mandatory before any Phoenix task (Rule 0.4/8)<br>2. Environment must be explicit — never inferred (Rule CONF.0 / DB.0a)<br>3. Phoenix code is NEVER edited — read-only via aligned branches (Rule 0.8)<br>4. EnergoTS tests/ writable ONLY by EnergoTSTestAgent (Rule 0.8.1)<br>5. Confluence + GitLab = read-only always (Rule 1)<br>6. Swagger refresh mandatory before .spec.ts files (Rule 41)<br>7. No beforeAll in EnergoTS preconditions (Rule 40)<br>8. Every response: Confidence % + Agents involved (Rules CONF.1 / 0.1)<br>9. Disk reports only on /report, /feedback, explicit save — NOT by default (Rule 0.6)<br>10. Jira bugs: Experiments board only, never Phoenix delivery (Rule JIRA.0)
+- 1. PhoenixExpert is mandatory before any Phoenix task (Rule 0.4/8)<br>2. Environment must be explicit — never inferred (Rule CONF.0 / DB.0a)<br>3. Phoenix code is NEVER edited — read-only via aligned branches (Rule 0.8)<br>4. EnergoTS src/tests and src/frontend writable when the user asks (Rule 0.8)<br>5. Confluence + GitLab = read-only always (Rule 1)<br>6. Swagger refresh mandatory before .spec.ts files (Rule 41)<br>7. No beforeAll in EnergoTS preconditions (Rule 40)<br>8. Every response: Confidence % + Agents involved (Rules CONF.1 / 0.1)<br>9. Disk reports only on /report, /feedback, explicit save — NOT by default (Rule 0.6)<br>10. Jira bugs: Experiments board only, never Phoenix delivery (Rule JIRA.0)
 - Resolve test file<br>(newly created / Jira key /<br>file path / domain)
 - jira-bug
 - <b>External System Permissions (Rule 1)</b>
-- <b>TIER B — EnergoTS (restricted)</b><br>EnergoTS/** outside tests/ → NO AI writes<br>EnergoTS/tests/** → ONLY EnergoTSTestAgent (Rule 0.8.1)<br>Generic Cursor AI MUST NOT edit even if user asks
+- <b>TIER B — EnergoTS (restricted)</b><br>EnergoTS/** outside tests/ → NO AI writes<br>EnergoTS/src/tests/** → EnergoTSTestAgent when the user asks (Rule 0.8)<br>Generic Cursor AI MUST NOT edit even if user asks
 - 7. Respond: answer + Confidence + Agents involved
 - Confluence MCP (primary)<br>READ-ONLY tools only<br>getConfluencePage, search, CQL
 - DRY creation-step rule:<br>## Test data once per topic; each TC<br>references slice + deltas only.
 - Slack token missing/expired<br>→ note in chat, skip Slack delivery
 - Slack
 - Path 3: Scoped Playwright run<br>Tester DM + #ai-report (C0AK96S1D7X)
-- <b>Step 5: Test execution (energo-ts-run)</b><br><br>1. EnergoTS must be on cursor branch (Rule ENERGOTS.0)<br>2. npx playwright test --reporter=json<br>3. Produces playwright-report.json<br>4. generate-detailed-report.mjs → playwright-report-detailed.md
+- <b>Step 5: Test execution (energo-ts-run)</b><br><br>1. EnergoTS must be on cursorMerged or staging with testDir ./src/tests (Rule ENERGOTS.0)<br>2. npx playwright test<br>3. Produces src/backend/playwright-report.json<br>4. generate-detailed-report.mjs → src/backend/playwright-report-detailed.md
 - <b>Connector Types</b>
-- 3. Write .spec.ts<br>EnergoTS/tests/cursor/<br>(ONLY EnergoTSTestAgent — Rule 0.8.1)
+- 3. Write .spec.ts<br>EnergoTS/src/tests/cursor/
 - Red / pink = Bug validation / Safety guards
 
 ## Save Operations (Outcomes)

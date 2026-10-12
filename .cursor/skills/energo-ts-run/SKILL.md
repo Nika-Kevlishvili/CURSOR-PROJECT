@@ -5,7 +5,7 @@ description: Runs specific Playwright tests from EnergoTS (local repo synced fro
 
 # EnergoTS Playwright Test Run Skill
 
-Use when the user wants to **run** (execute) Playwright tests from the local EnergoTS repo (**`cursor` or `staging` branch**, Rule ENERGOTS.0).
+Use when the user wants to **run** (execute) Playwright tests from the local EnergoTS repo. Stay on the current allowed branch (`cursorMerged`, `staging`, or `cursor`). Do not switch branches to run tests (Rule ENERGOTS.0).
 
 ## When to Apply
 
@@ -13,24 +13,26 @@ Use when the user wants to **run** (execute) Playwright tests from the local Ene
 
 ## Workflow
 
-1. **Branch** — in `Cursor-Project/EnergoTS/`, stay on `cursor` or `staging`. If the checkout is another branch, switch to `staging` when the user is doing frontend or POM work, otherwise switch to `cursor`. Do not switch away from `staging` to `cursor` unless the user asks.
-2. **Resolve target** (see table below).
-3. **Execute** from `Cursor-Project/EnergoTS/`: `npx playwright test <path|grep|dir>`.
-4. **Report** pass/fail; optional Chat reports file on user request (Rule 0.6).
+1. **Branch** — in `Cursor-Project/EnergoTS/`, read `git rev-parse --abbrev-ref HEAD` and `playwright.config.ts` `testDir`. Stay put when HEAD is `cursorMerged` or `staging` and `testDir` is `./src/tests`. If HEAD is `cursor` and `testDir` is still `./tests`, stop and ask the user to use `cursorMerged` or `staging`. Do not checkout another branch yourself. If HEAD is not one of those three, stop and ask.
+2. **Resolve target** (see table below). Paths are relative to `Cursor-Project/EnergoTS/`.
+3. **Execute** from `Cursor-Project/EnergoTS/`: `npx playwright test <path|grep>`. API specs live under `src/tests/`. Frontend specs use `--project=frontend` and paths under `src/frontend/`. Visual regression uses `--config=tests/regression/playwright.regression.config.ts`.
+4. **Report** pass/fail; optional Chat reports file on user request (Rule 0.6). JSON output is `src/backend/playwright-report.json`.
 
 ## Resolution table
 
 | User prompt | Action |
 |-------------|--------|
-| Newly created / latest | Most recent `.spec.ts` in `EnergoTS/tests/` (mtime or git status); ask if ambiguous |
-| Jira key (REG-123, PDT-456) | Grep tests → `npx playwright test --grep "KEY"` or matching file(s) |
-| File path / name | Normalize path under `tests/` and run |
-| Domain (billing) | `npx playwright test tests/billing/` or equivalent |
+| Newly created / latest | Most recent `.spec.ts` under `EnergoTS/src/tests/` (mtime or git status); ask if ambiguous |
+| Jira key (REG-123, PDT-456) | Grep `src/tests/` → `npx playwright test --grep "KEY"` or the matching file |
+| File path / name | Normalize under `src/tests/` or `src/frontend/` and run |
+| Domain (billing) | `npx playwright test src/tests/billing/` |
+| Frontend / POM spec | `npx playwright test --project=frontend src/frontend/<file>.spec.ts` |
+| Visual regression | `npx playwright test --config=tests/regression/playwright.regression.config.ts` |
 | "From GitHub" | Clarify: run local clone; suggest sync if user wants latest remote |
 
 ## Setup (when fixtures missing)
 
-From `EnergoTS/`: `npx playwright test --project=setup` (requires `.env` with PORTAL_USER, PASSWORD, DEVAUTHAPI or TESTAUTHAPI) → creates `fixtures/token.json`, `fixtures/envVariables.json`.
+From `EnergoTS/`: `npx playwright test --project=setup` (requires `.env` with PORTAL_USER, PASSWORD, DEVAUTHAPI or TESTAUTHAPI) → writes `src/backend/fixtures/token.json`, `src/backend/fixtures/envVariables.json`, `src/backend/fixtures/salesPortalToken.json`, and `src/frontend/fixtures/frontendEnvVariables.json`.
 
 ## Rule DPR.0 — detailed markdown
 
@@ -41,7 +43,8 @@ From `EnergoTS/`: `npx playwright test --project=setup` (requires `.env` with PO
 
 | Condition | Action |
 |-----------|--------|
-| Not on `cursor` or `staging` / checkout fails | Report error; do not run on any other branch |
+| Not on `cursor`, `staging`, or `cursorMerged` | Stop and ask. Do not checkout another branch |
+| `testDir` is not `./src/tests` | Stop. That checkout is the pre-merge layout. Ask before switching to `cursorMerged` or `staging` |
 | EnergoTS or Playwright missing | Report path / `npm install` hint |
 | No matching test | "No matching test found" + how you searched |
 | Tests fail | Report failures; do not fix code unless user asked |

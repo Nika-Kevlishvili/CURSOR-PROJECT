@@ -47,7 +47,7 @@ If file upload is **not** possible **after** trying the upload script (missing t
 ## File attachments — MANDATORY for Playwright test reports (paths 2 & 3)
 
 1. **Smart report:** save using **`Cursor-Project/config/playwright/Playwright_run_detailed_report_template.md`** (**ScopedPlaywright_*.md** under **`Chat reports`**).
-2. **Machine report:** run **`generate-detailed-report.mjs`** from **`EnergoTS/`** when **`playwright-report.json`** exists → **`Cursor-Project/EnergoTS/playwright-report-detailed.md`** (same folder as the JSON; Rule **DPR.0**).
+2. **Machine report:** run **`generate-detailed-report.mjs`** from **`EnergoTS/`** when **`src/backend/playwright-report.json`** exists → **`Cursor-Project/EnergoTS/src/backend/playwright-report-detailed.md`** (same folder as the JSON; Rule **DPR.0**).
 3. **Upload** **both** files to Slack for **each** destination (Tester user ID + `C0AK96S1D7X`) via **`upload-file-to-slack.ps1`** with `InitialComment` distinguishing e.g. `Smart report ({JIRA_KEY})` vs `Playwright JSON detailed ({JIRA_KEY})`. **#ai-report** is the **report channel** for these attachments.
 
 **`slack_send_message`** MCP cannot attach files; **always** use the upload script (or **`_run-upload-with-dotenv.ps1`**) for files.

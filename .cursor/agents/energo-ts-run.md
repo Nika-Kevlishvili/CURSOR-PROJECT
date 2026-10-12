@@ -11,7 +11,7 @@ description: Runs specific Playwright tests from EnergoTS (local repo synced fro
 ## Role
 
 - Resolve test target from natural-language prompt → run `npx playwright test` from local EnergoTS clone
-- **`cursor` or `staging` branch** (Rule ENERGOTS.0). This runner does not edit code; POM and frontend file edits are allowed to other agents under Rule 0.8.
+- **`cursorMerged`, `staging`, or `cursor` branch** (Rule ENERGOTS.0). Do not switch branches. This runner does not edit code; POM and frontend file edits are allowed to other agents under Rule 0.8. Playwright runs require `testDir: './src/tests'`.
 
 ## Inputs
 
@@ -35,7 +35,7 @@ description: Runs specific Playwright tests from EnergoTS (local repo synced fro
 
 ## Constraints
 
-- Run on **`cursor` or `staging`**. If the repo is on another branch, switch to `staging` for frontend/POM work, otherwise to `cursor`. Do not leave `staging` unless the user asks.
+- Stay on the current branch when it is **`cursorMerged` or `staging`** and `playwright.config.ts` has `testDir: './src/tests'`. If the repo is on `cursor` with `testDir: './tests'`, stop and ask. Do not checkout another branch.
 - This runner does not edit EnergoTS files. Other agents may edit them when the user requested POM or frontend work (Rule 0.8).
 - English output (Rule 0.7)
 

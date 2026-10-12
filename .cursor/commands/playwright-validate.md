@@ -10,7 +10,7 @@ Example: `/playwright-validate PDT-2971`
 
 ## What this command does
 
-1. Resolves `Cursor-Project/EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`.
+1. Resolves `Cursor-Project/EnergoTS/src/tests/cursor/{JIRA_KEY}-*.spec.ts`.
 2. Resolves Backend TC path when `Cursor-Project/test_cases/Backend/*` matches the topic; otherwise uses Jira ticket as alignment source (bug-only automation).
 3. Invokes **playwright-test-validator** (`.cursor/agents/playwright-test-validator.md`).
 4. Returns scored report in chat: **0–100**, PASS/FAIL (≥80 = pass), numbered issues.

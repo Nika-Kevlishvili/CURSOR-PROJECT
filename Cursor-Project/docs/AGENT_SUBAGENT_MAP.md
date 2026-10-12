@@ -46,7 +46,7 @@ Use this file as the **single map** from “agent role” to **where it lives to
 |----------|------|
 | Reports (Rule 0.6) | **`Cursor-Project/reports/README.md`** — each area uses **`YYYY/<english-month>/<DD>/`** before filenames |
 | Test cases (canonical) | **`Cursor-Project/test_cases/Backend/<Topic>.md`** (always when TCs generated); **`Cursor-Project/test_cases/Frontend/<Topic>.md`** only if **TC-FRONTEND-ASK.0** = Yes |
-| Playwright (automation branch) | **`Cursor-Project/EnergoTS/tests/cursor/`** |
+| Playwright (automation branch) | **`Cursor-Project/EnergoTS/src/tests/cursor/`** |
 | Templates | **`Cursor-Project/config/template/`** |
 | Postman exports | **`Cursor-Project/postman/`** |
 

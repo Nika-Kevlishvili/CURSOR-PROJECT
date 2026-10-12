@@ -12,7 +12,7 @@ description: STRICT Playwright spec validator (0–100, pass ≥80). Forces rege
 
 - `backend_path` — `Cursor-Project/test_cases/Backend/<Topic>.md` (required)
 - `frontend_path` — optional; only when file exists on disk (Backend-only scope OK)
-- `spec_path` — `EnergoTS/tests/cursor/{KEY}-*.spec.ts`
+- `spec_path` — `EnergoTS/src/tests/cursor/{KEY}-*.spec.ts`
 - `jira_key`
 
 ## Outputs
@@ -24,7 +24,7 @@ description: STRICT Playwright spec validator (0–100, pass ≥80). Forces rege
 
 ## Verdict rules
 
-- New `tests/cursor/` specs: `./cursor-test.fixtures`, `TestRunSummary`, `finalizeTestRunSummary`, `recordCheck`, `relevantEntityKeys` (SKILL § Test run summary check; −3/−2/−1 per gap, criterion 5).
+- New `src/tests/cursor/` specs: `./cursor-test.fixtures`, `TestRunSummary`, `finalizeTestRunSummary`, `recordCheck`, `relevantEntityKeys` (SKILL § Test run summary check; −3/−2/−1 per gap, criterion 5).
 - **≥80** → parent proceeds to energo-ts-run
 - **<80** → return to energo-ts-test with issue list
 - **3 failures** → BLOCK WORKFLOW, escalate user

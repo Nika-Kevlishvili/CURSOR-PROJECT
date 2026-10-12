@@ -109,7 +109,7 @@ For each endpoint involved in a test, extract:
 
 ### Endpoint Verification
 
-- Compare the path from the spec with the `Endpoints` constant in `fixtures/constants/endpoints.ts`.
+- Compare the path from the spec with the `Endpoints` constant in `src/backend/fixtures/constants/endpoints.ts`.
 - If the endpoint is not in `Endpoints`, use the path string directly (strip leading `/` per `RequestWrapper` convention).
 - If the `Endpoints` constant differs from the spec, trust the spec and use the correct path.
 

@@ -1,5 +1,5 @@
 ---
-description: "Rules and conventions for Playwright API test spec files. Use when creating, editing, or reviewing .spec.ts test files in the tests/ directory."
+description: "Rules and conventions for Playwright API test spec files. Use when creating, editing, or reviewing .spec.ts test files under src/tests/."
 applyTo: "**/*.spec.ts"
 ---
 
@@ -7,7 +7,7 @@ applyTo: "**/*.spec.ts"
 
 ## Reference Example
 
-All test files follow the same architecture. Use `tests/contractsAndOrders/productContract.spec.ts` as the single reference example for structure, patterns, and conventions. Do **not** scan multiple test files to learn the pattern — one example is sufficient for any domain.
+All test files follow the same architecture. Use `src/tests/contractsAndOrders/productContract.spec.ts` as the single reference example for structure, patterns, and conventions. Do **not** scan multiple test files to learn the pattern — one example is sufficient for any domain.
 
 ## Naming & Structure
 
@@ -32,22 +32,28 @@ test.describe('[REG-55]: Billing', { tag: '@billing' }, () => {
 
 ## Imports
 
-**New** `tests/cursor/*.spec.ts` (AI-authored):
+**New** `src/tests/cursor/*.spec.ts` (AI-authored):
 
 ```typescript
 import { test, expect } from './cursor-test.fixtures';
 import { finalizeTestRunSummary } from './shared/manual-verification-links.fixtures';
 ```
 
-`cursor-test.fixtures` re-exports `baseFixture` and adds `afterEach`: console `[API responses]` + Playwright attach. No manual `reportGenerator` attach or local `test.afterEach` for API response logging. Existing specs that already use `../../fixtures/baseFixture` should not be migrated unless the user asks.
+`cursor-test.fixtures` re-exports `baseFixture` and adds `afterEach`: console `[API responses]` + Playwright attach. No manual `reportGenerator` attach or local `test.afterEach` for API response logging. Existing specs that already use `../../backend/fixtures/baseFixture` should not be migrated unless the user asks.
 
-**Legacy / domain** specs under other `tests/` folders:
+**Legacy / domain** specs under other `src/tests/` folders. From `src/tests/<domain>/*.spec.ts`:
 
 ```typescript
-import { test, expect } from '../../fixtures/baseFixture';
+import { test, expect } from '../../backend/fixtures/baseFixture';
 ```
 
-Do not import from `@playwright/test` directly.
+From one folder deeper (`src/tests/<domain>/<sub>/*.spec.ts`):
+
+```typescript
+import { test, expect } from '../../../backend/fixtures/baseFixture';
+```
+
+Do not import from `@playwright/test` directly in API specs. Do not write new specs under the repo-root `tests/` folder. That folder is visual regression only.
 
 ## Data Handling
 
@@ -241,7 +247,7 @@ await test.step('Create specific entity', async () => {
 
 ## Report Attachment (mandatory — test run summary)
 
-**Every** `test()` in `tests/cursor/` ends with a unified test run summary:
+**Every** `test()` in `src/tests/cursor/` ends with a unified test run summary:
 test title, relevant payloads, expected vs actual results, filtered portal links.
 Use `./cursor-test.fixtures` (includes `TestRunSummary` fixture + API response `afterEach`).
 

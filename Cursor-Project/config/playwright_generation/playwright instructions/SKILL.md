@@ -15,8 +15,8 @@ description: "Write, modify, or debug Playwright API test cases for Energo-Pro. 
 
 ## Fixture Usage Pattern
 
-**New** `tests/cursor/*.spec.ts`: import `./cursor-test.fixtures` (re-exports `baseFixture` + automatic API response logging via global `afterEach` — no local `attachReport` or `test.afterEach` for API responses needed; see test-writing-rules § Imports).
-**Legacy** specs: import `../../fixtures/baseFixture`. Destructure only the fixtures you need:
+**New** `src/tests/cursor/*.spec.ts`: import `./cursor-test.fixtures` (re-exports `baseFixture` + automatic API response logging via global `afterEach` — no local `attachReport` or `test.afterEach` for API responses needed; see test-writing-rules § Imports).
+**Legacy** specs under `src/tests/<domain>/`: import `../../backend/fixtures/baseFixture` (one more `../` per extra folder). Destructure only the fixtures you need:
 
 ```typescript
 import { test, expect } from './cursor-test.fixtures';
@@ -108,7 +108,7 @@ Payload generators automatically link prerequisite entities from `this.responses
 7. Billing Run        → Responses.billingRun.push()        (links contract)
 ```
 
-Each generator method knows what it needs from `this.responses` arrays. Check the specific domain class in `jsons/payloadGenerators/domains/` to see required prerequisites.
+Each generator method knows what it needs from `this.responses` arrays. Check the specific domain class in `src/backend/jsons/payloadGenerators/domains/` to see required prerequisites.
 
 ### Modifying Payloads
 
@@ -131,24 +131,23 @@ const accountManagerTypeId = await Nomenclatures.Account_manager_types('Manager'
 const currencyId = await Nomenclatures.currencies('BGN');
 ```
 
-Most nomenclature IDs are pre-cached in `fixtures/envVariables.json` during setup. Access cached values via:
+Most nomenclature IDs are pre-cached in `src/backend/fixtures/envVariables.json` during setup. From `src/tests/cursor/` or `src/tests/<domain>/`:
 ```typescript
-import { envVariables } from '../../fixtures/envCashed';
+import { envVariables } from '../../backend/fixtures/envCashed';
 const cachedId = envVariables.someNomenclatureKey;
 ```
 
 ## Mass Import Pattern
 
-The `MassImportGenerator` fixture is **commented out** in `baseFixture.ts`. Instantiate manually:
+`MassImportGenerator` is a fixture on `baseFixture`. Destructure it. Do not construct `massImportGenerator` by hand unless the fixture is unavailable.
 
 ```typescript
-import { massImportGenerator } from '../../mass-imports/generators/massImportGenerator';
-
-const mig = new massImportGenerator(Request.raw, FileUploadRequest, Responses, uploadUrl, downloadUrl);
-const { payload, templateName } = mig.CustomerMassImportGenerator.privateCustomerMP();
+test('[REG-XXX]: Mass import', async ({ MassImportGenerator, FileUploadRequest }) => {
+  const { payload, templateName } = MassImportGenerator.CustomerMassImportGenerator.privateCustomerMP();
+});
 ```
 
-Domain generators: `CustomerMassImportGenerator`, `ProductContractMassImportGenerator` in `mass-imports/generators/domains/`.
+Wired domain properties on `src/backend/mass-imports/generators/massImportGenerator.ts`: `CustomerMassImportGenerator`, `ProductContractMassImportGenerator`, `PaymentMassImportGenerator`, `SupplyActionDeactivationMassImportGenerator`. `priceParameterMP.ts` exists under `domains/` and is not attached on the class.
 
 Supports horizontal (default) and vertical (`vertical: true`) Excel template layouts.
 
@@ -166,7 +165,7 @@ test('[REG-XXX]: Sales Portal test', async ({ SPRequest, Endpoints }) => {
 ## Report Attachment (mandatory)
 
 New cursor specs use `./cursor-test.fixtures` (`TestRunSummary` + API response `afterEach`).
-Every `tests/cursor/` test ends with `finalizeTestRunSummary`:
+Every `src/tests/cursor/` test ends with `finalizeTestRunSummary`:
 
 ```typescript
 import {
@@ -197,7 +196,7 @@ await test.step('Attach test run summary', async () => {
 });
 ```
 
-- **Helpers:** `tests/cursor/shared/manual-verification-links.fixtures.ts`, `test-run-summary.fixtures.ts`
+- **Helpers:** `src/tests/cursor/shared/manual-verification-links.fixtures.ts`, `test-run-summary.fixtures.ts`
 - Attachments work without `SAVE_OBJECT_LINKS` (optional extra logging in `ResponseLinker` only).
 
 ## Common Mistakes

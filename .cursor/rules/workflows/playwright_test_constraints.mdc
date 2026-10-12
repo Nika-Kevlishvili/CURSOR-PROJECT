@@ -2,7 +2,8 @@
 description: "Rule 40: Playwright test constraints — no beforeAll for preconditions; use fixtures and test.step."
 alwaysApply: false
 globs:
-  - "Cursor-Project/EnergoTS/tests/**/*.spec.ts"
+  - "Cursor-Project/EnergoTS/src/tests/**/*.spec.ts"
+  - "Cursor-Project/EnergoTS/src/frontend/**/*.spec.ts"
   - ".cursor/agents/energo-ts-test.md"
   - ".cursor/agents/playwright-test-validator.md"
   - "Cursor-Project/config/playwright_generation/**/*.md"
@@ -18,7 +19,7 @@ globs:
 - Implicit shared state across tests in a describe block via hooks
 
 **REQUIRED instead:**
-- **Fixtures** — `fixtures/token.json`, `fixtures/envVariables.json`, login fixtures per **`Cursor-Project/EnergoTS/fixtures/`**
+- **Fixtures** — `src/backend/fixtures/token.json`, `src/backend/fixtures/envVariables.json`, `src/backend/fixtures/salesPortalToken.json`, and login fixtures under **`Cursor-Project/EnergoTS/src/backend/fixtures/`**
 - **`test.step('Precondition: …')`** — explicit precondition steps inside each `test()` block
 - Helper functions called from within `test()` — see **`precondition-data-creation.instructions.md`** in the playwright instructions pack
 

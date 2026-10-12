@@ -17,7 +17,7 @@ description: STRICT Playwright spec validator (0–100, pass ≥80). Compares sp
 
 | Field | Required | Notes |
 |-------|----------|-------|
-| `spec_path` | Yes | `EnergoTS/tests/cursor/{KEY}-*.spec.ts` |
+| `spec_path` | Yes | `EnergoTS/src/tests/cursor/{KEY}-*.spec.ts` |
 | `jira_key` | Yes | Naming + bug-only alignment |
 | `backend_path` | When TC exists | `Cursor-Project/test_cases/Backend/<Topic>.md` |
 | `frontend_path` | No | Only when file exists on disk |
@@ -62,7 +62,7 @@ When `backend_path` is absent (common for direct bug automation after Rule 32):
 | New cursor spec uses `baseFixture` instead of `./cursor-test.fixtures` | Criterion 5 −3 |
 | Manual `reportGenerator` attach / extra API `afterEach` in new cursor spec | Criterion 5 −3 |
 
-## Test run summary check (new tests/cursor/ specs)
+## Test run summary check (new src/tests/cursor/ specs)
 
 Per **energo-ts-test SKILL § Manual verification links**. Specs on `baseFixture` only — legacy; not retrofitted unless user requests.
 
@@ -81,9 +81,9 @@ Per **energo-ts-test SKILL § Manual verification links**. Specs on `baseFixture
 | No `recordCheck` with narrative expected/actual | −2 |
 | Missing `relevantEntityKeys` | −1 |
 
-## cursor-test fixtures check (new tests/cursor/ specs)
+## cursor-test fixtures check (new src/tests/cursor/ specs)
 
-1. Import from `./cursor-test.fixtures`, not `../../fixtures/baseFixture`.
+1. Import from `./cursor-test.fixtures`, not `../../backend/fixtures/baseFixture`.
 2. No duplicate manual API-response `afterEach` or `reportGenerator.setLinksToResponses` attach.
 3. Deduct **−3** from criterion 5 per violation (minimum 0 for that criterion).
 

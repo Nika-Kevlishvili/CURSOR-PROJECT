@@ -6,14 +6,14 @@ globs:
   - ".cursor/agents/energo-ts-run.md"
   - ".cursor/skills/energo-ts-run/**"
   - "Cursor-Project/config/playwright/**"
-  - "Cursor-Project/EnergoTS/playwright-report.json"
+  - "Cursor-Project/EnergoTS/src/backend/playwright-report.json"
 ---
 
 # PLAYWRIGHT MACHINE DETAILED MARKDOWN (Rule DPR.0)
 
 ## Rule DPR.0: `playwright-report-detailed.md` vs scoped smart report
 
-This rule governs **`playwright-report-detailed.md`** written next to **`playwright-report.json`** (default **`Cursor-Project/EnergoTS/playwright-report-detailed.md`**) by **`Cursor-Project/config/playwright/generate-detailed-report.mjs`** when run from **`Cursor-Project/EnergoTS`**. See **`Cursor-Project/config/playwright/README-detailed-reporting.md`**.
+This rule governs **`playwright-report-detailed.md`** written next to **`playwright-report.json`** (default **`Cursor-Project/EnergoTS/src/backend/playwright-report-detailed.md`**) by **`Cursor-Project/config/playwright/generate-detailed-report.mjs`** when run from **`Cursor-Project/EnergoTS`**. The Playwright config writes JSON to **`src/backend/playwright-report.json`**. See **`Cursor-Project/config/playwright/README-detailed-reporting.md`**.
 
 ### Two complementary files (scoped Slack path 2)
 
@@ -24,7 +24,7 @@ This rule governs **`playwright-report-detailed.md`** written next to **`playwri
 
 ### Scoped Slack (path 2) — generation + upload
 
-1. **After tests produce `playwright-report.json`:** From **`Cursor-Project/EnergoTS`**, run **`node ../config/playwright/generate-detailed-report.mjs`** when **`playwright-report.json`** exists. This writes **`Cursor-Project/EnergoTS/playwright-report-detailed.md`** (default: same directory as the JSON). If JSON is missing, skip generation and note it in the smart report **Notes** (optional block).
+1. **After tests produce `src/backend/playwright-report.json`:** From **`Cursor-Project/EnergoTS`**, run **`node ../config/playwright/generate-detailed-report.mjs`**. This writes **`Cursor-Project/EnergoTS/src/backend/playwright-report-detailed.md`** (same directory as the JSON). If JSON is missing, skip generation and note it in the smart report **Notes** (optional block).
 2. **Slack #ai-report** (`C0AK96S1D7X`) is the **report channel** for these uploads: upload **both** `.md` files there as **attachments** (not pasted body text). Also upload **both** files to the **Tester DM** when Jira Tester (`customfield_10095`) exists — same rules as **`send-playwright-results-slack.md`**.
 3. **Do NOT** paste the full contents of **`playwright-report-detailed.md`** (or the smart report) into the Slack **chat body** — short three-block summary only, per **`Slack_report_summary_short_template.md`**.
 
@@ -44,7 +44,7 @@ This rule governs **`playwright-report-detailed.md`** written next to **`playwri
 | Artifact | Path | Role |
 |----------|------|------|
 | **Smart (human) report** | `Cursor-Project/reports/Chat reports/…/ScopedPlaywright_*.md` | Per **`Playwright_run_detailed_report_template.md`**; primary narrative for testers |
-| **Machine report** | `Cursor-Project/EnergoTS/playwright-report-detailed.md` (next to JSON) | JSON→MD via **`generate-detailed-report.mjs`**; uploaded with smart report to Slack |
+| **Machine report** | `Cursor-Project/EnergoTS/src/backend/playwright-report-detailed.md` (next to JSON) | JSON→MD via **`generate-detailed-report.mjs`**; uploaded with smart report to Slack |
 
 **Forbidden as the primary detailed deliverable:** `playwright-report.json`, `playwright-report/index.html`, or any non-Markdown format used **instead of** the smart `.md` under **`reports/`**.
 

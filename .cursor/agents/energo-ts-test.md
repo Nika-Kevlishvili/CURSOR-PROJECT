@@ -1,7 +1,7 @@
 ---
 name: energo-ts-test
 model: inherit
-description: Manages EnergoTS Playwright test automation. Preferred writer for EnergoTS/tests/*.spec.ts and *.fixtures.ts. Use for user-requested Playwright authoring. Other EnergoTS files may be edited when the user asks (Rule 0.8).
+description: Manages EnergoTS Playwright test automation. Preferred writer for EnergoTS/src/tests/*.spec.ts and *.fixtures.ts. Use for user-requested Playwright authoring. Frontend files under EnergoTS/src/frontend may be edited when the user asks (Rule 0.8).
 ---
 
 # EnergoTS Test Subagent (EnergoTSTestAgent)
@@ -19,7 +19,7 @@ description: Manages EnergoTS Playwright test automation. Preferred writer for E
 
 ## Outputs
 
-- Spec file: `Cursor-Project/EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`
+- Spec file: `Cursor-Project/EnergoTS/src/tests/cursor/{JIRA_KEY}-*.spec.ts`
 - Optional fixtures: `*.fixtures.ts` in same folder
 - Completion summary with **Reference spec(s):**, **Confidence**, mapped TC list
 
@@ -41,7 +41,7 @@ Same validator gate — **not** optional when user requests Playwright authoring
 
 ## Constraints
 
-- Preferred output is `EnergoTS/tests/**/*.spec.ts` and `*.fixtures.ts`. Other files under `Cursor-Project/EnergoTS/` may be edited when the user asked for page objects or frontend cases (Rule 0.8). Branch must be `cursor` or `staging`.
+- Preferred output is `EnergoTS/src/tests/**/*.spec.ts` and `*.fixtures.ts`. Frontend files under `EnergoTS/src/frontend/` may be edited when the user asked for page objects or frontend cases (Rule 0.8). Stay on `cursorMerged` or `staging` (Rule ENERGOTS.0). Do not switch to `cursor`.
 - Consult **PhoenixExpert** when business logic unclear (Rule 0.4).
 - English artifacts (Rule 0.7).
 

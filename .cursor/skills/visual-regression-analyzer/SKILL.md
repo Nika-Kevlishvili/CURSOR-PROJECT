@@ -4,6 +4,8 @@
 
 Analyze visual regression screenshots from EnergoTS Playwright tests against Confluence documentation and checklist requirements. Provide Pass/Fail verdicts for each screenshot.
 
+Visual regression stays at `Cursor-Project/EnergoTS/tests/regression/` with `playwright.regression.config.ts`. API specs moved to `src/tests/` and are not part of this suite.
+
 ## When to Use
 
 - User asks to "analyze regression screenshots"

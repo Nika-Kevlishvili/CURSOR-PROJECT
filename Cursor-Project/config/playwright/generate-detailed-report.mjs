@@ -2,7 +2,8 @@
 /**
  * Builds a human-readable detailed Markdown report from Playwright JSON output.
  * Usage (from EnergoTS root): node ../config/playwright/generate-detailed-report.mjs
- * Default JSON: cwd/playwright-report.json | Default out: cwd/playwright-report-detailed.md (next to JSON)
+ * Default JSON: cwd/src/backend/playwright-report.json (fallback: cwd/playwright-report.json)
+ * Default out: playwright-report-detailed.md next to that JSON
  * Overrides: node generate-detailed-report.mjs <path/to.json> [path/to/out.md]
  * See README-detailed-reporting.md and Rule DPR.0.
  */
@@ -307,8 +308,10 @@ function buildMarkdown(report, jsonPath, cwdForDisplay) {
 }
 
 const cwd = process.cwd();
-const jsonArg = process.argv[2] || path.join(cwd, 'playwright-report.json');
-const outArg = process.argv[3] || path.join(cwd, 'playwright-report-detailed.md');
+const relocatedJson = path.join(cwd, 'src', 'backend', 'playwright-report.json');
+const jsonArg = process.argv[2] || (fs.existsSync(relocatedJson) ? relocatedJson : path.join(cwd, 'playwright-report.json'));
+const resolvedJsonForOut = path.resolve(jsonArg);
+const outArg = process.argv[3] || path.join(path.dirname(resolvedJsonForOut), 'playwright-report-detailed.md');
 const jsonPath = path.resolve(jsonArg);
 const outPath = path.resolve(outArg);
 

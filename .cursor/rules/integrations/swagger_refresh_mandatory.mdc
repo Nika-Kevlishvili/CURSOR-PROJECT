@@ -2,7 +2,8 @@
 description: "MANDATORY: Always refresh Swagger/OpenAPI specs BEFORE generating or editing any Playwright .spec.ts file. Run update-swagger-specs.ps1 and grep the updated spec for every endpoint used. Never skip this step even if cached specs exist."
 alwaysApply: false
 globs:
-  - "Cursor-Project/EnergoTS/tests/**/*.spec.ts"
+  - "Cursor-Project/EnergoTS/src/tests/**/*.spec.ts"
+  - "Cursor-Project/EnergoTS/src/frontend/**/*.spec.ts"
   - ".cursor/agents/energo-ts-test.md"
   - ".cursor/skills/energo-ts-test/SKILL.md"
   - ".cursor/agents/playwright-test-validator.md"

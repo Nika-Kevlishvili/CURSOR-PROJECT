@@ -1,37 +1,50 @@
 ---
-description: "EnergoTS (Cursor-Project/EnergoTS) git branch lock (Rule ENERGOTS.0): use the `cursor` or `staging` branch. Do not checkout main or any other branch. Do not auto-sync from main unless the user explicitly asks. File writes under EnergoTS are allowed when the user requests them (Rule 0.8)."
+description: "EnergoTS (Cursor-Project/EnergoTS) git branch lock (Rule ENERGOTS.0): use the `cursor`, `staging`, or `cursorMerged` branch. Do not checkout main or any other branch. Do not auto-sync from main unless the user explicitly asks. File writes under EnergoTS are allowed when the user requests them (Rule 0.8). Playwright authoring uses the post-merge src/tests layout."
 alwaysApply: false
 globs:
   - "Cursor-Project/EnergoTS/**"
   - ".cursor/agents/energo-ts-run.md"
   - ".cursor/skills/energo-ts-run/SKILL.md"
-  - ".cursor/skills/energo-ts-run/SKILL.md"
+  - ".cursor/skills/energo-ts-test/SKILL.md"
 ---
 # ENERGOTS BRANCH LOCK RULE [CRITICAL]
 
 ## Rule ENERGOTS.0: EnergoTS Branch Restriction
 
-**Cursor AI may use only `cursor` or `staging`** under `Cursor-Project/EnergoTS/`.
+**Cursor AI may use only `cursor`, `staging`, or `cursorMerged`** under `Cursor-Project/EnergoTS/`.
 
 **Cursor AI MUST NEVER automatically** fetch/merge/pull/rebase from **`main`** — only when the user **explicitly** asks.
 
+**Do not auto-switch branches.** Stay on the current checkout when it is already one of the three allowed branches. Do not leave `cursorMerged` for `cursor`.
+
+### Layout by branch
+
+| Branch | Playwright layout |
+|--------|-------------------|
+| `cursorMerged` | Post-merge layout. `playwright.config.ts` `testDir` is `./src/tests`. Support code is under `src/backend/`. This is the branch created from `cursor` with `origin/staging` merged (`19fbe36`). |
+| `staging` | Same post-merge layout as `cursorMerged`. |
+| `cursor` | Pre-merge layout until that branch receives the merge: `testDir` is `./tests` and fixtures live at the repo root. Do not author new specs against that layout. |
+
+Playwright authoring and runs for the current EnergoTS tree MUST see `testDir: './src/tests'` in `playwright.config.ts`. If the checkout is `cursor` and `testDir` is still `./tests`, stop and ask the user before switching to `cursorMerged` or `staging`.
+
 ### Allowed vs prohibited
 
-- **Allowed on EnergoTS:** All git ops while already on `cursor` or `staging`; switching **to** `cursor` or **to** `staging`; merging `main` into the current allowed branch only after an explicit user request.
-- **Prohibited:** `git checkout` / `switch` to any branch other than `cursor` or `staging`; `checkout -b` new branches; any proactive sync with `main` without an explicit request.
+- **Allowed on EnergoTS:** All git ops while already on `cursor`, `staging`, or `cursorMerged`; switching **to** one of those three branches when the user asks; merging `main` into the current allowed branch only after an explicit user request.
+- **Prohibited:** `git checkout` / `switch` to any branch other than `cursor`, `staging`, or `cursorMerged`; `checkout -b` new branches; any proactive sync with `main` without an explicit request; switching from `cursorMerged` to `cursor` during Playwright work.
 
 ### Before git branch ops under EnergoTS
 
 1. Confirm path is under `Cursor-Project/EnergoTS/`.
-2. If the operation changes branch, the target **must** be `cursor` or `staging`. Otherwise **BLOCK**.
+2. If the operation changes branch, the target **must** be `cursor`, `staging`, or `cursorMerged`. Otherwise **BLOCK**.
+3. For Playwright writes or runs, confirm `playwright.config.ts` contains `testDir: './src/tests'` before creating specs.
 
 ### Enforcement hooks
 
-Hooks **`block-energots-branch-switch.ps1`** (`beforeShellExecution`) and **`block-energots-branch-requests.ps1`** (`beforeSubmitPrompt`) allow `cursor` and `staging` and block every other branch. **`protect-energots-writes.ps1`** allows file writes under `Cursor-Project/EnergoTS/`.
+Hooks **`block-energots-branch-switch.ps1`** (`beforeShellExecution`) and **`block-energots-branch-requests.ps1`** (`beforeSubmitPrompt`) allow `cursor`, `staging`, and `cursorMerged` and block every other branch. **`protect-energots-writes.ps1`** allows file writes under `Cursor-Project/EnergoTS/`.
 
 ### Integration
 
-- **Rule 0.8:** On `cursor` or `staging`, user-requested edits under `Cursor-Project/EnergoTS/**` are allowed, including page objects, fixtures, helpers, and frontend tests.
+- **Rule 0.8:** On `cursor`, `staging`, or `cursorMerged`, user-requested edits under `Cursor-Project/EnergoTS/**` are allowed, including page objects, fixtures, helpers, and frontend tests.
 - Phoenix/other repos: **not** covered by this rule. Phoenix stays read-only.
 
 **Violation of ENERGOTS.0 is a BLOCK.**

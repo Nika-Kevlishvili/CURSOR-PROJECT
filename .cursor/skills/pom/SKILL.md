@@ -231,7 +231,7 @@ After the POM is wired:
 5. If authentication, environment availability, permissions, or product validation blocks creation, stop with the exact blocker and do not claim the workflow succeeded.
 6. Creation tests may mutate Dev, Dev2, Test, or Experiments. PreProd or Prod requires explicit user approval before execution.
 
-EnergoTS may be on `cursor` or `staging`. Do not refuse a write because the branch is `staging` or because the file is outside `tests/`.
+EnergoTS may be on `cursorMerged`, `staging`, or `cursor`. For this layout stay on `cursorMerged` or `staging` (`testDir: './src/tests'`). Do not refuse a write because the branch is `staging` or `cursorMerged`, or because the file is under `src/frontend/` rather than `src/tests/`.
 
 ## Output locations
 

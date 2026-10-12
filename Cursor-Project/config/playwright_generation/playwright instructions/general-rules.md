@@ -6,10 +6,10 @@ The following files and directories are **off-limits** and must never be created
 
 - `.github/` — entire directory including all subfolders (`workflows/`, `scripts/`, etc.)
 - `playwright.config.ts`
-- `utils/` — entire directory and everything inside it
-- `scripts/` — entire directory and everything inside it
-- `tests/setup/global-setup.ts`
-- `tests/setup/global-teardown.ts`
+- `src/backend/utils/` — entire directory and everything inside it
+- `src/backend/scripts/` — entire directory and everything inside it
+- `src/tests/setup/global-setup.ts`
+- `src/tests/setup/global-teardown.ts`
 
 ### No New Dependencies
 
@@ -21,8 +21,8 @@ Test code must **never** execute commands or operations that affect anything out
 
 ### Fixtures — Preserve Existing Architecture
 
-The `fixtures/` directory should be treated with care. Do not restructure, refactor, or significantly alter existing fixture files. If something new needs to be added, follow the **exact existing patterns** (same coding style, same export conventions, same integration approach). No architectural changes — additions only, and only when necessary.
+The `src/backend/fixtures/` directory should be treated with care. Do not restructure, refactor, or significantly alter existing fixture files. If something new needs to be added, follow the **exact existing patterns** (same coding style, same export conventions, same integration approach). No architectural changes — additions only, and only when necessary.
 
 ### Cursor Test Entry Point
 
-`tests/cursor/cursor-test.fixtures.ts` re-exports `baseFixture` and registers a global `afterEach` that automatically logs API entity links and attaches them to the Playwright report. **New specs under `tests/cursor/`** should import `{ test, expect }` from `./cursor-test.fixtures` instead of `../../fixtures/baseFixture`. Do not modify `cursor-test.fixtures.ts` without understanding its role as the shared entry point for all cursor-branch tests.
+`src/tests/cursor/cursor-test.fixtures.ts` re-exports `baseFixture` and registers a global `afterEach` that automatically logs API entity links and attaches them to the Playwright report. **New specs under `src/tests/cursor/`** should import `{ test, expect }` from `./cursor-test.fixtures` instead of `../../backend/fixtures/baseFixture`. Do not modify `cursor-test.fixtures.ts` without understanding its role as the shared entry point for cursor-authored tests. Files inside `src/backend/**` must not gain an extra `backend/` path segment.

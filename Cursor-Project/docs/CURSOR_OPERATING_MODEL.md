@@ -16,7 +16,7 @@ This repository is **not** the Phoenix application. It is the **QA automation an
 2. **Bug triage** with evidence (Confluence, Swagger, Phoenix code read-only, optional DB).
 3. **Safe AI operation** — hooks and rules block Phoenix edits, Confluence writes, wrong EnergoTS branches, and silent environment guesses.
 
-**Primary outputs:** `test_cases/`, `EnergoTS/tests/cursor/`, `reports/` (+ Slack uploads). **`.cursor/`** is the factory configuration; deliverables are the product.
+**Primary outputs:** `test_cases/`, `EnergoTS/src/tests/cursor/`, `reports/` (+ Slack uploads). **`.cursor/`** is the factory configuration; deliverables are the product.
 
 ---
 
@@ -249,12 +249,12 @@ Command: .cursor/commands/send-playwright-results-slack.md
 |----------|------|----------|------------|
 | Backend TCs | `Cursor-Project/test_cases/Backend/<Topic>.md` | Yes | — |
 | Frontend TCs | `Cursor-Project/test_cases/Frontend/<Topic>.md` | If TC-FRONTEND = Yes | — |
-| Playwright spec | `Cursor-Project/EnergoTS/tests/cursor/<KEY>-*.spec.ts` | Yes | — |
+| Playwright spec | `Cursor-Project/EnergoTS/src/tests/cursor/<KEY>-*.spec.ts` | Yes | — |
 | Scoped Playwright report | `Cursor-Project/reports/Chat reports/YYYY/month/DD/ScopedPlaywright_*.md` | If user scoped Slack | **Path 2** upload |
 | Chat report (`/report`) | `Cursor-Project/reports/Chat reports/YYYY/month/DD/*.md` | User `/report` or explicit save | Only if user asks |
 | Feedback (`/feedback`) | `Cursor-Project/reports/Feedback/YYYY/month/DD/Feedback_*.md` | User `/feedback` | — |
-| Machine report | `Cursor-Project/EnergoTS/playwright-report-detailed.md` | Generated (DPR) | **Path 2** upload |
-| Playwright JSON | `Cursor-Project/EnergoTS/playwright-report.json` | Ephemeral input | — |
+| Machine report | `Cursor-Project/EnergoTS/src/backend/playwright-report-detailed.md` | Generated (DPR) | **Path 2** upload |
+| Playwright JSON | `Cursor-Project/EnergoTS/src/backend/playwright-report.json` | Ephemeral input | — |
 | Bug validation | Chat default | Optional `BugValidation_*.md` on `/report` | **Path 1** channel |
 | Routine Q&A | Chat only | No auto file (Rule 0.6) | — |
 

@@ -10,8 +10,31 @@ description: Manages EnergoTS Playwright test automation (*.spec.ts, *.fixtures.
 
 ## When to apply
 
-- User asks to create, modify, or analyze EnergoTS Playwright tests (map test cases → `EnergoTS/tests/cursor/{KEY}-*.spec.ts` when TC `.md` exists)
-- Writes under `Cursor-Project/EnergoTS/tests/` for `.spec.ts` and `.fixtures.ts`. Other EnergoTS files are allowed when the user asked for page objects or frontend cases (Rule 0.8). Branch: `cursor` or `staging`.
+- User asks to create, modify, or analyze EnergoTS Playwright tests (map test cases → `EnergoTS/src/tests/cursor/{KEY}-*.spec.ts` when TC `.md` exists)
+- API specs and fixtures go under `Cursor-Project/EnergoTS/src/tests/`. Frontend specs and page objects go under `Cursor-Project/EnergoTS/src/frontend/`. Branch: stay on `cursorMerged` or `staging` (Rule ENERGOTS.0). Do not switch to `cursor`.
+
+## Repository layout (post staging merge)
+
+`playwright.config.ts` sets `testDir: './src/tests'`. JSON report: `src/backend/playwright-report.json`. HTML report: `src/backend/playwright-report/`. Frontend project `testDir`: `./src/frontend`.
+
+| Path | Role |
+|------|------|
+| `src/tests/cursor/` | New AI-authored API specs, `cursor-test.fixtures.ts`, `shared/` |
+| `src/tests/<domain>/` | Legacy domain API specs |
+| `src/tests/setup/` | `global-setup.ts`, `global-teardown.ts`, `jira-update.ts` |
+| `src/backend/fixtures/` | `baseFixture.ts`, login, `token.json`, `envVariables.json`, `salesPortalToken.json` |
+| `src/backend/jsons/` | Payload generators and payload templates (`payloads/<domain>/`, no `payloads/create/`) |
+| `src/backend/mass-imports/` | Mass-import generator library |
+| `src/backend/utils/` | `RequestWrapper`, reporters, `randomGens` |
+| `src/backend/validations/` | Response validators |
+| `src/frontend/` | UI specs, POM, frontend fixtures |
+| `tests/regression/` | Visual regression only. Own config `tests/regression/playwright.regression.config.ts`. Not part of `testDir` |
+
+### Import prefix rule
+
+- From `src/tests/cursor/*.spec.ts` or `src/tests/<domain>/*.spec.ts`, support code is reached through `backend/`: `../../backend/fixtures/baseFixture`. One extra directory (`src/tests/cursor/shared/`, `src/tests/billing/<sub>/`) uses `../../../backend/...`.
+- Files already under `src/backend/**` import sibling folders directly (`../../fixtures/baseFixture` from `src/backend/jsons/payloadGenerators/`). Do not insert another `backend/` segment.
+- Frontend files under `src/frontend/**` keep local `../utils` and `../fixtures` imports. Cross-imports into the API stack use `../backend/...` or `../../backend/...`.
 
 ## Mandatory before `.spec.ts` / `.fixtures.ts` edits
 
@@ -21,7 +44,7 @@ description: Manages EnergoTS Playwright test automation (*.spec.ts, *.fixtures.
    powershell -ExecutionPolicy Bypass -File ".cursor/commands/update-swagger-specs.ps1"
    ```
    Grep `Cursor-Project/config/swagger/{env}/swagger-spec.json` for each endpoint; validate field names, enums, types from spec — **not** from TC .md alone.
-3. **Reference specs (multi-entity chains):** Grep `EnergoTS/tests/` (prefer `tests/cursor/`, then domain specs). Read one reference end-to-end. Entity order → **`precondition-data-creation.instructions.md`** unless citing a deliberate reference. Summary must list **Reference spec(s):** paths.
+3. **Reference specs (multi-entity chains):** Grep `EnergoTS/src/tests/` (prefer `src/tests/cursor/`, then domain specs such as `src/tests/contractsAndOrders/productContract.spec.ts`). Read one reference end-to-end. Entity order → **`precondition-data-creation.instructions.md`** unless citing a deliberate reference. Summary must list **Reference spec(s):** paths.
 
 ## Test creation workflow
 
@@ -43,7 +66,7 @@ Format: `test('[JIRA-KEY]: {Exact Jira Task Title}', async ({...}) => {`
 
 1. Read all provided `.md` files; extract TC-BE-N / TC-FE-N, steps, expected results, endpoints.
 2. One `test()` per main TC scenario; titles include Jira key.
-3. **Output:** `EnergoTS/tests/cursor/{JIRA_KEY}-*.spec.ts`
+3. **Output:** `EnergoTS/src/tests/cursor/{JIRA_KEY}-*.spec.ts`
 4. EnergoTS fixtures only — no ad-hoc `getToken()` / `apiRequest()`.
 
 ## Precondition rules [CRITICAL]
@@ -62,10 +85,10 @@ Format: `test('[JIRA-KEY]: {Exact Jira Task Title}', async ({...}) => {`
 ## Framework quick reference
 
 - Playwright API, TypeScript; fixtures: Request, Endpoints, GeneratePayload, Responses
-- **New** `tests/cursor/*.spec.ts`: `./cursor-test.fixtures` — see test-writing-rules § Imports
-- **Legacy** specs: `../../fixtures/baseFixture`; do not migrate unless user asks
+- **New** `src/tests/cursor/*.spec.ts`: `./cursor-test.fixtures` — see test-writing-rules § Imports
+- **Legacy** specs at `src/tests/<domain>/*.spec.ts`: `../../backend/fixtures/baseFixture` (add `../` per extra folder). Do not migrate legacy specs unless the user asks
 - Assertions: prefer `await expect(response).CheckResponse()` for POST/create chains
-- Branch: **`cursor` or `staging`** (Rule ENERGOTS.0). Do not switch off `staging` unless the user asks.
+- Branch: stay on **`cursorMerged` or `staging`** when `testDir` is `./src/tests` (Rule ENERGOTS.0). Do not switch to `cursor`
 
 ## Manual verification links [CRITICAL — new specs]
 
@@ -102,8 +125,8 @@ Legacy snippet (`attachManualVerificationLinks` without `testRunSummary`) — do
 
 ## Permissions
 
-- ✅ `EnergoTS/tests/**/*.spec.ts`, `*.fixtures.ts`
-- ✅ Other files under `Cursor-Project/EnergoTS/**` when the user asked for page objects or frontend cases (Rule 0.8), on `cursor` or `staging`
+- ✅ `EnergoTS/src/tests/**/*.spec.ts`, `*.fixtures.ts`
+- ✅ `EnergoTS/src/frontend/**` when the user asked for page objects or frontend cases (Rule 0.8), on `cursorMerged` or `staging`
 - ❌ Phoenix (Tier A)
 
 ## Post-authoring validation [MANDATORY — all paths]

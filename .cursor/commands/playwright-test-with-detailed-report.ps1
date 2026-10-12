@@ -37,13 +37,16 @@ try {
     }
     $testExit = $LASTEXITCODE
 } finally {
-    $jsonPath = Join-Path $energotsPath "playwright-report.json"
+    $jsonPath = Join-Path $energotsPath "src\backend\playwright-report.json"
+    if (-not (Test-Path $jsonPath)) {
+        $jsonPath = Join-Path $energotsPath "playwright-report.json"
+    }
     if (Test-Path $jsonPath) {
         Write-Host "[playwright-test-with-detailed-report] Generating detailed markdown..." -ForegroundColor Cyan
-        node $detailedGenerator
+        node $detailedGenerator $jsonPath
         if ($LASTEXITCODE -ne 0) { Write-Warning "Detailed report generator exited with code $LASTEXITCODE" }
     } else {
-        Write-Warning "[playwright-test-with-detailed-report] No playwright-report.json — skip detailed report."
+        Write-Warning "[playwright-test-with-detailed-report] No src/backend/playwright-report.json — skip detailed report."
     }
     Pop-Location
 }

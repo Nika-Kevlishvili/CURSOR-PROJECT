@@ -1,6 +1,6 @@
 # block-energots-branch-requests.ps1
 # Hook: beforeSubmitPrompt
-# Purpose: Block prompts that request EnergoTS branch switches other than cursor or staging
+# Purpose: Block prompts that request EnergoTS branch switches other than cursor, staging, or cursorMerged
 # Rule: ENERGOTS.0 - EnergoTS Branch Restriction
 
 $jsonInput = [Console]::In.ReadToEnd()
@@ -39,7 +39,7 @@ try {
         "energo"
     )
     
-    # Branch names that are NOT allowed (anything except 'cursor' and 'staging')
+    # Branch names that are NOT allowed (anything except 'cursor', 'staging', and 'cursorMerged')
     $hasBranchSwitchKeyword = $false
     $hasSyncKeyword = $false
     $hasEnergoTSKeyword = $false
@@ -102,7 +102,7 @@ try {
         # Pattern: "checkout <branch>" or "switch to <branch>" (forbidden)
         if ($promptLower -match "(?:checkout|switch\s+to|change\s+to|go\s+to)\s+['""]?([a-z0-9_-]+)['""]?") {
             $mentionedBranch = $matches[1]
-            if ($mentionedBranch -ne "cursor" -and $mentionedBranch -ne "staging") {
+            if ($mentionedBranch -ne "cursor" -and $mentionedBranch -ne "staging" -and $mentionedBranch -ne "cursormerged") {
                 $hasForbiddenBranch = $true
             }
         }
@@ -114,8 +114,8 @@ try {
         $response = @{
             continue = $false
             block = $true
-            user_message = "[HOOK BLOCKED] EnergoTS may use only the 'cursor' or 'staging' branch. Cannot switch to '$mentionedBranch'. Request blocked."
-            agent_message = "CRITICAL: Prompt blocked. Rule ENERGOTS.0 allows only 'cursor' and 'staging' under EnergoTS. Attempted to switch to '$mentionedBranch'."
+            user_message = "[HOOK BLOCKED] EnergoTS may use only the 'cursor', 'staging', or 'cursorMerged' branch. Cannot switch to '$mentionedBranch'. Request blocked."
+            agent_message = "CRITICAL: Prompt blocked. Rule ENERGOTS.0 allows only 'cursor', 'staging', and 'cursorMerged' under EnergoTS. Attempted to switch to '$mentionedBranch'."
         }
     } else {
         $response = @{ continue = $true }

@@ -1,6 +1,6 @@
 # block-energots-branch-switch.ps1
 # Hook: beforeShellExecution
-# Purpose: Block git checkout/switch in EnergoTS except the allowed branches cursor and staging
+# Purpose: Block git checkout/switch in EnergoTS except the allowed branches cursor, staging, and cursorMerged
 # Rule: ENERGOTS.0 - EnergoTS Branch Restriction
 
 $jsonInput = [Console]::In.ReadToEnd()
@@ -128,8 +128,8 @@ try {
     # Normalize target branch name (remove quotes, trim)
     $targetBranchNormalized = $targetBranch.Trim('"', "'", '`').Trim()
     
-    # Allowed EnergoTS branches: cursor and staging
-    if ($targetBranchNormalized -eq "cursor" -or $targetBranchNormalized -eq "staging") {
+    # Allowed EnergoTS branches: cursor, staging, and cursorMerged (staging merge layout)
+    if ($targetBranchNormalized -eq "cursor" -or $targetBranchNormalized -eq "staging" -or $targetBranchNormalized -eq "cursormerged") {
         $response = @{ continue = $true }
         $response | ConvertTo-Json -Compress
         exit 0
@@ -140,8 +140,8 @@ try {
         continue = $false
         block = $true
         permission = "deny"
-        user_message = "[HOOK BLOCKED] EnergoTS may use only the 'cursor' or 'staging' branch. Cannot switch to '$targetBranchNormalized'. Operation blocked."
-        agent_message = "CRITICAL: Branch switch blocked. Rule ENERGOTS.0 allows only 'cursor' and 'staging' under EnergoTS. Attempted to switch to '$targetBranchNormalized'."
+        user_message = "[HOOK BLOCKED] EnergoTS may use only the 'cursor', 'staging', or 'cursorMerged' branch. Cannot switch to '$targetBranchNormalized'. Operation blocked."
+        agent_message = "CRITICAL: Branch switch blocked. Rule ENERGOTS.0 allows only 'cursor', 'staging', and 'cursorMerged' under EnergoTS. Attempted to switch to '$targetBranchNormalized'."
     }
     
     $response | ConvertTo-Json -Compress

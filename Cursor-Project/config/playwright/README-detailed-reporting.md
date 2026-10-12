@@ -2,12 +2,12 @@
 
 **Workspace rule:** `.cursor/rules/workflows/playwright_detailed_reporting.mdc` (Rule **DPR.0**). **Scoped Slack path 2** (`send-playwright-results-slack`) **MUST** run **`generate-detailed-report.mjs`** after tests when **`playwright-report.json`** exists and **MUST** upload **`playwright-report-detailed.md`** to **#ai-report** (`C0AK96S1D7X`) and Tester (if any) **together with** the smart `.md` report. For **ad-hoc** runs outside that flow, generate/upload only when the user explicitly requests it.
 
-**This folder (`Cursor-Project/config/playwright/`):** `generate-detailed-report.mjs`, **`Playwright_run_detailed_report_template.md`** (scoped Slack disk report structure). **Default machine output** is **not** here — it is written next to the JSON: **`Cursor-Project/EnergoTS/playwright-report-detailed.md`** (gitignored under EnergoTS).
+**This folder (`Cursor-Project/config/playwright/`):** `generate-detailed-report.mjs`, **`Playwright_run_detailed_report_template.md`** (scoped Slack disk report structure). **Default machine output** is **not** here — it is written next to the JSON: **`Cursor-Project/EnergoTS/src/backend/playwright-report-detailed.md`**.
 
 ## What you get today
 
 - **Summary-style outputs:** Playwright `html` + `json` reporters (see `EnergoTS/playwright.config.ts`), Slack upload of HTML/ZIP from existing utilities.
-- **Second file — detailed (machine):** `EnergoTS/playwright-report-detailed.md`, from `EnergoTS/playwright-report.json` when you run the generator from **`Cursor-Project/EnergoTS/`** (default paths). One section per executed test — Jira + **TC-BE-n** / **TC-FE-n** + scenario parsed from the **`test()`** title when the title matches `[KEY] TC-BE-n: …`; see `generate-detailed-report.mjs`.
+- **Second file — detailed (machine):** `EnergoTS/src/backend/playwright-report-detailed.md`, from `EnergoTS/src/backend/playwright-report.json` when you run the generator from **`Cursor-Project/EnergoTS/`** (default paths). One section per executed test — Jira + **TC-BE-n** / **TC-FE-n** + scenario parsed from the **`test()`** title when the title matches `[KEY] TC-BE-n: …`; see `generate-detailed-report.mjs`.
 
 ## Generate the detailed file
 
@@ -27,7 +27,7 @@ powershell -ExecutionPolicy Bypass -File ".cursor/commands/playwright-test-with-
 
 ### Manual (only detailed MD, tests already ran)
 
-From **`Cursor-Project/EnergoTS`** after a run (so `playwright-report.json` exists). Default output: **`Cursor-Project/EnergoTS/playwright-report-detailed.md`** (same directory as the JSON).
+From **`Cursor-Project/EnergoTS`** after a run (so `src/backend/playwright-report.json` exists). Default output: **`Cursor-Project/EnergoTS/src/backend/playwright-report-detailed.md`** (same directory as the JSON).
 
 ```bash
 node ../config/playwright/generate-detailed-report.mjs
@@ -36,7 +36,7 @@ node ../config/playwright/generate-detailed-report.mjs
 Custom paths:
 
 ```bash
-node ../config/playwright/generate-detailed-report.mjs ./playwright-report.json ./my-detailed.md
+node ../config/playwright/generate-detailed-report.mjs ./src/backend/playwright-report.json ./src/backend/my-detailed.md
 ```
 
 Include setup/teardown in the detailed file:
