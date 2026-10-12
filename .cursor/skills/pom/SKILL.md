@@ -189,8 +189,18 @@ Never invent a locator, option, required flag, or modal step that the crawl did 
 10. If `Cursor-Project/EnergoTS/src/frontend/pom/PageObjects.ts` exists, register a new facade there. Do not register internal helpers separately. If the registry does not exist, export the class from its file and do not create a registry.
 11. Define and export a typed `<Object>CreateArguments` type. Required properties are values that must be unique for every creation, such as an identifier or a customer name. Nomenclature dropdowns are optional: when the caller omits one, the private method fills `frontendNomenclatureName('<envVariables key>', args.field)`. The key is the same one `src/backend/fixtures/envVariables.json` uses for the id, and the value is the name in `src/frontend/fixtures/frontendEnvVariables.json`. Do not hardcode a dropdown label in the POM or the spec.
 12. End the class with one public creation method named for the object, such as `createLegalCustomer(args)` or `createProduct(args)`. This is the POM's primary API.
-13. The public creation method must call the private atomic methods in UI order, apply optional arguments conditionally, click the final Create/Save action, and wait for the observed submit transition. Do not generate nomenclature labels inside the POM. Unique values still come from the spec. A missing `frontendEnvVariables` entry is an error that tells the user to run global setup; do not invent a fallback label.
+13. The public creation method must call the private atomic methods in UI order, apply optional arguments conditionally, click the final Create/Save action, and wait for the observed submit transition. Do not generate nomenclature labels or prerequisite object labels inside the POM. Unique values and `FrontendResponses` entries come from the spec. A missing `frontendEnvVariables` entry, or a missing prerequisite in `FrontendResponses`, is an error that names the missing key. Do not invent a fallback label.
 14. Keep assertions in the spec. The POM may return observable creation data such as the submitted identifier or resulting URL when that helps verification.
+
+## Backend preconditions
+
+Nomenclature dropdowns come from `frontendNomenclatureName`. A field that points at another business object, such as a POD on a meter or a customer on a contract, is not created through the UI.
+
+1. Find the object from the page URL and the closest backend spec under `Cursor-Project/EnergoTS/src/tests/`. Read that spec's precondition steps and the payload generator they call. For a product contract, `src/tests/contractsAndOrders/productContract.spec.ts` creates the customer, price component, term, penalty, termination, POD, and product through the API before the contract.
+2. In the frontend spec, create those same prerequisites with `Request`, `GeneratePayload`, and `Endpoints` from `FrontEndFixture` (it extends the API fixture). Keep the backend order.
+3. After each successful create, push the response JSON onto `Responses` so the next payload generator can read ids. Also push the value the UI shows onto `FrontendResponses` under the same key: `customerIdentifier` for a customer, `identifier` for a POD, or the name the screen displays. Do not push the numeric id into `FrontendResponses`.
+4. Pass `FrontendResponses.<entity>[index]` into the POM for that prerequisite field. The POM does not call the API and does not create the prerequisite on screen.
+5. Do not create the prerequisite through the page under test. The page under test is the only UI flow.
 
 The removed customer POMs before commit `b8021091c59581c6ae7e5a295b800e7ea741dffc` are the structural precedent: typed arguments, private field operations, and one public `create…()` method. Reuse the pattern, not their outdated locators.
 
@@ -201,7 +211,7 @@ After the POM is wired:
 1. Create or update exactly one focused spec in `Cursor-Project/EnergoTS/src/frontend/`.
 2. Ensure `playwright.config.ts` has a reusable frontend project that discovers `src/frontend/**/*.spec.ts`; do not hardcode the project to one filename.
 3. Use `FrontEndFixture.ts` and the registered `POM` facade. Repair missing fixture wiring when necessary.
-4. Generate unique identifiers and names in the spec. For a nomenclature dropdown, omit the argument so the POM calls `frontendNomenclatureName`. Never hardcode a dropdown label, and never put credentials, tokens, or environment-specific session values in source.
+4. Generate unique identifiers and names in the spec for the object this page creates. For a nomenclature dropdown, omit the argument so the POM calls `frontendNomenclatureName`. For a prerequisite business object, create it through the API first and pass `FrontendResponses` into the POM, as described in Backend preconditions. Never hardcode a dropdown label or another object's identifier, and never put credentials, tokens, or environment-specific session values in source.
 5. Open the creation page with `openAuthenticatedFrontendPage` from `MainPage.ts`. That helper reads `src/backend/fixtures/token.json` through `attachFrontendJwt`, waits until the frontend root has consumed `?jwt=`, then opens the creation path with `page.goto`. Do not sign in through the portal, do not click an application tile, do not append `jwt` to the creation path, and do not use `history.pushState`. Then call only the POM's public creation method for the business flow. The spec may contain setup and assertions, but must not duplicate field-by-field actions.
 6. Keep one test: the minimal successful creation path. Additional field-presence, dialog, and negative tests are out of scope unless the user asks.
 7. Prove creation with at least two independent signals when the page exposes them:
