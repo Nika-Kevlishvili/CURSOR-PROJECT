@@ -87,6 +87,7 @@ Before writing the POM:
 3. When these files exist, read them too:
    - `Cursor-Project/EnergoTS/src/frontend/pom/PageObjects.ts`
    - `Cursor-Project/EnergoTS/src/frontend/fixtures/FrontEndFixture.ts`
+   - `Cursor-Project/EnergoTS/src/frontend/fixtures/frontendEnvVariables.ts`
    - `Cursor-Project/EnergoTS/src/frontend/utils/dropdownSelector.ts`
 4. Follow current repository code when it conflicts with an outdated example in the instructions.
 5. Absence of the optional files above is not a blocker. Do not invent a registry, fixture, or helper the repository does not already have.
@@ -186,9 +187,9 @@ Never invent a locator, option, required flag, or modal step that the crawl did 
 8. Do not put assertions of business outcome inside the POM.
 9. Replace fixed sleeps with Playwright state waits that the crawl showed were needed (overlay visible, panel expanded, list rendered).
 10. If `Cursor-Project/EnergoTS/src/frontend/pom/PageObjects.ts` exists, register a new facade there. Do not register internal helpers separately. If the registry does not exist, export the class from its file and do not create a registry.
-11. Define and export a typed `<Object>CreateArguments` type. Required properties are fields needed by every successful minimal creation; optional properties represent optional fields or optional branches.
+11. Define and export a typed `<Object>CreateArguments` type. Required properties are values that must be unique for every creation, such as an identifier or a customer name. Nomenclature dropdowns are optional: when the caller omits one, the private method fills `frontendNomenclatureName('<envVariables key>', args.field)`. The key is the same one `src/backend/fixtures/envVariables.json` uses for the id, and the value is the name in `src/frontend/fixtures/frontendEnvVariables.json`. Do not hardcode a dropdown label in the POM or the spec.
 12. End the class with one public creation method named for the object, such as `createLegalCustomer(args)` or `createProduct(args)`. This is the POM's primary API.
-13. The public creation method must call the private atomic methods in UI order, apply optional arguments conditionally, click the final Create/Save action, and wait for the observed submit transition. Do not generate test data inside the POM; the spec supplies all arguments.
+13. The public creation method must call the private atomic methods in UI order, apply optional arguments conditionally, click the final Create/Save action, and wait for the observed submit transition. Do not generate nomenclature labels inside the POM. Unique values still come from the spec. A missing `frontendEnvVariables` entry is an error that tells the user to run global setup; do not invent a fallback label.
 14. Keep assertions in the spec. The POM may return observable creation data such as the submitted identifier or resulting URL when that helps verification.
 
 The removed customer POMs before commit `b8021091c59581c6ae7e5a295b800e7ea741dffc` are the structural precedent: typed arguments, private field operations, and one public `create…()` method. Reuse the pattern, not their outdated locators.
@@ -200,7 +201,7 @@ After the POM is wired:
 1. Create or update exactly one focused spec in `Cursor-Project/EnergoTS/src/frontend/`.
 2. Ensure `playwright.config.ts` has a reusable frontend project that discovers `src/frontend/**/*.spec.ts`; do not hardcode the project to one filename.
 3. Use `FrontEndFixture.ts` and the registered `POM` facade. Repair missing fixture wiring when necessary.
-4. Generate unique valid arguments in the spec. Never put credentials, tokens, or environment-specific session values in source.
+4. Generate unique identifiers and names in the spec. For a nomenclature dropdown, omit the argument so the POM calls `frontendNomenclatureName`. Never hardcode a dropdown label, and never put credentials, tokens, or environment-specific session values in source.
 5. Open the creation page with `openAuthenticatedFrontendPage` from `MainPage.ts`. That helper reads `src/backend/fixtures/token.json` through `attachFrontendJwt`, waits until the frontend root has consumed `?jwt=`, then opens the creation path with `page.goto`. Do not sign in through the portal, do not click an application tile, do not append `jwt` to the creation path, and do not use `history.pushState`. Then call only the POM's public creation method for the business flow. The spec may contain setup and assertions, but must not duplicate field-by-field actions.
 6. Keep one test: the minimal successful creation path. Additional field-presence, dialog, and negative tests are out of scope unless the user asks.
 7. Prove creation with at least two independent signals when the page exposes them:
@@ -244,7 +245,7 @@ Before finishing:
 5. Format changed TypeScript consistently with nearby files.
 6. Run the narrowest available TypeScript or lint check, then a broader typecheck when practical.
 7. Confirm the public creation method is the last workflow-level method in the class and uses private atomic helpers.
-8. Confirm the spec supplies the method arguments and does not repeat raw form interactions.
+8. Confirm the spec supplies unique business values, leaves nomenclature dropdowns to `frontendNomenclatureName`, and does not repeat raw form interactions.
 9. Confirm the spec is discovered by the frontend Playwright project.
 10. Run the spec and confirm both Playwright success and object-creation evidence.
 11. Run the Playwright test validator after authoring. Fix introduced errors; report unrelated pre-existing failures separately.
