@@ -52,9 +52,9 @@ When the user requests test cases, run **in order** (gates fixed — **`test_cas
 | **2** | **test-case-generator** with `cross_dependency_data`; read playwright instructions pack + Test Case Template; **TC-STANDALONE-PRE.0** | **`.cursor/skills/test-case-generator/SKILL.md`** |
 | **2.5** | **test-case-quality-validator** — 10-axis, **≥80/100**, max **3** rewrites; block if still failing | **`.cursor/skills/test-case-quality-validator/SKILL.md`** |
 
-**Outputs:** `test_cases/Backend/<Topic>.md` always; `test_cases/Frontend/<Topic>.md` only if user chose Backend+Frontend.
+**Outputs:** `test_cases/Backend/<Topic>.md` and `test_cases/Backend/<Topic>.xlsx` always; Frontend `.md` and `.xlsx` only if the user chose Backend+Frontend. The workbook is manual tester language (no Playwright) — **test-case-generator** SKILL § Human-readable Excel.
 
-**Never skip** Step 1 (cross-dep) or Step 2.5 (quality gate). Violation is a **BLOCK**.
+**Never skip** Step 1 (cross-dep), Step 2.5 (quality gate), or the manual Excel workbook. Violation is a **BLOCK**.
 
 ---
 

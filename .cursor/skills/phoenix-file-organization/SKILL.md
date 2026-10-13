@@ -24,7 +24,7 @@ Ensures new files are saved in the correct directories (Rule 31 under `workspace
 | Documentation | `Cursor-Project/docs/` | |
 | User stories, flows | **`Cursor-Project/User story/`** | **Mandatory** for story/flow files |
 | Reports | **`Cursor-Project/reports/`** → `Chat reports/`, `Feedback/` | See `reports/README.md` |
-| Test cases | **`Cursor-Project/test_cases/Backend/<Topic>.md`** always; **`Frontend/<Topic>.md`** when TC-FRONTEND scope includes UI | Per `test_cases_structure.mdc` |
+| Test cases | **`Cursor-Project/test_cases/Backend/<Topic>.md`** and **`<Topic>.xlsx`** always; **`Frontend/<Topic>.md`** and **`.xlsx`** when TC-FRONTEND scope includes UI | Per `test_cases_structure.mdc`. Excel is manual language, no Playwright. |
 | Phoenix code | `Cursor-Project/Phoenix/**` | AI: read-only (Rule 0.8) |
 
 **Optional Python agent package:** If `Cursor-Project/agents/` is reintroduced later, organize per project owner — it is **not** present in this workspace now.

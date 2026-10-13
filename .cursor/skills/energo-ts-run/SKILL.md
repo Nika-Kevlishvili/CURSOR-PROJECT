@@ -32,7 +32,7 @@ Use when the user wants to **run** (execute) Playwright tests from the local Ene
 
 ## Setup (when fixtures missing)
 
-From `EnergoTS/`: `npx playwright test --project=setup` (requires `.env` with PORTAL_USER, PASSWORD, DEVAUTHAPI or TESTAUTHAPI) → writes `src/backend/fixtures/token.json`, `src/backend/fixtures/envVariables.json`, `src/backend/fixtures/salesPortalToken.json`, and `src/frontend/fixtures/frontendEnvVariables.json`.
+From `EnergoTS/`: `npx playwright test --project=setup` (requires `.env` with PORTAL_USER, PASSWORD, DEVAUTHAPI or TESTAUTHAPI) → writes `src/backend/fixtures/token.json`, `src/backend/fixtures/envVariables.json`, and `src/backend/fixtures/salesPortalToken.json`. Frontend runs use `--project=frontend`, which also runs `frontend-env-setup.ts` and writes `src/frontend/fixtures/frontendEnvVariables.json`.
 
 ## Rule DPR.0 — detailed markdown
 

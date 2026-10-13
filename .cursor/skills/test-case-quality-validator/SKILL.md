@@ -19,6 +19,7 @@ description: STRICT test case .md validator — 10 axes, 0–100 total, pass ≥
 - `topic_name` — e.g. `Invoice_cancellation`
 - `backend_path` — default `Cursor-Project/test_cases/Backend/<topic>.md` (**required**)
 - `frontend_path` — optional; score only if file exists — **do not fail** Backend-only scope
+- Do **not** score `*.xlsx`. That workbook is manual language on purpose. Missing API endpoints there is required, not a defect.
 
 ## Workflow
 

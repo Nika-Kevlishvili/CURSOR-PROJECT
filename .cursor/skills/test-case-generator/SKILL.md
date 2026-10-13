@@ -1,11 +1,11 @@
 ---
 name: test-case-generator
-description: Generates test cases from bug or task descriptions. Rule 35: run cross-dependency-finder FIRST, then generate with cross_dependency_data. Save Backend/ always; Frontend/ only if TC-FRONTEND-ASK.0 = Yes — under Cursor-Project/test_cases/ per test_cases_structure.mdc. Use when the user asks to generate test cases or scenarios.
+description: Generates test cases from bug or task descriptions. Rule 35: run cross-dependency-finder FIRST, then generate with cross_dependency_data. Save Backend/ markdown always; Frontend/ markdown only if TC-FRONTEND-ASK.0 = Yes. Also write a human-readable Excel workbook (no Playwright) beside each markdown file. Use when the user asks to generate test cases or scenarios.
 ---
 
 # Test Case Generator Skill
 
-Ensures test case generation follows Rule 35 (cross-dependency-finder first) and saves **`Cursor-Project/test_cases/Backend/<Topic_name>.md`** (TC-BE-N) **always** when test cases are generated. Save **`Cursor-Project/test_cases/Frontend/<Topic_name>.md`** (TC-FE-N) **only** if **TC-FRONTEND-ASK.0** = Yes (Backend+Frontend). Per `.cursor/rules/workspace/test_cases_structure.mdc`. Legacy `generated_test_cases/` is optional. READ-ONLY for Phoenix code except test-case markdown writes in allowed paths.
+Ensures test case generation follows Rule 35 (cross-dependency-finder first) and saves **`Cursor-Project/test_cases/Backend/<Topic_name>.md`** (TC-BE-N) **always** when test cases are generated. Save **`Cursor-Project/test_cases/Frontend/<Topic_name>.md`** (TC-FE-N) **only** if **TC-FRONTEND-ASK.0** = Yes (Backend+Frontend). Per `.cursor/rules/workspace/test_cases_structure.mdc`. The same run also saves a **manual Excel workbook** next to each markdown file (`<Topic_name>.xlsx`) — human-readable cases, no Playwright. Legacy `generated_test_cases/` is optional. READ-ONLY for Phoenix code except test-case markdown and those workbooks in allowed paths.
 
 ## When to Apply
 
@@ -54,7 +54,9 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 
 **Apply to test cases:** Steps and expected results should be **granular enough** to map to `test.step`, call out **HTTP method, endpoint, status, and response checks** where the instructions require (e.g. CheckResponse-style assertions), and avoid contradictions with **`general-rules.md`** (forbidden paths/patterns). This does **not** replace **`Cursor-Project/config/template/Test_case_template.md`** — use both.
 
-**Related:** Downstream **energo-ts-test** agent reads the same folder when authoring `.spec.ts`; keep manual TCs consistent with that canon.
+**Related:** Downstream **energo-ts-test** agent reads the same folder when authoring `.spec.ts`; keep the **markdown** cases consistent with that canon.
+
+**Audience split:** The Playwright pack applies to the **markdown** only. The same run must also write the **human-readable Excel** in § Human-readable Excel. Do not copy Playwright, HTTP, or payload instructions into that workbook.
 
 ## Workflow (test-case-generator part)
 
@@ -187,15 +189,67 @@ Before writing the final `.md` files, score each TC against the quality rubric i
 - **Backend file:** `Backend/<Topic_name>.md` (TC-BE-N) — **always**
 - **Frontend file:** `Frontend/<Topic_name>.md` (TC-FE-N) — **only if TC-FRONTEND-ASK.0 = Yes** (see `test_cases_structure.mdc`)
 - Each file: ≥1 Positive + ≥1 Negative TC; underscores in topic names
-- Update READMEs per `test_cases_structure.mdc`
+- Update READMEs per `test_cases_structure.mdc` (list the `.xlsx` next to the `.md`)
+
+### 5b. Human-readable Excel (MANDATORY — no Playwright)
+
+After the **quality validator accepts** the markdown, write one workbook per saved markdown file. If a later rewrite changes the markdown, regenerate the workbook in the same turn. Do not finish a test-case request with markdown only.
+
+**Reference for columns and wording:** [PHN-4503](https://oppa-support.atlassian.net/browse/PHN-4503) (description table). Match that sheet. Do not add a Description column, and do not paste the markdown blocks in.
+
+| Column | What to write |
+|--------|----------------|
+| **ID** | Same id as the markdown, in order: `TC-BE-1`… or `TC-FE-1`… |
+| **Type** | `Positive` or `Negative` |
+| **Title** | One line. The situation and the outcome, in the PHN-4503 style ("Both suitable PODs are in the file and the import action stays unclaimed"). |
+| **Acceptance criteria** | Story AC ids when they exist, comma-separated (`AC-6, AC-8`). A short source label is fine when the case checks an older rule (`Existing import gate, before this story`, `PHN-4175`). Do not invent AC numbers. Leave blank when no id exists. |
+| **Preconditions** | How a person sets the data up in the product. Business attributes that matter (customer kind, penalty applicability, action type, dates, empty fields). |
+| **Steps** | What the person does: open the screen, choose the option, enter values, run the process, open the report or the record. |
+| **Expected result** | What the person can see. One outcome per paragraph. Quote the on-screen message when the case checks one. |
+| **Result** | Leave empty. On PHN-4503 this column was filled with ✅ / ❌ only after someone executed the case. The generator must not mark pass or fail. |
+
+**Voice (from PHN-4503):** sentences a manual tester can follow. Name the screen and the business object. When the screen label is not English, include the label the tester will see and a short English explanation. Use a relative date ("14 days after today", "start of the current month") when the scenario depends on one. Number a line only when order matters.
+
+**Shared setup on the sheet:** the first case that establishes a setup writes that setup in full. A later row may start with `Same setup as TC-BE-1, except …` and must spell out every difference. "Same as above" with no id is not enough. This cross-reference is allowed **only in the Excel**. The markdown file still follows **TC-STANDALONE-PRE.0**.
+
+**Rewrite each case.** Stripping `` `POST /customer` `` out of the markdown leaves a broken sentence. Write the Excel cells from scratch in product language.
+
+**Forbidden in every Excel cell:**
+
+- HTTP methods and paths (`POST /customer`, `GET /invoice/listing`)
+- Status-code assertions (`HTTP 400`, `HTTP 403`)
+- Payload assignments (`amountExcludingVat: 4.16`, `billingType: STANDARD`). Quoting the exact on-screen or report message is allowed when that message itself starts with a field key (`noticeReceivingDate-Notice receiving date is required`).
+- Playwright, `test.step`, `test.beforeAll`, `GeneratePayload`, `CheckResponse`, fixtures, spec paths, backticks
+- "See the markdown", "see the spec", or a file path
+
+**Findings:** keep code↔doc Findings in the markdown `## References`. In Excel, state the documented outcome the tester should check, as a normal sentence. Do not cite Java files or line numbers in the sheet.
+
+**Files:**
+
+- `Cursor-Project/test_cases/Backend/<Topic_name>.xlsx` — sheet name `Backend` — always, next to the backend markdown
+- `Cursor-Project/test_cases/Frontend/<Topic_name>.xlsx` — sheet name `Frontend` — only when the frontend markdown was saved
+
+**How to write the file:** build a temporary JSON (do not leave it in the repo) and run:
+
+```bash
+python3 .cursor/skills/test-case-generator/write_manual_cases_xlsx.py \
+  --input <temp.json> \
+  --output Cursor-Project/test_cases/Backend/<Topic_name>.xlsx
+```
+
+JSON shape: `sheetName` (`Backend` or `Frontend`) and `cases[]` with `id`, `type`, `title`, `acceptanceCriteria`, `preconditions`, `steps`, `expectedResult`. Omit `result`.
+
+The script refuses the file if a cell still contains automation text. Rewrite that cell and run again. Do not weaken the script to force a leak through. Do not substitute CSV.
+
+**Validator:** the quality rubric scores the **markdown** only. Do not put API steps into the Excel to satisfy the rubric.
 
 ### 6. Output content
 
-- Confluence references, codebase analysis, file paths where test cases were saved (e.g. `test_cases/Backend/Invoice_cancellation.md` and `test_cases/Frontend/Invoice_cancellation.md`).
+- Confluence references, codebase analysis, file paths where test cases were saved (markdown and the matching `.xlsx`, e.g. `test_cases/Backend/Invoice_cancellation.md` and `test_cases/Backend/Invoice_cancellation.xlsx`).
 
 ## READ-ONLY for Phoenix
 
-- Do not modify Phoenix/production code. Only write test-case markdown under `Cursor-Project/test_cases/` (or legacy `generated_test_cases/` if explicitly requested).
+- Do not modify Phoenix/production code. Only write test-case markdown and the companion manual `.xlsx` under `Cursor-Project/test_cases/` (or legacy `generated_test_cases/` if explicitly requested). Delete the temporary JSON after the workbook is written.
 - All output in English (Rule 0.7).
 
 ## Integration

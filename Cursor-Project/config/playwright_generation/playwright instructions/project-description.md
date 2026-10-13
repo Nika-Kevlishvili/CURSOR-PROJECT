@@ -6,7 +6,7 @@ This is an **API test automation framework** for an energy management system (En
 
 ### Three-Phase Test Lifecycle
 
-1. **Setup project** (`src/tests/setup/global-setup.ts`): Authenticates (main API + Sales Portal), generates nomenclatures and document templates, stores in `src/backend/fixtures/envVariables.json` + `src/backend/fixtures/token.json` + `src/backend/fixtures/salesPortalToken.json` and `src/frontend/fixtures/frontendEnvVariables.json`
+1. **Setup project** (`src/tests/setup/global-setup.ts`): Authenticates (main API + Sales Portal), generates nomenclatures and document templates, stores in `src/backend/fixtures/envVariables.json` + `src/backend/fixtures/token.json` + `src/backend/fixtures/salesPortalToken.json`. Frontend nomenclature names are written separately by `src/tests/setup/frontend-env-setup.ts` into `src/frontend/fixtures/frontendEnvVariables.json`, and only the frontend project depends on that step.
 2. **Main project**: Test execution with parallel workers
 3. **Send report project** (`src/tests/setup/global-teardown.ts`): Aggregates results, sends to Slack/Jira
 

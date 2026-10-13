@@ -22,7 +22,7 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 | **environment-access.md** | Environment access | Dev/Dev2; browser/MCP per subagent doc. |
 | **environment-resolver.md** | Environment resolver | Resolves `dev/dev2/test/preprod/prod/experiments` from user/Jira; asks user when ambiguous. |
 | **postman-collection.md** | Postman collections | PhoenixExpert first; save under `postman/`. |
-| **test-case-generator.md** | Test cases (Rule 35) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.md`; Confluence + codebase + `cross_dependency_data`; save Backend always; Frontend only if TC-FRONTEND scope includes UI. |
+| **test-case-generator.md** | Test cases (Rule 35) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.md`; Confluence + codebase + `cross_dependency_data`; save Backend `.md` + manual `.xlsx` always; Frontend `.md` + `.xlsx` only if TC-FRONTEND scope includes UI. |
 | **test-case-quality-validator.md** | TC quality gate (Rule 35 Step 2.5) | **10-axis, ≥80/100** STRICT scoring; READ-ONLY; max 3 rewrites. |
 | **cross-dependency-finder.md** | Cross-dependencies (Rule 35, 35a) | Jira + code + deep Confluence exploration; **no** local merge/git; hand off to test-case-generator. |
 | **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.spec.ts`. Other EnergoTS files may be edited when the user asks. |

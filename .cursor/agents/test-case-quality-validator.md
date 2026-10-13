@@ -28,6 +28,7 @@ description: STRICT quality validator for test case .md files (10-axis, ≥80/10
 - **Harsh:** 79.9 = FAIL; no leniency
 - **READ-ONLY** — score only; parent regenerates via test-case-generator
 - **Backend-only OK** — missing Frontend file is not a failure when scope was Backend-only
+- **Markdown only** — do not score the companion `.xlsx`
 
 ## Iteration
 

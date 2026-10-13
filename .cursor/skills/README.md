@@ -16,7 +16,7 @@ Skills guide the Cursor agent for this repo’s workflows. **Location:** workspa
 | **production-data-reader** | Rule PDR.0; PostgreSQLProd MCP readonly |
 | **environment-resolver** | Resolve dev/dev2/test/preprod/prod/experiments; ask when ambiguous |
 | **cross-dependency-finder** | Rule 35 / 35a; output for test-case-generator |
-| **test-case-generator** | Rule 35; save to `test_cases/Backend/` (+ `Frontend/` when scope includes UI) |
+| **test-case-generator** | Rule 35; save `test_cases/Backend/` markdown + manual Excel (+ `Frontend/` when scope includes UI) |
 | **test-case-quality-validator** | 10-axis rubric; ≥80/100; Rule 35 Step 2.5 |
 | **energo-ts-test** | Playwright authoring under `EnergoTS/src/tests/` (`cursorMerged` or `staging`, `testDir: ./src/tests`) |
 | **playwright-test-validator** | Spec vs TC quality gate after energo-ts-test |
