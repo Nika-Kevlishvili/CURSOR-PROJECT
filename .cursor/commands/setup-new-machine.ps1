@@ -6,14 +6,21 @@
 #   .\.cursor\commands\setup-new-machine.ps1 -VerifyOnly
 #   .\.cursor\commands\setup-new-machine.ps1 -ForceEnv -ForceMcp
 #   .\.cursor\commands\setup-new-machine.ps1 -SkipClone -SkipExtensions
+#   .\.cursor\commands\setup-new-machine.ps1 -SkipScratchRelocate
 #   .\.cursor\commands\setup-new-machine.ps1 -GitLabToken <token>
 
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'Console setup script')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Existing command names')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'Setup script applies changes directly')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Switches are part of the public CLI')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingEmptyCatchBlock', '', Justification = 'Optional probes')]
 param(
     [switch]$VerifyOnly,
     [switch]$ForceEnv,
     [switch]$ForceMcp,
     [switch]$SkipClone,
     [switch]$SkipExtensions,
+    [switch]$SkipScratchRelocate,
     [string]$GitLabToken = $env:GITLAB_TOKEN
 )
 
@@ -777,10 +784,253 @@ function Invoke-Verify {
         $script:PartialFail = $true
     }
 
+    $scratchPlan = @(Get-MisplacedScratchPlan)
+    $scratchOk = $scratchPlan.Count -eq 0
+    $scratchDetail = if ($scratchOk) { 'already under Cursor-Project/config/tmp' } else { "$($scratchPlan.Count) file(s) outside config/tmp" }
+    Add-VerifyResult -Name 'scratch file locations' -Ok $scratchOk -Detail $scratchDetail
+    if (-not $scratchOk) { $script:PartialFail = $true }
+
     Write-Host ""
     $pass = @($script:VerifyResults | Where-Object { $_.Ok }).Count
     $total = $script:VerifyResults.Count
     Write-Host "Verify summary: $pass / $total passed" -ForegroundColor $(if ($pass -eq $total) { 'Green' } else { 'Yellow' })
+}
+
+function Get-RepoRelativePath {
+    param([string]$FullPath)
+    $root = [System.IO.Path]::GetFullPath($workspaceRoot).TrimEnd('\')
+    $full = [System.IO.Path]::GetFullPath($FullPath)
+    if (-not $full.StartsWith($root, [System.StringComparison]::OrdinalIgnoreCase)) { return $null }
+    return ($full.Substring($root.Length).TrimStart('\') -replace '\\', '/')
+}
+
+function Get-TrackedPathSet {
+    if ($null -ne $script:TrackedPaths) { return $script:TrackedPaths }
+    $set = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+    Push-Location $workspaceRoot
+    try {
+        $listed = @(git ls-files)
+        if ($LASTEXITCODE -ne 0) {
+            $script:TrackedPathsFailed = $true
+            Write-Warn 'git ls-files failed; scratch relocate skipped so tracked files stay put'
+        }
+        else {
+            $script:TrackedPathsFailed = $false
+            foreach ($path in $listed) {
+                $trimmed = "$path".Trim()
+                if (-not [string]::IsNullOrWhiteSpace($trimmed)) { [void]$set.Add($trimmed) }
+            }
+        }
+    }
+    finally {
+        Pop-Location
+    }
+    $script:TrackedPaths = $set
+    return $set
+}
+
+function Test-RepoTracked {
+    param([string]$RelativePath)
+    return (Get-TrackedPathSet).Contains(($RelativePath -replace '\\', '/'))
+}
+
+function Get-ScratchFileName {
+    param(
+        [string]$Name,
+        [switch]$ForceJson
+    )
+    foreach ($c in [System.IO.Path]::GetInvalidFileNameChars()) {
+        $Name = $Name.Replace([string]$c, '-')
+    }
+    $Name = $Name -replace '[~=]', '-'
+    $Name = $Name.Trim()
+    if ($Name.Length -gt 60) { $Name = $Name.Substring(0, 60).Trim() }
+    if ($ForceJson -and -not $Name.EndsWith('.json')) { $Name = "$Name.json" }
+    return $Name
+}
+
+function Get-UniqueDestination {
+    param([string]$DestFull)
+    if (-not (Test-Path -LiteralPath $DestFull)) { return $DestFull }
+    $dir = Split-Path -Parent $DestFull
+    $base = [System.IO.Path]::GetFileNameWithoutExtension($DestFull)
+    $ext = [System.IO.Path]::GetExtension($DestFull)
+    $i = 2
+    do {
+        $candidate = Join-Path $dir ('{0}-{1}{2}' -f $base, $i, $ext)
+        $i++
+    } while (Test-Path -LiteralPath $candidate)
+    return $candidate
+}
+
+function Test-JiraScratchRelative {
+    param([string]$SubPath)
+    $name = [System.IO.Path]::GetFileName($SubPath)
+    if ($name -match '(?i)-full(-temp)?\.json$') { return $true }
+    if ($SubPath -match '(?i)(^|/)tmp-') { return $true }
+    if ($name -match '(?i)^_tmp') { return $true }
+    if ($name -match '(?i)^_pdt') { return $true }
+    if ($name -match '(?i)-(extract|extracted)\.txt$') { return $true }
+    if ($SubPath -match '(?i)(^|/)extracted/') { return $true }
+    if ($name -match '(?i)-(unfiltered|validator-rest)\.json$') { return $true }
+    if ($name -match '(?i)-(desc|cf-desc)\.(json|txt)$') { return $true }
+    if ($name -match '(?i)^issue-rest\.json$') { return $true }
+    if ($name -match '(?i)-issue\.json$') { return $true }
+    if ($name -match '(?i)-comments\.json$') { return $true }
+    if ($name -match '(?i)^fetch-pdt-.*\.ps1$') { return $true }
+    if ($name -match '(?i)^fixversion-.*\.json$') { return $true }
+    return $false
+}
+
+function Test-ConfluenceScratchRelative {
+    param([string]$SubPath)
+    # diagrams/ holds saved diagram exports; leave that tree alone.
+    if ($SubPath -match '(?i)^diagrams/') { return $false }
+    if ($SubPath -match '(?i)(^|/)tmp-') { return $true }
+    if ($SubPath -match '(?i)(^|/)_') { return $true }
+    if ($SubPath -match '(?i)^pdt') { return $true }
+    if ($SubPath -match '(?i)^page-') { return $true }
+    if ($SubPath -match '(?i)^bug-validation/') { return $true }
+    if ($SubPath -match '(?i)^pages/(fresh-|page-|cql-|pdt)') { return $true }
+    if ($SubPath -match '(?i)^pages/.*-fresh\.json$') { return $true }
+    if ($SubPath -match '(?i)^pages/.*-retry\.json$') { return $true }
+    if ($SubPath -match '(?i)^search-.*\.json$') { return $true }
+    return $false
+}
+
+function Add-ScratchMove {
+    param(
+        [System.Collections.Generic.List[object]]$Plan,
+        [string]$SourceFull,
+        [string]$DestFull,
+        [switch]$AllowTracked
+    )
+    if ([string]::IsNullOrWhiteSpace($SourceFull) -or [string]::IsNullOrWhiteSpace($DestFull)) { return }
+    $sourceNorm = [System.IO.Path]::GetFullPath($SourceFull)
+    $destNorm = [System.IO.Path]::GetFullPath($DestFull)
+    if ($sourceNorm.Equals($destNorm, [System.StringComparison]::OrdinalIgnoreCase)) { return }
+    $rel = Get-RepoRelativePath -FullPath $sourceNorm
+    if ([string]::IsNullOrWhiteSpace($rel)) { return }
+    if (-not $AllowTracked -and (Test-RepoTracked -RelativePath $rel)) { return }
+    $Plan.Add([pscustomobject]@{
+        SourceFull = $sourceNorm
+        DestFull   = $destNorm
+        Relative   = $rel
+    })
+}
+
+function Get-MisplacedScratchPlan {
+    $plan = [System.Collections.Generic.List[object]]::new()
+    $null = Get-TrackedPathSet
+    if ($script:TrackedPathsFailed) { return $plan }
+    $scratchRoot = Join-Path $cursorProjectPath 'config\tmp'
+
+    Get-ChildItem -LiteralPath $workspaceRoot -File -Force -ErrorAction SilentlyContinue | ForEach-Object {
+        if ($_.Name -match '^\.') { return }
+        $looksLikeCql = ($_.Name -match '(?i)( AND |type\s*=|text\s*~)') -or ([string]::IsNullOrEmpty($_.Extension))
+        if ($looksLikeCql) {
+            $dest = Join-Path (Join-Path $scratchRoot 'confluence') (Get-ScratchFileName -Name $_.Name -ForceJson)
+        }
+        else {
+            $dest = Join-Path $scratchRoot (Get-ScratchFileName -Name $_.Name)
+        }
+        Add-ScratchMove -Plan $plan -SourceFull $_.FullName -DestFull $dest
+    }
+
+    $jiraRoot = Join-Path $cursorProjectPath 'config\jira'
+    if (Test-Path -LiteralPath $jiraRoot) {
+        Get-ChildItem -LiteralPath $jiraRoot -Recurse -File -Force -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -notlike '*\attachments\*' } |
+            ForEach-Object {
+                $rel = Get-RepoRelativePath -FullPath $_.FullName
+                if ([string]::IsNullOrWhiteSpace($rel) -or -not $rel.StartsWith('Cursor-Project/config/jira/', [System.StringComparison]::OrdinalIgnoreCase)) { return }
+                $sub = $rel.Substring('Cursor-Project/config/jira/'.Length)
+                if (-not (Test-JiraScratchRelative -SubPath $sub)) { return }
+                $dest = Join-Path (Join-Path $scratchRoot 'jira') ($sub -replace '/', '\')
+                Add-ScratchMove -Plan $plan -SourceFull $_.FullName -DestFull $dest -AllowTracked
+            }
+    }
+
+    $confluenceRoot = Join-Path $cursorProjectPath 'config\confluence'
+    if (Test-Path -LiteralPath $confluenceRoot) {
+        Get-ChildItem -LiteralPath $confluenceRoot -Recurse -File -Force -ErrorAction SilentlyContinue | ForEach-Object {
+            $rel = Get-RepoRelativePath -FullPath $_.FullName
+            if ([string]::IsNullOrWhiteSpace($rel) -or -not $rel.StartsWith('Cursor-Project/config/confluence/', [System.StringComparison]::OrdinalIgnoreCase)) { return }
+            $sub = $rel.Substring('Cursor-Project/config/confluence/'.Length)
+            if (-not (Test-ConfluenceScratchRelative -SubPath $sub)) { return }
+            $dest = Join-Path (Join-Path $scratchRoot 'confluence') ($sub -replace '/', '\')
+            Add-ScratchMove -Plan $plan -SourceFull $_.FullName -DestFull $dest -AllowTracked
+        }
+    }
+
+    $swaggerRoot = Join-Path $cursorProjectPath 'config\swagger'
+    if (Test-Path -LiteralPath $swaggerRoot) {
+        Get-ChildItem -LiteralPath $swaggerRoot -Recurse -File -Force -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -match '(?i)(^|_)tmp' } |
+            ForEach-Object {
+                $dest = Join-Path (Join-Path $scratchRoot 'swagger') $_.Name
+                Add-ScratchMove -Plan $plan -SourceFull $_.FullName -DestFull $dest -AllowTracked
+            }
+    }
+
+    Get-ChildItem -LiteralPath $cursorProjectPath -File -Force -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -match '(?i)^(tmp-|_tmp)' } |
+        ForEach-Object {
+            $dest = Join-Path $scratchRoot $_.Name
+            Add-ScratchMove -Plan $plan -SourceFull $_.FullName -DestFull $dest
+        }
+
+    return $plan
+}
+
+function Remove-VacatedDirectory {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param(
+        [string]$StartDir,
+        [string[]]$StopAt
+    )
+    $stops = @($StopAt | ForEach-Object { [System.IO.Path]::GetFullPath($_).TrimEnd('\') })
+    $dir = $StartDir
+    while (-not [string]::IsNullOrWhiteSpace($dir) -and (Test-Path -LiteralPath $dir)) {
+        $full = [System.IO.Path]::GetFullPath($dir).TrimEnd('\')
+        if ($stops -contains $full) { return }
+        $items = @(Get-ChildItem -LiteralPath $full -Force -ErrorAction SilentlyContinue)
+        if ($items.Count -gt 0) { return }
+        if (-not $PSCmdlet.ShouldProcess($full, 'Remove empty directory')) { return }
+        Remove-Item -LiteralPath $full -Force -ErrorAction SilentlyContinue
+        $dir = Split-Path -Parent $full
+    }
+}
+
+function Invoke-RelocateMisplacedScratch {
+    Write-Step 'Phase 0b - Relocate misplaced scratch'
+    $plan = @(Get-MisplacedScratchPlan)
+    if ($plan.Count -eq 0) {
+        Write-Ok 'Scratch files already live under Cursor-Project/config/tmp'
+        return
+    }
+
+    $moved = 0
+    $jiraRoot = Join-Path $cursorProjectPath 'config\jira'
+    $confluenceRoot = Join-Path $cursorProjectPath 'config\confluence'
+    $swaggerRoot = Join-Path $cursorProjectPath 'config\swagger'
+    foreach ($item in $plan) {
+        try {
+            $destDir = Split-Path -Parent $item.DestFull
+            if (-not (Test-Path -LiteralPath $destDir)) {
+                New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+            }
+            $dest = Get-UniqueDestination -DestFull $item.DestFull
+            Move-Item -LiteralPath $item.SourceFull -Destination $dest -Force
+            $moved++
+            $parent = Split-Path -Parent $item.SourceFull
+            Remove-VacatedDirectory -StartDir $parent -StopAt @($workspaceRoot, $cursorProjectPath, $jiraRoot, $confluenceRoot, $swaggerRoot)
+        }
+        catch {
+            Write-Warn "Could not move $($item.Relative): $($_.Exception.Message)"
+        }
+    }
+    Write-Ok "Moved $moved scratch file(s) into Cursor-Project/config/tmp"
 }
 
 # ---------- main ----------
@@ -815,6 +1065,9 @@ if ($pyCheck) { Write-Ok "Python (Elasticsearch MCP): $pyCheck" }
 else { Write-Warn 'Python with mcp/requests not ready - script will try pip install in Phase 3a' }
 
 if (-not $VerifyOnly) {
+    if (-not $SkipScratchRelocate) { Invoke-RelocateMisplacedScratch }
+    else { Write-Step 'Phase 0b - Skipped (-SkipScratchRelocate)' }
+
     if (-not $SkipClone) { Invoke-CloneSubmodules }
     else { Write-Step 'Phase 1 - Skipped (-SkipClone)' }
 

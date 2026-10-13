@@ -27,6 +27,7 @@ Optional:
 .\.cursor\commands\setup-new-machine.ps1 -ForceMcp
 .\.cursor\commands\setup-new-machine.ps1 -SkipClone
 .\.cursor\commands\setup-new-machine.ps1 -SkipExtensions
+.\.cursor\commands\setup-new-machine.ps1 -SkipScratchRelocate
 .\.cursor\commands\setup-new-machine.ps1 -GitLabToken <token>
 ```
 
@@ -37,6 +38,7 @@ Optional:
 | Phase | Action |
 |-------|--------|
 | 0 | Preconditions (workspace, `.gitmodules`, templates, npm + Python check) |
+| 0b | Move scratch that landed in the wrong place into `Cursor-Project/config/tmp/` (workspace-root dumps, Jira ticket JSON, Confluence search output, including copies that were still tracked). Diagram exports under `config/confluence/diagrams/` stay put. Skip with `-SkipScratchRelocate`. |
 | 1 | Clone/init all submodules from `.gitmodules` (skip if already valid) |
 | 2 | Copy `Cursor Setup/env.example` → `Cursor-Project/.env` and `EnergoTS/.env` |
 | 3a | Detect Python with `mcp`/`requests` deps; install via `pip` if needed |

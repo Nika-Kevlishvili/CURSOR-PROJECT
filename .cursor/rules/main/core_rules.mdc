@@ -60,6 +60,7 @@ alwaysApply: true
    - **Bug validation (Rule 32):** Full analysis and verdict **in chat only** unless the user also runs **`/report`** or explicitly asks to save (e.g. `BugValidation_*.md` under **Chat reports**). Rule 32 does **not** mandate a disk file.
    - **Optional other exports:** If the user explicitly asks for a written run log or “save this to reports”, use editor/file tools — **no** Python `ReportingService` in this workspace
    - **Path layout (when a file is written):** `Cursor-Project/reports/<Chat reports|Feedback>/YYYY/<english-month>/<DD>/<filename>.md` — resolve segments per **`Cursor-Project/reports/README.md`** (reuse same-day folders; create missing segments only when writing a file). Example names: `Summary_{HHMM}.md`, `BugValidation_*.md` (only if user requested persistence), `ScopedPlaywright_*.md` (scoped Slack path), `Feedback_{HHMM}.md` (**`/feedback`**)
+   - **Shareable report format:** When the user asks for a **report**, also write a **Word `.docx`** (not Excel) in the PDT-3483 layout; keep writing a Cursor canvas. Procedure: **`.cursor/skills/word-report/SKILL.md`**, Rule **WR.0**.
    - **Violation:** Critical only if the user ran **`/report`** / **`/feedback`** / explicitly requested a saved report or feedback file and it was omitted — not when you omit optional on-disk summaries
    
    ### Rule 0.7: MANDATORY English for Project Artifacts (Not Chat)
