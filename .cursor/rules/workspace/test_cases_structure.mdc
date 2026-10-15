@@ -39,9 +39,10 @@ Violation of gate order is a **BLOCK**.
 
 - `<Topic_name>.md` with underscores for multi-word names
 - **`<Topic_name>.xlsx`** beside that markdown — manual tester workbook (same topic stem). Columns and wording: **test-case-generator** SKILL § Human-readable Excel. No Playwright or API instructions in the workbook. Quality validator scores the `.md` only.
-- Backend file contains ONLY backend TCs; Frontend file ONLY frontend TCs
+- **`<Topic_name>.playwright.md`** in **Frontend/** only, beside the frontend markdown, when the user chose Backend+Frontend. Automation instructions for **playwright-frontend** (Rule 45). Quality validator does not score this file. Do not create it for Backend-only.
+- Backend file contains ONLY backend TCs; Frontend `.md` contains ONLY frontend TCs
 - Do NOT create empty Frontend file when user chose "No"
-- Do NOT create a Frontend `.xlsx` when no Frontend `.md` was saved
+- Do NOT create a Frontend `.xlsx` or `.playwright.md` when no Frontend `.md` was saved
 
 ---
 
@@ -88,3 +89,5 @@ Update `test_cases/README.md`, `Backend/README.md` always; `Frontend/README.md` 
 ```
 
 **Frontend** (`test_cases/Frontend/<Topic>.md`): same structure with `TC-FE-N` and `## Frontend Test Cases`.
+
+**Frontend Playwright instructions** (`test_cases/Frontend/<Topic>.playwright.md`): written in the same run as the frontend markdown. Shape: **test-case-generator** SKILL § Frontend Playwright instructions. Consumed by **playwright-frontend**. Not a manual tester file.

@@ -1,7 +1,7 @@
 ---
 name: test-case-generator
 model: inherit
-description: Generates test cases from bug or task descriptions using Confluence (MCP) and codebase. Maps to TestCaseGeneratorAgent. Also writes a human-readable Excel workbook with no Playwright instructions. Use when the user asks to generate test cases, create test scenarios from a bug, or derive tests from a task description.
+description: Generates test cases from bug or task descriptions using Confluence (MCP) and codebase. Maps to TestCaseGeneratorAgent. Also writes a human-readable Excel workbook with no Playwright instructions. When frontend cases are requested, also writes Frontend/<Topic>.playwright.md for the playwright-frontend agent. Use when the user asks to generate test cases, create test scenarios from a bug, or derive tests from a task description.
 ---
 
 # Test Case Generator Subagent (TestCaseGeneratorAgent)
@@ -35,17 +35,18 @@ Do **not** run when the user requested test cases but cross-dependency-finder wa
 | User choice | Files |
 |-------------|-------|
 | Backend only (default after No) | `Cursor-Project/test_cases/Backend/<Topic>.md` (TC-BE-N) and `Backend/<Topic>.xlsx` |
-| Backend + Frontend (Yes) | Above + `Cursor-Project/test_cases/Frontend/<Topic>.md` (TC-FE-N) and `Frontend/<Topic>.xlsx` |
+| Backend + Frontend (Yes) | Above + `Cursor-Project/test_cases/Frontend/<Topic>.md` (TC-FE-N), `Frontend/<Topic>.xlsx`, and `Frontend/<Topic>.playwright.md` (automation instructions for **playwright-frontend**) |
 
 The `.xlsx` is the manual tester workbook (PHN-4503 columns). No Playwright, HTTP, or payload text. Write it with `.cursor/skills/test-case-generator/write_manual_cases_xlsx.py` after the markdown passes the quality validator. Procedure: **test-case-generator SKILL** § Human-readable Excel.
 
-Also update `test_cases/README.md` and `test_cases/Backend/README.md` (+ Frontend README if Frontend file created). List each `.xlsx` next to its `.md`.
+Also update `test_cases/README.md` and `test_cases/Backend/README.md` (+ Frontend README if Frontend file created). List each `.xlsx` next to its `.md`. When frontend scope is Yes, also list `Frontend/<Topic>.playwright.md`.
 
 ## Principles (pointers — full rules in SKILL + template)
 
 - **TC-STANDALONE-PRE.0** — each markdown TC has full numbered preconditions; no `Apply Test data steps 1–N` in **new** `.md` files. The Excel sheet may refer to an earlier row by id.
 - Read Playwright instructions pack + **`Test_case_template.md`** before writing the **markdown**.
 - After the quality gate, write the manual `.xlsx` (no Playwright) beside each markdown file.
+- When frontend scope is Yes, also write `Frontend/<Topic>.playwright.md` (SKILL § Frontend Playwright instructions). The quality validator does not score that file.
 - Score against **`test_case_quality_rubric.md`** (10-axis, ≥80) before save; validator is second pass.
 - READ-ONLY Phoenix (Rule 0.8). English artifacts (Rule 0.7).
 

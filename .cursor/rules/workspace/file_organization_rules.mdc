@@ -16,7 +16,7 @@ globs:
     - `docs/` - Documentation files (.md, .txt, .rst)
     - `Cursor-Project/User story/` - User stories, flows, and related documentation files (.txt, .drawio, .md) - **MANDATORY location for ALL story/flow files**
     - `reports/` - Report files (.md) under **`Cursor-Project/reports/`** → **`Chat reports/`**, **`Feedback/`**, each with **`YYYY/<english-month>/<DD>/`** before the filename — see **`Cursor-Project/reports/README.md`**
-    - `test_cases/` - **Test cases (MANDATORY layout)** – `Backend/` for TC-BE-N markdown **and** the manual `.xlsx`; `Frontend/` for TC-FE-N markdown **and** `.xlsx` **only when TC-FRONTEND-ASK.0 = Yes**. Same topic name per folder when both are generated. Excel has no Playwright instructions. See `.cursor/rules/workspace/test_cases_structure.mdc`. Path: `Cursor-Project/test_cases/`
+    - `test_cases/` - **Test cases (MANDATORY layout)** – `Backend/` for TC-BE-N markdown **and** the manual `.xlsx`; `Frontend/` for TC-FE-N markdown, `.xlsx`, and `<Topic>.playwright.md` **only when TC-FRONTEND-ASK.0 = Yes**. Same topic name per folder when both are generated. Excel has no Playwright instructions. The `.playwright.md` file is the automation contract for Rule 45. See `.cursor/rules/workspace/test_cases_structure.mdc`. Path: `Cursor-Project/test_cases/`
     - `Phoenix/` - Phoenix Java project files (git submodules, READ-ONLY)
     
     **Process:**

@@ -92,18 +92,20 @@ Base: **40**
 | Confluence evidence found | **+10** | Relevant wiki pages found and cited | Business rules for expected results |
 | User requirements clear (ticket well-defined) | **+10** | Jira ticket has clear scope, steps, expected behavior | Clear scope = better TC coverage |
 | Playwright instructions read | **+5** | `config/playwright_generation/` pack consumed | Alignment with downstream Playwright |
+| Frontend Playwright instructions file written | **+5** | TC-FRONTEND = Yes and `Frontend/<Topic>.playwright.md` saved | Contract for Rule 45 |
 | Quality validator passed (≥ 80/100) | **+5** | Step 2.5 all TCs ≥ 80 first pass | External validation of TC quality |
 | Environment aligned | **+5** | PHOENIX-SWITCH.0 exit code 0 | Correct code branch for TC generation |
 | No cross-dep data | **-20** | Step 1 skipped or failed | Critical input missing; highest penalty |
 | No Confluence found | **-10** | 0 relevant pages | Missing business rules |
 | Swagger not checked | **-10** | Endpoints used without spec verification | TCs may use wrong field names |
 | Quality validator required rewrite | **-5** | Per rewrite iteration needed | Each iteration signals initial quality gap |
+| Frontend scope without `*.playwright.md` | **-10** | User chose Backend+Frontend and the instructions file was not saved | playwright-frontend has no contract |
 | Assumption made (per assumption) | **-5** | Inferred behavior | Each assumption is a potential error |
 | Single evidence source only | **-15** | Code-only or ticket-only | Insufficient cross-validation |
 | Spec↔code mismatch documented in References (Rule QA.2 Finding) | **+5** | Generator flagged divergence | Senior QA alignment |
 | Spec↔code mismatch known but no Finding in References | **-10** | Violates Rule QA.0 / TC generator authority |
 
-**Max achievable:** 40 + 75 = 115 → capped at **100**
+**Max achievable:** 40 + 80 = 120 → capped at **100**
 
 ---
 
@@ -219,6 +221,35 @@ Base: **40**
 | 25–49% | +5 |
 | 1–24% | +0 |
 | 0% | -10 |
+
+---
+
+## Evidence factors — Playwright Frontend (Rule 45)
+
+Base: **40**. Score the **validator** sub-score and the **run** sub-score separately. Parent aggregate = **minimum** of the two.
+
+### Validator sub-score
+
+| Factor | Points | Condition |
+|--------|--------|-----------|
+| Spec, POM, instructions file, and phoenix-ui diff all read | **+25** | One-pass critique had every input |
+| Compared against `meterCreate.spec.ts` | **+10** | Preconditions, `FrontendResponses`, POM method |
+| Branch confirmed `cursorMerged` | **+10** | No checkout |
+| Validator total ≥ 80 before the fix pass | **+10** | First critique already passed |
+| Instructions file missing | **-20** | Cannot assess coverage |
+| phoenix-ui diff missing | **-15** | POM coverage cannot be checked |
+| Each assumption | **-5** | Inferred locator or route |
+
+### Run sub-score
+
+Use the **Playwright Test Run Results** factors above. Add:
+
+| Factor | Points | Condition |
+|--------|--------|-----------|
+| Each failure classified as product code defect, automation defect, or environment blocker | **+5** | Classification present for every failure (once, not per failure) |
+| Failure left unclassified | **-10** | Pass/fail only, no class |
+
+Deliver the execution report in every zone except STOP. STOP when EnergoTS is not `cursorMerged`, or the instructions file is missing, or the run never started because the environment was not named.
 
 ---
 
@@ -391,6 +422,7 @@ All factor weights were set based on the workspace's evidence model (Rule QA.0 /
 | 2026-06-10 | Initial weights set | Based on evidence hierarchy + research literature |
 | 2026-06-11 | QA.0 alignment | Dual-track; Finding documented +10 / hidden conflict -15; TC References Finding factors |
 | 2026-06-22 | Regression Validation factors added | Dev-to-Dev2 regression workflow; git-based deployment check; Step Validator gates |
+| 2026-10-13 | Playwright Frontend (Rule 45) factors added | cursorMerged frontend authoring; one-pass validator + classified run |
 
 ---
 
@@ -415,7 +447,7 @@ Log outcomes to **`Cursor-Project/config/confidence/conf_log.jsonl`** when the u
 | Field | Required | Description |
 |-------|----------|-------------|
 | `ts` | yes | ISO 8601 timestamp |
-| `workflow` | yes | bug-validation, test-cases, scoped-playwright-slack, db-query, phoenix-expert, regression-validation |
+| `workflow` | yes | bug-validation, test-cases, scoped-playwright-slack, db-query, phoenix-expert, regression-validation, playwright-frontend |
 | `ticket` | if applicable | Jira key |
 | `conf` | yes | Computed confidence score (0–100) |
 | `zone` | yes | GO, CAUTION, STOP |

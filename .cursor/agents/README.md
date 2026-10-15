@@ -22,14 +22,16 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 | **environment-access.md** | Environment access | Dev/Dev2; browser/MCP per subagent doc. |
 | **environment-resolver.md** | Environment resolver | Resolves `dev/dev2/test/preprod/prod/experiments` from user/Jira; asks user when ambiguous. |
 | **postman-collection.md** | Postman collections | PhoenixExpert first; save under `postman/`. |
-| **test-case-generator.md** | Test cases (Rule 35) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.md`; Confluence + codebase + `cross_dependency_data`; save Backend `.md` + manual `.xlsx` always; Frontend `.md` + `.xlsx` only if TC-FRONTEND scope includes UI. |
+| **test-case-generator.md** | Test cases (Rule 35) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.md`; Confluence + codebase + `cross_dependency_data`; save Backend `.md` + manual `.xlsx` always; Frontend `.md` + `.xlsx` + `.playwright.md` only if TC-FRONTEND scope includes UI. |
 | **test-case-quality-validator.md** | TC quality gate (Rule 35 Step 2.5) | **10-axis, ≥80/100** STRICT scoring; READ-ONLY; max 3 rewrites. |
 | **cross-dependency-finder.md** | Cross-dependencies (Rule 35, 35a) | Jira + code + deep Confluence exploration; **no** local merge/git; hand off to test-case-generator. |
-| **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.spec.ts`. Other EnergoTS files may be edited when the user asks. |
+| **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.spec.ts`. API specs under `src/tests/`. |
+| **playwright-frontend.md** | Frontend Playwright (Rule 45) | `cursorMerged` only. phoenix-ui read-only diff, POM update, `src/frontend` specs from `Frontend/<Topic>.playwright.md`, one validator pass, then execute. |
+| **playwright-frontend-validator.md** | Frontend spec assessor (Rule 45) | One critique. POM coverage + `meterCreate.spec.ts` pattern. READ-ONLY. |
 | **energo-ts-run.md** | Playwright runner (Rule 36) | `npx playwright test` from EnergoTS `src/tests/`; stay on `cursorMerged` or `staging`. JSON is `src/backend/playwright-report.json`. JSON→MD + Slack uploads for **scoped Slack path 2**; ad-hoc runs: generator only if user explicitly asks (**Rule DPR.0**). |
 | **jira-bug.md** | Jira bug (Rule JIRA.0) | Experiments board only. |
 | **phoenix-bug-reporter.md** | Phoenix Phase 2 bug reporter (Rule PHOENIX-BUG.0) | Review file → Step 3.5 **bug-validator** (parent prefetch) → APPROVE + `.active-bugreview` sidecar → `createJiraIssue`; hook guards Internal Bug + Bug; reporter from `.env`; Internal tester from QA/Test subtask. |
-| **playwright-test-validator.md** | Playwright QA gate | Spec vs test cases + **`playwright instructions/`** (Rule 35 / energo-ts-test quality gate). |
+| **playwright-test-validator.md** | Playwright QA gate | Spec vs test cases + **`playwright instructions/`** (Rule 35 / energo-ts-test quality gate). API specs. |
 | **production-data-reader.md** | Production data (Rule PDR.0) | PostgreSQLProd MCP readonly. |
 
 ---

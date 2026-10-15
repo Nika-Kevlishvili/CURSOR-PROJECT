@@ -6,6 +6,10 @@ globs:
   - ".cursor/agents/energo-ts-run.md"
   - ".cursor/skills/energo-ts-run/SKILL.md"
   - ".cursor/skills/energo-ts-test/SKILL.md"
+  - ".cursor/agents/playwright-frontend.md"
+  - ".cursor/agents/playwright-frontend-validator.md"
+  - ".cursor/skills/playwright-frontend/SKILL.md"
+  - ".cursor/skills/playwright-frontend-validator/SKILL.md"
 ---
 # ENERGOTS BRANCH LOCK RULE [CRITICAL]
 
@@ -45,6 +49,7 @@ Hooks **`block-energots-branch-switch.ps1`** (`beforeShellExecution`) and **`blo
 ### Integration
 
 - **Rule 0.8:** On `cursor`, `staging`, or `cursorMerged`, user-requested edits under `Cursor-Project/EnergoTS/**` are allowed, including page objects, fixtures, helpers, and frontend tests.
+- **Rule 45:** **playwright-frontend** and **playwright-frontend-validator** may run only when EnergoTS is already on `cursorMerged`. They must not checkout or switch, including to `cursor` or `staging`.
 - Phoenix/other repos: **not** covered by this rule. Phoenix stays read-only.
 
 **Violation of ENERGOTS.0 is a BLOCK.**

@@ -171,10 +171,12 @@ flowchart TD
 | Validate bug | `bug-validator` | `phoenix-bug-validation` | 32, 41, PHOENIX-SWITCH |
 | Resolve environment | `environment-resolver` | `environment-resolver` | CONF.0, TC-ENV, DB.0a |
 | Cross-dependencies | `cross-dependency-finder` | `cross-dependency-finder` | 35a, 39 |
-| Generate test cases | `test-case-generator` | `test-case-generator` | 35, STANDALONE; Backend always; Frontend if TC-FRONTEND-ASK.0 = Yes |
-| Score test cases | `test-case-quality-validator` | `test-case-quality-validator` | rubric 10-axis, ≥80/100 |
-| Write Playwright spec | `energo-ts-test` | `energo-ts-test` | 0.8.1, 41, 40 |
-| Validate spec | `playwright-test-validator` | `playwright-test-validator` | Rule 35 quality gate |
+| Generate test cases | `test-case-generator` | `test-case-generator` | 35, STANDALONE; Backend always; Frontend `.md` + `.xlsx` + `.playwright.md` if TC-FRONTEND-ASK.0 = Yes |
+| Score test cases | `test-case-quality-validator` | `test-case-quality-validator` | rubric 10-axis, ≥80/100; does not score `.playwright.md` |
+| Write API Playwright spec | `energo-ts-test` | `energo-ts-test` | 0.8.1, 41, 40 |
+| Validate API spec | `playwright-test-validator` | `playwright-test-validator` | Rule 35 quality gate |
+| Write and run frontend Playwright | `playwright-frontend` | `playwright-frontend` | Rule 45; `cursorMerged` only; `/playwright-frontend` |
+| Assess frontend spec once | `playwright-frontend-validator` | `playwright-frontend-validator` | One critique, then the author executes |
 | Run Playwright | `energo-ts-run` | `energo-ts-run` | 36, ENERGOTS.0 |
 | Scoped Playwright + Slack | parent or energo-ts-run | `send-playwright-results-slack.md` | DPR, path 2 |
 | DB query | `database-query` | `phoenix-database` | 33, DB.0a |
@@ -210,6 +212,33 @@ flowchart TD
 [6] quality gate     10-axis >= 80 per TC (max 3 rewrites)
         |
       DONE
+      Frontend run also leaves Frontend/<Topic>.playwright.md
+      for /playwright-frontend (Rule 45). That file is not scored here.
+```
+
+### 5.4 Frontend Playwright (Rule 45) — ASCII
+
+```
+EnergoTS HEAD is cursorMerged?  NO -> STOP (do not checkout)
+        |
+        YES
+Environment named?  NO -> ask and stop
+        |
+Frontend/<Topic>.playwright.md exists?  NO -> test-case-generator (Backend+Frontend) first
+        |
+phoenix-ui: git fetch + log/show/diff on origin/*   (no checkout)
+        |
+POM missing the new controls?  YES -> playwright-cli record, update existing POM
+        |
+Write src/frontend specs (meterCreate shape: API precondition, FrontendResponses, POM)
+        |
+playwright-frontend-validator ONCE
+        |
+Apply that fix list. Do not validate again.
+        |
+npx playwright test --project=frontend
+        |
+Report: passed / failed / product code defect / automation defect
 ```
 
 ### 5.2 Bug validation (Rule 32) — ASCII
@@ -249,7 +278,9 @@ Command: .cursor/commands/send-playwright-results-slack.md
 |----------|------|----------|------------|
 | Backend TCs | `Cursor-Project/test_cases/Backend/<Topic>.md` | Yes | — |
 | Frontend TCs | `Cursor-Project/test_cases/Frontend/<Topic>.md` | If TC-FRONTEND = Yes | — |
-| Playwright spec | `Cursor-Project/EnergoTS/src/tests/cursor/<KEY>-*.spec.ts` | Yes | — |
+| Frontend Playwright instructions | `Cursor-Project/test_cases/Frontend/<Topic>.playwright.md` | Same frontend run | — |
+| Playwright API spec | `Cursor-Project/EnergoTS/src/tests/cursor/<KEY>-*.spec.ts` | Yes | — |
+| Playwright frontend spec | `Cursor-Project/EnergoTS/src/frontend/<topic>.spec.ts` | Rule 45, branch `cursorMerged` | — |
 | Scoped Playwright report | `Cursor-Project/reports/Chat reports/YYYY/month/DD/ScopedPlaywright_*.md` | If user scoped Slack | **Path 2** upload |
 | Chat report (`/report`) | `Cursor-Project/reports/Chat reports/YYYY/month/DD/*.md` | User `/report` or explicit save | Only if user asks |
 | Feedback (`/feedback`) | `Cursor-Project/reports/Feedback/YYYY/month/DD/Feedback_*.md` | User `/feedback` | — |

@@ -16,9 +16,11 @@ Use this file as the **single map** from “agent role” to **where it lives to
 | **cross-dependency-finder.md** | Cross-dependencies (35, 35a) | `cross-dependency-finder` | Before test cases; Jira + code + deep Confluence exploration |
 | **test-case-generator.md** | Test cases (Rule 35) | `test-case-generator` | After **`cross-dependency-finder`** |
 | **test-case-quality-validator.md** | TC quality (10-axis ≥80) | `test-case-quality-validator` | Rule 35 Step 2.5 |
-| **energo-ts-test.md** | Playwright test authoring | `energo-ts-test` | Rule 0.8.1; `EnergoTS/tests/` only |
-| **playwright-test-validator.md** | Spec vs test cases | `playwright-test-validator` | After energo-ts-test authoring |
-| **energo-ts-run.md** | Playwright test run | `energo-ts-run` | Rule 36; `cursor` branch only |
+| **energo-ts-test.md** | Playwright API authoring | `energo-ts-test` | Rule 0.8.1; `EnergoTS/src/tests/` |
+| **playwright-test-validator.md** | API spec vs test cases | `playwright-test-validator` | After energo-ts-test authoring |
+| **playwright-frontend.md** | Frontend Playwright author + run | `playwright-frontend` | Rule 45; EnergoTS `cursorMerged` only; `/playwright-frontend` |
+| **playwright-frontend-validator.md** | Frontend spec assessor (one pass) | `playwright-frontend-validator` | After POM + `src/frontend` specs, before execution |
+| **energo-ts-run.md** | Playwright test run | `energo-ts-run` | Rule 36; `cursor`, `staging`, or `cursorMerged` |
 | **test-runner.md** | Test execution | — (consult PhoenixExpert) | Test-related runs |
 | **database-query.md** | PostgreSQL (Dev/Test/Prod) | `phoenix-database` | DB questions; `database_workflow.mdc` |
 | **production-data-reader.md** | Production DB (read-only) | `production-data-reader` | Rule PDR.0; PostgreSQLProd MCP |
@@ -45,8 +47,9 @@ Use this file as the **single map** from “agent role” to **where it lives to
 | Artifact | Path |
 |----------|------|
 | Reports (Rule 0.6) | **`Cursor-Project/reports/README.md`** — each area uses **`YYYY/<english-month>/<DD>/`** before filenames |
-| Test cases (canonical) | **`Cursor-Project/test_cases/Backend/<Topic>.md`** (always when TCs generated); **`Cursor-Project/test_cases/Frontend/<Topic>.md`** only if **TC-FRONTEND-ASK.0** = Yes |
-| Playwright (automation branch) | **`Cursor-Project/EnergoTS/src/tests/cursor/`** |
+| Test cases (canonical) | **`Cursor-Project/test_cases/Backend/<Topic>.md`** (always when TCs generated); **`Cursor-Project/test_cases/Frontend/<Topic>.md`** only if **TC-FRONTEND-ASK.0** = Yes; **`Frontend/<Topic>.playwright.md`** in that same frontend run |
+| Playwright API specs | **`Cursor-Project/EnergoTS/src/tests/cursor/`** |
+| Playwright frontend specs | **`Cursor-Project/EnergoTS/src/frontend/`** on branch **`cursorMerged`** (Rule 45) |
 | Templates | **`Cursor-Project/config/template/`** |
 | Postman exports | **`Cursor-Project/postman/`** |
 

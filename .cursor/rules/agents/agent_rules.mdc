@@ -18,7 +18,8 @@ alwaysApply: true
    - **Senior QA Tester** → code defects, doc gaps, spec↔implementation (`senior-qa.md`, `senior-qa-analysis` SKILL; Rule QA.0)
    - PhoenixExpert → Phoenix backend, endpoints, schedulers (Rule 0.2) — **includes** Senior QA Findings when mismatches exist
    - test-case-generator / test-case-quality-validator → Rule 35 test cases
-   - energo-ts-test / playwright-test-validator / energo-ts-run → Playwright (Rules 36–37)
+   - energo-ts-test / playwright-test-validator / energo-ts-run → API Playwright (Rules 36–41)
+   - playwright-frontend / playwright-frontend-validator → frontend Playwright on EnergoTS `cursorMerged` only (Rule 45)
    - bug-validator → Rule 32
    - production-data-reader → Prod DB read (Rule PDR.0)
    - **Legacy names (no dedicated agent file):** TestExpert / DevOpsExpert — use the agents above or direct tool usage; do not invent Python `agents.*` imports.

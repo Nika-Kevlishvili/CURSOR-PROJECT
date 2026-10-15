@@ -250,6 +250,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 - Save test cases under **`Cursor-Project/test_cases/`** per **`test_cases_structure.mdc`**:
   - **`Backend/<Topic_name>.md`** — TC-BE-N only; **always** when test cases are generated.
   - **`Frontend/<Topic_name>.md`** — TC-FE-N only; **only** if user chose Backend+Frontend (TC-FRONTEND-ASK.0 = Yes).
+  - **`Frontend/<Topic_name>.playwright.md`** — same frontend run; automation instructions for `/playwright-frontend`. Not scored by the quality validator.
 - Legacy **`test_cases/Objects/`**, **`Flows/`** and **`generated_test_cases/`** may appear in older material; prefer **`Backend/`** + **`Frontend/`** for new work.
 - One `.md` per group with title, steps, expected result.
 - Save reports (Rule 0.6). Read-only for Phoenix code.
@@ -276,6 +277,23 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 
 ---
 
+## 17. Playwright frontend
+
+**Command:** `.cursor/commands/playwright-frontend.md`  
+**Trigger:** `/playwright-frontend <JIRA_KEY or Topic> [environment]`
+
+**What it can do:**
+- Run only when EnergoTS is already on `cursorMerged`. It does not checkout.
+- Read `test_cases/Frontend/<Topic>.playwright.md` (written by test-case-generator when the user chose Backend+Frontend).
+- Inspect `Phoenix/phoenix-ui` with read-only git. Record missing locators with `playwright-cli` and update the existing page object.
+- Write `EnergoTS/src/frontend` specs in the `meterCreate.spec.ts` shape: API preconditions, `FrontendResponses`, then the page object.
+- Take one critique from **playwright-frontend-validator**, apply it, then run `--project=frontend`.
+- Report each result as passed, product code defect, automation defect, or environment blocker.
+
+**When to use:** Automate a merged frontend change. API specs stay with EnergoTS test (section 16).
+
+---
+
 ## Summary table
 
 | Command / trigger           | Main action |
@@ -295,7 +313,8 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 | **Production data reader** | Read and explain Prod DB data (read-only). |
 | **Cross-dependency finder** | Find dependencies and what could break; feed test-case-generator. |
 | **Test case generate**     | Generate test cases (after cross-dependency finder). |
-| **EnergoTS test**          | Create/edit EnergoTS tests in `EnergoTS/tests/` only. |
+| **EnergoTS test**          | Create/edit EnergoTS API tests in `EnergoTS/src/tests/`. |
+| **Playwright frontend**    | Frontend specs on `cursorMerged` only (Rule 45). |
 ---
 
 *Document generated for Cursor workspace. All commands follow project rules (e.g. Rule 0.6 reports, Rule 0.8 no code edit except EnergoTS tests).*

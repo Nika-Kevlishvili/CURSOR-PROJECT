@@ -1,11 +1,11 @@
 ---
 name: test-case-generator
-description: Generates test cases from bug or task descriptions. Rule 35: run cross-dependency-finder FIRST, then generate with cross_dependency_data. Save Backend/ markdown always; Frontend/ markdown only if TC-FRONTEND-ASK.0 = Yes. Also write a human-readable Excel workbook (no Playwright) beside each markdown file. Use when the user asks to generate test cases or scenarios.
+description: Generates test cases from bug or task descriptions. Rule 35: run cross-dependency-finder FIRST, then generate with cross_dependency_data. Save Backend/ markdown always; Frontend/ markdown only if TC-FRONTEND-ASK.0 = Yes. Also write a human-readable Excel workbook (no Playwright) beside each markdown file. When frontend cases are in scope, also write Frontend/<Topic>.playwright.md with Playwright instructions for the frontend agent. Use when the user asks to generate test cases or scenarios.
 ---
 
 # Test Case Generator Skill
 
-Ensures test case generation follows Rule 35 (cross-dependency-finder first) and saves **`Cursor-Project/test_cases/Backend/<Topic_name>.md`** (TC-BE-N) **always** when test cases are generated. Save **`Cursor-Project/test_cases/Frontend/<Topic_name>.md`** (TC-FE-N) **only** if **TC-FRONTEND-ASK.0** = Yes (Backend+Frontend). Per `.cursor/rules/workspace/test_cases_structure.mdc`. The same run also saves a **manual Excel workbook** next to each markdown file (`<Topic_name>.xlsx`) — human-readable cases, no Playwright. Legacy `generated_test_cases/` is optional. READ-ONLY for Phoenix code except test-case markdown and those workbooks in allowed paths.
+Ensures test case generation follows Rule 35 (cross-dependency-finder first) and saves **`Cursor-Project/test_cases/Backend/<Topic_name>.md`** (TC-BE-N) **always** when test cases are generated. Save **`Cursor-Project/test_cases/Frontend/<Topic_name>.md`** (TC-FE-N) **only** if **TC-FRONTEND-ASK.0** = Yes (Backend+Frontend). Per `.cursor/rules/workspace/test_cases_structure.mdc`. The same run also saves a **manual Excel workbook** next to each markdown file (`<Topic_name>.xlsx`) — human-readable cases, no Playwright. When frontend cases are in scope, also save **`Frontend/<Topic_name>.playwright.md`** — the automation instructions **playwright-frontend** consumes. Legacy `generated_test_cases/` is optional. READ-ONLY for Phoenix code except test-case markdown, the Playwright instructions file, and those workbooks in allowed paths.
 
 ## When to Apply
 
@@ -57,6 +57,8 @@ Ensures test case generation follows Rule 35 (cross-dependency-finder first) and
 **Related:** Downstream **energo-ts-test** agent reads the same folder when authoring `.spec.ts`; keep the **markdown** cases consistent with that canon.
 
 **Audience split:** The Playwright pack applies to the **markdown** only. The same run must also write the **human-readable Excel** in § Human-readable Excel. Do not copy Playwright, HTTP, or payload instructions into that workbook.
+
+When TC-FRONTEND-ASK.0 = Yes, also write the separate automation file in § Frontend Playwright instructions. That file is for **playwright-frontend**. It is not the manual TC markdown and not the Excel workbook. Backend-only runs do not create it.
 
 ## Workflow (test-case-generator part)
 
@@ -241,15 +243,66 @@ JSON shape: `sheetName` (`Backend` or `Frontend`) and `cases[]` with `id`, `type
 
 The script refuses the file if a cell still contains automation text. Rewrite that cell and run again. Do not weaken the script to force a leak through. Do not substitute CSV.
 
-**Validator:** the quality rubric scores the **markdown** only. Do not put API steps into the Excel to satisfy the rubric.
+**Validator:** the quality rubric scores the **markdown** only. Do not put API steps into the Excel to satisfy the rubric. Do not point the quality validator at `*.playwright.md`.
+
+### 5c. Frontend Playwright instructions (only when TC-FRONTEND-ASK.0 = Yes)
+
+After the quality validator accepts the frontend markdown, write:
+
+`Cursor-Project/test_cases/Frontend/<Topic_name>.playwright.md`
+
+One file per topic, next to `Frontend/<Topic_name>.md`. Do not create it for Backend-only. Do not put this content into the Excel workbook. List the file in `test_cases/Frontend/README.md`.
+
+The file tells **playwright-frontend** how to automate each TC-FE. It is not a second copy of the manual case. Use the closest existing page object and the `meterCreate.spec.ts` precondition shape.
+
+```markdown
+# {Title} — Frontend Playwright instructions ({JIRA_KEY})
+
+**Environment:** {env}
+**Page route:** {app path, e.g. meters/create/base or customers/preview}
+**UI mode:** create | edit | tab
+**Existing POM:** Cursor-Project/EnergoTS/src/frontend/pom/{createPOM|editPOM}/{Class}.ts
+**POM class:** {Class}
+**Public method:** {createOrEdit method, or "add if missing"}
+**Spec file:** Cursor-Project/EnergoTS/src/frontend/{topic}.spec.ts
+**Reference spec:** Cursor-Project/EnergoTS/src/frontend/meterCreate.spec.ts
+**phoenix-ui area:** Cursor-Project/Phoenix/phoenix-ui/src/app/pages/{area}
+
+## Shared API preconditions
+Repeat the chain each TC needs. For every prerequisite business object:
+1. Generator: `GeneratePayload.{domain}.{method}()`
+2. Endpoint: `Endpoints.{key}`
+3. `Responses.{key}.push` — response JSON
+4. `FrontendResponses.{key}.push` — on-screen name or identifier, never the numeric id
+5. POM argument that receives `FrontendResponses.{key}[0]`
+
+Nomenclature dropdowns: omit the argument so the POM calls `frontendNomenclatureName`. Name the `envVariables` key. Do not hardcode the label.
+
+## TC-FE-1 (Positive): {title}
+**Preconditions (API, in order):** numbered steps with generator, endpoint, Responses key, FrontendResponses field.
+**Open:** `openAuthenticatedFrontendPage` + route.
+**UI:** call `POM.{facade}.{publicMethod}(args)` with FrontendResponses values. Do not restate every fill.
+**Assertions:** network status, route, and the visible value from FrontendResponses.
+
+## TC-FE-2 (Negative): {title}
+Same blocks. State the exact UI rejection (message, disabled action, or HTTP error) the spec must assert.
+```
+
+Rules for this file:
+
+- One section per TC-FE, same ids and Positive/Negative labels as `Frontend/<Topic_name>.md`.
+- Preconditions name the API creation chain. "A POD exists" is not enough.
+- Edit and new-tab cases create the main object through the API, push its display name to `FrontendResponses`, then open the edit route. Create cases create only prerequisites through the API and create the object through the POM.
+- If no POM class exists, set **Existing POM** to `none` and name the page route the agent must record.
+- Do not include portal credentials, tokens, or hardcoded entity ids.
 
 ### 6. Output content
 
-- Confluence references, codebase analysis, file paths where test cases were saved (markdown and the matching `.xlsx`, e.g. `test_cases/Backend/Invoice_cancellation.md` and `test_cases/Backend/Invoice_cancellation.xlsx`).
+- Confluence references, codebase analysis, file paths where test cases were saved (markdown and the matching `.xlsx`, e.g. `test_cases/Backend/Invoice_cancellation.md` and `test_cases/Backend/Invoice_cancellation.xlsx`). When frontend scope was Yes, also cite `test_cases/Frontend/<Topic>.playwright.md`.
 
 ## READ-ONLY for Phoenix
 
-- Do not modify Phoenix/production code. Only write test-case markdown and the companion manual `.xlsx` under `Cursor-Project/test_cases/` (or legacy `generated_test_cases/` if explicitly requested). Delete the temporary JSON after the workbook is written.
+- Do not modify Phoenix/production code. Only write test-case markdown, `Frontend/<Topic>.playwright.md` when frontend scope is Yes, and the companion manual `.xlsx` under `Cursor-Project/test_cases/` (or legacy `generated_test_cases/` if explicitly requested). Delete the temporary JSON after the workbook is written.
 - All output in English (Rule 0.7).
 
 ## Integration

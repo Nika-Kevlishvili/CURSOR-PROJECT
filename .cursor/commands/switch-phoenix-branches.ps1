@@ -51,7 +51,12 @@ if (-not (Test-Path $phoenixRoot)) {
 
 function Invoke-Git {
     param([string]$GitArgs)
-    $output = cmd /c "git $GitArgs 2>&1"
+    $argArray = $GitArgs -split ' '
+    if (Get-Command cmd -ErrorAction SilentlyContinue) {
+        $output = cmd /c "git $GitArgs 2>&1"
+    } else {
+        $output = & git @argArray 2>&1
+    }
     @{ ExitCode = $LASTEXITCODE; Output = ($output | Out-String) }
 }
 

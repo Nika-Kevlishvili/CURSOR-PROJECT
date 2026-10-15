@@ -1,6 +1,6 @@
 ---
 name: energo-ts-test
-description: Manages EnergoTS Playwright test automation (*.spec.ts, *.fixtures.ts). Mandatory Swagger refresh + playwright instructions pack before spec edits. Other EnergoTS files may be edited when the user asks (Rule 0.8).
+description: Manages EnergoTS API Playwright specs (src/tests *.spec.ts, *.fixtures.ts). Mandatory Swagger refresh + playwright instructions pack before spec edits. Frontend page objects and src/frontend specs for a merged UI change belong to playwright-frontend (Rule 45, cursorMerged only).
 ---
 
 # EnergoTS Test Skill
@@ -10,8 +10,9 @@ description: Manages EnergoTS Playwright test automation (*.spec.ts, *.fixtures.
 
 ## When to apply
 
-- User asks to create, modify, or analyze EnergoTS Playwright tests (map test cases → `EnergoTS/src/tests/cursor/{KEY}-*.spec.ts` when TC `.md` exists)
-- API specs and fixtures go under `Cursor-Project/EnergoTS/src/tests/`. Frontend specs and page objects go under `Cursor-Project/EnergoTS/src/frontend/`. Branch: stay on `cursorMerged` or `staging` (Rule ENERGOTS.0). Do not switch to `cursor`.
+- User asks to create, modify, or analyze EnergoTS API Playwright tests (map test cases → `EnergoTS/src/tests/cursor/{KEY}-*.spec.ts` when TC `.md` exists)
+- API specs and fixtures go under `Cursor-Project/EnergoTS/src/tests/`. Branch: stay on `cursorMerged` or `staging` (Rule ENERGOTS.0). Do not switch to `cursor`.
+- Frontend specs and page-object updates for a merged UI change are **playwright-frontend** (Rule 45). That workflow stays on `cursorMerged` and does not checkout. Do not author those `src/frontend` specs here.
 
 ## Repository layout (post staging merge)
 
