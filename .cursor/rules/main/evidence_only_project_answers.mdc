@@ -1,5 +1,5 @@
 ---
-description: "Evidence-only answers for project-related questions: require grounding in code, Confluence (read-only via MCP or REST read fallback per confluence_rest_fallback.mdc when MCP fails), and Swagger/OpenAPI; ask 1–2 clarifying questions instead of improvising when evidence is missing."
+description: "Evidence-only answers for project-related questions: require grounding in code, Confluence REST GET (atlassian_zero_cost.mdc), and Swagger/OpenAPI; ask 1–2 clarifying questions instead of improvising when evidence is missing."
 alwaysApply: true
 ---
 
@@ -11,7 +11,7 @@ Prevent the assistant from answering **project-related questions** using persona
 For project scope, answers MUST be grounded in **verifiable sources**:
 
 1. **Codebase** — authoritative for **runtime behavior today** (what the system actually does)
-2. **Confluence via MCP (read-only), or Confluence Cloud REST read fallback** — authoritative for **documented product intent / expected behavior** (**`.cursor/rules/integrations/confluence_rest_fallback.mdc`**); disclose **`Confluence source: REST fallback …`** when used
+2. **Confluence via Cloud REST GET** — authoritative for **documented product intent / expected behavior** (**`.cursor/rules/integrations/atlassian_zero_cost.mdc`**); disclose **`Confluence source: Cloud REST GET.`**
 3. **Swagger/OpenAPI** — published HTTP contract (fields, enums, required properties); compare to code (Rule QA.0)
 4. **Database evidence** (schema objects + read-only queries): tables/views, constraints, and stored routines (functions/procedures)
 
@@ -98,7 +98,7 @@ the assistant MAY answer from general knowledge, but MUST still respect:
 For **Jira fetch, triage, analysis, cross-dep, or bug validation** that uses a ticket:
 
 1. **Before substantive Jira reads** → load **`.cursor/skills/jira-evidence/SKILL.md`** (Rule 0.0).
-2. **REST fallback** when MCP fails → **`.cursor/rules/integrations/jira_rest_fallback.mdc`** (Rule 42).
+2. **Official ACLI** (`acli jira workitem view` / `search`) → **`.cursor/rules/integrations/atlassian_zero_cost.mdc`** (Rule 42). Do not call Jira MCP.
 3. **Linked Confluence on ticket analysis** → Rule 44 procedure in **`jira-evidence` SKILL** § linked Confluence.
 
 Delivering Jira-only analysis when readable in-scope Confluence links were present without user opt-out is a **BLOCK violation** (evidence gate).

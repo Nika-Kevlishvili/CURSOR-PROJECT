@@ -1,0 +1,121 @@
+---
+alwaysApply: true
+description: "Jira via official ACLI only. Confluence via existing REST GET scripts only. No Atlassian MCP. No Rovo credits."
+---
+
+# ATLASSIAN ZERO-COST READS [CRITICAL]
+
+## Rule ATLASSIAN.0: No Jira or Confluence MCP [BLOCK]
+
+**Intent.** Atlassian MCP (`mcp.atlassian.com`, Rovo MCP, project servers named Jira or Confluence) spends Rovo credits. This workspace does **not** use it.
+
+**Jira** reads and the bug-reporter writes below use the **official Atlassian CLI** (`acli`) only. No open-source Jira CLIs.
+
+**Confluence** reads use the existing **GET** scripts under `Cursor-Project/config/confluence/`. `acli` has no Confluence commands. Confluence writes stay forbidden (Rule 1).
+
+**Violation** is a **BLOCK** when an agent calls a Jira or Confluence MCP tool, `acli rovodev`, `acli rovo`, or Teamwork Graph (`twg`).
+
+---
+
+## Rule ATLASSIAN.1: Rovo stay at zero
+
+These commands can spend Rovo credits. **Never run them:**
+
+- `acli rovodev` (any subcommand)
+- `acli rovo` (any subcommand)
+- `twg` / Teamwork Graph CLI, including any command whose help text says `[Enriched]`
+
+Official `acli jira workitem` and `acli jira project` commands are direct Jira API calls. They are the allowed set. `acli jira auth status` is also allowed (it prints the logged-in site and email; it does not spend Rovo credits). Do not pass `--web`. Do not put API tokens on the command line.
+
+If `acli` is missing or not logged in, stop and ask the user to install official ACLI and run `acli jira auth login` themselves. Do **not** fall back to Jira MCP or to a hand-written Jira issue GET.
+
+---
+
+## Rule ATLASSIAN.2: Jira retrieval (enough for almost every flow)
+
+Default fields are too small (`key,issuetype,summary,status,assignee,description`). Always pass `--json` and an explicit `--fields` list.
+
+**One work item:**
+
+```bash
+acli jira workitem view KEY-123 --json --fields "summary,description,status,priority,issuetype,environment,labels,components,assignee,reporter,attachment,issuelinks,comment,created,updated,customfield_10103,customfield_10283,customfield_10048,customfield_10745,customfield_10104,customfield_10217,customfield_10095,customfield_10877,customfield_10485,customfield_10484,customfield_10483"
+```
+
+Use `*all` only when a required field is absent from that list. Do not use `*all` on the first call.
+
+**JQL list (hard caps):** `--jql` required, `--limit` required, maximum **50**, no `--paginate`.
+
+```bash
+acli jira workitem search --jql "key = KEY-123" --json --fields "key,summary,status,assignee" --limit 25
+```
+
+**Only if `view` omitted comments or attachment metadata:**
+
+```bash
+acli jira workitem comment list --key KEY-123 --json --limit 50
+acli jira workitem attachment list --key KEY-123 --json
+```
+
+No `--paginate` on comment list.
+
+**Attachment bytes** (official `acli` lists metadata only): keep the existing script `Cursor-Project/config/jira/download-jira-attachments.ps1`. That script is the only allowed Jira REST exception.
+
+**Chat line when Jira was read:** `Jira source: official ACLI (acli jira workitem view|search).`
+
+**Not in official `acli`:** issue changelog expand, rendered HTML (`renderedFields`), and createmeta. Do not call MCP, and do not hand-write a Jira REST GET, to obtain them.
+
+**Bug-reporter metadata (reads, before create):**
+
+```bash
+acli jira auth status
+acli jira project view --key KEY --json
+acli jira workitem search --jql "reporter = currentUser() ORDER BY created DESC" --limit 1 --json --fields "reporter"
+```
+
+`project view` returns `issueTypes` and `versions`. Use those instead of createmeta and instead of `GET /rest/api/3/project/{key}/versions`. Use `auth status` plus `currentUser()` instead of `GET /rest/api/3/user/search`. The `.env` API token is not the `acli` login; on this site it cannot see PHN or resolve the reporter the CLI can see. Do not print the token.
+
+---
+
+## Rule ATLASSIAN.3: Extra official commands (not basic retrieval)
+
+Basic `view` + `search` covers ticket fetch for bug validation, cross-dependency, test cases, Phoenix Q&A, regression validation, and Slack Jira context.
+
+These official commands are allowed **only** for the bug-reporter flow (Rule PHOENIX-BUG.0), after the review file is `# Bug Review — APPROVED` and `.active-bugreview` is written:
+
+```bash
+acli jira project list --limit 50 --json
+acli jira workitem create --from-json payload.json --json
+acli jira workitem edit --key KEY-123 --from-json payload.json --yes --json
+```
+
+`project list --paginate` is allowed only when the first page does not contain the project the user must pick. Do not create projects, fields, or bulk work items. Do not delete attachments, comments, or links.
+
+There is **no** official createmeta command. For a bug-reporter project, read issue types and versions with `acli jira project view --key KEY --json`. Ask the user only when the needed type name is absent, or when a required version was not chosen yet. Do not guess Epic or custom-field ids. Do not fall back to Jira REST createmeta.
+
+---
+
+## Rule ATLASSIAN.4: Confluence GET only
+
+Same credentials as today (`JIRA_EMAIL`, `JIRA_API_TOKEN`, or `CONFLUENCE_EMAIL` / `CONFLUENCE_API_TOKEN`, wiki base `CONFLUENCE_WIKI_BASE`). Never print the token.
+
+**One page:**
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "Cursor-Project/config/confluence/get-confluence-page-rest.ps1" -PageId "<numericId>"
+```
+
+**CQL search** (bug validation and cross-dependency only; other flows stay on linked page IDs — Rule 39):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "Cursor-Project/config/confluence/search-confluence-cql-rest.ps1" -Cql "<cql>" -Limit 25
+```
+
+`-Limit` maximum **50**. Read full page JSON for hits you cite. Do not POST, PUT, or DELETE.
+
+**Chat line:** `Confluence source: Cloud REST GET.`
+
+---
+
+## Who this replaces
+
+Rules **42** and **43**, `jira_rest_fallback.mdc`, and `confluence_rest_fallback.mdc` follow this file. Jira MCP-first and Confluence MCP-first instructions are obsolete.

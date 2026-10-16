@@ -1,6 +1,6 @@
-# Confluence REST read fallback (Cursor / agents)
+# Confluence REST reads (Cursor / agents)
 
-When **Confluence MCP** is unavailable, use **read-only** Confluence Cloud REST per **`.cursor/rules/integrations/confluence_rest_fallback.mdc`** (Rule **CONFLUENCE.1** / workflow Rule **43**).
+Confluence MCP is disabled (Rovo cost). Read wiki pages with **Cloud REST GET** per **`.cursor/rules/integrations/atlassian_zero_cost.mdc`** (Rule **CONFLUENCE.1** / workflow Rule **43**).
 
 ## Environment variables
 
@@ -28,4 +28,4 @@ Optional: `-OutFile "page.json"` to save JSON. Optional: `-Api v1` (default) or 
 
 ## Chat disclosure
 
-When the assistant used REST instead of MCP: include **`Confluence source: REST fallback (MCP unavailable or failed after retries).`**
+When the assistant read Confluence: include **`Confluence source: Cloud REST GET.`**

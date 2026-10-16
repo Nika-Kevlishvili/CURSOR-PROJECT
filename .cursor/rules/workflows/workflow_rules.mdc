@@ -107,11 +107,11 @@ Violation is a **MUST**.
 
 | Rule | Obligation | Detail |
 |------|------------|--------|
-| **42** | Jira MCP first; REST read fallback after retries — disclose **`Jira source: REST fallback …`** | **`jira_rest_fallback.mdc`** |
-| **43** | Confluence MCP first; REST read fallback after retries — disclose **`Confluence source: REST fallback …`** | **`confluence_rest_fallback.mdc`** |
+| **42** | Official ACLI only (`acli jira workitem view` / `search`). No Jira MCP. Disclose **`Jira source: official ACLI`** | **`atlassian_zero_cost.mdc`**, **`jira-evidence` SKILL** |
+| **43** | Confluence REST GET scripts only. No Confluence MCP. Disclose **`Confluence source: Cloud REST GET`** | **`atlassian_zero_cost.mdc`**, **`confluence_rest_fallback.mdc`** |
 | **44** | Jira ticket analysis/triage with linked Confluence → read those pages **same pass** | **`.cursor/skills/jira-evidence/SKILL.md`**; Rule 39 scope |
 
-Abandoning mandatory reads when REST could satisfy them **without** user opt-out is a **MUST**.
+Abandoning a mandatory Confluence read when the REST GET scripts can satisfy it is a **MUST**. Abandoning a mandatory Jira read by calling Jira MCP, or by skipping `acli`, is a **BLOCK** (Rule ATLASSIAN.0).
 
 ---
 

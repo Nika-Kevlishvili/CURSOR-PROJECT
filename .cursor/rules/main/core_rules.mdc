@@ -24,7 +24,7 @@ alwaysApply: true
    
    ### Rule 0.2: PhoenixExpert for Phoenix Questions [ABSOLUTE PRIORITY]
    - ALL Phoenix questions MUST be answered **in the PhoenixExpert role** with PhoenixExpert as final authority — NO EXCEPTIONS
-   - Do **not** answer from general knowledge alone: gather evidence with **read-only** tools (Phoenix codebase under `Cursor-Project/Phoenix/**`, Confluence MCP per Rule 0.5), then synthesize as PhoenixExpert
+   - Do **not** answer from general knowledge alone: gather evidence with **read-only** tools (Phoenix codebase under `Cursor-Project/Phoenix/**`, Confluence REST GET per Rule 0.5), then synthesize as PhoenixExpert
    - **Forbidden:** stating Phoenix behavior without checking code and/or Confluence when those sources apply; **not** forbidden: using `read_file`, `grep`, codebase search, or MCP to **read** Phoenix-related material
    - Route to PhoenixExpert framing IMMEDIATELY when Phoenix content is detected
    - Violation is a **MUST**
@@ -40,8 +40,9 @@ alwaysApply: true
    - **Consultation means** code/Confluence/Swagger evidence gathered — not a ceremonial line without reads. Do not fake consultation.
    - Violation is a **BLOCK** when Phoenix-scoped work proceeds without evidence; not a BLOCK for out-of-scope trivia.
    
-   ### Rule 0.5: PhoenixExpert MUST Always Check Confluence via MCP
-   - **Workflow order for Phoenix Q&A:** (1) MCP Confluence read tools when wiki evidence applies, (2) Phoenix codebase, (3) synthesize as PhoenixExpert
+   ### Rule 0.5: PhoenixExpert MUST Always Check Confluence via REST GET
+   - **Workflow order for Phoenix Q&A:** (1) Confluence REST GET (`get-confluence-page-rest.ps1` / `search-confluence-cql-rest.ps1` per **`atlassian_zero_cost.mdc`**) when wiki evidence applies, (2) Phoenix codebase, (3) synthesize as PhoenixExpert
+   - **Do not** call Confluence MCP or Jira MCP (Rovo cost). Jira tickets: official `acli jira workitem view` / `search`.
    - **Conflict handling (Rule QA.0–QA.2):** When code and Confluence disagree, report **both** sides and file a **Finding** (Code↔Doc mismatch). For *runtime today*, cite code; for *documented product intent*, cite Confluence. **Forbidden:** silently collapsing to one side without a Finding.
    - Confluence checked FRESH every time - never use cache
    - Violation is a **MUST**

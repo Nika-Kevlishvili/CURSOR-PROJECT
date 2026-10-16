@@ -9,14 +9,14 @@ alwaysApply: true
    - **GitLab/Confluence pages:** no modifications. **Jira/GitLab automation:** only via approved external tooling (e.g. Python IntegrationService where that stack still exists). **This workspace** has no `Cursor-Project/agents/` package — Cursor AI does not run IntegrationService in chat.
    - Violation is a **BLOCK** (security).
    
-   1a. [CRITICAL] Confluence Editing Tools are FORBIDDEN - READ-ONLY ONLY.
-      - FORBIDDEN: updateConfluencePage(), createConfluencePage(), createConfluenceFooterComment(), createConfluenceInlineComment()
-      - ALLOWED: getConfluencePage(), getPagesInConfluenceSpace(), getConfluenceSpaces(), search(), searchConfluenceUsingCql(), getConfluencePageDescendants(), getConfluencePageFooterComments(), getConfluencePageInlineComments()
+   1a. [CRITICAL] Confluence is READ-ONLY. Confluence MCP is disabled (Rovo cost).
+      - FORBIDDEN: Confluence MCP tools, and any REST POST/PUT/DELETE to Confluence.
+      - ALLOWED reads: `Cursor-Project/config/confluence/get-confluence-page-rest.ps1` and `search-confluence-cql-rest.ps1` (GET only). See **`atlassian_zero_cost.mdc`**.
       - Applies to ALL agents, ALL operations, ALL circumstances - NO EXCEPTIONS.
 
 # SOURCE-OF-TRUTH RULES
 
-6. Evidence roles (Rule QA.0 dual-track): (1) **Codebase** — runtime truth; (2) **Confluence** (via MCP, fresh) — documented product intent; (3) General knowledge (fallback only)
+6. Evidence roles (Rule QA.0 dual-track): (1) **Codebase** — runtime truth; (2) **Confluence** (REST GET, fresh) — documented product intent; (3) General knowledge (fallback only)
    - **Conflicts:** report both sides + **Finding** (`senior_qa_product_quality.mdc`); do not silently discard Confluence when it contradicts code.
 
 7. Code modification per Rule 0.8 tiers (`.cursor/rules/main/core_rules.mdc`):

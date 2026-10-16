@@ -68,7 +68,7 @@ Use diagrams **when they sharpen expected flow or scope**, not as a substitute f
 
 2. **Diagrams from Jira / Confluence links**  
    - Extract URLs from ticket rich-text and linked pages per **`evidence_only_project_answers.mdc`** (Figma, diagrams.net, embedded media).  
-   - When `getConfluencePage` or linked URLs expose **direct downloadable assets** (e.g. PNG/SVG/PDF): save **read-only** copies under **`Cursor-Project/config/confluence/diagrams/<pageId-or-issueKey>/`** (create folders as needed) and cite that path.  
+   - When the page JSON or linked URLs expose **direct downloadable assets** (e.g. PNG/SVG/PDF): save **read-only** copies under **`Cursor-Project/config/confluence/diagrams/<pageId-or-issueKey>/`** (create folders as needed) and cite that path.  
    - **Generate companion file:** For downloaded `.drawio.svg` or `.drawio` diagrams, run `.cursor/commands/extract-diagram-semantic.ps1 -Path <diagram>` to create a `.semantic.md` companion for AI analysis.
    - Macro-only embeds without a direct file URL: state limitation in chat; do not invent flows.
 
@@ -102,16 +102,16 @@ When the resolved environment is **Prod** or **PreProd** (and by default for **T
    - Standalone Phoenix pages **without** a `Phase 2 -` title prefix (e.g. `Bundle 6 - Receivables`, `Invoice details`, `Manual credit or debit note change`).
 2. **PROHIBITED as decision basis:** Any page whose **title** starts with **`Phase 2 -`**, or lives under wiki trees **`Phase 2 - Phoenix documentation`**, **`Phase 2 - Only Changes`**, **`Phase 2 - postponed`**, **`Phase 2 - Experimental Documentation`**, or **`Experimental Documentation`** (non–Phase-1 experimental specs).
 3. **Allowed but non-decisive:** Phase 2 pages may be **read** for context or to note “planned / delta only”; they **must not** drive **VALID**, **NOT VALID**, or **exact match** alone. If Phase 1 has no rule, classify Confluence as **contextual match** or **no match**, lean on **code + DB** for runtime, and add a **Doc gap** or **Code↔Doc mismatch** **Finding** (Rule QA.2) when spec is missing or diverges — **do not** silently treat code as the only answer without a Finding.
-4. **Report:** In **`### Confluence evidence (decision basis)`**, add **`Phase 2 excluded: yes`** and list any Phase 2 pages **read but excluded** (title + ID + URL). CQL/Rovo queries should prefer `ancestor = 164356` and/or `title !~ "Phase 2"` where supported.
+4. **Report:** In **`### Confluence evidence (decision basis)`**, add **`Phase 2 excluded: yes`** and list any Phase 2 pages **read but excluded** (title + ID + URL). CQL should prefer `ancestor = 164356` and/or `title !~ "Phase 2"` where supported. Do not use Rovo or Confluence MCP for that query.
 5. **User override:** If the user explicitly asks to include Phase 2 for this ticket, document **`Phase 2 excluded: no (user override)`**.
 
-**Methods:** Use MCP Confluence tools (`search`, `searchConfluenceUsingCql`, `getConfluencePage`, etc.). Apply **>=2 distinct** discovery approaches. Cap result size. Jira-linked pages are additive, not a substitute.
+**Methods:** Use Confluence REST GET only. Run **`search-confluence-cql-rest.ps1`** (`-Limit` 25, max 50) and **`get-confluence-page-rest.ps1 -PageId`**. Apply **>=2 distinct** CQL queries. Cap result size. Jira-linked pages are additive, not a substitute. Do not call Confluence MCP.
 
-**REST fallback (Rule 43):** MCP failure after retries → REST per `.cursor/rules/integrations/confluence_rest_fallback.mdc`. Disclose fallback in output. If both fail → **`PROCESS BLOCKED`**.
+**REST (Rule 43):** This is the only Confluence path. Disclose **`Confluence source: Cloud REST GET.`** If the scripts fail → **`PROCESS BLOCKED`**. Do not retry via MCP.
 
 **Classify:** EXACT match / contextual match / no match / contradicts / **search failed**.
 
-**Decision-basis URLs (MANDATORY):** For every Confluence page that informed the verdict, list **page title**, **page ID**, and **full wiki URL** (from MCP/REST payload or compose from env base). Do not silently omit pages.
+**Decision-basis URLs (MANDATORY):** For every Confluence page that informed the verdict, list **page title**, **page ID**, and **full wiki URL** (from the REST JSON or compose from env base). Do not silently omit pages.
 
 **PROHIBITED:** Skipping Confluence when no ticket link; limiting to reporter's CQL only; stopping after one failed query.
 
@@ -243,7 +243,7 @@ Use **Confluence classification + code analysis + database evidence + Elasticsea
 - **`PROCESS BLOCKED`** (operational status, **not** a business verdict) when:
   - **Environment not confirmed** — Jira `environment` empty (or ambiguous) and user has not chosen from the six env options (**Step 0.0**), **or**
   - Phoenix alignment script exits **`3`** (all repos failed) and code-based conclusions would be unreliable, **or**
-  - Confluence mandatory read path failed after MCP retries **and** REST fallback failed or could not run (**Step 2**), **or**
+  - Confluence mandatory read path failed (**Step 2** REST GET), **or**
   - The user must confirm **prod** alignment and has not acknowledged yet.
 - **`PROCESS BLOCKED`** output must not contain `VALID` / `NEEDS CLARIFICATION` / `NEEDS APPROVAL` / `NOT VALID` / `INSUFFICIENT EVIDENCE`; it must contain blocker details and a direct user question for next action.
 - **Do not** claim Playwright-based reproducibility as part of Rule 32; if the user wants automated reproduction, route to an explicit **test case / Playwright** request (**Rule 35 / 36**).

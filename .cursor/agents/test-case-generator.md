@@ -1,7 +1,7 @@
 ---
 name: test-case-generator
 model: inherit
-description: Generates test cases from bug or task descriptions using Confluence (MCP) and codebase. Maps to TestCaseGeneratorAgent. Also writes a human-readable Excel workbook with no Playwright instructions. When frontend cases are requested, also writes Frontend/<Topic>.playwright.md for the playwright-frontend agent. Use when the user asks to generate test cases, create test scenarios from a bug, or derive tests from a task description.
+description: Generates test cases from bug or task descriptions using Confluence REST GET and codebase. Maps to TestCaseGeneratorAgent. Also writes a human-readable Excel workbook with no Playwright instructions. When frontend cases are requested, also writes Frontend/<Topic>.playwright.md for the playwright-frontend agent. Use when the user asks to generate test cases, create test scenarios from a bug, or derive tests from a task description.
 ---
 
 # Test Case Generator Subagent (TestCaseGeneratorAgent)

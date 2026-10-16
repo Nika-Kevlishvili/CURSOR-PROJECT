@@ -1,6 +1,6 @@
 ---
 name: jira-evidence
-description: Jira ticket read completeness — custom fields, linked issues, attachments, linked Confluence. Load before substantive Jira fetch, triage, analysis, cross-dep, or bug validation when Jira is the source. Rule 42 REST fallback when MCP fails.
+description: Jira ticket read completeness — custom fields, linked issues, attachments, linked Confluence. Load before substantive Jira fetch, triage, analysis, cross-dep, or bug validation when Jira is the source. Rule 42 official ACLI only. No Jira MCP.
 ---
 
 # Jira Evidence Skill
@@ -15,7 +15,7 @@ description: Jira ticket read completeness — custom fields, linked issues, att
 
 When the user asks to retrieve information from a Jira ticket, do **not** rely only on the `description` field.
 
-**Jira MCP unavailable:** Use **REST read fallback** in **`.cursor/rules/integrations/jira_rest_fallback.mdc`**. Disclose **`Jira source: REST fallback …`** in the reply.
+**Jira transport:** official ACLI only — **`.cursor/rules/integrations/atlassian_zero_cost.mdc`**. Disclose **`Jira source: official ACLI (acli jira workitem view|search).`** Do not call Jira MCP. If `acli` is missing or unauthenticated, stop and ask the user to run `acli jira auth login`. Do not invent a Jira issue GET.
 
 Always:
 
@@ -33,7 +33,7 @@ Do **not** conclude "no information" only because `description` is empty.
 When the user requests **analysis / triage / summary / retrieval** of a Jira issue, and the payload contains **Confluence URLs** (`*.atlassian.net/wiki/...`):
 
 1. **Read every linked in-scope Confluence page** (Rule 39 narrow scope — linked URLs only; no broad CQL except Rule 32 `bug-validator`).
-2. Confluence MCP first; after 2–3 retries use **Rule 43** REST (**`get-confluence-page-rest.ps1`**). Set **`CONFLUENCE_WIKI_BASE`** when wiki host differs from default.
+2. Read each linked page with **`get-confluence-page-rest.ps1 -PageId`** (Rule 43 / ATLASSIAN.4). No Confluence MCP. Set **`CONFLUENCE_WIKI_BASE`** when the wiki host differs from the script default. Disclose **`Confluence source: Cloud REST GET.`**
 3. Merge findings into the **same** response; cite page title + page ID.
 4. Jira-only analysis when readable linked Confluence was skipped → **BLOCK violation** (evidence gate).
 
@@ -41,10 +41,10 @@ When the user requests **analysis / triage / summary / retrieval** of a Jira iss
 
 ## Jira custom field mapping (MANDATORY)
 
-When fetching via MCP `getJiraIssue`:
+When fetching, run `acli jira workitem view <KEY> --json` with the field list in **`atlassian_zero_cost.mdc`** (do not rely on the CLI default fields):
 
-1. **`expand: "names"`** — fieldId → human label map.
-2. Request content-bearing custom fields (or omit `fields` for breadth):
+1. Map field ids using the labels in the table below. Official `acli` does not return an `expand=names` map or a changelog.
+2. Request these content-bearing custom fields in `--fields`:
 
 | Custom Field ID | Human Label | Purpose |
 |---|---|---|
@@ -70,7 +70,7 @@ When fetching via MCP `getJiraIssue`:
 
 When attachments exist and content analysis is required:
 
-1. Metadata via `getJiraIssue` → `fields.attachment[]`.
+1. Metadata from `acli jira workitem view` → `fields.attachment[]` (or `acli jira workitem attachment list --key <KEY> --json` if view omitted it).
 2. Content: run  
    `powershell -ExecutionPolicy Bypass -File "Cursor-Project/config/jira/download-jira-attachments.ps1" -IssueKey "<KEY>"`  
    → `Cursor-Project/config/jira/attachments/<KEY>/`

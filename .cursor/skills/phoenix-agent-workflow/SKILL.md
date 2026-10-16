@@ -28,7 +28,7 @@ Guides the assistant to follow **`.cursor/rules/`**, **`.cursor/agents/*.md`**, 
 
 ## Consultation (Rule 8)
 
-- Before tasks that need Phoenix authority: gather evidence from codebase + Confluence MCP, answer in **PhoenixExpert** role.
+- Before tasks that need Phoenix authority: gather evidence from codebase + Confluence REST GET, answer in **PhoenixExpert** role.
 - No `AgentRegistry.consult_best_agent()` — coordinate explicitly in chat.
 
 ## Reporting (Rule 0.6)

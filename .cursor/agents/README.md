@@ -12,7 +12,7 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 
 | Subagent file | Role | When to use |
 |---------------|------|-------------|
-| **phoenix-qa.md** | PhoenixExpert (Rule 0.2) + Senior QA lens | Phoenix Q&A; Confluence MCP + codebase; **Findings** on mismatch. READ-ONLY. |
+| **phoenix-qa.md** | PhoenixExpert (Rule 0.2) + Senior QA lens | Phoenix Q&A; Confluence REST GET + codebase; **Findings** on mismatch. READ-ONLY. |
 | **senior-qa.md** | Senior QA Tester (Rule QA.0) | QA audit, doc gaps, code↔doc mismatches, spec vs implementation. READ-ONLY. |
 | **bug-validator.md** | Bug validation (Rule 32) | Confluence → codebase → full analysis in chat; **Chat reports** file only if **`/report`** or explicit save. READ-ONLY. |
 | **test-runner.md** | TestAgent | Tests; consult PhoenixExpert first; report results. |
@@ -30,7 +30,7 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 | **playwright-frontend-validator.md** | Frontend spec assessor (Rule 45) | One critique. POM coverage + `meterCreate.spec.ts` pattern. READ-ONLY. |
 | **energo-ts-run.md** | Playwright runner (Rule 36) | `npx playwright test` from EnergoTS `src/tests/`; stay on `cursorMerged` or `staging`. JSON is `src/backend/playwright-report.json`. JSON→MD + Slack uploads for **scoped Slack path 2**; ad-hoc runs: generator only if user explicitly asks (**Rule DPR.0**). |
 | **jira-bug.md** | Jira bug (Rule JIRA.0) | Experiments board only. |
-| **phoenix-bug-reporter.md** | Phoenix Phase 2 bug reporter (Rule PHOENIX-BUG.0) | Review file → Step 3.5 **bug-validator** (parent prefetch) → APPROVE + `.active-bugreview` sidecar → `createJiraIssue`; hook guards Internal Bug + Bug; reporter from `.env`; Internal tester from QA/Test subtask. |
+| **phoenix-bug-reporter.md** | Phoenix Phase 2 bug reporter (Rule PHOENIX-BUG.0) | Review file → Step 3.5 **bug-validator** (parent prefetch) → APPROVE + `.active-bugreview` sidecar → `acli jira workitem create`; hook guards Internal Bug + Bug; reporter from `.env`; Internal tester from QA/Test subtask. |
 | **playwright-test-validator.md** | Playwright QA gate | Spec vs test cases + **`playwright instructions/`** (Rule 35 / energo-ts-test quality gate). API specs. |
 | **production-data-reader.md** | Production data (Rule PDR.0) | PostgreSQLProd MCP readonly. |
 

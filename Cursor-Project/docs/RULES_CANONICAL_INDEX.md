@@ -17,11 +17,11 @@ Single map from **rule / topic** to the **primary procedural** file(s). When `wo
 | 35 / 35a Test cases | **Gates:** `test_cases_structure.mdc` (TC-ENV, TC-FRONTEND, STANDALONE). **Procedure:** cross-dep → generator → quality | Gates: **`.cursor/rules/workspace/test_cases_structure.mdc`**. Steps: cross-dep / generator / quality **SKILL.md** files |
 | 36 EnergoTS run | `energo-ts-run`; stay on `cursor`, `staging`, or `cursorMerged` | `.cursor/skills/energo-ts-run/SKILL.md`, `.cursor/agents/energo-ts-run.md` |
 | 45 Frontend Playwright | `playwright-frontend` on EnergoTS **`cursorMerged` only** (no checkout); one validator pass; then `--project=frontend` | `.cursor/skills/playwright-frontend/SKILL.md`, `.cursor/skills/playwright-frontend-validator/SKILL.md`, `.cursor/agents/playwright-frontend.md`, `.cursor/commands/playwright-frontend.md` |
-| 39 Non-bug Confluence | Linked pages only | `workflow_rules.mdc` (short); Confluence MCP read tools |
+| 39 Non-bug Confluence | Linked pages only | `workflow_rules.mdc` (short); Confluence REST GET (`get-confluence-page-rest.ps1`) |
 | 40 beforeAll ban | Playwright preconditions | **`.cursor/rules/workflows/playwright_test_constraints.mdc`** |
 | 41 Swagger refresh | Before `.spec.ts` edits | `.cursor/rules/integrations/swagger_refresh_mandatory.mdc` |
-| 42 / JIRA.1 Jira read | MCP first, REST fallback; ticket completeness | `.cursor/skills/jira-evidence/SKILL.md`, `.cursor/rules/integrations/jira_rest_fallback.mdc` |
-| 43 / CONFLUENCE.1 Confluence read | MCP first, REST fallback | `.cursor/rules/integrations/confluence_rest_fallback.mdc`, `Cursor-Project/config/confluence/README.md` |
+| 42 / JIRA.1 Jira read | Official ACLI only; no Jira MCP; ticket completeness | `.cursor/skills/jira-evidence/SKILL.md`, `.cursor/rules/integrations/atlassian_zero_cost.mdc` |
+| 43 / CONFLUENCE.1 Confluence read | REST GET scripts only; no Confluence MCP | `.cursor/rules/integrations/atlassian_zero_cost.mdc`, `.cursor/rules/integrations/confluence_rest_fallback.mdc`, `Cursor-Project/config/confluence/README.md` |
 | LINK.0–LINK.1 Atlassian user links | Confluence = asterbit wiki slug; Jira = oppa-support browse | `.cursor/rules/integrations/atlassian_link_format.mdc`, `Cursor-Project/reports/README.md` |
 | 44 Jira analysis + Confluence | Ticket analysis must include linked Confluence reads | `.cursor/skills/jira-evidence/SKILL.md` § linked Confluence; `workflow_rules.mdc` Rule 44 |
 | PHOENIX-SWITCH.0 | Align Phoenix repos | **`.cursor/skills/phoenix-branch-switching/SKILL.md`**, `.cursor/rules/integrations/phoenix_branch_switching.mdc` (summary), `.cursor/commands/switch-phoenix-branches.ps1` |

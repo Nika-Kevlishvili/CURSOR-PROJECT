@@ -28,7 +28,7 @@ globs:
 
 | **Internal (Ph2)** | Internal Bug | When parent provided | PHN or parent’s Ph2 `project.key` |
 
-| **External** | Bug (confirm via createmeta) | No | Any visible Jira project except the **denylist** below (Step 0) |
+| **External** | Bug (confirm the name on `acli jira project view` `issueTypes`) | No | Any visible Jira project except the **denylist** below (Step 0) |
 
 **Allowed internal:** PHN and other Ph2 delivery project keys (from parent or user when Internal, no parent).
 
@@ -43,7 +43,7 @@ globs:
 
 **Never offer and never create on a denylist key.** If the user names one → refuse.
 
-**Experiments** is **not** on this denylist. It keeps **Rule JIRA.0** routing: refuse and use `jira-bug` (unchanged). Also omit Experiments from the External AskQuestion list if it appears in `getVisibleJiraProjects`.
+**Experiments** is **not** on this denylist. It keeps **Rule JIRA.0** routing: refuse and use `jira-bug` (unchanged). Also omit Experiments from the External AskQuestion list if it appears in `acli jira project list`.
 
 **GB** has no privileged status — never auto-selected. **PDT** (Phoenix Delivery) and **PHN** (Phoenix Phase 2) are valid External targets when visible.
 
@@ -51,7 +51,7 @@ globs:
 
 1. Current user message — project key or Jira board/project URL
 2. This chat — most recently discussed: pasted Jira issue key, board/project URL, or a ticket fetched in this session (`fields.project.key`); skip denylist and Experiments
-3. Otherwise **AskQuestion** from live `getVisibleJiraProjects` (`"{key} — {name}"`), minus denylist and Experiments
+3. Otherwise **AskQuestion** from live `acli jira project list --limit 50 --json` (`"{key} — {name}"`), minus denylist and Experiments
 4. **MUST NOT** create on any External project without a resolved **`externalProjectKey`**
 
 - Parent on Ph2 without External intent → **Internal** with `parent`
@@ -62,7 +62,7 @@ globs:
 
 ### Workflow entry — no pre-registration question
 
-The agent MUST begin at **Step 0** (class, board/project, sprint, tester, parent) without asking whether the bug is “valid for registration.” User consent for Jira is collected only in the **approval gate** below, after Step 3. Hook `block-bugreview-unapproved-jira.ps1` enforces `# Bug Review — APPROVED` and `.active-bugreview` sidecar before `createJiraIssue` for **Internal Bug** and **Bug**.
+The agent MUST begin at **Step 0** (class, board/project, sprint, tester, parent) without asking whether the bug is “valid for registration.” User consent for Jira is collected only in the **approval gate** below, after Step 3. Hook `block-acli-rovo.ps1` enforces `# Bug Review — APPROVED` and `.active-bugreview` sidecar before `acli jira workitem create` for **Internal Bug** and **Bug**. Jira MCP `createJiraIssue` is denied.
 
 ---
 
@@ -90,7 +90,7 @@ The required sequence is:
 
 4. Ask using **AskQuestion**: "Is this bug ready to be reported on Jira?" → **Agree** / **Disagree** (header must not be `CANCELLED`)
 
-5. **On Agree** → write `.active-bugreview` sidecar → call `createJiraIssue`
+5. **On Agree** → write `.active-bugreview` sidecar → `acli jira workitem create --from-json`
 
 **On Disagree:**
 
@@ -118,7 +118,7 @@ Displaying the full review file content in chat instead of the clickable link is
 
 - **Internal (Ph2):** **Internal Bug** (subtask, `hierarchyLevel: -1`). PHN issue type id: `10504`. Set `parent` when a parent ticket exists.
 
-- **External:** Issue type from **`getJiraProjectIssueTypesMetadata`** — exact name **Bug** when present; otherwise **AskQuestion** (never guess id; never assume GB `10004`). No `parent`. Required create fields and split-ADF vs legacy **`description`** from **`getJiraIssueTypeMetaWithFields`** for that project + issue type — see SKILL **External Bug (standalone)** and Step 5a createmeta. **Never** send Epic / Tester / `customfield_10103` unless that field’s **key** appears in createmeta. Never guess Epic or other required values — ask the user.
+- **External:** Issue type name **Bug** when `acli jira project view --key <KEY> --json` lists `Bug` with `subtask` false. If that name is absent, **AskQuestion** from the live `issueTypes` names. No `parentIssueId`. There is no createmeta command. **PHN** standalone Bug uses `additionalAttributes.customfield_10103` and requires a Fix version chosen in Step **0c** before approval. Do not wait for create to fail with `Fix versions is required`. **Never** send Epic unless the user supplied it. Never guess Epic, a version name, or a field id.
 
 If no parent ticket on Ph2 Internal: create standalone Internal Bug under the selected board.
 
@@ -128,19 +128,17 @@ If no parent ticket on Ph2 Internal: create standalone Internal Bug under the se
 
 #### Reporter — always the current user from `.env` (mandatory)
 
-**Regardless of bug class or parent ticket**, the Jira **reporter** is ALWAYS the current user running the bug reporter agent (`JIRA_REPORTER_EMAIL` in `.env`) — never taken from the parent ticket's `fields.reporter`.
+**Regardless of bug class or parent ticket**, the Jira **reporter** is the account from `acli jira auth status` — never the parent ticket's `fields.reporter`, and never a user resolved with the `.env` API token.
 
 **Resolution (MUST execute at the start of Step 0):**
 
-1. Read `JIRA_REPORTER_EMAIL` from `Cursor-Project/.env`
+1. Run `acli jira auth status`. Store the printed email. If it is not authenticated, stop and ask the user to run `acli jira auth login`.
 
-2. Call Jira user search: `GET .../rest/api/3/user/search?query=<JIRA_REPORTER_EMAIL>` with Basic auth using `JIRA_EMAIL:JIRA_API_TOKEN`
+2. Run `acli jira workitem search --jql "reporter = currentUser() ORDER BY created DESC" --limit 1 --json --fields "reporter"`. Store `accountId` and `displayName`. If that search is empty, retry once with `assignee = currentUser()`.
 
-3. Use returned `accountId` for **Reporter** in the `createJiraIssue` call (`additional_fields.reporter.accountId`)
+3. Step 5a sends top-level `"reporter": "<accountId>"` when that id exists. If create rejects the reporter field, omit it and continue. The work item is still created as the `acli` account.
 
-4. If lookup fails → omit reporter from `additional_fields`
-
-Setting reporter via `additional_fields` requires the API token owner to have "Modify Reporter" permission. If Jira returns a field-validation error for reporter, log it and continue — the ticket is still created under the token owner.
+4. **Forbidden:** `GET /rest/api/3/user/search` and any hand-written Jira REST call that uses `JIRA_API_TOKEN` to identify the reporter. That token is not the `acli` login.
 
 Never use `fields.reporter` from the parent ticket as reporter. Violation is a **MUST**.
 
@@ -149,12 +147,12 @@ Never use `fields.reporter` from the parent ticket as reporter. Violation is a *
 | Bug class | Parent | Tester source |
 |-----------|--------|---------------|
 | **Internal** | Yes | **QA chapter subtask** assignee on parent (summary contains `QA` or `Test`, case-insensitive; prefer `QA`) |
-| **Internal** | No | **Current user** — same `.env` lookup as reporter |
-| **External** | — | **Current user** — same `.env` lookup as reporter |
+| **Internal** | No | **Current `acli` user** — same account as reporter |
+| **External** | — | **Current `acli` user** — same account as reporter |
 
 **Internal + parent:** Match subtask under parent whose summary contains **`QA`** or **`Test`**; use that subtask's **`fields.assignee`** as tester (`customfield_10095` at create). If no match or subtask unassigned → **Step 1b AskQuestion** (Tester + **Leave unset** option); do **not** fall back to parent reporter or `.env`.
 
-**External / Internal without parent:** Tester = same person as reporter from `.env` lookup.
+**External / Internal without parent:** Tester = same person as the `acli` reporter. A failed `.env` user search is not a reason to leave Tester empty when `currentUser()` returned an `accountId`.
 
 Never use `fields.reporter` from the parent ticket as tester. Violation is a **MUST**.
 
@@ -180,7 +178,7 @@ When a parent ticket is provided **and bug class is Internal**, the assignee for
 
 2. Match by label keyword in the subtask summary
 
-3. Call `getJiraIssue` on the matched subtask; use its `fields.assignee` as the bug's assignee
+3. Run `acli jira workitem view <SUBTASK> --json` on the matched subtask; use its assignee as the bug's assignee
 
 4. If no matching subtask exists, or the matched subtask has no assignee → fall back to `fields.assignee` from the parent ticket itself
 
@@ -206,11 +204,20 @@ The assignee must never be guessed or invented. If the chapter subtask exists bu
 - **Scope:** this relaxation applies **only** to phoenix-bug-reporter Step 0b. It does **not** change **DB.0a**, **TC-ENV-ASK.0**, or environment-resolver usage elsewhere.
 - **Gate:** Do **not** write the Step 3 review file until **`resolvedEnvironment`** is set. Review file must show canonical env name and source, never bare `—`.
 
+### Fix version gate (Step 0c)
+
+- After the project key is known, run `acli jira project view --key <KEY> --json`.
+- Confirm the issue type name on `issueTypes` (`Bug` not a subtask, or `Internal Bug` subtask).
+- Fix version is required when recent issues of that type all have `fixVersions`, and always for PHN **Bug** and PHN **Internal Bug** (`Fix versions: Fix versions is required.`).
+- Ask for the version **before** the review file. Options are unarchived, unreleased `versions[].name` from that `project view`.
+- **Forbidden:** `GET /rest/api/3/project/{key}/versions` with the `.env` token. That call cannot see PHN.
+- **Gate:** Do **not** write the review file, and do **not** offer Step 4 Agree, while a required Fix version is still empty.
+
 ### Assignee / Tester gate (Step 1b)
 
 - After Step 0 auto-resolution, if **Assignee** or **Tester** accountId is still empty and user did not name them → **AskQuestion** with candidate users + **Leave unset**.
 - **Leave unset:** review file shows `— (Leave unset — user confirmed)`; Step 5a **omits** that Jira field.
-- **Named user:** Step 5a **MUST** include `assignee_account_id` and/or `customfield_10095.accountId`.
+- **Named user:** Step 5a **MUST** include top-level `assignee` (account id or email) and/or `additionalAttributes.customfield_10095.accountId` on PHN.
 - **Gate:** Do **not** write review file or offer Step 4 Agree with bare `—` for assignee/tester without Step 1b ask or user naming them in chat.
 
 Skipping Step 0b or Step 1b AskQuestion when fields are unresolved is a **MUST** violation.
@@ -275,15 +282,14 @@ Priority is **AI-determined** using the priority matrix. Never ask the user for 
 
 ---
 
-### Jira MCP — cloudId
+### Jira site (official ACLI)
 
 ```
-
-cloudId: ad451d5c-7331-46f8-9a47-f51dc8e6bbde
-
-host: https://oppa-support.atlassian.net
-
+site: https://oppa-support.atlassian.net
+auth: acli jira auth login
 ```
+
+Do not pass `cloudId` to MCP. Jira MCP is disabled.
 
 ---
 
@@ -295,7 +301,7 @@ host: https://oppa-support.atlassian.net
 
 | Internal bug on PHN or Ph2 board | Use `phoenix-bug-reporter` — class Internal |
 
-| External bug (standalone) | Use `phoenix-bug-reporter` — class External; resolve project (message → this chat → **AskQuestion** from `getVisibleJiraProjects` minus denylist) |
+| External bug (standalone) | Use `phoenix-bug-reporter` — class External; resolve project (message → this chat → **AskQuestion** from `acli jira project list --json` minus denylist) |
 
 | Bug on Experiments board | Use `jira-bug` agent (Rule JIRA.0) |
 
@@ -315,17 +321,17 @@ Rule JIRA.0 (`jira_bug_agent.mdc`) governs the **Experiments board** workflow on
 
 After user Agree, the agent MUST execute all steps in this exact order:
 
-1. **Step 5a** — `createJiraIssue` (obtain issue key).
+1. **Step 5a** — `acli jira workitem create --from-json` (obtain issue key).
 
-   - **Split ADF (Internal, External with 10103):** **full Tier 1 colored Key details ADF** in **`customfield_10103`** (Description first, Option A TL;DR, Option B Actual bullets, API `codeBlock` evidence, screenshot embed when **5b** succeeds — any Backend/Frontend/DB label); standard **`description`** omitted or empty; **one** minimal stub retry if create requires Description. **MUST NOT** put full bug body in standard `description`.
+   - **Split ADF (PHN Internal Bug, PHN standalone Bug, or a project whose recent same-type issue has non-null `customfield_10103`):** **full Tier 1 colored Key details ADF** in **`additionalAttributes.customfield_10103`**. Include `additionalAttributes.fixVersions` when Step 0c required one. Omit standard **`description`**. One minimal stub retry if create requires Description. **MUST NOT** put the full bug body in standard `description`. The JSON shape is `acli jira workitem create --generate-json` (`projectKey`, `type`, `labels`, top-level `reporter` / `assignee`, `parentIssueId`, `additionalAttributes`). Do not send MCP `cloudId`, `additional_fields`, or `assignee_account_id`.
 
    - **Legacy Ph2 (no `customfield_10103`):** full markdown **`description`** only.
 
 2. **Step 5b** — upload screenshot **before the embed**: run `attach-screenshot-to-jira.ps1` via Shell; capture `ATTACHMENT_FILENAME`, `ATTACHMENT_ID`, **`ATTACHMENT_MEDIA_UUID`**, `ATTACHMENT_WIDTH`, `ATTACHMENT_HEIGHT`; the script auto-converts WebP/BMP/TIFF to PNG. `ATTACHMENT_MEDIA_UUID` is the **only** valid value for ADF `media.attrs.id` — the numeric attachment id is rejected and Jira silently drops the node
 
-3. **Step 5c** — **Split ADF:** **mandatory once when 5b uploaded an image** (exit 0), run **before 5d**; otherwise **conditional** on **5d** failure. `editJiraIssue` with **`customfield_10103` only** (no `description` in payload); max two attempts; MCP only — no Shell REST issue update. Content is the **same** Tier 1 ADF as 5a plus the `mediaSingle` — no other text, colour, order, or mark may change. **Legacy Ph2:** **mandatory** colored ADF on **`description`** after **5b**.
+3. **Step 5c** — **Split ADF:** **mandatory once when 5b uploaded an image** (exit 0), run **before 5d**; otherwise **conditional** on **5d** failure. `acli jira workitem edit --from-json` with **`customfield_10103` only** (no `description` in payload); max two attempts. No Jira MCP and no hand-written Jira REST issue update. Content is the **same** Tier 1 ADF as 5a plus the `mediaSingle` — no other text, colour, order, or mark may change. **Legacy Ph2:** **mandatory** colored ADF on **`description`** after **5b**.
 
-4. **Step 5d (split ADF boards)** — `getJiraIssue` with `expand=renderedFields`; verify **`customfield_10103`** Tier 1 structure (Description + TL;DR, Actual bullets, API codeBlocks, colors, content) and **report** the screenshot outcome. When an image was uploaded, a real image embed is required — a filename text line is a **fail**, reported as *attached only — not embedded*. When no image was provided, the screenshot criterion does not apply.
+4. **Step 5d (split ADF boards)** — `acli jira workitem view <KEY> --json`; verify **`customfield_10103`** ADF (official `acli` does not return rendered HTML) for Tier 1 structure (Description + TL;DR, Actual bullets, API codeBlocks, colors, content) and **report** the screenshot outcome. When an image was uploaded, a real image embed is required — a filename text line is a **fail**, reported as *attached only — not embedded*. When no image was provided, the screenshot criterion does not apply.
 
 **Why Step 5b before the embed:** Step 5a cannot reference an attachment that does not exist yet; the media UUID only becomes available after upload.
 
@@ -341,7 +347,7 @@ After user Agree, the agent MUST execute all steps in this exact order:
 
 ### Compliance tiers
 
-- Skipping the approval gate before `createJiraIssue` → **BLOCK**
+- Skipping the approval gate before `acli jira workitem create` → **BLOCK**
 
 - Creating Jira bug when multiple APPROVED review files exist and no valid `.active-bugreview` sidecar → hook **deny** (expected)
 
@@ -351,9 +357,13 @@ After user Agree, the agent MUST execute all steps in this exact order:
 
 - **External class:** auto-selecting GB (or any project) without user choice or a resolved chat/message source → **MUST NOT**
 
-- **External class:** sending hardcoded `customfield_10008` / `customfield_10095` / `customfield_10103` when those keys are absent from createmeta → **MUST NOT**
+- **External class:** sending `customfield_10008` (Epic) without a user-supplied value → **MUST NOT**
 
-- **External class:** guessing Epic, Fix version, issue type id, or any required field value → **MUST NOT** (AskQuestion)
+- **PHN External Bug:** omitting `customfield_10103` or omitting a Step 0c Fix version → **MUST NOT**
+
+- **External class:** guessing Epic, Fix version, issue type id, or any required field value → **MUST NOT** (AskQuestion from `acli jira project view`)
+
+- Calling Jira REST `user/search` or `GET /rest/api/3/project/{key}` during this workflow → **MUST NOT**
 
 - Skipping screenshot upload (Step 5b) when the file exists → **MUST**
 
@@ -366,9 +376,9 @@ After user Agree, the agent MUST execute all steps in this exact order:
 - Treating a missing screenshot as an error, warning, or blocker → **MUST NOT** (screenshots are optional)
 - Changing any existing text, colour, section order, mark, list, or `codeBlock` during the **5c** screenshot patch → **MUST NOT** (the media node is the only delta)
 
-- Skipping **legacy** `editJiraIssue` with `contentFormat: "adf"` (Step 5c) → **MUST**
+- Skipping **legacy** `acli jira workitem edit` of `description` (Step 5c) → **MUST**
 
-- Using Shell Jira REST to apply Step 5c formatting instead of `editJiraIssue` → **MUST**
+- Using Jira MCP or a hand-written Jira REST PUT to apply Step 5c formatting instead of `acli jira workitem edit` → **MUST**
 
 - Applying ADF (Step 5c legacy) before uploading screenshot (Step 5b) — wrong order → **MUST**
 
@@ -376,7 +386,7 @@ After user Agree, the agent MUST execute all steps in this exact order:
 
 - **Split ADF:** writing full bug body to standard `description` at create or in **5c** → **MUST NOT**
 
-- **Split ADF:** including `description` in Step **5c** `editJiraIssue` payload → **MUST NOT**
+- **Split ADF:** including `description` in Step **5c** `acli jira workitem edit` payload → **MUST NOT**
 
 - Deleting the review file on rejection (instead of editing) → **MUST**
 

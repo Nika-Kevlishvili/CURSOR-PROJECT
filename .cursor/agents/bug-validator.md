@@ -20,7 +20,7 @@ description: Validates bug reports using BugFinderAgent workflow (Rule 32). Envi
 
 | Field | Required | Notes |
 |-------|----------|-------|
-| Jira key or bug description | Yes | Jira MCP or REST; use **jira-evidence** SKILL for field completeness |
+| Jira key or bug description | Yes | Official ACLI `acli jira workitem view`; use **jira-evidence** SKILL for field completeness |
 | Environment | Yes | User-named in chat or AskQuestion — **no silent default** (Rule CONF.0) |
 | Attachments / diagrams | No | `download-jira-attachments.ps1`; local `config/Diagrams/` per SKILL Step 1b |
 
@@ -55,7 +55,7 @@ description: Validates bug reports using BugFinderAgent workflow (Rule 32). Envi
 ## Constraints
 
 - No Python `agents.*` imports. Phoenix READ-ONLY (Rule 0.8 Tier A).
-- DB failure does **not** block verdict; Confluence search/read failure after MCP + REST **does** → `PROCESS BLOCKED`.
+- DB failure does **not** block verdict; Confluence search/read failure on the REST GET scripts **does** → `PROCESS BLOCKED`.
 - Elasticsearch failure does **not** block verdict — it is supporting evidence that reduces confidence (like DB). Document `elasticsearch_investigation=failed` and continue.
 
 ## Footer

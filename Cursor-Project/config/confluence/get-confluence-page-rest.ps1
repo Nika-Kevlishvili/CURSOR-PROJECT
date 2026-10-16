@@ -3,8 +3,8 @@
     Fetches a single Confluence Cloud wiki page via REST (read-only) using Basic auth.
 
 .DESCRIPTION
-    Intended as the operational helper for Confluence REST fallback when MCP is unavailable.
-    Uses CONFLUENCE_WIKI_BASE or CONFLUENCE_URL, plus JIRA_EMAIL/JIRA_API_TOKEN or
+    Intended as the operational helper for Confluence Cloud REST GET reads.
+    Confluence MCP is disabled. Uses CONFLUENCE_WIKI_BASE or CONFLUENCE_URL, plus JIRA_EMAIL/JIRA_API_TOKEN or
     CONFLUENCE_EMAIL/CONFLUENCE_API_TOKEN. Never log secrets.
 
 .PARAMETER PageId

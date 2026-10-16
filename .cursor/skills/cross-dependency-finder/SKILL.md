@@ -29,7 +29,7 @@ Route to cross-dependency-finder subagent / CrossDependencyFinderAgent. Do not d
 
 ### 0b. Jira-anchored analysis (Rule 35a) [when user gives a Jira/bug/task]
 
-- **Jira:** Load issue (key, summary, description, links, key custom fields) via **Jira MCP** first; if MCP fails after retries, use **REST read fallback** per **`.cursor/rules/integrations/jira_rest_fallback.mdc`** (disclose `Jira source: REST fallback` in output to parent).
+- **Jira:** Load issue (key, summary, description, links, key custom fields) with **`acli jira workitem view <KEY> --json --fields "<list>"`** per **`.cursor/rules/integrations/atlassian_zero_cost.mdc`**. Disclose `Jira source: official ACLI` to the parent. Do not call Jira MCP.
 - **Codebase:** Search/read Phoenix code (READ-ONLY) for entry points, callers, **what_could_break** — **only after** step 0 environment + alignment.
 - **Prohibited (default):** local **`git log` / merge lookup** for the ticket key; **`git show`** archaeology; **git sync** triggered only because cross-dep ran; any removed **git snapshot** script.
 - **GitLab MR/merge:** **Only** if the user **explicitly** asks; read-only MCP.
@@ -48,9 +48,9 @@ Route to cross-dependency-finder subagent / CrossDependencyFinderAgent. Do not d
 ### 3. Find cross-dependencies
 
 - **Codebase:** Imports, references, API clients, DB access, event producers/consumers, shared libs. In code links/references, identify **what could break** (callers, consumers, contract users).
-- **Confluence (MCP) — deep exploration:** Confluence is a **primary evidence source** alongside Jira and codebase. The agent MUST actively search for and read relevant wiki pages to find **detailed descriptions, business rules, validation logic, and documented behavior** for the topic. If Confluence MCP fails after retries, use **read-only REST** per **`.cursor/rules/integrations/confluence_rest_fallback.mdc`** (disclose **`Confluence source: REST fallback …`** to the parent).
+- **Confluence (REST GET) — deep exploration:** Confluence is a **primary evidence source** alongside Jira and codebase. Search with **`search-confluence-cql-rest.ps1`** (`-Limit` max 50) and read each relevant page with **`get-confluence-page-rest.ps1 -PageId`**. Disclose **`Confluence source: Cloud REST GET.`** Do not call Confluence MCP.
   - **Search broadly:** Use multiple CQL queries if needed (Jira key, service/module name, feature phrase, related entity names) to find all relevant pages.
-  - **Read full pages:** When search results return relevant hits, use `getPage` to read the **full content** of each relevant page — not just snippets and titles.
+  - **Read full pages:** When search results return relevant hits, run `get-confluence-page-rest.ps1 -PageId` for the **full content** of each relevant page — not just snippets and titles.
   - **Walk related pages:** Follow descendants, "see also" links, and related pages when they are likely to contain dependency or integration details (e.g. upstream/downstream service descriptions, validation rules, status transitions, integration specs).
   - **Extract business context:** From Confluence pages, extract: business rules, validation logic, expected behavior, entity relationships, integration contracts, status flows, and any documented dependencies that the codebase alone cannot reveal.
   - **Stop condition:** Stop expanding Confluence reads when pages become clearly unrelated to the topic or when sufficient evidence has been gathered for `what_could_break` and dependency mapping.

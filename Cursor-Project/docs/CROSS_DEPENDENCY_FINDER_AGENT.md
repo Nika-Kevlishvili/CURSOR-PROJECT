@@ -21,7 +21,7 @@ The **Cross-Dependency Finder** agent discovers cross-dependencies (modules, ser
 
 ### 0. Jira-anchored scope (Rule 35a) [when user gives a Jira/bug/task]
 
-- **Jira MCP:** Fetch issue (key, summary, description, relevant fields).
+- **Jira:** Fetch issue (key, summary, description, relevant fields) with `acli jira workitem view`.
 - **Codebase:** Search/read under `Cursor-Project/Phoenix/**` (READ-ONLY) for services, callers, integration points tied to the ticket.
 - **Do NOT (default):** local `git log` / merge history / `git show` keyed by Jira; **GitLab MR** lists; conditional **git sync** solely because cross-dep ran. Optional GitLab (read-only) **only** if the user **explicitly** asks.
 - **technical_details:** Short notes from Jira + codebase (paths, class names, behaviour) — **not** mandatory merge-commit or MR enumeration.

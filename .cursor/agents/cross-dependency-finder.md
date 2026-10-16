@@ -28,7 +28,7 @@ Optional save: `Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope_slug>.json`
 
 ## Rule 35a / Confluence scope
 
-- **Jira + codebase + deep Confluence exploration** — GitLab MR only if user explicitly asks.
+- **Jira + codebase + deep Confluence REST exploration** — GitLab MR only if user explicitly asks. Jira via `acli jira workitem view`. Confluence via `search-confluence-cql-rest.ps1` and `get-confluence-page-rest.ps1`. No Jira or Confluence MCP.
 - Confluence is a **primary evidence source**: search broadly (multiple CQL queries), read full pages, walk descendants and related pages to find detailed descriptions, business rules, validation logic, and documented dependencies.
 - Stop expanding reads only when pages become clearly unrelated or sufficient evidence is gathered.
 

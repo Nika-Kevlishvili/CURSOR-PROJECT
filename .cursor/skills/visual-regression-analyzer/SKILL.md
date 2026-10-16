@@ -43,7 +43,7 @@ EnergoTS/tests/regression/{module}/{submodule}/checklist.md
 
 1. **Read the image file** using Read tool (supports images)
 2. **Compare against checkItems** from manifest
-3. **Check Confluence** if `confluenceRef` is provided (use Confluence MCP)
+3. **Check Confluence** if `confluenceRef` is provided (REST GET via `get-confluence-page-rest.ps1`; no Confluence MCP)
 4. **Determine verdict**: PASS, FAIL, or WARNING
 
 ### Step 4: Generate Report

@@ -1,7 +1,7 @@
 ---
 name: phoenix-qa
 model: inherit
-description: Answers Phoenix-related questions using Confluence (MCP) and codebase. Maps to PhoenixExpert. Use when the user asks about Phoenix backend, endpoints, business logic, or documentation. READ-ONLY; no code edits.
+description: Answers Phoenix-related questions using Confluence REST GET and codebase. Maps to PhoenixExpert. Use when the user asks about Phoenix backend, endpoints, business logic, or documentation. READ-ONLY; no code edits.
 ---
 
 # Phoenix Q&A Subagent (PhoenixExpert)
@@ -12,7 +12,7 @@ You act as the **PhoenixExpert** subagent with a **Senior QA Tester** lens (Rule
 
 1. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed.
 2. **Phoenix branch alignment (Rule PHOENIX-SWITCH.0)** — If the question is environment-sensitive (mentions or implies `dev`, `dev2`, `test`, `preprod`, `prod`, or `experiments`), **MANDATORY resolver call:** run `environment-resolver` and use its resolved output before running `.cursor/commands/switch-phoenix-branches.ps1 -Environment <env>` to align every `Cursor-Project/Phoenix/*` repo to `origin/<branch>` (latest tip). If ambiguity remains, `environment-resolver` must ask the user via questionnaire first (Rule CONF.0). Local uncommitted Phoenix edits are discarded by the script; Phoenix code remains READ-ONLY (Rule 0.8 Tier A). Skip alignment only for clearly environment-agnostic doc questions.
-3. Search **Confluence** via MCP (get cloudId → spaces → search → get pages). Use Confluence data fresh, no cache.
+3. Search **Confluence** with `Cursor-Project/config/confluence/search-confluence-cql-rest.ps1` and read pages with `get-confluence-page-rest.ps1 -PageId`. Use Confluence data fresh, no cache. Do not call Confluence MCP. Jira tickets, when needed: `acli jira workitem view` per `atlassian_zero_cost.mdc`.
 4. Search **Phoenix codebase** (Cursor-Project/Phoenix/) for relevant code, endpoints, services — using the working copy aligned in step 2.
 5. If anything is unclear, consult project rules in `.cursor/rules/` (agent_rules.mdc, core_rules.mdc, integrations/phoenix_branch_switching.mdc).
 

@@ -1,6 +1,6 @@
 # Jira integration (local scripts)
 
-This folder holds **Jira-related scripts and optional local exports**. Do not commit secrets; use environment variables or MCP configuration only.
+This folder holds **Jira-related scripts and optional local exports**. Do not commit secrets. Ticket JSON comes from official **`acli`** (`atlassian_zero_cost.mdc`). This folder's scripts are for attachment bytes and local exports only.
 
 ## `download-jira-attachments.ps1`
 

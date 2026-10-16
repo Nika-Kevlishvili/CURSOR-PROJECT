@@ -125,7 +125,7 @@ Base: **40**
 | No Confluence pages found | **-10** | Deep search returned 0 relevant pages | Major evidence gap — business rules unknown |
 | Confluence searched but only snippets used (no full page read) | **-5** | Search done but no `getPage` for any result | Shallow evidence despite deep exploration mandate |
 | No Phoenix code found for scope | **-15** | Could not locate relevant entry points or callers | Primary source missing |
-| Jira fetch failed (both MCP + REST) | **-10** | `PROCESS BLOCKED` for Jira | Scope anchor missing |
+| Jira fetch failed (official ACLI) | **-10** | `PROCESS BLOCKED` for Jira | Scope anchor missing |
 | what_could_break empty | **-10** | Zero items in output | Core deliverable missing |
 | Single evidence source only (code-only or Confluence-only) | **-15** | Only one of code/Confluence populated | Cross-validation impossible |
 | Assumption made (per assumption) | **-5** | Inferred dependency not backed by code or Confluence | Each assumption = potential missed or wrong dependency |
@@ -162,7 +162,7 @@ Base: **40**
 | Factor | Points | Condition | Weight rationale |
 |--------|--------|-----------|-----------------|
 | Phoenix code read + cited (file:line) | **+25** | Primary source — runtime behavior | Rule QA.0 dual-track |
-| Confluence checked (MCP or REST) | **+15** | Rule 0.5 satisfied | Documented product intent |
+| Confluence checked (REST GET) | **+15** | Rule 0.5 satisfied | Documented product intent |
 | Swagger/OpenAPI referenced | **+10** | API contract evidence when applicable | Contract-level verification |
 | Code and Confluence agree | **+5** | No conflict | Cross-validation bonus |
 | Environment-specific analysis | **+5** | Branch aligned to target env | Correct branch = correct behavior |
@@ -180,15 +180,15 @@ Base: **40**
 
 | Factor | Points | Condition | Weight rationale |
 |--------|--------|-----------|-----------------|
-| Issue fetched successfully (MCP or REST) | **+20** | Full issue JSON retrieved | Primary input for pipeline |
+| Issue fetched successfully (official ACLI) | **+20** | `acli jira workitem view --json` retrieved | Primary input for pipeline |
 | Custom fields read (environment, tester, etc.) | **+10** | `expand=names` or equivalent | Needed for env resolution, Slack routing |
 | Linked issues inspected | **+10** | `issuelinks` array processed | Cross-ticket context |
 | Attachments listed/downloaded | **+10** | `attachment[]` metadata read; binaries fetched if needed | Screenshots, logs, DOCX for reproduction |
 | Linked Confluence pages read (Rule 44) | **+10** | URLs from ticket fetched same pass | Business context |
-| Jira MCP failed → REST fallback used | **-5** | Disclosed as `Jira source: REST fallback` | Slightly less reliable path |
+| Jira read used MCP or skipped `--fields` | **-15** | Violates ATLASSIAN.0 / ATLASSIAN.2 | Rovo cost or incomplete ticket |
 | Missing custom fields | **-10** | Key fields (environment, tester) null/empty | Critical routing info missing |
 | No attachments processed | **-5** | Attachment array empty or not inspected | May miss reproduction evidence |
-| Both MCP and REST failed | **-20** | `PROCESS BLOCKED` | Cannot proceed |
+| Official ACLI view/search failed | **-20** | `PROCESS BLOCKED` | Cannot proceed |
 
 ---
 
@@ -267,7 +267,7 @@ Base: **40** (applied to **each** sub-score: Dev sub-score and Dev2 sub-score in
 |--------|--------|-----------|-------|
 | Jira ticket fetched + rich data (desc + AC) | **+20** | Step 1a: description + acceptance criteria present | `[A]` |
 | Jira ticket fetched + sparse (summary only) | **+10** | Step 1a: minimal detail | `[A]` |
-| Both MCP and REST Jira failed | **-20** | Step 1: PROCESS BLOCKED | `[A]` |
+| Official ACLI Jira fetch failed | **-20** | Step 1: PROCESS BLOCKED | `[A]` |
 | Git commit found referencing ticket | **+10** | Step 1b: `git log --grep` returned results | — |
 | Dev environment aligned (exit 0) | **+5** | Step 2a: full success | `[B]` |
 | Dev alignment partial (exit 2) | **-5** | Step 2a: some repos misaligned | `[B]` |

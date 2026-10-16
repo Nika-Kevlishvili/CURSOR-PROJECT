@@ -9,7 +9,7 @@
 ## 1. When this applies
 
 - **Cross-dependencies**, “what could break”, or **test cases** (Rule 35: cross-dependency-finder **before** test-case-generator).
-- User gives a **Jira/bug/task key** → **Rule 35a**: anchor on **Jira MCP + codebase + deep Confluence exploration**; **not** `git log` / merge lists by default.
+- User gives a **Jira/bug/task key** → **Rule 35a**: anchor on **official ACLI + codebase + deep Confluence REST exploration**; **not** `git log` / merge lists by default.
 
 ---
 

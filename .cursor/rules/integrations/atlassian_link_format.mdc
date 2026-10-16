@@ -76,8 +76,8 @@ Violation is a **MUST** when user-facing Confluence links use `oppa-support` wik
 
 ---
 
-## Rule LINK.4: MCP / REST vs user links
+## Rule LINK.4: ACLI / REST vs user links
 
-- MCP and REST may use cloud-specific API bases internally.
+- `acli` and Confluence REST may use cloud-specific API bases internally.
 - When **citing** Confluence in answers, always translate to **LINK.1** asterbit wiki URLs.
 - When **citing** Jira, always translate to **LINK.2** browse URLs.

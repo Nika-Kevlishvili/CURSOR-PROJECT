@@ -352,7 +352,7 @@ Place **`## Verdict`** immediately after a one-line ticket summary (or at the to
 
 Use **⚠️** when partially met or inferred; **❌** when failed or not checked; **N/A** when criterion does not apply.
 
-**Evidence basis (MANDATORY):** List only sources used, e.g. `Jira MCP, Phoenix code (file:line), git log, git diff origin/dev origin/dev2`.
+**Evidence basis (MANDATORY):** List only sources used, e.g. `official ACLI, Phoenix code (file:line), git log, git diff origin/dev origin/dev2`.
 
 **Example:**
 
@@ -376,7 +376,7 @@ Use **⚠️** when partially met or inferred; **❌** when failed or not checke
 | Dev2 code matches Dev (ticket scope) | ✅ | Certificate block identical |
 | Ops / env-only step (if ticket implies) | ❌ | Certificate copy not verified |
 
-**Evidence basis:** Jira MCP, Phoenix code, git log, git diff, commit ancestry.
+**Evidence basis:** official ACLI, Phoenix code, git log, git diff, commit ancestry.
 ```
 
 **When related tickets exist:** Repeat `## Verdict` + Sections 1–4 **per ticket** in bundle order (primary first), OR provide full detail for primary and abbreviated verdict+commits rows for related tickets — **matrix is never optional**.
@@ -505,7 +505,7 @@ Action needed: [specific steps or questions]
 | Step | Error | Action | Confidence impact |
 |------|-------|--------|-------------------|
 | 0 | Phoenix repos missing | PROCESS BLOCKED | N/A |
-| 0 | Jira MCP auth failure | Try REST fallback | -5 (fallback used) |
+| 0 | `acli` missing or auth failure | Stop. Ask the user to run `acli jira auth login`. Do not use Jira MCP | -20 |
 | 1 | Ticket not found | PROCESS BLOCKED | -20 |
 | 1 | Empty description | Continue with sparse data | +10 instead of +20 |
 | 1 | All code mapping fails | Set CODE_MAPPING: UNKNOWN | -15 |

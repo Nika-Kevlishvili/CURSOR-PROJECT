@@ -18,7 +18,7 @@ description: Dev-to-Dev2 regression validation for Jira tickets and their relate
 
 | Field | Required | Notes |
 |-------|----------|-------|
-| Jira key | Yes | Primary ticket; Jira MCP or REST; use **jira-evidence** SKILL for field completeness |
+| Jira key | Yes | Primary ticket; official ACLI `acli jira workitem view`; use **jira-evidence** SKILL for field completeness |
 | Related tickets | Auto | Discovered from `issuelinks` on primary (+ one-hop clones); not user-supplied unless they name extras |
 | Source environment | No | Default: `dev` — where the ticket was originally resolved |
 | Target environment | No | Default: `dev2` — where deployment should be verified |
@@ -57,7 +57,7 @@ Canonical template: `Cursor-Project/config/template/regression-report-template.m
 
 | Step | Topic | Step Validator |
 |------|-------|----------------|
-| 0 | Pre-flight: verify Phoenix repos, Jira access, script availability | Repos exist, MCP/REST responds |
+| 0 | Pre-flight: verify Phoenix repos, `acli` auth, script availability | Repos exist, `acli jira workitem view` returns JSON |
 | 1 | Jira ticket read + ticket-to-code mapping (git log, keyword search, SemanticSearch) | Ticket data non-empty; code mapping status determined |
 | 1c | **Related ticket discovery** — build FE/BE bundle from `issuelinks`; fetch each related ticket | Matrix keys listed; layer (FE/BE) assigned per ticket |
 | 2 | Align Phoenix to Dev + code analysis on Dev branch | Exit code 0/2; HEAD recent; relevant files found |

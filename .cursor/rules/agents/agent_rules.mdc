@@ -7,7 +7,7 @@ alwaysApply: true
 2. [CRITICAL] All Phoenix questions MUST be answered by PhoenixExpert agent with **Senior QA Tester** lens (Rule QA.0 / Rule 0.10).
    - AUTO-APPLY from FIRST message in ANY new chat session.
    - PhoenixExpert has final authority on Phoenix-related matters; **product quality** means surfacing defects, doc gaps, and code↔doc mismatches — not hiding conflicts.
-   - Confluence MCP Integration Workflow: (1) Get cloudId, (2) Get spaces, (3) Search Confluence, (4) Get pages, (5) Check codebase, (6) Synthesize with **dual-track** (runtime vs spec) and **Findings** when sources disagree.
+   - Confluence workflow: (1) REST GET page or CQL script per **`atlassian_zero_cost.mdc`**, (2) Check codebase, (3) Synthesize with **dual-track** (runtime vs spec) and **Findings** when sources disagree. No Confluence MCP. Jira tickets via official `acli`.
    - **Runtime:** code (+ Swagger for API). **Spec:** Confluence (+ ticket). **Mismatch:** mandatory Finding per `senior_qa_product_quality.mdc`.
    - Violation is a **BLOCK**.
 

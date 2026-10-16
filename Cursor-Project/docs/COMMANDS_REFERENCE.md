@@ -227,7 +227,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 **Trigger:** Dependency analysis, “what could break”, or before test case generation (Rule 35). **Rule 35a** applies when user gives a Jira/bug/task key.
 
 **What it can do:**
-- **Rule 35a:** **Jira MCP + codebase + deep Confluence exploration** — **no** local merge/`git log`/git sync solely for cross-dep; **technical_details** from Jira + code. **GitLab MR** only if the user explicitly asks.
+- **Rule 35a:** **official ACLI + codebase + deep Confluence REST exploration** — **no** local merge/`git log`/git sync solely for cross-dep; **technical_details** from Jira + code. **GitLab MR** only if the user explicitly asks.
 - Follow Rule 0.3; consult PhoenixExpert if needed (Rule 8).
 - Define scope (bug/task/feature): entry points, modules, services.
 - Find cross-dependencies: code (imports, APIs, DB, callers, consumers) and Confluence (deep exploration — full pages, related pages, business rules).
@@ -264,7 +264,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 **Trigger:** EnergoTS test creation, modification, analysis (Rule 0.8.1 – may edit only `EnergoTS/tests/`)
 
 **What it can do:**
-- Follow Rule 0.3; read Jira task (title, description) via Jira MCP before creating tests.
+- Follow Rule 0.3; read Jira task (title, description) via `acli jira workitem view` before creating tests.
 - Consult PhoenixExpert for API/business logic if needed.
 - **Study test:** Analyze a test file (e.g. `tests/billing/...spec.ts`).
 - **Create new test:** From Jira ID, domain, fixtures, endpoint, method, payload generator; test name must match Jira task title exactly.
