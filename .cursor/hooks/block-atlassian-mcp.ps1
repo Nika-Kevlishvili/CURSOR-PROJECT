@@ -1,7 +1,8 @@
 # block-atlassian-mcp.ps1
 # Hook: beforeMCPExecution
 # Purpose: Deny Jira and Confluence MCP tools so Atlassian Rovo credits stay at zero.
-# PostgreSQL, Elasticsearch, Slack, Playwright, and other MCP servers stay allowed.
+# PostgreSQL, Slack, Playwright, and other non-Atlassian MCP servers stay allowed.
+# Elasticsearch MCP is denied by block-elasticsearch-mcp.ps1 (official Elastic CLI instead).
 # Fail-open on parse errors so a hook bug does not freeze unrelated MCP.
 
 $jsonInput = [Console]::In.ReadToEnd()

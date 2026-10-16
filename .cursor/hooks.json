@@ -12,6 +12,7 @@
       { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/warn-phoenix-code-edit.ps1" }
     ],
     "beforeMCPExecution": [
+      { "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .cursor/hooks/block-elasticsearch-mcp.ps1" },
       { "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .cursor/hooks/block-atlassian-mcp.ps1" },
       { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/block-confluence-write.ps1" },
       { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/control-database-write.ps1" },
@@ -24,6 +25,11 @@
         "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .cursor/hooks/block-acli-rovo.ps1",
         "matcher": "acli|\\btwg\\b|teamwork-graph",
         "failClosed": true
+      },
+      {
+        "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .cursor/hooks/block-elasticsearch-write.ps1",
+        "matcher": "elastic|elasticsearch_mcp",
+        "failClosed": false
       }
     ],
     "afterAgentResponse": [

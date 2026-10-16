@@ -74,7 +74,7 @@ Base: **40**
 | Elasticsearch logs analyzed (relevant results) | **+10** | Step 4c completed with ≥1 relevant log entry | Runtime log evidence — errors, stack traces, timing |
 | Elasticsearch logs reveal root cause | **+5** | Bonus on top of +10 above: stack trace or error directly explains bug | Strongest log evidence |
 | Elasticsearch logs searched, no relevant results | **+2** | Step 4c completed but no matching logs | Absence noted; still ran the search |
-| Elasticsearch investigation failed/unavailable | **-3** | ES MCP unreachable or not configured for env | Supporting evidence missing, not primary |
+| Elasticsearch investigation failed/unavailable | **-3** | Elastic CLI unreachable or not configured for env | Supporting evidence missing, not primary |
 
 **Max achievable:** 40 + 90 = 130 → capped at **100**
 

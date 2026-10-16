@@ -17,7 +17,8 @@
 # Written by agent on Step 4 Agree; cleared on CREATED / CANCELLED
 #
 # Fail-open: empty stdin, parse failures, unexpected payload shapes, and all non-create
-# MCP (Jira reads, Confluence reads, PostgreSQL/Oracle/MySQL, Elasticsearch, Slack) MUST allow.
+# MCP (Jira reads, Confluence reads, PostgreSQL/Oracle/MySQL, Slack) MUST allow.
+# Elasticsearch MCP is denied by block-elasticsearch-mcp.ps1, not by this hook.
 # Fail-secure: only a parsed guarded createJiraIssue (Internal Bug / Bug) is denied when
 # the approval gate fails.
 

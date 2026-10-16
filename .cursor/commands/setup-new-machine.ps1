@@ -32,9 +32,11 @@ $envExamplePath = Join-Path $setupDir 'env.example'
 $extensionsJsonPath = Join-Path $setupDir 'extensions.json'
 $workspaceMcpPath = Join-Path $workspaceRoot '.cursor\mcp.json'
 $userMcpPath = Join-Path $env:USERPROFILE '.cursor\mcp.json'
-$esScriptPath = Join-Path $cursorProjectPath 'scripts\elasticsearch_mcp_server.py'
-$esScriptRelativePath = 'Cursor-Project/scripts/elasticsearch_mcp_server.py'
-$esRequirementsPath = Join-Path $cursorProjectPath 'scripts\elasticsearch-requirements.txt'
+$elasticCliDir = Join-Path $cursorProjectPath 'config\elasticsearch'
+$elasticBin = Join-Path $elasticCliDir 'node_modules\.bin\elastic'
+$elasticContexts = Join-Path $elasticCliDir 'contexts.yml'
+$elasticPhoenix = Join-Path $cursorProjectPath 'scripts\elastic-phoenix.py'
+$esMcpNames = @('ElasticsearchDev', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd')
 $envTargetProject = Join-Path $cursorProjectPath '.env'
 $envTargetEnergo = Join-Path (Join-Path $cursorProjectPath 'EnergoTS') '.env'
 
@@ -256,123 +258,48 @@ function Invoke-CopyEnvFiles {
     Write-Host "           $envTargetEnergo" -ForegroundColor Gray
 }
 
-function Test-PythonHasEsDeps {
-    param([string]$PythonExe)
-    if ([string]::IsNullOrWhiteSpace($PythonExe) -or -not (Test-Path $PythonExe)) { return $false }
-    & $PythonExe -c "import requests, mcp; from mcp.server.fastmcp import FastMCP" 2>$null | Out-Null
-    return $LASTEXITCODE -eq 0
-}
-
-function Get-PythonExecutableCandidates {
-    $candidates = [System.Collections.Generic.List[string]]::new()
-
-    $pyLauncher = Get-Command py -ErrorAction SilentlyContinue
-    if ($pyLauncher) {
-        $resolved = (& py -3 -c "import sys; print(sys.executable)" 2>$null | Out-String).Trim()
-        if ($LASTEXITCODE -eq 0 -and $resolved) { $candidates.Add($resolved) }
-    }
-
-    $pythonRoot = Join-Path $env:LOCALAPPDATA 'Programs\Python'
-    if (Test-Path $pythonRoot) {
-        Get-ChildItem -Path $pythonRoot -Directory -ErrorAction SilentlyContinue |
-            Sort-Object Name -Descending |
-            ForEach-Object {
-                $exe = Join-Path $_.FullName 'python.exe'
-                if (Test-Path $exe) { $candidates.Add($exe) }
-            }
-    }
-
-    foreach ($name in @('python', 'python3')) {
-        $cmd = Get-Command $name -ErrorAction SilentlyContinue
-        if ($cmd -and $cmd.Source -notmatch 'WindowsApps') {
-            $candidates.Add($cmd.Source)
-        }
-    }
-
-    $unique = @()
-    $seen = @{}
-    foreach ($exe in $candidates) {
-        $norm = $exe.ToLowerInvariant()
-        if ($seen[$norm]) { continue }
-        $seen[$norm] = $true
-        if (Test-Path $exe) { $unique += $exe }
-    }
-    return $unique
-}
-
-function Get-ElasticsearchPython {
-    foreach ($exe in (Get-PythonExecutableCandidates)) {
-        if (Test-PythonHasEsDeps -PythonExe $exe) { return $exe }
-    }
-    return $null
-}
-
-function Install-ElasticsearchPythonDeps {
-    param([string]$RequirementsPath)
-
-    foreach ($exe in (Get-PythonExecutableCandidates)) {
-        Write-Host "  Installing Elasticsearch MCP Python deps via $exe ..." -ForegroundColor Gray
-        & $exe -m pip install --upgrade pip 2>&1 | Out-Null
-        & $exe -m pip install -r $RequirementsPath 2>&1 | Out-String | Out-Null
-        if ($LASTEXITCODE -eq 0 -and (Test-PythonHasEsDeps -PythonExe $exe)) {
-            return $exe
-        }
-    }
-    return $null
-}
-
-function Set-ElasticsearchMcpServerEntries {
-    param(
-        $McpServersObj,
-        [string]$PythonExe,
-        [string]$ScriptPath
-    )
-
-    foreach ($name in @('ElasticsearchDev', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd')) {
-        if (-not $McpServersObj.$name) { continue }
-        $McpServersObj.$name.command = $PythonExe
-        if ($McpServersObj.$name.args -is [System.Array] -and $McpServersObj.$name.args.Count -gt 0) {
-            $McpServersObj.$name.args[0] = $ScriptPath
-        }
-        else {
-            $McpServersObj.$name.args = @($ScriptPath)
+function Remove-ElasticsearchMcpServers {
+    param($McpObj)
+    if (-not $McpObj -or -not $McpObj.mcpServers) { return }
+    foreach ($name in $esMcpNames) {
+        if ($McpObj.mcpServers.PSObject.Properties.Name -contains $name) {
+            $McpObj.mcpServers.PSObject.Properties.Remove($name)
         }
     }
 }
 
-function Invoke-SetupElasticsearchMcp {
-    Write-Step 'Phase 3a - Elasticsearch MCP Python setup'
+function Invoke-SetupElasticCli {
+    Write-Step 'Phase 3a - Official Elastic CLI (@elastic/cli)'
 
-    if (-not (Test-Path $esScriptPath)) {
-        Write-Fail "Missing Elasticsearch MCP script: $esScriptPath" -Hard
-        return @{ Ok = $false; Python = ''; ScriptPath = '' }
+    if (-not (Test-Path $elasticContexts) -or -not (Test-Path $elasticPhoenix)) {
+        Write-Fail 'Missing Elastic CLI contexts.yml or elastic-phoenix.py' -Hard
+        return $false
     }
-    if (-not (Test-Path $esRequirementsPath)) {
-        Write-Fail "Missing Elasticsearch requirements: $esRequirementsPath" -Hard
-        return @{ Ok = $false; Python = ''; ScriptPath = '' }
+    if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
+        Write-Fail 'npm is required to install @elastic/cli. Install Node.js 22.12 or later.' -Hard
+        return $false
     }
 
-    $python = Get-ElasticsearchPython
-    if ($python) {
-        Write-Ok "Python ready for Elasticsearch MCP: $python"
-    }
-    else {
-        Write-Warn 'Python with mcp/requests not found - installing dependencies'
-        $python = Install-ElasticsearchPythonDeps -RequirementsPath $esRequirementsPath
-        if ($python) {
-            Write-Ok "Installed Elasticsearch MCP deps with: $python"
-        }
-        else {
-            Write-Fail 'Could not find Python or install mcp/requests/urllib3. Install Python 3.11+ and re-run.' -Hard
-            return @{ Ok = $false; Python = ''; ScriptPath = $esScriptPath }
+    Push-Location $elasticCliDir
+    try {
+        & npm install --silent
+        if ($LASTEXITCODE -ne 0) {
+            Write-Fail 'npm install failed in Cursor-Project/config/elasticsearch' -Hard
+            return $false
         }
     }
-
-    return @{
-        Ok         = $true
-        Python     = $python
-        ScriptPath = $esScriptRelativePath
+    finally {
+        Pop-Location
     }
+
+    $binOk = (Test-Path $elasticBin) -or (Test-Path ($elasticBin + '.cmd'))
+    if (-not $binOk) {
+        Write-Fail "Elastic CLI binary missing after npm install: $elasticBin" -Hard
+        return $false
+    }
+    Write-Ok "Elastic CLI installed under $elasticCliDir"
+    Write-Host "  Dev/Prod API keys: secrets.env or ELASTIC_DEV_API_KEY / ELASTIC_PROD_API_KEY. Not mcp.json." -ForegroundColor Yellow
+    return $true
 }
 
 function Write-PrettyJsonFile {
@@ -452,10 +379,7 @@ function Invoke-WriteMcpConfig {
         return
     }
 
-    $esSetup = Invoke-SetupElasticsearchMcp
-    if (-not $esSetup.Ok) {
-        Write-Warn 'Continuing MCP merge without Elasticsearch entries (setup failed)'
-    }
+    Invoke-SetupElasticCli | Out-Null
 
     $raw = Get-Content -Path $mcpTemplatePath -Raw -Encoding UTF8
     try {
@@ -470,16 +394,7 @@ function Invoke-WriteMcpConfig {
         return
     }
 
-    if ($esSetup.Ok) {
-        Set-ElasticsearchMcpServerEntries -McpServersObj $template.mcpServers -PythonExe $esSetup.Python -ScriptPath $esSetup.ScriptPath
-    }
-    else {
-        foreach ($name in @('ElasticsearchDev', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd')) {
-            if ($template.mcpServers.$name) {
-                $template.mcpServers.PSObject.Properties.Remove($name)
-            }
-        }
-    }
+    Remove-ElasticsearchMcpServers -McpObj $template
 
     $existing = $null
     if (Test-Path $workspaceMcpPath) {
@@ -523,13 +438,16 @@ function Invoke-WriteMcpConfig {
         }
     }
 
-    $pyExe = if ($esSetup.Ok -and $esSetup.Python) { $esSetup.Python } else { 'python' }
+    Remove-ElasticsearchMcpServers -McpObj $merged
+    $pyCmd = Get-Command python3 -ErrorAction SilentlyContinue
+    if (-not $pyCmd) { $pyCmd = Get-Command python -ErrorAction SilentlyContinue }
+    $pyExe = if ($pyCmd) { $pyCmd.Source } else { 'python' }
     Write-PrettyJsonFile -Path $workspaceMcpPath -Object $merged -PythonExe $pyExe
     Write-Ok "Wrote $workspaceMcpPath"
 
     Clear-UserLevelMcpConfig
 
-    Write-Host "  Restart Cursor (or reload MCP servers) so Confluence/Jira/PostgreSQL/Elasticsearch load." -ForegroundColor Yellow
+    Write-Host "  Restart Cursor so PostgreSQL MCP reloads. Elasticsearch uses the Elastic CLI, not MCP." -ForegroundColor Yellow
 }
 
 function Get-CursorCli {
@@ -665,13 +583,16 @@ function Invoke-Verify {
             $names = @($mcp.mcpServers.PSObject.Properties.Name)
             $required = @(
                 'Confluence', 'Jira',
-                'PostgreSQLTest', 'PostgreSQLDev', 'PostgreSQLDev2', 'PostgreSQLPreProd', 'PostgreSQLProd',
-                'ElasticsearchDev', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd'
+                'PostgreSQLTest', 'PostgreSQLDev', 'PostgreSQLDev2', 'PostgreSQLPreProd', 'PostgreSQLProd'
             )
             $missing = @($required | Where-Object { $names -notcontains $_ })
-            if ($missing.Count -eq 0) {
+            $esLeft = @($names | Where-Object { $esMcpNames -contains $_ })
+            if ($missing.Count -eq 0 -and $esLeft.Count -eq 0) {
                 $mcpOk = $true
-                $mcpDetail = 'all required servers present in workspace .cursor/mcp.json'
+                $mcpDetail = 'required servers present; Elasticsearch MCP absent'
+            }
+            elseif ($esLeft.Count -gt 0) {
+                $mcpDetail = "Elasticsearch MCP still present: $($esLeft -join ', ')"
             }
             else {
                 $mcpDetail = "missing: $($missing -join ', ')"
@@ -713,29 +634,13 @@ function Invoke-Verify {
     Add-VerifyResult -Name 'user mcp.json' -Ok $userMcpOk -Detail $userMcpDetail
     if (-not $userMcpOk) { $script:PartialFail = $true }
 
-    # Elasticsearch Python + script
-    $esScriptOk = Test-Path $esScriptPath
-    Add-VerifyResult -Name 'Elasticsearch MCP script' -Ok $esScriptOk -Detail $(if ($esScriptOk) { 'present' } else { 'missing' })
-    if (-not $esScriptOk) { $script:PartialFail = $true }
+    $elasticFilesOk = (Test-Path $elasticContexts) -and (Test-Path $elasticPhoenix)
+    Add-VerifyResult -Name 'Elastic CLI wrapper' -Ok $elasticFilesOk -Detail $(if ($elasticFilesOk) { 'contexts.yml + elastic-phoenix.py' } else { 'missing contexts.yml or elastic-phoenix.py' })
+    if (-not $elasticFilesOk) { $script:PartialFail = $true }
 
-    $esPython = Get-ElasticsearchPython
-    $esPythonDetail = if ($esPython) { $esPython } else { 'mcp/requests not importable - re-run setup or pip install -r Cursor-Project/scripts/elasticsearch-requirements.txt' }
-    Add-VerifyResult -Name 'Elasticsearch Python deps' -Ok ([bool]$esPython) -Detail $esPythonDetail
-    if (-not $esPython) { $script:PartialFail = $true }
-
-    if ($esPython -and (Test-Path $workspaceMcpPath)) {
-        try {
-            $mcpCheck = (Get-Content -Path $workspaceMcpPath -Raw -Encoding UTF8) | ConvertFrom-Json
-            $esCmd = $mcpCheck.mcpServers.ElasticsearchDev.command
-            $esCmdOk = (-not [string]::IsNullOrWhiteSpace($esCmd)) -and (Test-Path $esCmd)
-            Add-VerifyResult -Name 'Elasticsearch MCP python path' -Ok $esCmdOk -Detail $(if ($esCmdOk) { $esCmd } else { if ($esCmd) { "command=$esCmd (not found)" } else { 'command missing - run setup (not -VerifyOnly)' } })
-            if (-not $esCmdOk) { $script:PartialFail = $true }
-        }
-        catch {
-            Add-VerifyResult -Name 'Elasticsearch MCP python path' -Ok $false -Detail 'could not read workspace mcp.json'
-            $script:PartialFail = $true
-        }
-    }
+    $elasticBinOk = (Test-Path $elasticBin) -or (Test-Path ($elasticBin + '.cmd'))
+    Add-VerifyResult -Name 'Elastic CLI binary' -Ok $elasticBinOk -Detail $(if ($elasticBinOk) { $elasticBin } else { 'run npm install in Cursor-Project/config/elasticsearch' })
+    if (-not $elasticBinOk) { $script:PartialFail = $true }
 
     # Extensions
     $cursorExe = Get-CursorCli
@@ -787,9 +692,10 @@ try { $null = npm -v 2>$null; if ($LASTEXITCODE -eq 0) { $npmCheck = $true } } c
 if ($npmCheck) { Write-Ok "npm: $(npm -v 2>$null)" }
 else { Write-Warn 'npm not in PATH - install Node.js LTS manually (required for MCP npx)' }
 
-$pyCheck = Get-ElasticsearchPython
-if ($pyCheck) { Write-Ok "Python (Elasticsearch MCP): $pyCheck" }
-else { Write-Warn 'Python with mcp/requests not ready - script will try pip install in Phase 3a' }
+$pyCheck = Get-Command python3 -ErrorAction SilentlyContinue
+if (-not $pyCheck) { $pyCheck = Get-Command python -ErrorAction SilentlyContinue }
+if ($pyCheck) { Write-Ok "Python (elastic-phoenix.py): $($pyCheck.Source)" }
+else { Write-Warn 'python3 not in PATH - required for elastic-phoenix.py' }
 
 if (-not $VerifyOnly) {
     if (-not $SkipClone) { Invoke-CloneSubmodules }

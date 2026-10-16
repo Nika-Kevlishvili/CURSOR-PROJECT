@@ -1,71 +1,82 @@
 # ELASTICSEARCH WORKFLOW RULES
 
-**MCP server script:** `Cursor-Project/scripts/elasticsearch_mcp_server.py`
+**Client:** official Elastic CLI (`@elastic/cli`), invoked only through `Cursor-Project/scripts/elastic-phoenix.py`.
+**Procedure:** `.cursor/skills/phoenix-elasticsearch/SKILL.md`.
+**Config:** `Cursor-Project/config/elasticsearch/contexts.yml`.
 
-## Rule ES.0: Environment Selection
+Elasticsearch MCP is removed. Do not call `ElasticsearchDev`, `ElasticsearchTest`, `ElasticsearchTest2ES`, `ElasticsearchTest2SLR`, `ElasticsearchProd`, or `es_search_logs` / `es_error_summary` / `es_sql_query` / `es_search` / `es_count` / `es_field_values` / `es_list_indices` / `es_index_mapping` / `es_cluster_health`. A `beforeMCPExecution` hook denies those calls.
 
-| Resolved env | Elasticsearch MCP server | `environment` param | Auth |
+**Chat line when logs were read:** `Elasticsearch source: official Elastic CLI (@elastic/cli via elastic-phoenix).`
+
+## Rule ES.0: Environment selection
+
+| Resolved env | CLI context | `--environment` | Auth |
 |---|---|---|---|
-| Dev | `ElasticsearchDev` | `dev` | API key |
-| Dev2 | `ElasticsearchDev` | `dev2` | API key |
-| Test | `ElasticsearchTest` | `test` | None (no auth) |
-| PreProd | `ElasticsearchTest` | `preprod` | None (no auth) |
-| Test 2 ES | `ElasticsearchTest2ES` | `test2es` | None (no auth) |
-| Test 2 SLR | `ElasticsearchTest2SLR` | `test2slr` | None (no auth) |
-| Prod | `ElasticsearchProd` | `prod` | API key (read-only) |
+| Dev | `phoenix-dev` | `dev` | API key |
+| Dev2 | `phoenix-dev` | `dev2` | API key |
+| Test | `phoenix-test` | `test` | None |
+| PreProd | `phoenix-test` | `preprod` | None |
+| Test 2 ES | `phoenix-test` | `test2es` | None |
+| Test 2 SLR | `phoenix-test` | `test2slr` | None |
+| Prod | `phoenix-prod` | `prod` | API key (read-only) |
 | Experiments | Not configured | — | Skip ES, document `elasticsearch_investigation=not_available` |
 
-**Clusters / MCP servers:**
+**Clusters:**
 
-| MCP server | URL | Environments | Auth | Write protection | Mode |
+| Context | URL | Environments | Auth | Write protection | Mode |
 |---|---|---|---|---|---|
-| **ElasticsearchDev** | `https://10.236.20.13:9200` | Dev + Dev2 | API key (read-only) | API key is read-only | Paired — filter by `app_name` |
-| **ElasticsearchTest** | `http://10.236.20.27:9200` | Test + PreProd | None (open) | `ES_READ_ONLY=true` (Rule ES.4a) | Paired — filter by `app_name` |
-| **ElasticsearchTest2ES** | `http://10.236.20.27:9200` (same as Test) | Test 2 ES | None (open) | `ES_READ_ONLY=true` (Rule ES.4a) | Keyword — `app_name.keyword=phoenix2` + `environment.keyword=test` |
-| **ElasticsearchTest2SLR** | `http://10.236.20.27:9200` (same as Test) | Test 2 SLR | None (open) | `ES_READ_ONLY=true` (Rule ES.4a) | Keyword — `app_name.keyword=phoenix2` + `environment.keyword=testi2` |
-| **ElasticsearchProd** | `https://10.236.20.69:9200` | Prod | API key (read-only) | API key is read-only + `ES_READ_ONLY=true` | Single — no `app_name` filter (all logs = Prod) |
+| **phoenix-dev** | `https://10.236.20.13:9200` | Dev + Dev2 | API key (read-only) | API key is read-only | Paired — filter by `app_name` |
+| **phoenix-test** | `http://10.236.20.27:9200` | Test, PreProd, Test 2 ES, Test 2 SLR | None (open) | Wrapper rejects writes (Rule ES.4a) | Paired, or keyword for Test 2 |
+| **phoenix-prod** | `https://10.236.20.69:9200` | Prod | API key (read-only) | API key is read-only and the wrapper rejects writes | Single — no `app_name` filter |
 
-**Prod limitations:** The read-only API key cannot access `_cluster/health` or `_cat/indices` (403). Use `es_search_logs`, `es_error_summary`, `es_sql_query`, `es_search`, `es_count`, and `es_field_values` — these work. Skip `es_cluster_health` and `es_list_indices` on Prod.
+These clusters run **Elasticsearch 8.19**. `contexts.yml` pins the CLI version to `8.19`. The Elastic CLI is a technical preview documented for 9.x; this workspace uses the search, count, SQL, and cat commands that succeed on 8.19.
 
-Paired clusters use the **same** `logstash-*` index pattern and the **same** `app_name` filtering convention:
+**Prod and Dev limitation:** the read-only API keys cannot call cluster health or list indices (403). Use `search-logs`, `error-summary`, `sql`, `search`, `count`, `field-values`, and `health` (size-0 search). Skip `indices` and `mapping` on Prod.
+
+Paired environments use the same `logstash-*` index pattern:
 
 | Environment role | `app_name` values |
 |---|---|
-| Primary env (dev, test) | `phoenix`, `phoenix-scheduler`, `phoenix-billing-run`, `phoenix-mass-import`, `phoenix-sales-portal`, `phoenix-payment-api` |
-| Secondary env (dev2, preprod) | `phoenix2`, `phoenix-scheduler2`, `phoenix-billing-run2`, `phoenix-mass-import2`, `phoenix-sales-portal2`, `phoenix-payment-api2` |
+| Primary (`dev`, `test`) | `phoenix`, `phoenix-scheduler`, `phoenix-billing-run`, `phoenix-mass-import`, `phoenix-sales-portal`, `phoenix-payment-api` |
+| Secondary (`dev2`, `preprod`) | those names with a `2` suffix |
 
-Keyword-mode servers (Test 2 ES / Test 2 SLR) share the Test cluster URL but filter with fixed term clauses (configured via `ES_FILTER_APP_NAME` + `ES_FILTER_ENVIRONMENT_KEYWORD` in mcp.json).
+Keyword environments:
 
-The `es_search_logs` and `es_error_summary` tools apply the configured filter automatically when you pass the `environment` parameter.
+| `--environment` | Filters |
+|---|---|
+| `test2es` | `app_name.keyword=phoenix2`, `environment.keyword=test` |
+| `test2slr` | `app_name.keyword=phoenix2`, `environment.keyword=testi2` |
 
-## Rule ES.0a: Bug description portal URL → Test 2 ES log filter [MUST]
+The wrapper applies these filters. Do not re-implement them in an ad-hoc query unless `search` is required, and then include the same filter clauses.
 
-When **bug-validator** retrieves a Jira ticket, scan the description (and other ticket text with portal URLs) for these path markers. If found, **override** the normal ES.0 MCP mapping **for Elasticsearch log search only** (Step 4c):
+## Rule ES.0a: Bug description portal URL → Test 2 log filter [MUST]
 
-| URL path marker in ticket | Portal example | ES MCP server | `environment` param | Keyword filters applied |
-|---|---|---|---|---|
-| `phoenix-test2/` | `https://testapps.energo-pro.bg/app/phoenix-test2/` | `ElasticsearchTest2ES` | `test2es` | `app_name.keyword=phoenix2`, `environment.keyword=test` |
-| `phoenix2-slr-test/` | `https://testapps.energo-pro.bg/app/phoenix2-slr-test/` | `ElasticsearchTest2SLR` | `test2slr` | `app_name.keyword=phoenix2`, `environment.keyword=testi2` |
+When **bug-validator** retrieves a Jira ticket, scan the description (and other ticket text with portal URLs) for these path markers. If found, **override** the normal ES.0 environment **for Elasticsearch log search only** (Step 4c):
 
-- Match is **substring** on the path (case-sensitive path segments as written above).
-- If **both** markers appear → AskQuestion which Test 2 log target to use (Rule CONF.0); do not guess.
-- If **neither** marker appears → use Rule ES.0 mapping from the resolved environment.
-- This override applies to **Elasticsearch logs only** — it does not silently change PostgreSQL MCP or Phoenix branch alignment unless the user also resolved that environment.
+| URL path marker in ticket | Portal example | `--environment` | Keyword filters applied |
+|---|---|---|---|
+| `phoenix-test2/` | `https://testapps.energo-pro.bg/app/phoenix-test2/` | `test2es` | `app_name.keyword=phoenix2`, `environment.keyword=test` |
+| `phoenix2-slr-test/` | `https://testapps.energo-pro.bg/app/phoenix2-slr-test/` | `test2slr` | `app_name.keyword=phoenix2`, `environment.keyword=testi2` |
+
+- Match is a **substring** on the path (case-sensitive path segments as written above).
+- If **both** markers appear → AskQuestion which Test 2 log target to use (Rule CONF.0).
+- If **neither** marker appears → use Rule ES.0 from the resolved environment.
+- This override applies to **Elasticsearch logs only**. It does not change PostgreSQL MCP or Phoenix branch alignment unless the user also resolved that environment.
 
 ## Rule ES.1: Environment gate — reuse resolved environment
 
-Elasticsearch log analysis uses the **same environment** already resolved by the environment-resolver (Step 0.0 in bug validation, TC-ENV-ASK.0 for test cases). Do **not** ask the user again. If the resolved environment has no configured ES MCP server, skip ES and document `elasticsearch_investigation=not_available`.
+Elasticsearch log analysis uses the **same environment** already resolved by the environment-resolver (Step 0.0 in bug validation, TC-ENV-ASK.0 for test cases). Do **not** ask the user again. If the resolved environment has no cluster (`experiments`), skip ES and document `elasticsearch_investigation=not_available`.
 
 ## Rule ES.2: Log search index pattern
 
-All Phoenix application logs are stored in daily `logstash-YYYY.MM.DD` indices. The MCP tools use `logstash-*` by default. Available log fields:
+Phoenix application logs are in daily `logstash-YYYY.MM.DD` indices. The wrapper searches `logstash-*`.
 
 | Field | Type | Description |
 |---|---|---|
 | `@timestamp` | date | Log timestamp |
 | `message` | text | Log message body |
 | `level` | text | Log level: ERROR, WARN, INFO, DEBUG |
-| `app_name` | text | Application name (phoenix, phoenix-scheduler, etc.) |
+| `app_name` | text | Application name |
 | `logger_name` | text | Java logger / class name |
 | `stack_trace` | text | Java stack trace (when present) |
 | `thread_name` | text | Thread name |
@@ -80,7 +91,7 @@ All Phoenix application logs are stored in daily `logstash-YYYY.MM.DD` indices. 
 | `User` | text | User identifier |
 | `operation` | text | Operation name |
 
-Use `extra_filters` parameter on `es_search_logs` for exact-match filtering on business ID fields (e.g. `{"invoiceId": "123"}`).
+Use `--extra-filters` on `search-logs` for exact-match filtering on business ID fields (example: `--extra-filters '{"invoiceId":"123"}'`).
 
 ## Rule ES.3: Integration with bug validation (Rule 32)
 
@@ -90,32 +101,36 @@ Elasticsearch log analysis is **Step 4c** in the bug validation SKILL — after 
 
 **Report section:** Include `### Elasticsearch Log Analysis` in the bug validation report between Database Investigation and Quality Findings.
 
-**Evidence checklist:** Add `elasticsearch_investigation=<classification>` to the evidence checklist. Classification: `supports_bug` | `contradicts_bug` | `reveals_root_cause` | `no_relevant_logs` | `investigation_failed` | `not_available`.
+**Evidence checklist:** Add `elasticsearch_investigation=<classification>`. Classification: `supports_bug` | `contradicts_bug` | `reveals_root_cause` | `no_relevant_logs` | `investigation_failed` | `not_available`.
 
 ## Rule ES.4: Security
 
-Never commit or log Elasticsearch API keys. Credentials stay in Cursor MCP server config (`~/.cursor/mcp.json` env block) only. Violation is a **BLOCK** (security).
+Never commit or log Elasticsearch API keys. Keys live in the process environment, `Cursor-Project/config/elasticsearch/secrets.env` (gitignored), or the OS credential store. Violation is a **BLOCK** (security).
 
-## Rule ES.4a: Read-Only Enforcement (Test / PreProd) [CRITICAL]
+## Rule ES.4a: Read-only [CRITICAL]
 
-**ElasticsearchTest** (`test`, `preprod`), **ElasticsearchTest2ES** (`test2es`), and **ElasticsearchTest2SLR** (`test2slr`) share the same open Test cluster endpoint. The MCP server enforces **read-only** mode via `ES_READ_ONLY=true`:
+Every environment is read-only:
 
-- **BLOCKED at the script level:** `PUT`, `DELETE`, `PATCH` methods and write-path endpoints (`_bulk`, `_delete_by_query`, `_update_by_query`, `_reindex`, `_aliases`, `_template`, `_ingest`, `_snapshot`, etc.) are rejected before any HTTP request is sent.
-- **ElasticsearchDev** (`dev`, `dev2`) uses a **read-only API key** — write protection is enforced by Elasticsearch itself.
-- **ElasticsearchProd** (`prod`) uses a **read-only API key** AND `ES_READ_ONLY=true` — double protection.
-- Agents MUST NOT attempt to create, modify, or delete indices, documents, templates, or pipelines on any Elasticsearch cluster. All ES interactions are **search and read only**.
-- Violation is a **BLOCK** (security — unauthenticated write to shared infrastructure).
+- The wrapper exposes only search, count, SQL read, field terms, mapping, index listing, and a size-0 health search.
+- SQL containing `INSERT`, `UPDATE`, `DELETE`, `DROP`, `ALTER`, `CREATE`, `TRUNCATE`, `GRANT`, or `REVOKE` is rejected before the CLI runs.
+- A shell hook blocks `elastic` write subcommands (`bulk`, `delete`, `update`, `reindex`, `index`, `create`) and `elasticsearch_mcp_server.py`.
+- Dev and Prod API keys are read-only in Elasticsearch itself. Test has no auth, so the wrapper and the hook are the write barrier.
+- Agents MUST NOT create, modify, or delete indices, documents, templates, or pipelines.
 
-## Rule ES.5: Available MCP tools
+Violation is a **BLOCK** (security — unauthenticated write to shared infrastructure).
 
-| Tool | Purpose | When to use |
+## Rule ES.5: Commands
+
+| Command | Purpose | When to use |
 |---|---|---|
-| `es_search_logs` | Environment-aware Phoenix log search | Primary tool for bug validation log analysis |
-| `es_error_summary` | Top ERROR groups by logger_name | First step — broad error scan for the bug domain |
-| `es_sql_query` | SQL-style queries (Kibana syntax) | Ad-hoc queries, DESCRIBE, SHOW TABLES |
-| `es_search` | Native Query DSL | Complex queries that SQL/search_logs can't express |
-| `es_list_indices` | List available indices | Discovery |
-| `es_index_mapping` | Field mappings | Before querying unfamiliar indices |
-| `es_field_values` | Top values for a field | Discovering enum values, service names |
-| `es_count` | Count matching documents | Quick volume checks |
-| `es_cluster_health` | Cluster connectivity check | Verify ES is reachable |
+| `error-summary` | Top ERROR groups by `logger_name` | First step — broad error scan |
+| `search-logs` | Environment-aware Phoenix log search | Primary bug-validation evidence |
+| `health` | Size-0 search connectivity check | Confirm the cluster answers |
+| `sql` | Read-only SQL | Ad-hoc `SELECT`, `DESCRIBE`, `SHOW` |
+| `search` | Query DSL | Filters `search-logs` cannot express |
+| `count` | Count matching documents | Volume checks |
+| `field-values` | Top values for a field | Discover enum / service names |
+| `indices` | List indices | Discovery. Skip on Prod (403) |
+| `mapping` | Flattened field list | Unfamiliar index. Skip on Prod (403) |
+
+Canonical invocation and examples: `.cursor/skills/phoenix-elasticsearch/SKILL.md`.

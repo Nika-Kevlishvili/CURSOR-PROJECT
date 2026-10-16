@@ -5,7 +5,7 @@ Onboard a new Windows machine for this workspace after the root repo is cloned f
 ## Manual steps (before the script)
 
 1. Clone this workspace from GitHub and open it in Cursor.
-2. Install **Node.js LTS + npm** (required for MCP `npx` PostgreSQL servers).
+2. Install **Node.js 22.12+ and npm** (PostgreSQL MCP via `npx`, and the official Elastic CLI).
 3. Install extensions manually:
    - **PowerShell** — `ms-vscode.powershell`
    - **Playwright Test for VSCode (Modified)** — `custom.playwright-custom` (custom VSIX, not Marketplace)
@@ -39,10 +39,10 @@ Optional:
 | 0 | Preconditions (workspace, `.gitmodules`, templates, npm + Python check) |
 | 1 | Clone/init all submodules from `.gitmodules` (skip if already valid) |
 | 2 | Copy `Cursor Setup/env.example` → `Cursor-Project/.env` and `EnergoTS/.env` |
-| 3a | Detect Python with `mcp`/`requests` deps; install via `pip` if needed |
-| 3 | Merge `Cursor Setup/mcp_content.txt` into **workspace** `.cursor/mcp.json` (backup first); patch Elasticsearch `command` + relative `args`; clear user-level `%USERPROFILE%\.cursor\mcp.json` if it contains duplicate MCP servers |
+| 3a | `npm install` the official Elastic CLI in `Cursor-Project/config/elasticsearch` |
+| 3 | Merge `Cursor Setup/mcp_content.txt` into **workspace** `.cursor/mcp.json` (backup first); strip any Elasticsearch MCP servers; clear user-level `%USERPROFILE%\.cursor\mcp.json` if it contains duplicate MCP servers |
 | 4 | Install `scriptInstall` extensions via `cursor --install-extension` |
-| 5 | Verify repos, remotes, EnergoTS `cursor` branch, env, MCP (incl. Elasticsearch), extensions, npm |
+| 5 | Verify repos, remotes, EnergoTS `cursor` branch, env, MCP (no Elasticsearch MCP), Elastic CLI binary, extensions, npm |
 
 ## Exit codes
 
@@ -54,7 +54,8 @@ Optional:
 
 ## After the script
 
-1. Restart Cursor (or reload MCP servers).
-2. Confirm workspace MCP in `.cursor/mcp.json` (not user-level `mcp.json`).
-3. Review `.env` files and adjust credentials if needed.
-4. Re-run `.\.cursor\commands\setup-new-machine.ps1 -VerifyOnly` anytime.
+1. Restart Cursor (or reload MCP servers). Elasticsearch is not an MCP server.
+2. Confirm workspace MCP in `.cursor/mcp.json` (not user-level `mcp.json`) and that no `Elasticsearch*` server remains.
+3. For Dev and Prod logs, set `ELASTIC_DEV_API_KEY` and `ELASTIC_PROD_API_KEY`, or copy `Cursor-Project/config/elasticsearch/secrets.env.example` to `secrets.env`. Do not put those keys in `mcp.json`.
+4. Review `.env` files and adjust credentials if needed.
+5. Re-run `.\.cursor\commands\setup-new-machine.ps1 -VerifyOnly` anytime.

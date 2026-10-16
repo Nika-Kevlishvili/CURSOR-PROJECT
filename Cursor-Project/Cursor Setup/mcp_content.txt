@@ -1,78 +1,5 @@
 {
   "mcpServers": {
-    "ElasticsearchDev": {
-      "command": "__ELASTICSEARCH_PYTHON__",
-      "args": [
-        "__ELASTICSEARCH_SCRIPT__"
-      ],
-      "env": {
-        "ES_HOST": "https://10.236.20.13:9200",
-        "ES_API_KEY": "bUk0c281OEJHc0FWd3pIRUdVOTg6NjFrTTJ1T1ZnckFvNVZvWDk5aTJuZw==",
-        "ES_VERIFY_SSL": "false",
-        "ES_SERVER_NAME": "ElasticsearchDev",
-        "ES_ENVIRONMENTS": "dev,dev2"
-      }
-    },
-    "ElasticsearchProd": {
-      "command": "__ELASTICSEARCH_PYTHON__",
-      "args": [
-        "__ELASTICSEARCH_SCRIPT__"
-      ],
-      "env": {
-        "ES_HOST": "https://10.236.20.69:9200",
-        "ES_API_KEY": "YkhGNnA1OEJtc0dJd2JJT3Y5eF86eFllZ0hJakZ2cHVHQmljZUJPT19FQQ==",
-        "ES_VERIFY_SSL": "false",
-        "ES_SERVER_NAME": "ElasticsearchProd",
-        "ES_ENVIRONMENTS": "prod",
-        "ES_READ_ONLY": "true"
-      }
-    },
-    "ElasticsearchTest": {
-      "command": "__ELASTICSEARCH_PYTHON__",
-      "args": [
-        "__ELASTICSEARCH_SCRIPT__"
-      ],
-      "env": {
-        "ES_HOST": "http://10.236.20.27:9200",
-        "ES_API_KEY": "",
-        "ES_VERIFY_SSL": "false",
-        "ES_SERVER_NAME": "ElasticsearchTest",
-        "ES_ENVIRONMENTS": "test,preprod",
-        "ES_READ_ONLY": "true"
-      }
-    },
-    "ElasticsearchTest2ES": {
-      "command": "__ELASTICSEARCH_PYTHON__",
-      "args": [
-        "__ELASTICSEARCH_SCRIPT__"
-      ],
-      "env": {
-        "ES_HOST": "http://10.236.20.27:9200",
-        "ES_API_KEY": "",
-        "ES_VERIFY_SSL": "false",
-        "ES_SERVER_NAME": "ElasticsearchTest2ES",
-        "ES_ENVIRONMENTS": "test2es",
-        "ES_FILTER_APP_NAME": "phoenix2",
-        "ES_FILTER_ENVIRONMENT_KEYWORD": "test",
-        "ES_READ_ONLY": "true"
-      }
-    },
-    "ElasticsearchTest2SLR": {
-      "command": "__ELASTICSEARCH_PYTHON__",
-      "args": [
-        "__ELASTICSEARCH_SCRIPT__"
-      ],
-      "env": {
-        "ES_HOST": "http://10.236.20.27:9200",
-        "ES_API_KEY": "",
-        "ES_VERIFY_SSL": "false",
-        "ES_SERVER_NAME": "ElasticsearchTest2SLR",
-        "ES_ENVIRONMENTS": "test2slr",
-        "ES_FILTER_APP_NAME": "phoenix2",
-        "ES_FILTER_ENVIRONMENT_KEYWORD": "testi2",
-        "ES_READ_ONLY": "true"
-      }
-    },
     "Confluence": {
       "type": "http",
       "url": "https://mcp.atlassian.com/v1/sse"
@@ -163,5 +90,3 @@
     }
   }
 }
-
-

@@ -1,0 +1,28 @@
+# Phoenix Elasticsearch contexts for the official Elastic CLI (@elastic/cli).
+# URLs only. API keys are NOT stored here.
+# Dev and Prod keys resolve from ELASTIC_DEV_API_KEY and ELASTIC_PROD_API_KEY.
+# elastic-phoenix.py fills those from the environment, secrets.env, or the macOS keychain.
+# Clusters are Elasticsearch 8.19. The CLI is a technical preview aimed at 9.x;
+# version is pinned so request bodies stay compatible with 8.19.
+
+current_context: phoenix-test
+detect_version: false
+telemetry: false
+banner: false
+contexts:
+  phoenix-dev:
+    elasticsearch:
+      url: https://10.236.20.13:9200
+      version: "8.19"
+      auth:
+        api_key: $(env:ELASTIC_DEV_API_KEY)
+  phoenix-test:
+    elasticsearch:
+      url: http://10.236.20.27:9200
+      version: "8.19"
+  phoenix-prod:
+    elasticsearch:
+      url: https://10.236.20.69:9200
+      version: "8.19"
+      auth:
+        api_key: $(env:ELASTIC_PROD_API_KEY)

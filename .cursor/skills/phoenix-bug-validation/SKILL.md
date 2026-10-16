@@ -148,47 +148,55 @@ Gather DB evidence to strengthen or clarify conclusions. Use the **same environm
 
 ### Step 4c: Elasticsearch Log Analysis [RECOMMENDED]
 
-Search application logs via Elasticsearch to find runtime evidence of the reported bug — stack traces, error patterns, relevant operations, and timing.
+Search application logs through the **official Elastic CLI** (`Cursor-Project/scripts/elastic-phoenix.py`). Do **not** call Elasticsearch MCP. Procedure: `.cursor/skills/phoenix-elasticsearch/SKILL.md`. Rule ES.0.
 
-**Environment → MCP mapping (Rule ES.0):**
+**Environment → CLI `--environment` (Rule ES.0):**
 
-| Resolved env | Elasticsearch MCP server | `environment` param |
+| Resolved env | `--environment` | Context |
 |---|---|---|
-| dev | `ElasticsearchDev` | `dev` |
-| dev2 | `ElasticsearchDev` | `dev2` |
-| test | `ElasticsearchTest` | `test` |
-| preprod | `ElasticsearchTest` | `preprod` |
-| test2es (Test 2 ES) | `ElasticsearchTest2ES` | `test2es` |
-| test2slr (Test 2 SLR) | `ElasticsearchTest2SLR` | `test2slr` |
-| prod | `ElasticsearchProd` | `prod` |
+| dev | `dev` | `phoenix-dev` |
+| dev2 | `dev2` | `phoenix-dev` |
+| test | `test` | `phoenix-test` |
+| preprod | `preprod` | `phoenix-test` |
+| test2es (Test 2 ES) | `test2es` | `phoenix-test` |
+| test2slr (Test 2 SLR) | `test2slr` | `phoenix-test` |
+| prod | `prod` | `phoenix-prod` |
 | experiments | Not configured — skip, document `elasticsearch_investigation=not_available` |
 
-Clusters: **ElasticsearchDev** (Dev+Dev2, paired, HTTPS+API key), **ElasticsearchTest** (Test+PreProd, paired, HTTP, no auth), **ElasticsearchTest2ES** / **ElasticsearchTest2SLR** (same Test cluster URL, keyword filters), **ElasticsearchProd** (Prod only, single, HTTPS+API key). Paired clusters filter by `app_name` (primary = base names, secondary = `2` suffix). Test 2 servers filter with `app_name.keyword=phoenix2` plus `environment.keyword=test` (ES) or `testi2` (SLR). Prod has no filtering — all logs belong to Prod. **Prod limitation:** `es_cluster_health` and `es_list_indices` return 403 — use search tools only.
+The wrapper applies `app_name` filters (primary vs `2` suffix) and Test 2 keyword filters. Prod has no `app_name` filter. **Prod limitation:** index listing and cluster health return 403 — use `search-logs`, `error-summary`, and `health` only.
 
 **4c.0 — Portal URL override for Test 2 ES / SLR logs (Rule ES.0a) [MUST]:**
 
-When the Jira ticket description (or other ticket text) contains a portal URL path marker, select the Elasticsearch MCP server **before** 4c.1/4c.2 — this overrides the resolved-env mapping for log search only:
+When the Jira ticket description (or other ticket text) contains a portal URL path marker, choose `--environment` **before** 4c.1/4c.2 — this overrides the resolved-env mapping for log search only:
 
-| URL contains | Meaning | MCP server | `environment` | Filters |
-|---|---|---|---|---|
-| `phoenix-test2/` | Test 2 ES | `ElasticsearchTest2ES` | `test2es` | `app_name.keyword=phoenix2`, `environment.keyword=test` |
-| `phoenix2-slr-test/` | Test 2 SLR | `ElasticsearchTest2SLR` | `test2slr` | `app_name.keyword=phoenix2`, `environment.keyword=testi2` |
+| URL contains | Meaning | `--environment` | Filters |
+|---|---|---|---|
+| `phoenix-test2/` | Test 2 ES | `test2es` | `app_name.keyword=phoenix2`, `environment.keyword=test` |
+| `phoenix2-slr-test/` | Test 2 SLR | `test2slr` | `app_name.keyword=phoenix2`, `environment.keyword=testi2` |
 
-Examples: `https://testapps.energo-pro.bg/app/phoenix-test2/` → Test 2 ES; `https://testapps.energo-pro.bg/app/phoenix2-slr-test/` → Test 2 SLR. If both markers appear → AskQuestion. If neither → use Rule ES.0 from resolved env. Document which marker triggered the override in `### Elasticsearch Log Analysis`.
+Examples: `https://testapps.energo-pro.bg/app/phoenix-test2/` → `test2es`; `https://testapps.energo-pro.bg/app/phoenix2-slr-test/` → `test2slr`. If both markers appear → AskQuestion. If neither → use Rule ES.0 from resolved env. Document which marker triggered the override in `### Elasticsearch Log Analysis`.
 
 **4c.1 — Error summary (broad scan):**
-- Call `es_error_summary(environment=<env>, search_text=<bug domain keywords>, days_back=7)` to get top ERROR groups by logger_name.
-- Identify error patterns related to the bug's scope (service, entity type, endpoint).
+
+```bash
+python3 Cursor-Project/scripts/elastic-phoenix.py error-summary --environment <env> --search-text "<bug domain keywords>" --days-back 7
+```
+
+Identify error patterns related to the bug's scope (service, entity type, endpoint).
 
 **4c.2 — Targeted log search (specific evidence):**
-- Call `es_search_logs(environment=<env>, search_text=<specific terms>, level="ERROR")` to get detailed log entries.
+
+```bash
+python3 Cursor-Project/scripts/elastic-phoenix.py search-logs --environment <env> --search-text "<specific terms>" --level ERROR --days-back 7
+```
+
 - Search terms to try (combine as needed):
-  - Entity identifiers from the ticket (invoice ID, contract ID, billing ID, etc.) — use `extra_filters` for exact field matches when IDs are known (e.g. `extra_filters='{"invoiceId": "123"}'`).
+  - Entity identifiers from the ticket (invoice ID, contract ID, billing ID, etc.) — use `--extra-filters` for exact field matches when IDs are known (example: `--extra-filters '{"invoiceId":"123"}'`).
   - Error messages or exception names from the bug report.
   - Endpoint or operation names (`RequestURI`, `operation` fields).
-  - Service/logger names relevant to the bug's domain.
+  - Service/logger names relevant to the bug's domain (`--logger-name`).
 - Expand search to WARN level if ERROR yields no results.
-- Adjust `days_back` if the bug report references a specific time window.
+- Adjust `--days-back` if the bug report references a specific time window.
 
 **4c.3 — Stack trace analysis:**
 - When error logs contain `stack_trace`, analyze for root cause indicators: null pointers, constraint violations, timeout exceptions, authentication failures, etc.
@@ -201,7 +209,7 @@ Examples: `https://testapps.energo-pro.bg/app/phoenix-test2/` → Test 2 ES; `ht
 
 **Classification:** `supports_bug` | `contradicts_bug` | `reveals_root_cause` | `no_relevant_logs` | `investigation_failed` | `not_available`.
 
-**Failure handling:** Retry once on connection error. If Elasticsearch is unreachable or the MCP server is not configured for the target environment, document `elasticsearch_investigation=failed` or `elasticsearch_investigation=not_available` and continue to verdict. ES failure does **not** block verdict — it reduces confidence.
+**Failure handling:** Retry once on connection error. If the Elastic CLI is unreachable, or the environment is `experiments`, document `elasticsearch_investigation=failed` or `elasticsearch_investigation=not_available` and continue to verdict. ES failure does **not** block verdict — it reduces confidence. Disclose `Elasticsearch source: official Elastic CLI (@elastic/cli via elastic-phoenix).`
 
 **Report section:** Include **`### Elasticsearch Log Analysis`** with:
 - Environment and time range searched

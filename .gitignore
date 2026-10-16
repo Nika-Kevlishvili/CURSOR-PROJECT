@@ -10,6 +10,9 @@ __MACOSX/
 # Dependencies
 node_modules/
 
+# Elasticsearch API keys for the official Elastic CLI (never commit)
+Cursor-Project/config/elasticsearch/secrets.env
+
 # OS
 Thumbs.db
 Desktop.ini
