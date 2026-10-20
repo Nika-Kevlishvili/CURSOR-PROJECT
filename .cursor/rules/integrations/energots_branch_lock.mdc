@@ -6,10 +6,9 @@ globs:
   - ".cursor/agents/energo-ts-run.md"
   - ".cursor/skills/energo-ts-run/SKILL.md"
   - ".cursor/skills/energo-ts-test/SKILL.md"
-  - ".cursor/agents/playwright-frontend.md"
-  - ".cursor/agents/playwright-frontend-validator.md"
-  - ".cursor/skills/playwright-frontend/SKILL.md"
-  - ".cursor/skills/playwright-frontend-validator/SKILL.md"
+  - ".cursor/procedures/playwright-frontend/**"
+  - ".cursor/procedures/playwright-frontend-validator/**"
+  - ".cursor/commands/playwright-frontend.md"
 ---
 # ENERGOTS BRANCH LOCK RULE [CRITICAL]
 

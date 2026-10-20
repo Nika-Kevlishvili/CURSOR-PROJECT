@@ -37,8 +37,8 @@ Rules load first (**Rule 0.0**) from **`.cursor/rules/`**.
 | Test cases (.md, Backend + Frontend) | **`cross-dependency-finder`** then **`test-case-generator`** — `.cursor/skills/test-case-generator/SKILL.md` |
 | Run EnergoTS Playwright | **`energo-ts-run`** — `.cursor/agents/energo-ts-run.md`, skill (**Rules 36, ENERGOTS.0**) |
 | Author EnergoTS `.spec.ts` (API, `src/tests/`) | **`energo-ts-test`** — `.cursor/agents/energo-ts-test.md` (**Rule 0.8.1**, Swagger **Rule 41**) |
-| Author and run frontend Playwright (`src/frontend/`, cursorMerged only) | **`playwright-frontend`** — `.cursor/agents/playwright-frontend.md`, command **`.cursor/commands/playwright-frontend.md`** (**Rule 45**) |
-| Assess frontend specs once before that run | **`playwright-frontend-validator`** — `.cursor/agents/playwright-frontend-validator.md` |
+| Author and run frontend Playwright (`src/frontend/`, cursorMerged only) | **`/playwright-frontend`** — `.cursor/commands/playwright-frontend.md`, then `.cursor/procedures/playwright-frontend/` (**Rule 45**). Not a subagent. |
+| Assess frontend specs once before that run | Read `.cursor/procedures/playwright-frontend-validator/procedure.md` inside that command. Not a slash command. |
 | Scoped Playwright Slack | **`.cursor/commands/send-playwright-results-slack.md`** — user-triggered test results to Slack |
 
 ## Section notes

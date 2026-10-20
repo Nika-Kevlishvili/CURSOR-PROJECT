@@ -175,8 +175,8 @@ flowchart TD
 | Score test cases | `test-case-quality-validator` | `test-case-quality-validator` | rubric 10-axis, ≥80/100; does not score `.playwright.md` |
 | Write API Playwright spec | `energo-ts-test` | `energo-ts-test` | 0.8.1, 41, 40 |
 | Validate API spec | `playwright-test-validator` | `playwright-test-validator` | Rule 35 quality gate |
-| Write and run frontend Playwright | `playwright-frontend` | `playwright-frontend` | Rule 45; `cursorMerged` only; `/playwright-frontend` |
-| Assess frontend spec once | `playwright-frontend-validator` | `playwright-frontend-validator` | One critique, then the author executes |
+| Write and run frontend Playwright | `/playwright-frontend` command | `.cursor/procedures/playwright-frontend/procedure.md` | Rule 45; `cursorMerged` only. Not a subagent. |
+| Assess frontend spec once | inside that command | `.cursor/procedures/playwright-frontend-validator/procedure.md` | One critique, then execute. Not a slash command. |
 | Run Playwright | `energo-ts-run` | `energo-ts-run` | 36, ENERGOTS.0 |
 | Scoped Playwright + Slack | parent or energo-ts-run | `send-playwright-results-slack.md` | DPR, path 2 |
 | DB query | `database-query` | `phoenix-database` | 33, DB.0a |

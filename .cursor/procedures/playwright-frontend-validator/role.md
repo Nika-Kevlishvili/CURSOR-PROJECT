@@ -1,12 +1,8 @@
----
-name: playwright-frontend-validator
-model: inherit
-description: STRICT one-pass assessor for EnergoTS frontend Playwright specs (0–100, pass ≥80). Checks that the page object includes the new phoenix-ui controls and that specs follow the meterCreate precondition pattern. READ-ONLY. Invoked once by playwright-frontend before execution. Not a second rewrite loop.
----
+# Playwright Frontend Validator role
 
-# Playwright Frontend Validator Subagent
+Role contract for the one critique inside `/playwright-frontend`. This file is not a subagent and does not appear in the `/` menu.
 
-**Procedure (HOW):** `.cursor/skills/playwright-frontend-validator/SKILL.md` — scoring model and one-pass rule.
+**Procedure (HOW):** `.cursor/procedures/playwright-frontend-validator/procedure.md` — scoring model and one-pass rule.
 
 ## Inputs
 
@@ -28,7 +24,7 @@ description: STRICT one-pass assessor for EnergoTS frontend Playwright specs (0�
 
 ## Verdict rules
 
-- **One critique only.** The parent applies fixes and then executes. This agent is not called a second time in the same task.
+- **One critique only.** The author applies fixes and then executes. This procedure is not run a second time in the same task.
 - Score harshly. 79 = fail, with concrete fixes.
 - Do not edit files.
 

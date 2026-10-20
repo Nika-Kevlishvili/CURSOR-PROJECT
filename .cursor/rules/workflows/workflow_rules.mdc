@@ -60,8 +60,8 @@ When the user requests test cases, run **in order** (gates fixed — **`test_cas
 
 ## Rule 45 — Frontend Playwright on cursorMerged [CRITICAL]
 
-- **Author:** **`playwright-frontend`** — `.cursor/skills/playwright-frontend/SKILL.md`, `.cursor/agents/playwright-frontend.md`, command **`.cursor/commands/playwright-frontend.md`**
-- **Assessor (once):** **`playwright-frontend-validator`** — `.cursor/skills/playwright-frontend-validator/SKILL.md`. One critique. The author applies it and does not call the assessor again.
+- **User entry:** **`/playwright-frontend`** only — `.cursor/commands/playwright-frontend.md`. Read `.cursor/procedures/playwright-frontend/procedure.md` and `role.md`. Those files are not skills or subagents and must not be registered under `.cursor/skills/` or `.cursor/agents/`.
+- **Assessor (once):** `.cursor/procedures/playwright-frontend-validator/procedure.md`. One critique. The author applies it and does not run it again. Not a slash command.
 - **Branch:** EnergoTS HEAD must already be **`cursorMerged`**. Do not checkout or switch. `cursor` and `staging` are not valid for this rule.
 - **Inputs:** `test_cases/Frontend/<Topic>.md` and `test_cases/Frontend/<Topic>.playwright.md` from test-case-generator when the user chose Backend+Frontend.
 - **UI evidence:** read-only git on `Cursor-Project/Phoenix/phoenix-ui` (no checkout). Missing locators are recorded with `playwright-cli`, then the existing page object is updated, then specs are written.

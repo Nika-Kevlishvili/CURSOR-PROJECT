@@ -1,12 +1,8 @@
----
-name: playwright-frontend
-model: inherit
-description: Authors and runs EnergoTS frontend Playwright specs on the cursorMerged branch only. Reads phoenix-ui for the merged UI change, updates the page object (playwright-cli when locators are missing), writes src/frontend specs from the frontend Playwright instructions file, applies one validator critique, then executes and classifies failures. Use for frontend automation, POM updates for a new UI change, or /playwright-frontend.
----
+# Playwright Frontend role
 
-# Playwright Frontend Subagent (PlaywrightFrontendAgent)
+Role contract for the `/playwright-frontend` command. This file is not a subagent and does not appear in the `/` menu.
 
-**Procedure (HOW):** `.cursor/skills/playwright-frontend/SKILL.md` — read before any `src/frontend` spec or page-object edit.
+**Procedure (HOW):** `.cursor/procedures/playwright-frontend/procedure.md` — read before any `src/frontend` spec or page-object edit.
 
 ## Inputs
 
@@ -30,7 +26,7 @@ description: Authors and runs EnergoTS frontend Playwright specs on the cursorMe
 2. Inspect `Cursor-Project/Phoenix/phoenix-ui` with read-only git (`fetch`, `log`, `show`, `diff`). Do not checkout Phoenix.
 3. Update the existing POM before writing specs. Record missing locators with `playwright-cli` (same rules as the `pom` skill). Do not use Playwright MCP browser tools.
 4. Specs follow `src/frontend/meterCreate.spec.ts`: API preconditions inside `test.step`, `Responses` for JSON, `FrontendResponses` for the on-screen name, then the POM method.
-5. Invoke **playwright-frontend-validator** once. Apply its fixes. Do not call it again.
+5. Read `.cursor/procedures/playwright-frontend-validator/procedure.md` once and apply that critique. Do not call it again. Do not look for a slash command named playwright-frontend-validator.
 6. Run `--project=frontend` and classify each failure.
 
 ## Constraints

@@ -19,7 +19,7 @@ alwaysApply: true
    - PhoenixExpert → Phoenix backend, endpoints, schedulers (Rule 0.2) — **includes** Senior QA Findings when mismatches exist
    - test-case-generator / test-case-quality-validator → Rule 35 test cases
    - energo-ts-test / playwright-test-validator / energo-ts-run → API Playwright (Rules 36–41)
-   - playwright-frontend / playwright-frontend-validator → frontend Playwright on EnergoTS `cursorMerged` only (Rule 45)
+   - `/playwright-frontend` → frontend Playwright on EnergoTS `cursorMerged` only (Rule 45). Command only. Procedures live under `.cursor/procedures/` and are not slash entries.
    - bug-validator → Rule 32
    - production-data-reader → Prod DB read (Rule PDR.0)
    - **Legacy names (no dedicated agent file):** TestExpert / DevOpsExpert — use the agents above or direct tool usage; do not invent Python `agents.*` imports.

@@ -18,8 +18,7 @@ Use this file as the **single map** from “agent role” to **where it lives to
 | **test-case-quality-validator.md** | TC quality (10-axis ≥80) | `test-case-quality-validator` | Rule 35 Step 2.5 |
 | **energo-ts-test.md** | Playwright API authoring | `energo-ts-test` | Rule 0.8.1; `EnergoTS/src/tests/` |
 | **playwright-test-validator.md** | API spec vs test cases | `playwright-test-validator` | After energo-ts-test authoring |
-| **playwright-frontend.md** | Frontend Playwright author + run | `playwright-frontend` | Rule 45; EnergoTS `cursorMerged` only; `/playwright-frontend` |
-| **playwright-frontend-validator.md** | Frontend spec assessor (one pass) | `playwright-frontend-validator` | After POM + `src/frontend` specs, before execution |
+| **playwright-frontend command** | Frontend Playwright author + run | `.cursor/procedures/playwright-frontend/procedure.md` | Rule 45. User entry is `/playwright-frontend` only. Not a subagent. The one critique is `.cursor/procedures/playwright-frontend-validator/procedure.md`. |
 | **energo-ts-run.md** | Playwright test run | `energo-ts-run` | Rule 36; `cursor`, `staging`, or `cursorMerged` |
 | **test-runner.md** | Test execution | — (consult PhoenixExpert) | Test-related runs |
 | **database-query.md** | PostgreSQL (Dev/Test/Prod) | `phoenix-database` | DB questions; `database_workflow.mdc` |

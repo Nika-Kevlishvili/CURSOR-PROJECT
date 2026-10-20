@@ -287,7 +287,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 - Read `test_cases/Frontend/<Topic>.playwright.md` (written by test-case-generator when the user chose Backend+Frontend).
 - Inspect `Phoenix/phoenix-ui` with read-only git. Record missing locators with `playwright-cli` and update the existing page object.
 - Write `EnergoTS/src/frontend` specs in the `meterCreate.spec.ts` shape: API preconditions, `FrontendResponses`, then the page object.
-- Take one critique from **playwright-frontend-validator**, apply it, then run `--project=frontend`.
+- Take one critique by reading `.cursor/procedures/playwright-frontend-validator/procedure.md`, apply it, then run `--project=frontend`.
 - Report each result as passed, product code defect, automation defect, or environment blocker.
 
 **When to use:** Automate a merged frontend change. API specs stay with EnergoTS test (section 16).

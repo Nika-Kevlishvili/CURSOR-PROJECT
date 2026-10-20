@@ -19,12 +19,11 @@ Examples:
 2. Resolves `Cursor-Project/test_cases/Frontend/<Topic>.md` and `Cursor-Project/test_cases/Frontend/<Topic>.playwright.md`.
 3. If the environment is missing, ask (dev, dev2, test, preprod, prod, experiments) and stop until it is named.
 4. If the Playwright instructions file is missing, stop. Generate frontend cases first (test-case-generator with Backend+Frontend). That generator writes the instructions file. Do not invent the instructions inside this command.
-5. Invokes **playwright-frontend** (`.cursor/agents/playwright-frontend.md`), which:
+5. Reads `.cursor/procedures/playwright-frontend/role.md` and `.cursor/procedures/playwright-frontend/procedure.md`, then:
    - inspects `Cursor-Project/Phoenix/phoenix-ui` on remote branches without checking out;
    - updates the existing page object, using `playwright-cli` only when the merged UI added controls the POM does not expose;
    - writes `src/frontend` specs in the `meterCreate.spec.ts` shape;
-   - takes **one** critique from **playwright-frontend-validator**;
-   - applies those fixes;
+   - reads `.cursor/procedures/playwright-frontend-validator/procedure.md` once and applies that critique;
    - runs `npx playwright test --project=frontend` and reports pass, fail, product code defect, and automation defect.
 
 ## What it does not do
@@ -36,6 +35,7 @@ Examples:
 
 ## References
 
-- Procedure: `.cursor/skills/playwright-frontend/SKILL.md`
-- Assessor: `.cursor/skills/playwright-frontend-validator/SKILL.md`
+- Procedure: `.cursor/procedures/playwright-frontend/procedure.md`
+- Role: `.cursor/procedures/playwright-frontend/role.md`
+- Assessor: `.cursor/procedures/playwright-frontend-validator/procedure.md`
 - Instructions file: test-case-generator SKILL § Frontend Playwright instructions

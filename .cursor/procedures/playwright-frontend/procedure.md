@@ -1,9 +1,6 @@
----
-name: playwright-frontend
-description: Authors and runs EnergoTS frontend Playwright specs on cursorMerged only. Inspects phoenix-ui for the merged UI change, updates the page object with playwright-cli when locators are missing, writes src/frontend specs from the frontend Playwright instructions file, applies one validator critique, then executes and classifies failures. Use for /playwright-frontend or when the user asks to automate frontend cases.
----
-
 # Playwright Frontend
+
+Procedure for the `/playwright-frontend` command. This file is not a skill and does not appear in the `/` menu.
 
 Frontend automation for EnergoTS. API specs under `src/tests/` stay with **energo-ts-test**. This skill owns `src/frontend/**` specs and the page objects they need for a new UI change.
 
@@ -147,7 +144,7 @@ Rules:
 
 ## 4. One validator pass
 
-After the POM and specs are saved, invoke **playwright-frontend-validator** once with the spec paths, POM paths, both frontend markdown files, and the phoenix-ui diff summary.
+After the POM and specs are saved, read `.cursor/procedures/playwright-frontend-validator/procedure.md` once and score the specs with the spec paths, POM paths, both frontend markdown files, and the phoenix-ui diff summary. Do not look for a slash command or subagent named playwright-frontend-validator.
 
 Apply every fix it lists. Then stop editing for quality. **Do not call the validator again.**
 

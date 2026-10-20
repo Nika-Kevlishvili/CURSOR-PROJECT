@@ -26,8 +26,7 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 | **test-case-quality-validator.md** | TC quality gate (Rule 35 Step 2.5) | **10-axis, ≥80/100** STRICT scoring; READ-ONLY; max 3 rewrites. |
 | **cross-dependency-finder.md** | Cross-dependencies (Rule 35, 35a) | Jira + code + deep Confluence exploration; **no** local merge/git; hand off to test-case-generator. |
 | **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.spec.ts`. API specs under `src/tests/`. |
-| **playwright-frontend.md** | Frontend Playwright (Rule 45) | `cursorMerged` only. phoenix-ui read-only diff, POM update, `src/frontend` specs from `Frontend/<Topic>.playwright.md`, one validator pass, then execute. |
-| **playwright-frontend-validator.md** | Frontend spec assessor (Rule 45) | One critique. POM coverage + `meterCreate.spec.ts` pattern. READ-ONLY. |
+| *(no subagent)* | Frontend Playwright (Rule 45) | User entry is **`/playwright-frontend`** only (`.cursor/commands/playwright-frontend.md`). Procedures are `.cursor/procedures/playwright-frontend/` and `.cursor/procedures/playwright-frontend-validator/`. They are not slash entries. |
 | **energo-ts-run.md** | Playwright runner (Rule 36) | `npx playwright test` from EnergoTS `src/tests/`; stay on `cursorMerged` or `staging`. JSON is `src/backend/playwright-report.json`. JSON→MD + Slack uploads for **scoped Slack path 2**; ad-hoc runs: generator only if user explicitly asks (**Rule DPR.0**). |
 | **jira-bug.md** | Jira bug (Rule JIRA.0) | Experiments board only. |
 | **phoenix-bug-reporter.md** | Phoenix Phase 2 bug reporter (Rule PHOENIX-BUG.0) | Review file → Step 3.5 **bug-validator** (parent prefetch) → APPROVE + `.active-bugreview` sidecar → `acli jira workitem create`; hook guards Internal Bug + Bug; reporter from `.env`; Internal tester from QA/Test subtask. |

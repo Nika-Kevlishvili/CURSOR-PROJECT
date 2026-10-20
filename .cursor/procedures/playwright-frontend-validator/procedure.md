@@ -1,18 +1,15 @@
----
-name: playwright-frontend-validator
-description: STRICT one-pass assessor for EnergoTS frontend Playwright specs (0–100, pass ≥80). Checks the page object against the merged phoenix-ui change and the meterCreate precondition pattern. READ-ONLY. Called once by playwright-frontend before execution.
----
-
 # Playwright Frontend Validator
 
-**Subagent:** `.cursor/agents/playwright-frontend-validator.md`
+Scoring procedure for `/playwright-frontend`. This file is not a skill and does not appear in the `/` menu.
 
-Scores frontend specs and the page object they use. One critique per task. The author applies it and runs the tests. This skill does not run the tests and does not edit files.
+**Role contract:** `.cursor/procedures/playwright-frontend-validator/role.md`
+
+Scores frontend specs and the page object they use. One critique per task. The author applies it and runs the tests. This procedure does not run the tests and does not edit files.
 
 ## When to apply
 
 - **playwright-frontend** has saved the POM update and the `src/frontend` specs, and has not executed them yet.
-- User asks to assess frontend specs against the meter-create pattern (`/playwright-frontend` validation only, or a direct ask). Still one pass.
+- The `/playwright-frontend` command is scoring specs before execution. Still one pass. There is no separate slash command for this check.
 
 Do not use this skill for `src/tests/**` API specs. Those stay with **playwright-test-validator**.
 
@@ -20,7 +17,7 @@ Do not use this skill for `src/tests/**` API specs. Those stay with **playwright
 
 `iteration` is always **1**.
 
-Return the score and the fix list. Do not ask for a second review. If the parent calls this skill again after applying fixes, refuse the second pass and point at the first critique.
+Return the score and the fix list. Do not ask for a second review. If this procedure is applied again after the fixes, refuse the second pass and point at the first critique.
 
 ## Inputs
 

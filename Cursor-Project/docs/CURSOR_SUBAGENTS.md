@@ -25,8 +25,7 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 | **Test Case Quality Validator** | `test-case-quality-validator.md` | `test-case-quality-validator` | 10-axis rubric, ≥80/100, max 3 rewrites (Rule 35 Step 2.5). |
 | **EnergoTS Test Author** | `energo-ts-test.md` | `energo-ts-test` | API specs under `EnergoTS/src/tests/`. |
 | **Playwright Test Validator** | `playwright-test-validator.md` | `playwright-test-validator` | API spec vs test cases quality gate. |
-| **Playwright Frontend** | `playwright-frontend.md` | `playwright-frontend` | Rule 45: `src/frontend` on EnergoTS `cursorMerged` only. No checkout. |
-| **Playwright Frontend Validator** | `playwright-frontend-validator.md` | `playwright-frontend-validator` | One critique before the frontend run. READ-ONLY. |
+| **Playwright Frontend** | `.cursor/commands/playwright-frontend.md` | `.cursor/procedures/playwright-frontend/procedure.md` | Rule 45. User entry is `/playwright-frontend` only. Not a subagent. |
 | **EnergoTS Run** | `energo-ts-run.md` | `energo-ts-run` | Rule 36: run Playwright on `cursor`, `staging`, or `cursorMerged`. |
 | **Test Runner** | `test-runner.md` | — | Run tests; consult PhoenixExpert first. |
 | **Database Query** | `database-query.md` | `phoenix-database` | PostgreSQL MCP; correct env; connect first. |
