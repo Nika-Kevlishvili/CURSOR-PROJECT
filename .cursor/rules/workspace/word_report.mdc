@@ -14,4 +14,8 @@ When the user **asks for a report** (`რეპორტი`, report, Word repor
 4. **MUST** follow **`.cursor/skills/word-report/SKILL.md`** (title, meta, intro, glance table, per-case stories with **live** amounts and portal links).
 5. Save under **`Cursor-Project/reports/Chat reports/YYYY/<english-month>/DD/`** (Rule 0.6). English on disk (Rule 0.7).
 
-`/feedback` and Playwright Slack path 2 stay as those workflows define. Violation is a **MUST**.
+`/feedback` and Playwright Slack path 2 stay as those workflows define.
+
+Attaching that Word file to a Jira comment is a separate command: **`.cursor/commands/attach-report-to-jira.md`**. Do not comment on Jira during `/report` unless the user also asks to attach the report.
+
+Violation is a **MUST**.

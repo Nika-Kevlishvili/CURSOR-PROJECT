@@ -64,6 +64,10 @@ python .cursor/skills/word-report/scripts/docx_style.py
 
 That module is a library — import helpers from a short per-report script, write the `.docx`, delete the one-off script if it is only case data.
 
+## Attach to Jira
+
+Attaching the `.docx` to the ticket is **`.cursor/commands/attach-report-to-jira.md`**. Do not attach during `/report` unless the user also asks to put the report on the Jira ticket. If that command finds no file, come back to this skill, create the report, then attach.
+
 ## Do not
 
 - Excel `.xlsx` as the report (unless the user explicitly asks for a spreadsheet).

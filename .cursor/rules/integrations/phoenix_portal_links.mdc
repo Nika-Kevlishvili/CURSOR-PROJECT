@@ -1,0 +1,37 @@
+---
+description: Dev portal preview URLs must match Phoenix UI routes. Never invent government-compensations or invoice basic-parameters links.
+alwaysApply: true
+---
+
+# PHOENIX PORTAL LINKS [MUST]
+
+## Rule PORTAL.0: Dev 1 preview URLs
+
+When a chat reply, report, or test summary includes a clickable Phoenix portal link for **Dev 1**, use this base:
+
+`https://devapps.energo-pro.bg/app/phoenix1-dev`
+
+Paths come from `Cursor-Project/Phoenix/phoenix-ui/src/app` routing. Use these shapes:
+
+| Entity | Path |
+|---|---|
+| Customer | `/customers/preview/basic?id={id}` |
+| Compensation | `/compensation/preview?id={id}` |
+| Invoice | `/invoices/preview/basic-data?id={id}` |
+| Billing run | `/billing-run/preview/basic-parameters?id={id}` |
+| Customer receivable | `/customer-receivables/preview?id={id}` |
+| Customer liability | `/customer-liabilities/preview?id={id}` |
+| Product contract | `/energy-product-contracts/preview/basic-parameters?id={id}` |
+| Point of delivery | `/points-of-delivery/preview?id={id}` |
+
+## Forbidden in user-facing links
+
+- `/government-compensations/preview` — the UI route is `/compensation/preview`. The API path `/government-compensations` is not a portal page.
+- `/billing-run/invoices/preview/basic-parameters` — invoice tabs are `basic-data`, `summary-data`, `detailed-data`.
+- `/invoices/preview/basic-parameters` — same reason.
+
+Billing-run tabs do use `basic-parameters`. Do not copy that segment onto invoice URLs.
+
+If a test log prints both a route and a second rewritten URL, prefer the path in the table above.
+
+Violation is a **MUST** when a user-facing Dev 1 link uses a path that is not in this table.

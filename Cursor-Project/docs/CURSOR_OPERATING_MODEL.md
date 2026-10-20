@@ -183,6 +183,7 @@ flowchart TD
 | Postman collection | `postman-collection` | — (stub agent) | 8, PhoenixExpert |
 | Dev portal access | `environment-access` | — (stub agent) | Rule 10 |
 | Save report / feedback | `report-generator` | `phoenix-reporting` | 0.6 — Chat reports or Feedback |
+| Attach Word report to Jira comment | parent | `attach-report-to-jira.md` | WR.0; create the `.docx` first if missing |
 | Which workflow? | — | `phoenix-commands` | 0.0 |
 
 **Every reply:** `Agents involved:` (0.1) + `Confidence: XX%` (CONF.1).
@@ -241,6 +242,20 @@ Does NOT run cross-dep or test-case generation unless user asks separately.
 Command: .cursor/commands/send-playwright-results-slack.md
 ```
 
+### 5.4 Attach verification report to Jira
+
+```
+User asks to attach the report to its Jira ticket
+  -> report .docx already on disk?
+       yes -> attach-report-to-jira.ps1 comments and uploads that file
+       no  -> word-report skill creates the .docx, then the same script attaches it
+
+Comment text (English, before the file):
+  These are the main cases that were run and verified for this bug/task.
+
+Command: .cursor/commands/attach-report-to-jira.md
+```
+
 ---
 
 ## 6. Deliverables map
@@ -252,6 +267,7 @@ Command: .cursor/commands/send-playwright-results-slack.md
 | Playwright spec | `Cursor-Project/EnergoTS/tests/cursor/<KEY>-*.spec.ts` | Yes | — |
 | Scoped Playwright report | `Cursor-Project/reports/Chat reports/YYYY/month/DD/ScopedPlaywright_*.md` | If user scoped Slack | **Path 2** upload |
 | Chat report (`/report`) | `Cursor-Project/reports/Chat reports/YYYY/month/DD/*.md` | User `/report` or explicit save | Only if user asks |
+| Jira verification comment | Existing issue comment + the Word `.docx` | User runs `attach-report-to-jira` | — |
 | Feedback (`/feedback`) | `Cursor-Project/reports/Feedback/YYYY/month/DD/Feedback_*.md` | User `/feedback` | — |
 | Machine report | `Cursor-Project/EnergoTS/playwright-report-detailed.md` | Generated (DPR) | **Path 2** upload |
 | Playwright JSON | `Cursor-Project/EnergoTS/playwright-report.json` | Ephemeral input | — |
