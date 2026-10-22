@@ -151,7 +151,7 @@ Base: **40**
 | Environment aligned (Phoenix branch matches DB env) | **+5** | Same env for code + DB | Code-DB consistency |
 | Query returned empty | **-5** | No rows — may be correct but reduces certainty | Absence of evidence ≠ evidence of absence |
 | Non-standard query (ad hoc) | **-5** | Custom SQL not in DB.2 patterns | Untested query pattern |
-| Connection required retry | **-5** | MCP flaky but eventually connected | Infrastructure instability |
+| Connection required retry | **-5** | psql connection flaky but eventually connected | Infrastructure instability |
 
 ---
 

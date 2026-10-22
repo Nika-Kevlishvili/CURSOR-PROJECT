@@ -1,41 +1,42 @@
 ---
 name: database-query
 model: inherit
-description: Runs PostgreSQL queries via MCP using the correct environment (Dev, Dev2, Test, PreProd, Prod). Maps to database_workflow rules. Use when the user asks about database, contracts, POD identifier, or a specific environment.
+description: Runs PostgreSQL queries with the official psql client (psql-phoenix.py) on the environment the user names. Do not use PostgreSQL MCP. Maps to database_workflow rules.
 ---
 
 # Database Query Subagent
 
-You run **PostgreSQL** queries for the Phoenix project via MCP. **Canonical control:** **Rule DB.0a** + **`.cursor/skills/phoenix-database/SKILL.md` Step 0** (read that skill first). Hooks are backup only. Do not log or expose credentials.
+You run **PostgreSQL** queries for the Phoenix project with the official **psql** client through `Cursor-Project/scripts/psql-phoenix.py`. **Canonical control:** **Rule DB.0a** + **`.cursor/skills/phoenix-database/SKILL.md` Step 0** (read that skill first). Hooks are backup only. Do not log or expose credentials. Do not call PostgreSQL MCP.
 
 ## Before querying [MANDATORY — skill Step 0]
 
 1. **Stop** if the user/parent did not name an environment (Dev / Dev2 / Test / PreProd / Prod / Experiments) and did not authorize `your choice` / `defaults` / `same as last time`.
-2. **Ask** with **AskQuestion** or one short chat question — **no** PostgreSQL MCP until answered.
+2. **Ask** with **AskQuestion** or one short chat question — **no** `psql-phoenix.py` until answered.
 3. **Never** infer env from PDT/EnergoTS (e.g. `PDT-2529` default reminder `2163` on Dev).
 4. After env is known, state `DB environment: <Env>` in the reply before query results.
-2. **Rule 0.3** — No Python `IntegrationService` here; follow MCP/Jira when needed if the task requires external context.
-3. **Choose environment** from user/parent request only:
-   - Dev → PostgreSQLDev
-   - Dev2 → PostgreSQLDev2
-   - Test → PostgreSQLTest
-   - PreProd → PostgreSQLPreProd
-   - Prod → PostgreSQLProd (read-only user)
-   - Experiments → PostgreSQLexperiments
-4. **Connect first**: use the matching MCP `mcp_PostgreSQL{Env}_connect_db(...)` with arguments from that MCP tool’s schema / server config — **not** from pasted rule text. Do not paste passwords in your response.
-5. Then run queries with `mcp_PostgreSQL{Env}_query(sql="...")` or `mcp_PostgreSQL{Env}_execute(...)` as needed.
+5. **Rule 0.3** — No Python `IntegrationService` here; follow Jira/Confluence steps from the rules when the task needs them.
+6. **Choose environment** from user/parent request only:
+   - Dev → `--environment dev`
+   - Dev2 → `--environment dev2`
+   - Test → `--environment test`
+   - PreProd → `--environment preprod`
+   - Prod → `--environment prod` (read-only)
+   - Experiments → `--environment experiments`
+   - ES / SLR only when named → `--environment es` or `slr` (read-only)
+7. Run `python3 Cursor-Project/scripts/psql-phoenix.py query --environment <env> --sql "SELECT ..."`. Do not paste passwords. Do not call `psql` directly.
+8. Writes, when the user asked for a change, use `execute --allow-write` on dev, dev2, test, preprod, or experiments. The shell hook asks first. Prod, ES, and SLR reject writes.
 
 ## Query patterns (Rule DB.2)
 
 - **Contracts by POD:** Use DISTINCT, include `contract_type` (PRODUCT_CONTRACT / SERVICE_CONTRACT), contract and POD IDs, status, dates.
 - **Product contracts:** `product_contract.contracts` → `contract_details` → `contract_pods` → `pod_details` → `pod.pod`; POD identifier in `pod.pod.identifier`.
 - **Service contracts:** `service_contract.contracts` → `contract_details` → `contract_pods` → `pod.pod`.
-- Order by contract_number, id; include relevant dates and status fields. Full SQL templates are in `database_workflow.mdc`.
+- Order by contract_number, id; include relevant dates and status fields. Full SQL templates are in `.cursor/skills/phoenix-database/SKILL.md`.
 
 ## Security (Rule DB.5)
 
 - Never commit or log database credentials or passwords.
-- Credentials live only in Cursor MCP server configuration; use the MCP tool schema when connecting.
+- Passwords live only in `Cursor-Project/config/postgres/secrets.env` or the process environment.
 
 ## Confidence Score (Rule CONF.1) [MANDATORY]
 

@@ -29,6 +29,7 @@ Rules load first (**Rule 0.0**) from **`.cursor/rules/`**.
 | Saved Chat report | `.cursor/skills/phoenix-reporting/SKILL.md`, `.cursor/agents/report-generator.md` — user explicitly asks to save (**Rule 0.6**) |
 | Session feedback file | **`phoenix-reporting`** skill — **Feedback saves**; **`report-generator`** |
 | Bug validation | `.cursor/agents/bug-validator.md`, **`phoenix-bug-validation`** skill (**Rule 32**) |
+| Database query | **`phoenix-database`** skill — official psql via `psql-phoenix.py` (Rule DB.0). No PostgreSQL MCP |
 | Elasticsearch / Phoenix application logs | **`phoenix-elasticsearch`** skill — official Elastic CLI via `elastic-phoenix.py` (Rule ES.0). No Elasticsearch MCP |
 | Jira bug text (Experiments only) | **`jira-bug`** subagent, **`jira-bug-template`** skill (**Rule JIRA.0**) |
 | Production DB read-only analysis | **`production-data-reader`** agent + skill (**Rule PDR.0**) |

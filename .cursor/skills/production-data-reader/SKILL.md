@@ -1,6 +1,6 @@
 ---
 name: production-data-reader
-description: Production database analysis via PostgreSQLProd MCP (readonly): liabilities, receivables, payments, contracts, offsets, traceability. Use for ANY production data questions (Rule PDR.0).
+description: Production database analysis via official psql (psql-phoenix.py --environment prod, read-only): liabilities, receivables, payments, contracts, offsets, traceability. Use for ANY production data questions (Rule PDR.0). Do not use PostgreSQL MCP.
 ---
 
 # Production Data Reader Skill
@@ -13,9 +13,9 @@ description: Production database analysis via PostgreSQLProd MCP (readonly): lia
 ## Workflow (Cursor — no Python agent)
 
 1. **Role:** ProductionDataReader / **Rule PDR.0** (`.cursor/rules/integrations/production_data_reader.mdc`).
-2. **Connect:** PostgreSQLProd MCP — **`mcp_PostgreSQLProd_connect_db`** per MCP schema (**Rule DB.1**); READ-ONLY only.
+2. **Query:** `python3 Cursor-Project/scripts/psql-phoenix.py query --environment prod --sql "SELECT ..."` (**Rule DB.1**). READ-ONLY only. Do not call PostgreSQL MCP.
 3. **Parse entity** — extract ID and type from user query.
-4. **Query:** SELECT-only via MCP `query`; traverse relationships, offset tables (`customer_liabilitie_paid_by_*`, `customer_payment_*`, etc.); build chronology manually (no Python helpers in this workspace).
+4. **Query:** SELECT-only via `psql-phoenix.py query --environment prod`; traverse relationships, offset tables (`customer_liabilitie_paid_by_*`, `customer_payment_*`, etc.); build chronology manually (no Python helpers in this workspace).
 5. **Analyze** — event sequence, reversals, dependencies.
 6. **Report** — chat-first; file under **Chat reports** per **`Cursor-Project/reports/README.md`** only if user asks (Rule 0.6).
 
@@ -43,7 +43,7 @@ Provide for the entity type in scope:
 ## Integration
 
 - May consult **PhoenixExpert** for business logic.
-- **Rule 0.3 / 0.6:** no Python IntegrationService or ReportingService — MCP + chat; disk only on request.
+- **Rule 0.3 / 0.6:** no Python IntegrationService or ReportingService — psql wrapper + chat; disk only on request.
 
 ## Confidence Score (Rule CONF.1 — Three-Zone) [MANDATORY]
 

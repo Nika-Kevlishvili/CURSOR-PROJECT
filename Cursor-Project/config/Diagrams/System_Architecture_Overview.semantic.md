@@ -56,7 +56,7 @@
 - test-case-quality-validator
 - Reports (Rule 0.6)<br>reports/Chat reports/<br>reports/Feedback/
 - Scoped Playwright + Slack<br>(send-playwright-results-slack)
-- PostgreSQL MCP<br>Gate: env MUST be explicit (DB.0a)<br>Dev | Dev2 | Test | PreProd | Prod | Experiments
+- psql CLI<br>Gate: env MUST be explicit (DB.0a)<br>Dev | Dev2 | Test | PreProd | Prod | Experiments
 - test-runner
 - <b>.cursor Orchestration Layer</b>
 - Config / Templates<br>config/swagger/* &middot; config/template/*<br>config/Diagrams/* &middot; config/playwright_generation/*
@@ -88,8 +88,8 @@ Direct relationships between steps:
 - phoenix-qa<br>(PhoenixExpert) [reads code] --> Phoenix (READ-ONLY — never edit)<br>Cursor-Project/Phoenix/**<br>Env-aligned via switch-phoenix-branches.ps1
 - report-generator [saves report] --> Reports (Rule 0.6)<br>reports/Chat reports/<br>reports/Feedback/
 - bug-validator<br>(BugFinderAgent) [reads] --> Confluence<br>MCP primary → REST fallback (Rule 43)<br>Broad search ONLY in bug-validator
-- database-query [queries] --> PostgreSQL MCP<br>Gate: env MUST be explicit (DB.0a)<br>Dev | Dev2 | Test | PreProd | Prod | Experiments
-- production-data-reader [queries (Prod)] --> PostgreSQL MCP<br>Gate: env MUST be explicit (DB.0a)<br>Dev | Dev2 | Test | PreProd | Prod | Experiments
+- database-query [queries] --> psql CLI<br>Gate: env MUST be explicit (DB.0a)<br>Dev | Dev2 | Test | PreProd | Prod | Experiments
+- production-data-reader [queries (Prod)] --> psql CLI<br>Gate: env MUST be explicit (DB.0a)<br>Dev | Dev2 | Test | PreProd | Prod | Experiments
 - energo-ts-run [scoped Slack path 2] --> Slack<br>Path 2: Scoped Playwright — Tester DM + #ai-report (C0AK96S1D7X)
 
 ---

@@ -12,6 +12,7 @@
       { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/warn-phoenix-code-edit.ps1" }
     ],
     "beforeMCPExecution": [
+      { "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .cursor/hooks/block-postgresql-mcp.ps1" },
       { "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .cursor/hooks/block-elasticsearch-mcp.ps1" },
       { "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .cursor/hooks/block-atlassian-mcp.ps1" },
       { "command": "powershell -ExecutionPolicy Bypass -File .cursor/hooks/block-confluence-write.ps1" },
@@ -29,6 +30,11 @@
       {
         "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .cursor/hooks/block-elasticsearch-write.ps1",
         "matcher": "elastic|elasticsearch_mcp",
+        "failClosed": false
+      },
+      {
+        "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .cursor/hooks/block-postgresql-write.ps1",
+        "matcher": "psql|mcp-postgres",
         "failClosed": false
       }
     ],

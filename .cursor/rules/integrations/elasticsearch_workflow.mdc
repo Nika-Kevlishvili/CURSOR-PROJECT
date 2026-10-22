@@ -61,7 +61,7 @@ When **bug-validator** retrieves a Jira ticket, scan the description (and other 
 - Match is a **substring** on the path (case-sensitive path segments as written above).
 - If **both** markers appear → AskQuestion which Test 2 log target to use (Rule CONF.0).
 - If **neither** marker appears → use Rule ES.0 from the resolved environment.
-- This override applies to **Elasticsearch logs only**. It does not change PostgreSQL MCP or Phoenix branch alignment unless the user also resolved that environment.
+- This override applies to **Elasticsearch logs only**. It does not change the PostgreSQL environment or Phoenix branch alignment unless the user also resolved that environment.
 
 ## Rule ES.1: Environment gate — reuse resolved environment
 

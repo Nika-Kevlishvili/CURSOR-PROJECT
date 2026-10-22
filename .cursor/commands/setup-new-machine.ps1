@@ -36,6 +36,8 @@ $elasticCliDir = Join-Path $cursorProjectPath 'config\elasticsearch'
 $elasticBin = Join-Path $elasticCliDir 'node_modules\.bin\elastic'
 $elasticContexts = Join-Path $elasticCliDir 'contexts.yml'
 $elasticPhoenix = Join-Path $cursorProjectPath 'scripts\elastic-phoenix.py'
+$psqlPhoenix = Join-Path $cursorProjectPath 'scripts\psql-phoenix.py'
+$psqlContexts = Join-Path $cursorProjectPath 'config\postgres\contexts.json'
 $esMcpNames = @('ElasticsearchDev', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd')
 $envTargetProject = Join-Path $cursorProjectPath '.env'
 $envTargetEnergo = Join-Path (Join-Path $cursorProjectPath 'EnergoTS') '.env'
@@ -268,6 +270,15 @@ function Remove-ElasticsearchMcpServers {
     }
 }
 
+function Remove-PostgresMcpServers {
+    param($McpObj)
+    if (-not $McpObj -or -not $McpObj.mcpServers) { return }
+    $names = @($McpObj.mcpServers.PSObject.Properties.Name | Where-Object { $_ -like 'PostgreSQL*' })
+    foreach ($name in $names) {
+        $McpObj.mcpServers.PSObject.Properties.Remove($name)
+    }
+}
+
 function Invoke-SetupElasticCli {
     Write-Step 'Phase 3a - Official Elastic CLI (@elastic/cli)'
 
@@ -343,6 +354,7 @@ function Clear-UserLevelMcpConfig {
     $knownServers = @(
         'Confluence', 'Jira',
         'PostgreSQLTest', 'PostgreSQLDev', 'PostgreSQLDev2', 'PostgreSQLPreProd', 'PostgreSQLProd',
+        'PostgreSQLexperiments', 'PostgreSQLExperiment', 'PostgreSQLes', 'PostgreSQLSLR',
         'ElasticsearchDev', 'ElasticsearchTest', 'ElasticsearchTest2ES', 'ElasticsearchTest2SLR', 'ElasticsearchProd'
     )
 
@@ -395,6 +407,7 @@ function Invoke-WriteMcpConfig {
     }
 
     Remove-ElasticsearchMcpServers -McpObj $template
+    Remove-PostgresMcpServers -McpObj $template
 
     $existing = $null
     if (Test-Path $workspaceMcpPath) {
@@ -439,6 +452,7 @@ function Invoke-WriteMcpConfig {
     }
 
     Remove-ElasticsearchMcpServers -McpObj $merged
+    Remove-PostgresMcpServers -McpObj $merged
     $pyCmd = Get-Command python3 -ErrorAction SilentlyContinue
     if (-not $pyCmd) { $pyCmd = Get-Command python -ErrorAction SilentlyContinue }
     $pyExe = if ($pyCmd) { $pyCmd.Source } else { 'python' }
@@ -447,7 +461,7 @@ function Invoke-WriteMcpConfig {
 
     Clear-UserLevelMcpConfig
 
-    Write-Host "  Restart Cursor so PostgreSQL MCP reloads. Elasticsearch uses the Elastic CLI, not MCP." -ForegroundColor Yellow
+    Write-Host "  Restart Cursor. Elasticsearch uses the Elastic CLI. PostgreSQL uses psql-phoenix.py, not MCP." -ForegroundColor Yellow
 }
 
 function Get-CursorCli {
@@ -582,17 +596,17 @@ function Invoke-Verify {
             $mcp = (Get-Content -Path $workspaceMcpPath -Raw -Encoding UTF8) | ConvertFrom-Json
             $names = @($mcp.mcpServers.PSObject.Properties.Name)
             $required = @(
-                'Confluence', 'Jira',
-                'PostgreSQLTest', 'PostgreSQLDev', 'PostgreSQLDev2', 'PostgreSQLPreProd', 'PostgreSQLProd'
+                'Confluence', 'Jira'
             )
             $missing = @($required | Where-Object { $names -notcontains $_ })
             $esLeft = @($names | Where-Object { $esMcpNames -contains $_ })
-            if ($missing.Count -eq 0 -and $esLeft.Count -eq 0) {
+            $pgLeft = @($names | Where-Object { $_ -like 'PostgreSQL*' })
+            if ($missing.Count -eq 0 -and $esLeft.Count -eq 0 -and $pgLeft.Count -eq 0) {
                 $mcpOk = $true
-                $mcpDetail = 'required servers present; Elasticsearch MCP absent'
+                $mcpDetail = 'required servers present; Elasticsearch and PostgreSQL MCP absent'
             }
-            elseif ($esLeft.Count -gt 0) {
-                $mcpDetail = "Elasticsearch MCP still present: $($esLeft -join ', ')"
+            elseif ($esLeft.Count -gt 0 -or $pgLeft.Count -gt 0) {
+                $mcpDetail = "removed MCP still present: $((@($esLeft) + @($pgLeft)) -join ', ')"
             }
             else {
                 $mcpDetail = "missing: $($missing -join ', ')"
@@ -642,6 +656,10 @@ function Invoke-Verify {
     Add-VerifyResult -Name 'Elastic CLI binary' -Ok $elasticBinOk -Detail $(if ($elasticBinOk) { $elasticBin } else { 'run npm install in Cursor-Project/config/elasticsearch' })
     if (-not $elasticBinOk) { $script:PartialFail = $true }
 
+    $psqlFilesOk = (Test-Path $psqlContexts) -and (Test-Path $psqlPhoenix)
+    Add-VerifyResult -Name 'psql wrapper' -Ok $psqlFilesOk -Detail $(if ($psqlFilesOk) { 'contexts.json + psql-phoenix.py' } else { 'missing contexts.json or psql-phoenix.py' })
+    if (-not $psqlFilesOk) { $script:PartialFail = $true }
+
     # Extensions
     $cursorExe = Get-CursorCli
     if ($cursorExe -and (Test-Path $extensionsJsonPath)) {
@@ -690,12 +708,16 @@ Write-Ok 'Cursor Setup templates present'
 $npmCheck = $false
 try { $null = npm -v 2>$null; if ($LASTEXITCODE -eq 0) { $npmCheck = $true } } catch {}
 if ($npmCheck) { Write-Ok "npm: $(npm -v 2>$null)" }
-else { Write-Warn 'npm not in PATH - install Node.js LTS manually (required for MCP npx)' }
+else { Write-Warn 'npm not in PATH - install Node.js LTS manually (required for the Elastic CLI)' }
 
 $pyCheck = Get-Command python3 -ErrorAction SilentlyContinue
 if (-not $pyCheck) { $pyCheck = Get-Command python -ErrorAction SilentlyContinue }
-if ($pyCheck) { Write-Ok "Python (elastic-phoenix.py): $($pyCheck.Source)" }
-else { Write-Warn 'python3 not in PATH - required for elastic-phoenix.py' }
+if ($pyCheck) { Write-Ok "Python (elastic-phoenix.py, psql-phoenix.py): $($pyCheck.Source)" }
+else { Write-Warn 'python3 not in PATH - required for elastic-phoenix.py and psql-phoenix.py' }
+
+$psqlCheck = Get-Command psql -ErrorAction SilentlyContinue
+if ($psqlCheck) { Write-Ok "psql: $($psqlCheck.Source)" }
+else { Write-Warn 'psql not in PATH. macOS: brew install libpq. Windows: install the PostgreSQL client tools.' }
 
 if (-not $VerifyOnly) {
     if (-not $SkipClone) { Invoke-CloneSubmodules }

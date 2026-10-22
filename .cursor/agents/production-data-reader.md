@@ -10,7 +10,7 @@ description: Reads and analyzes ANY production database data and explains step-b
 
 ## Role
 
-- **READ-ONLY** PostgreSQLProd MCP (Rule PDR.0)
+- **READ-ONLY** `psql-phoenix.py --environment prod` (Rule PDR.0)
 - Trace entities, offsets, reversals, relationships for **any** production table/entity type
 
 ## Inputs
@@ -28,7 +28,7 @@ description: Reads and analyzes ANY production database data and explains step-b
 ## Constraints
 
 - **SELECT only** — never INSERT/UPDATE/DELETE
-- **PostgreSQLProd** MCP only for production (Rule DB.0)
+- **`psql-phoenix.py --environment prod`** only for production (Rule DB.0). Do not call PostgreSQL MCP.
 - May consult **PhoenixExpert** for business logic (Rule 8)
 
 ## Footer

@@ -76,7 +76,7 @@ These are the branching points in the process. Each decision leads to different 
 - PreProd
 - prod-data-reader
 - BLOCKED:<br>Fix code
-- <b>PostgreSQL MCP (Rules DB.0–DB.6)</b>
+- <b>psql CLI (Rules DB.0–DB.6)</b>
 - Ask clarifying Qs
 - tc-quality-validator
 - Cloud = External service<br>(Jira, Confluence, Slack)
@@ -247,7 +247,7 @@ These are the possible end states where data is persisted:
 - Swagger refresh fails<br>→ continue with cached specs (non-fatal)
 - BLOCK WORKFLOW<br>Escalate to user with all<br>failing axes and reasons
 - Phoenix alignment fails (exit 2/3)<br>→ PROCESS BLOCKED, ask user
-- Step 4b: DB evidence (optional)<br>Same env via PostgreSQL MCP<br>Entity state, audit logs, error logs
+- Step 4b: DB evidence (optional)<br>Same env via psql CLI<br>Entity state, audit logs, error logs
 - Swagger fail?<br>Continue with cached specs
 - Confluence MCP fails → REST fallback (Rule 43)<br>REST fails → note in analysis, continue if partial
 - Jira MCP fails → REST fallback (Rule 42)<br>REST fails → PROCESS BLOCKED
@@ -281,14 +281,14 @@ Direct relationships between steps:
 - Environment<br>needed? [No / resolved] --> Proceed to workflow<br>(see dedicated pages: 4–9)
 - Step 1: cross-dependency-finder (MANDATORY FIRST)<br>Jira-anchored analysis (Rule 35a)<br>No local merge/git — Jira + codebase + shallow Confluence --> Jira Cloud
 - Step 2: test-case-generator<br>Reads playwright instructions folder (MANDATORY)<br>Uses prompt + Confluence + codebase + cross_dependency_data<br>Writes Backend/&lt;Topic&gt;.md + Frontend/&lt;Topic&gt;.md --> Confluence<br>Cloud
-- Step 4b: DB evidence (optional)<br>Same env via PostgreSQL MCP<br>Entity state, audit logs, error logs --> PostgreSQL
+- Step 4b: DB evidence (optional)<br>Same env via psql CLI<br>Entity state, audit logs, error logs --> PostgreSQL
 - Env resolve (PHOENIX-SWITCH.0)<br>switch-phoenix-branches.ps1 --> Step 1: cross-dependency-finder (MANDATORY FIRST)<br>Jira-anchored analysis (Rule 35a)<br>No local merge/git — Jira + codebase + shallow Confluence
 - Step 1: cross-dependency-finder (MANDATORY FIRST)<br>Jira-anchored analysis (Rule 35a)<br>No local merge/git — Jira + codebase + shallow Confluence --> Step 1b: Check diagrams<br>Ticket attachments → config/Diagrams/<br>(Bundle 4/5/6 .svg fallback)
 - Step 1b: Check diagrams<br>Ticket attachments → config/Diagrams/<br>(Bundle 4/5/6 .svg fallback) --> Step 2: test-case-generator<br>Reads playwright instructions folder (MANDATORY)<br>Uses prompt + Confluence + codebase + cross_dependency_data<br>Writes Backend/&lt;Topic&gt;.md + Frontend/&lt;Topic&gt;.md
 - Step 2: test-case-generator<br>Reads playwright instructions folder (MANDATORY)<br>Uses prompt + Confluence + codebase + cross_dependency_data<br>Writes Backend/&lt;Topic&gt;.md + Frontend/&lt;Topic&gt;.md --> Step 3: Swagger refresh (MANDATORY)<br>update-swagger-specs.ps1
 - Step 3: Swagger refresh (MANDATORY)<br>update-swagger-specs.ps1 --> Step 4a: Phoenix code analysis<br>(aligned to env branch — READ-ONLY)<br>Endpoints, services, validators, schedulers
-- Step 4a: Phoenix code analysis<br>(aligned to env branch — READ-ONLY)<br>Endpoints, services, validators, schedulers --> Step 4b: DB evidence (optional)<br>Same env via PostgreSQL MCP<br>Entity state, audit logs, error logs
-- Step 4b: DB evidence (optional)<br>Same env via PostgreSQL MCP<br>Entity state, audit logs, error logs --> Step 5: 5-Verdict Matrix
+- Step 4a: Phoenix code analysis<br>(aligned to env branch — READ-ONLY)<br>Endpoints, services, validators, schedulers --> Step 4b: DB evidence (optional)<br>Same env via psql CLI<br>Entity state, audit logs, error logs
+- Step 4b: DB evidence (optional)<br>Same env via psql CLI<br>Entity state, audit logs, error logs --> Step 5: 5-Verdict Matrix
 - Step 1: cross-dependency-finder (MANDATORY FIRST)<br>Jira-anchored analysis (Rule 35a)<br>No local merge/git — Jira + codebase + shallow Confluence --> Output:<br>scope, entry_points,<br>upstream, downstream,<br>impact_risk / what_could_break,<br>integration_points, technical_details
 - Step 2: test-case-generator<br>Reads playwright instructions folder (MANDATORY)<br>Uses prompt + Confluence + codebase + cross_dependency_data<br>Writes Backend/&lt;Topic&gt;.md + Frontend/&lt;Topic&gt;.md --> test_cases/Backend/&lt;Topic&gt;.md<br>(TC-BE-N only)
 - Step 2: test-case-generator<br>Reads playwright instructions folder (MANDATORY)<br>Uses prompt + Confluence + codebase + cross_dependency_data<br>Writes Backend/&lt;Topic&gt;.md + Frontend/&lt;Topic&gt;.md --> test_cases/Frontend/&lt;Topic&gt;.md<br>(TC-FE-N only)

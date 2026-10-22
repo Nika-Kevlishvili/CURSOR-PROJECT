@@ -12,8 +12,8 @@ Single map from **rule / topic** to the **primary procedural** file(s). When `wo
 | 1 / safety | GitLab & Confluence read-only; tiers | `.cursor/rules/safety/safety_rules.mdc` |
 | 8 / agents | Consultation patterns | `.cursor/rules/agents/agent_rules.mdc` |
 | 32 Bug validation | BugFinder: env alignment, diagrams, Confluence, mandatory Swagger refresh + OpenAPI, code, 5 verdicts, Slack — no TC/Playwright pipeline | `.cursor/skills/phoenix-bug-validation/SKILL.md`, `.cursor/agents/bug-validator.md` |
-| 33 DB Test | PostgreSQLTest MCP | `.cursor/rules/integrations/database_workflow.mdc` |
-| DB.0a DB env gate | Ask env in chat before MCP (`phoenix-database` SKILL Step 0, `database-query` agent) | `.cursor/skills/phoenix-database/SKILL.md`, `.cursor/rules/integrations/database_workflow.mdc`, `.cursor/agents/database-query.md` |
+| 33 DB Test | `psql-phoenix.py --environment test` | `.cursor/rules/integrations/database_workflow.mdc` |
+| DB.0a DB env gate | Ask env in chat before `psql-phoenix.py` (`phoenix-database` SKILL Step 0, `database-query` agent). No PostgreSQL MCP | `.cursor/skills/phoenix-database/SKILL.md`, `.cursor/rules/integrations/database_workflow.mdc`, `.cursor/agents/database-query.md` |
 | 35 / 35a Test cases | **Gates:** `test_cases_structure.mdc` (TC-ENV, TC-FRONTEND, STANDALONE). **Procedure:** cross-dep → generator → quality | Gates: **`.cursor/rules/workspace/test_cases_structure.mdc`**. Steps: cross-dep / generator / quality **SKILL.md** files |
 | 36 EnergoTS run | `energo-ts-run`; stay on `cursor`, `staging`, or `cursorMerged` | `.cursor/skills/energo-ts-run/SKILL.md`, `.cursor/agents/energo-ts-run.md` |
 | 45 Frontend Playwright | `/playwright-frontend` on EnergoTS **`cursorMerged` only** (no checkout); one validator pass; then `--project=frontend` | `.cursor/commands/playwright-frontend.md`, `.cursor/procedures/playwright-frontend/procedure.md`, `.cursor/procedures/playwright-frontend-validator/procedure.md` |

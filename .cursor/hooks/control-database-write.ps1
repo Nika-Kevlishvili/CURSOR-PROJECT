@@ -1,65 +1,50 @@
 ﻿# control-database-write.ps1
 # Hook: beforeMCPExecution
-# Purpose: Ask permission for database write operations
+# Purpose: Second deny for removed PostgreSQL MCP write tools.
+#          Writes go through psql-phoenix.py --allow-write (block-postgresql-write.ps1).
+# Fail-open on parse errors.
 
 $jsonInput = [Console]::In.ReadToEnd()
 
+function Write-HookAllow {
+    @{ continue = $true; permission = "allow" } | ConvertTo-Json -Compress
+}
+
 try {
-    $input = $jsonInput | ConvertFrom-Json
-    $toolName = $input.tool_name
-    $toolInput = $input.tool_input
-    
-    $databaseTools = @("mcp_PostgreSQLTest_execute", "mcp_PostgreSQLDev_execute", "mcp_PostgreSQLDev2_execute", "mcp_PostgreSQLPreProd_execute", "mcp_PostgreSQLProd_execute")
-    
-    $isDatabaseTool = $false
-    foreach ($dbTool in $databaseTools) {
-        if ($toolName -eq $dbTool) {
-            $isDatabaseTool = $true
-            break
-        }
+    if (-not $jsonInput) {
+        Write-HookAllow
+        exit 0
     }
-    
-    if ($isDatabaseTool) {
-        $sqlQuery = ""
-        try {
-            if ($toolInput -is [string]) {
-                $toolInputObj = $toolInput | ConvertFrom-Json
-                $sqlQuery = $toolInputObj.sql
-            } else {
-                $sqlQuery = $toolInput.sql
-            }
-        } catch {
-            if ($toolInput -match "^\s*(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE)") {
-                $sqlQuery = $toolInput
-            }
-        }
-        
-        $writeKeywords = @("INSERT", "UPDATE", "DELETE", "DROP", "ALTER", "CREATE", "TRUNCATE", "REPLACE", "MERGE")
-        $isWriteOperation = $false
-        $sqlUpper = $sqlQuery.ToUpper()
-        
-        foreach ($keyword in $writeKeywords) {
-            if ($sqlUpper -match "\b$keyword\b") {
-                $isWriteOperation = $true
-                break
-            }
-        }
-        
-        if ($isWriteOperation) {
-            $response = @{
-                continue = $true
-                permission = "ask"
-                user_message = "[PERMISSION REQUIRED] Database write operation detected. Tool: $toolName, SQL: $sqlQuery"
-                agent_message = "Database write operation requires explicit user approval. Please wait for user approval."
-            }
-        } else {
-            $response = @{ continue = $true; permission = "allow" }
-        }
-    } else {
-        $response = @{ continue = $true; permission = "allow" }
+
+    $payload = $jsonInput | ConvertFrom-Json
+    $toolName = [string]$payload.tool_name
+    if (-not $toolName) { $toolName = [string]$payload.toolName }
+    $names = @($toolName)
+    $toolInput = $payload.tool_input
+    if (-not $toolInput) { $toolInput = $payload.toolInput }
+    if ($toolName -eq "CallDynamicTool" -and $toolInput) {
+        if ($toolInput.toolName) { $names += [string]$toolInput.toolName }
+        if ($toolInput.namespace) { $names += [string]$toolInput.namespace }
     }
-    
-    $response | ConvertTo-Json -Compress
+
+    $deny = $false
+    foreach ($name in $names) {
+        if ($name -match "PostgreSQL") { $deny = $true }
+    }
+    if (-not $deny -and $jsonInput -match "mcp_PostgreSQL") { $deny = $true }
+
+    if ($deny) {
+        @{
+            continue      = $true
+            permission    = "deny"
+            user_message  = "[HOOK BLOCKED] PostgreSQL MCP writes are disabled."
+            agent_message = "BLOCK (DB.0): PostgreSQL MCP is removed. Use python3 Cursor-Project/scripts/psql-phoenix.py. Read-only queries use query. Writes use execute --allow-write and are refused on prod, es, and slr."
+        } | ConvertTo-Json -Compress
+        exit 0
+    }
+
+    Write-HookAllow
 } catch {
-    @{ continue = $true; permission = "ask"; user_message = "[PERMISSION REQUIRED] Error parsing database operation." } | ConvertTo-Json -Compress
+    Write-HookAllow
+    exit 0
 }

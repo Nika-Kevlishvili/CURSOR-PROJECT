@@ -1,6 +1,6 @@
 ---
 alwaysApply: false
-description: "PostgreSQL MCP environment mapping, connect-first workflow. Loads for DB MCP, bug validation DB steps, and production-data reads."
+description: "PostgreSQL via official psql (psql-phoenix.py). Environment gate, read-only prod/es/slr. Loads for DB steps, bug validation, and production-data reads."
 globs:
   - ".cursor/agents/database-query.md"
   - ".cursor/skills/phoenix-database/**"
@@ -14,45 +14,59 @@ globs:
 
 # DATABASE WORKFLOW RULES
 
-**Full procedure + SQL patterns:** `.cursor/skills/phoenix-database/SKILL.md`
+**Client:** official `psql`, invoked only through `Cursor-Project/scripts/psql-phoenix.py`.
+**Procedure:** `.cursor/skills/phoenix-database/SKILL.md`.
+**Config:** `Cursor-Project/config/postgres/contexts.json`. Passwords: `Cursor-Project/config/postgres/secrets.env` (gitignored).
 
-## Rule DB.0: Environment Selection
+PostgreSQL MCP is removed (`mcp-postgres-server`, `connect_db`, `query`, `execute` on `PostgreSQL*`). Do not call those tools. A `beforeMCPExecution` hook denies them. Do not invoke `psql` directly: the wrapper passes the password through libpq environment variables, never as a command-line argument.
 
-| User says | MCP server |
-|-----------|------------|
-| Dev | PostgreSQLDev |
-| Dev2 | PostgreSQLDev2 |
-| Test | PostgreSQLTest |
-| PreProd | PostgreSQLPreProd |
-| Prod | PostgreSQLProd (read-only) |
-| Experiments | PostgreSQLexperiments |
+**Chat line when the database was read:** `PostgreSQL source: official psql CLI (psql-phoenix).`
+
+## Rule DB.0: Environment selection
+
+| User says | `--environment` | Database | Writes |
+|-----------|-----------------|----------|--------|
+| Dev | `dev` | `phoenix` | `execute --allow-write` asks first |
+| Dev2 | `dev2` | `phoenix` | `execute --allow-write` asks first |
+| Test | `test` | `phoenix` | `execute --allow-write` asks first |
+| PreProd | `preprod` | `phoenix` | `execute --allow-write` asks first |
+| Prod | `prod` | `phoenix` | Read-only (`readonly_user`) |
+| Experiments | `experiments` | `experiments` | `execute --allow-write` asks first |
+| ES | `es` | `phoenix` | Read-only (`readonly_user`) |
+| SLR | `slr` | `phoenix` | Read-only (`readonly_user`) |
 
 **ALWAYS** use the exact environment the user requests. Never switch.
 
-## Rule DB.0a: No silent environment for PostgreSQL MCP
+The six-way gate (Dev / Dev2 / Test / PreProd / Prod / Experiments) is unchanged. `es` and `slr` are used only when the user names those databases.
 
-Before ANY PostgreSQL MCP call: user MUST name environment in current task, or explicitly authorize defaults. Forbidden inference: ticket prefix, Playwright branch, habit, prior session. If missing → ask (AskQuestion, six options). Do not call MCP until answered.
+## Rule DB.0a: No silent environment
+
+Before ANY `psql-phoenix.py` call: user MUST name environment in current task, or explicitly authorize defaults. Forbidden inference: ticket prefix, Playwright branch, habit, prior session. If missing → ask (AskQuestion, six options). Do not run the wrapper until answered.
 
 Violation is a **BLOCK**.
 
-## Rule DB.1: Connect first
+## Rule DB.1: Run the wrapper
 
-Read MCP tool descriptor for chosen server. Connect with `connect_db(...)`, then query with `query(sql="SELECT ...")`. Never embed Host/Password in rules, chat, or commits.
+```bash
+python3 Cursor-Project/scripts/psql-phoenix.py query --environment <env> --sql "SELECT ..."
+```
+
+There is no `connect_db` step. Each command opens its own `psql` session (`-X -w -v ON_ERROR_STOP=1 --csv -c`). Reads set `default_transaction_read_only=on`. Never embed Host/Password in rules, chat, or commits.
 
 ## Rule DB.2: Query patterns
 
 **Key schemas:** Product contracts: `product_contract.contracts` → `contract_details` → `contract_pods` → `pod_details` → `pod.pod`. Service contracts: `service_contract.contracts` → `contract_details` → `contract_pods` → `pod.pod`. POD identifier in `pod.pod.identifier`.
 
-**Best practices:** DISTINCT on joins; include contract_type; order by contract_number; include status + date fields; LIMIT result sets; use schema prefixes.
+**Best practices:** DISTINCT on joins; include contract_type; order by contract_number; include status + date fields; LIMIT result sets; use schema prefixes. The wrapper also applies an outer LIMIT (default 200, max 500).
 
 ## Rule DB.5: Security
 
-Never commit or log database credentials. Credentials stay in Cursor MCP server config only. Violation is a **BLOCK** (security).
+Never commit or log database credentials. Passwords live in `Cursor-Project/config/postgres/secrets.env` or the process environment. `prod`, `es`, and `slr` are read-only in the wrapper and in the shell hook. Violation is a **BLOCK** (security).
 
 ## Rule DB.6: Workflow integration
 
-1. Connect using MCP from DB.0
-2. Execute queries using DB.2 patterns
+1. Resolve environment (DB.0a) and state `DB environment: <Env>`
+2. Run `psql-phoenix.py query` using DB.2 patterns
 3. Format results for user
 4. Save markdown under `reports/` only if user asks or runs `/report` (Rule 0.6)
 

@@ -34,7 +34,7 @@ alwaysApply: true
 
 # DATABASE ENVIRONMENT RULE [CRITICAL]
 
-10a. [CRITICAL] **PostgreSQL / live DB data** → follow **Rule DB.0a** and **`.cursor/skills/phoenix-database/SKILL.md` Step 0** before any PostgreSQL MCP. If the user did not name Dev/Dev2/Test/PreProd/Prod/Experiments, **ask** — do not infer from PDT tickets, EnergoTS test defaults (e.g. reminder `2163` in `PDT-2529`), or habit. Route to **database-query** subagent when appropriate. Hooks are backup only. Violation is a **BLOCK**.
+10a. [CRITICAL] **PostgreSQL / live DB data** → follow **Rule DB.0a** and **`.cursor/skills/phoenix-database/SKILL.md` Step 0** before any `psql-phoenix.py` call. If the user did not name Dev/Dev2/Test/PreProd/Prod/Experiments, **ask** — do not infer from PDT tickets, EnergoTS test defaults (e.g. reminder `2163` in `PDT-2529`), or habit. Route to **database-query** subagent when appropriate. Hooks are backup only. Do not call PostgreSQL MCP. Violation is a **BLOCK**.
 
 # ENVIRONMENT ACCESS RULE [IMPORTANT]
 

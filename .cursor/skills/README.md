@@ -12,8 +12,8 @@ Skills guide the Cursor agent for this repo’s workflows. **Location:** workspa
 | **phoenix-file-organization** | Where to put files (`Cursor-Project/`, `.cursor/`) |
 | **phoenix-reporting** | On-demand / workflow-mandated markdown per **`Cursor-Project/reports/README.md`** (Rule 0.6) |
 | **phoenix-commands** | Which slash command / workflow to use |
-| **phoenix-database** | PostgreSQL MCP; environments; connect first |
-| **production-data-reader** | Rule PDR.0; PostgreSQLProd MCP readonly |
+| **phoenix-database** | Official psql via `psql-phoenix.py`; environment gate |
+| **production-data-reader** | Rule PDR.0; `psql-phoenix.py --environment prod`, read-only |
 | **environment-resolver** | Resolve dev/dev2/test/preprod/prod/experiments; ask when ambiguous |
 | **cross-dependency-finder** | Rule 35 / 35a; output for test-case-generator |
 | **test-case-generator** | Rule 35; save `test_cases/Backend/` markdown + manual Excel (+ `Frontend/` when scope includes UI) |

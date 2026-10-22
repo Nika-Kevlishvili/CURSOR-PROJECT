@@ -17,7 +17,7 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 | **bug-validator.md** | Bug validation (Rule 32) | Confluence → codebase → full analysis in chat; **Chat reports** file only if **`/report`** or explicit save. READ-ONLY. |
 | **test-runner.md** | TestAgent | Tests; consult PhoenixExpert first; report results. |
 | **report-generator.md** | Reports (Rule 0.6) | **`/report`**, **`/feedback`**, or explicit save request only — per **`Cursor-Project/reports/README.md`**. |
-| **database-query.md** | DB workflow (Rule DB.0+) | PostgreSQL MCP; connect first; see `integrations/database_workflow.mdc`. |
+| **database-query.md** | DB workflow (Rule DB.0+) | Official psql via `psql-phoenix.py`; see `integrations/database_workflow.mdc`. |
 | **shell.md** | Shell / CLI | Delegated terminal + safe git/CLI with hooks and project safety rules. |
 | **environment-access.md** | Environment access | Dev/Dev2; browser/MCP per subagent doc. |
 | **environment-resolver.md** | Environment resolver | Resolves `dev/dev2/test/preprod/prod/experiments` from user/Jira; asks user when ambiguous. |
@@ -31,7 +31,7 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 | **jira-bug.md** | Jira bug (Rule JIRA.0) | Experiments board only. |
 | **phoenix-bug-reporter.md** | Phoenix Phase 2 bug reporter (Rule PHOENIX-BUG.0) | Review file → Step 3.5 **bug-validator** (parent prefetch) → APPROVE + `.active-bugreview` sidecar → `acli jira workitem create`; hook guards Internal Bug + Bug; reporter from `.env`; Internal tester from QA/Test subtask. |
 | **playwright-test-validator.md** | Playwright QA gate | Spec vs test cases + **`playwright instructions/`** (Rule 35 / energo-ts-test quality gate). API specs. |
-| **production-data-reader.md** | Production data (Rule PDR.0) | PostgreSQLProd MCP readonly. |
+| **production-data-reader.md** | Production data (Rule PDR.0) | `psql-phoenix.py --environment prod`, read-only. |
 
 ---
 

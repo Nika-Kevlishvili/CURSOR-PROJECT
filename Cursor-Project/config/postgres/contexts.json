@@ -1,0 +1,68 @@
+{
+  "environments": {
+    "dev": {
+      "host": "10.236.20.21",
+      "port": 5432,
+      "database": "phoenix",
+      "user": "postgres",
+      "password_env": "PGPASSWORD_DEV",
+      "read_only": false
+    },
+    "dev2": {
+      "host": "10.236.20.22",
+      "port": 5432,
+      "database": "phoenix",
+      "user": "postgres",
+      "password_env": "PGPASSWORD_DEV2",
+      "read_only": false
+    },
+    "test": {
+      "host": "10.236.20.24",
+      "port": 5432,
+      "database": "phoenix",
+      "user": "postgres",
+      "password_env": "PGPASSWORD_TEST",
+      "read_only": false
+    },
+    "preprod": {
+      "host": "10.236.20.76",
+      "port": 5432,
+      "database": "phoenix",
+      "user": "postgres",
+      "password_env": "PGPASSWORD_PREPROD",
+      "read_only": false
+    },
+    "prod": {
+      "host": "10.236.20.78",
+      "port": 5000,
+      "database": "phoenix",
+      "user": "readonly_user",
+      "password_env": "PGPASSWORD_PROD",
+      "read_only": true
+    },
+    "experiments": {
+      "host": "10.236.20.85",
+      "port": 5432,
+      "database": "experiments",
+      "user": "postgres",
+      "password_env": "PGPASSWORD_EXPERIMENTS",
+      "read_only": false
+    },
+    "es": {
+      "host": "10.236.20.81",
+      "port": 5433,
+      "database": "phoenix",
+      "user": "readonly_user",
+      "password_env": "PGPASSWORD_ES",
+      "read_only": true
+    },
+    "slr": {
+      "host": "10.236.20.87",
+      "port": 5432,
+      "database": "phoenix",
+      "user": "readonly_user",
+      "password_env": "PGPASSWORD_SLR",
+      "read_only": true
+    }
+  }
+}

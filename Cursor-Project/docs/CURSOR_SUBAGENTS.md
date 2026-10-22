@@ -28,7 +28,7 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 | **Playwright Frontend** | `.cursor/commands/playwright-frontend.md` | `.cursor/procedures/playwright-frontend/procedure.md` | Rule 45. User entry is `/playwright-frontend` only. Not a subagent. |
 | **EnergoTS Run** | `energo-ts-run.md` | `energo-ts-run` | Rule 36: run Playwright on `cursor`, `staging`, or `cursorMerged`. |
 | **Test Runner** | `test-runner.md` | — | Run tests; consult PhoenixExpert first. |
-| **Database Query** | `database-query.md` | `phoenix-database` | PostgreSQL MCP; correct env; connect first. |
+| **Database Query** | `database-query.md` | `phoenix-database` | Official psql via `psql-phoenix.py`; correct env. |
 | **Production Data Reader** | `production-data-reader.md` | `production-data-reader` | Rule PDR.0: production DB read-only traceability. |
 | **Jira Bug** | `jira-bug.md` | `jira-bug-template` | Rule JIRA.0: Experiments board only. |
 | **Postman Collection** | `postman-collection.md` | — (stub) | Generate Postman collections; consult PhoenixExpert. |

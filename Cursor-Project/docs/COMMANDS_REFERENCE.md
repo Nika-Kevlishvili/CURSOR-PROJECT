@@ -213,7 +213,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 **What it can do:**
 - Connect to production DB (PostgreSQLProd, readonly_user).
 - Analyze any entity: liability, receivable, payment, deposit, invoice, contract, customer, etc.
-- Use **PostgreSQLProd MCP**: `connect_db` then `query` with SELECT-only SQL; build analysis manually (no bundled `analyze_entity` helpers in this workspace).
+- Use **`psql-phoenix.py query --environment prod`** with SELECT-only SQL; build analysis manually (no bundled `analyze_entity` helpers in this workspace). Do not call PostgreSQL MCP.
 - Explain step-by-step how data was created; offset sequence; reversals; relationships.
 - Save report to **Chat reports** `…/<segment>/ProductionDataReaderAgent_{HHMM}.md` per **`Cursor-Project/reports/README.md`**.
 - Read-only; no writes.

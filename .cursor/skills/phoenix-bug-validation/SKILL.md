@@ -136,7 +136,7 @@ When the resolved environment is **Prod** or **PreProd** (and by default for **T
 
 ### Step 4b: Database Investigation [RECOMMENDED]
 
-Gather DB evidence to strengthen or clarify conclusions. Use the **same environment** as Step 0. Follow **`.cursor/skills/phoenix-database/SKILL.md`** for env mapping, connect-first workflow, SQL patterns, and query best practices. **SELECT-only**.
+Gather DB evidence to strengthen or clarify conclusions. Use the **same environment** as Step 0. Follow **`.cursor/skills/phoenix-database/SKILL.md`**. Run `python3 Cursor-Project/scripts/psql-phoenix.py query --environment <env> --sql "SELECT ..."`. Do **not** call PostgreSQL MCP. **SELECT-only**. Disclose `PostgreSQL source: official psql CLI (psql-phoenix).`
 
 **What to investigate (prioritized):** entity data state → audit/change logs → error logs → relationships/dependencies → data consistency checks.
 

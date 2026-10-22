@@ -13,6 +13,9 @@ node_modules/
 # Elasticsearch API keys for the official Elastic CLI (never commit)
 Cursor-Project/config/elasticsearch/secrets.env
 
+# PostgreSQL passwords for the official psql client (never commit)
+Cursor-Project/config/postgres/secrets.env
+
 # OS
 Thumbs.db
 Desktop.ini

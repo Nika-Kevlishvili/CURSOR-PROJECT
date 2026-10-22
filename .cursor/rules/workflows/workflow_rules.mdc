@@ -20,7 +20,7 @@ description: "Workflow obligations (Rules 32–45): summary + exit criteria. Ste
 - **Not in scope:** automatic test cases, Playwright, **`energo-ts-run`** (Rules 35 / 36 unless user explicitly asks)
 - **Env:** **`environment-resolver`** first; empty Jira Environment → AskQuestion (six envs); **`PROCESS BLOCKED`** — no silent `test` default
 - **Phoenix align:** **Rule PHOENIX-SWITCH.0**; prod requires `-ConfirmProd` + user ack
-- **Evidence:** Confluence (broad discovery **bug-validator only**) + mandatory Swagger refresh + aligned Phoenix code + DB (supporting, same env) + Elasticsearch logs via the official Elastic CLI (supporting, same env — Rule ES.0; not Elasticsearch MCP)
+- **Evidence:** Confluence (broad discovery **bug-validator only**) + mandatory Swagger refresh + aligned Phoenix code + DB via official psql (`psql-phoenix.py`, same env) + Elasticsearch logs via the official Elastic CLI (supporting, same env — Rule ES.0; not Elasticsearch MCP)
 - **SKILL must cover (do not skip read):** diagram bundles under **`Cursor-Project/config/Diagrams/`** when ticket has no diagram; Confluence **Phase 2 exclusion** on Prod/PreProd (prefer Phase 1 wiki); attachment recovery; **Elasticsearch log analysis** (Step 4c) — see **`.cursor/skills/phoenix-bug-validation/SKILL.md`**
 - **Slack** `bug-validation` **only when user explicitly asks**; disk report only when user explicitly asks to save (**Rule 0.6**)
 - **Rule 41** applies to any EnergoTS `.spec.ts` work — Rule 32 does not author specs
@@ -31,8 +31,8 @@ Violation is a **BLOCK**.
 
 ## Rule 33 — Database (Test environment) [CRITICAL]
 
-- Test env queries → **PostgreSQLTest** MCP only; **connect before query**
-- Env gate before any PostgreSQL MCP: **Rule DB.0a**, **`.cursor/skills/phoenix-database/SKILL.md`**
+- Test env queries → **`psql-phoenix.py --environment test`** only. Do not call PostgreSQL MCP.
+- Env gate before any `psql-phoenix.py` call: **Rule DB.0a**, **`.cursor/skills/phoenix-database/SKILL.md`**
 - Full patterns: **`.cursor/rules/integrations/database_workflow.mdc`**
 
 Violation is a **BLOCK**.
