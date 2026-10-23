@@ -17,6 +17,7 @@ Use this file as the **single map** from “agent role” to **where it lives to
 | **test-case-generator.md** | Test cases (Rule 35) | `test-case-generator` | After **`cross-dependency-finder`** |
 | **test-case-quality-validator.md** | TC quality (10-axis ≥80) | `test-case-quality-validator` | Rule 35 Step 2.5 |
 | **energo-ts-test.md** | Playwright API authoring | `energo-ts-test` | Rule 0.8.1; `EnergoTS/src/tests/` |
+| **performance-test.md** | Listing performance tests (POD-style) | `performance-test` | User calls `performance-test` / `perfomance-test` and names the object |
 | **playwright-test-validator.md** | API spec vs test cases | `playwright-test-validator` | After energo-ts-test authoring |
 | **playwright-frontend command** | Frontend Playwright author + run | `.cursor/procedures/playwright-frontend/procedure.md` | Rule 45. User entry is `/playwright-frontend` only. Not a subagent. The one critique is `.cursor/procedures/playwright-frontend-validator/procedure.md`. |
 | **energo-ts-run.md** | Playwright test run | `energo-ts-run` | Rule 36; `cursor`, `staging`, or `cursorMerged` |

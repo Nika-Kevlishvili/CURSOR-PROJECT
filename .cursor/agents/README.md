@@ -26,6 +26,7 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 | **test-case-quality-validator.md** | TC quality gate (Rule 35 Step 2.5) | **10-axis, ≥80/100** STRICT scoring; READ-ONLY; max 3 rewrites. |
 | **cross-dependency-finder.md** | Cross-dependencies (Rule 35, 35a) | Jira + code + deep Confluence exploration; **no** local merge/git; hand off to test-case-generator. |
 | **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.spec.ts`. API specs under `src/tests/`. |
+| **performance-test.md** | PerformanceTestAgent | Asks which object and environment, then writes and runs listing performance specs the same way as Points of Delivery. Skill: `performance-test`. |
 | *(no subagent)* | Frontend Playwright (Rule 45) | User entry is **`/playwright-frontend`** only (`.cursor/commands/playwright-frontend.md`). Procedures are `.cursor/procedures/playwright-frontend/` and `.cursor/procedures/playwright-frontend-validator/`. They are not slash entries. |
 | **energo-ts-run.md** | Playwright runner (Rule 36) | `npx playwright test` from EnergoTS `src/tests/`; stay on `cursorMerged` or `staging`. JSON is `src/backend/playwright-report.json`. JSON→MD + Slack uploads for **scoped Slack path 2**; ad-hoc runs: generator only if user explicitly asks (**Rule DPR.0**). |
 | **jira-bug.md** | Jira bug (Rule JIRA.0) | Experiments board only. |
