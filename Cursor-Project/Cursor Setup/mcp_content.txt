@@ -97,10 +97,9 @@
       "url": "https://mcp.atlassian.com/v1/sse"
     },
     "PostgreSQLTest": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "mcp-postgres-server"
+        "Cursor-Project/config/mcp/postgres-server/node_modules/mcp-postgres-server/build/index.js"
       ],
       "env": {
         "POSTGRES_CONNECTION_STRING": "postgres://postgres:U%26Vd2Ge%40nyM1@10.236.20.24:5432/phoenix",
@@ -109,14 +108,18 @@
         "POSTGRES_PORT": "5432",
         "POSTGRES_DB": "phoenix",
         "POSTGRES_USER": "postgres",
-        "POSTGRES_PASSWORD": "U&Vd2Ge@nyM1"
+        "POSTGRES_PASSWORD": "U&Vd2Ge@nyM1",
+        "PG_HOST": "10.236.20.24",
+        "PG_PORT": "5432",
+        "PG_DATABASE": "phoenix",
+        "PG_USER": "postgres",
+        "PG_PASSWORD": "U&Vd2Ge@nyM1"
       }
     },
     "PostgreSQLDev2": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "mcp-postgres-server"
+        "Cursor-Project/config/mcp/postgres-server/node_modules/mcp-postgres-server/build/index.js"
       ],
       "env": {
         "POSTGRES_CONNECTION_STRING": "postgres://postgres:uj6MfFgUkV1R@10.236.20.22:5432/phoenix",
@@ -125,14 +128,18 @@
         "POSTGRES_PORT": "5432",
         "POSTGRES_DB": "phoenix",
         "POSTGRES_USER": "postgres",
-        "POSTGRES_PASSWORD": "uj6MfFgUkV1R"
+        "POSTGRES_PASSWORD": "uj6MfFgUkV1R",
+        "PG_HOST": "10.236.20.22",
+        "PG_PORT": "5432",
+        "PG_DATABASE": "phoenix",
+        "PG_USER": "postgres",
+        "PG_PASSWORD": "uj6MfFgUkV1R"
       }
     },
     "PostgreSQLPreProd": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "mcp-postgres-server"
+        "Cursor-Project/config/mcp/postgres-server/node_modules/mcp-postgres-server/build/index.js"
       ],
       "env": {
         "POSTGRES_CONNECTION_STRING": "postgres://postgres:U&Vd2Ge@nyM1@10.236.20.76:5432/phoenix",
@@ -141,14 +148,18 @@
         "POSTGRES_PORT": "5432",
         "POSTGRES_DB": "phoenix",
         "POSTGRES_USER": "postgres",
-        "POSTGRES_PASSWORD": "U&Vd2Ge@nyM1"
+        "POSTGRES_PASSWORD": "U&Vd2Ge@nyM1",
+        "PG_HOST": "10.236.20.76",
+        "PG_PORT": "5432",
+        "PG_DATABASE": "phoenix",
+        "PG_USER": "postgres",
+        "PG_PASSWORD": "U&Vd2Ge@nyM1"
       }
     },
     "PostgreSQLDev": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "mcp-postgres-server"
+        "Cursor-Project/config/mcp/postgres-server/node_modules/mcp-postgres-server/build/index.js"
       ],
       "env": {
         "POSTGRES_CONNECTION_STRING": "postgres://postgres:rakX5thB2qO3@10.236.20.21:5432/phoenix",
@@ -157,14 +168,18 @@
         "POSTGRES_PORT": "5432",
         "POSTGRES_DB": "phoenix",
         "POSTGRES_USER": "postgres",
-        "POSTGRES_PASSWORD": "rakX5thB2qO3"
+        "POSTGRES_PASSWORD": "rakX5thB2qO3",
+        "PG_HOST": "10.236.20.21",
+        "PG_PORT": "5432",
+        "PG_DATABASE": "phoenix",
+        "PG_USER": "postgres",
+        "PG_PASSWORD": "rakX5thB2qO3"
       }
     },
     "PostgreSQLProd": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "mcp-postgres-server"
+        "Cursor-Project/config/mcp/postgres-server/node_modules/mcp-postgres-server/build/index.js"
       ],
       "env": {
         "POSTGRES_CONNECTION_STRING": "postgres://readonly_user:U$CM)*qr&Zb4JfU@@10.236.20.78:5000/phoenix",
@@ -173,10 +188,33 @@
         "POSTGRES_PORT": "5000",
         "POSTGRES_DB": "phoenix",
         "POSTGRES_USER": "readonly_user",
-        "POSTGRES_PASSWORD": "U$CM)*qr&Zb4JfU@"
+        "POSTGRES_PASSWORD": "U$CM)*qr&Zb4JfU@",
+        "PG_HOST": "10.236.20.78",
+        "PG_PORT": "5000",
+        "PG_DATABASE": "phoenix",
+        "PG_USER": "readonly_user",
+        "PG_PASSWORD": "U$CM)*qr&Zb4JfU@"
+      }
+    },
+    "PostgreSQLExperiment": {
+      "command": "node",
+      "args": [
+        "Cursor-Project/config/mcp/postgres-server/node_modules/mcp-postgres-server/build/index.js"
+      ],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgres://readonly_user:U$CM)*qr&Zb4JfU@@10.236.20.85:5432/postgres",
+        "MCP_SERVER_NAME": "PostgreSQLExperiment",
+        "POSTGRES_HOST": "10.236.20.85",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_DB": "postgres",
+        "POSTGRES_USER": "readonly_user",
+        "POSTGRES_PASSWORD": "U$CM)*qr&Zb4JfU@",
+        "PG_HOST": "10.236.20.85",
+        "PG_PORT": "5432",
+        "PG_DATABASE": "postgres",
+        "PG_USER": "readonly_user",
+        "PG_PASSWORD": "U$CM)*qr&Zb4JfU@"
       }
     }
   }
 }
-
-

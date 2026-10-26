@@ -57,6 +57,8 @@ $url = "$base/rest/api/content/search?cql=$encoded&limit=$Limit&expand=ancestors
 
 $result = Invoke-RestMethod -Uri $url -Headers $headers -Method Get
 if ($OutFile) {
+    . (Join-Path $PSScriptRoot 'resolve-scratch-outfile.ps1')
+    $OutFile = Resolve-ScratchOutFile -RequestedPath $OutFile
     $result | ConvertTo-Json -Depth 20 | Out-File -Encoding utf8 $OutFile
     Write-Host "Saved: $OutFile"
 }

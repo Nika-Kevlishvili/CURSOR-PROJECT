@@ -73,9 +73,11 @@ When attachments exist and content analysis is required:
 1. Metadata via `getJiraIssue` → `fields.attachment[]`.
 2. Content: run  
    `powershell -ExecutionPolicy Bypass -File "Cursor-Project/config/jira/download-jira-attachments.ps1" -IssueKey "<KEY>"`  
-   → `Cursor-Project/config/jira/attachments/<KEY>/`
+   → `Cursor-Project/config/jira/attachments/<KEY>/` (gitignored)
 3. Analyze: images (Read tool), SVG (text), DOCX (`.txt` extract), PDF (Read tool).
 4. Cite: "found in attachment: `<filename>`"
 5. If `JIRA_API_TOKEN` missing → metadata only; note in reply.
 
 **Env vars:** `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_BASE_URL` (see `Cursor-Project/EnergoTS/.env` or system env).
+
+Issue JSON dumps from `get-jira-issue-rest.ps1` go to `Cursor-Project/config/tmp/jira/` (gitignored, hidden). Do not save ticket dumps beside scripts.

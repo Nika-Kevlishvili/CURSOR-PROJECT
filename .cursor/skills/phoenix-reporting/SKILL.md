@@ -20,6 +20,8 @@ Cursor-Project/reports/<Chat reports|Feedback>/YYYY/<english-month>/<DD>/<filena
 
 No Python `ReportingService`. English on disk (Rule 0.7).
 
+**Shareable report (Rule WR.0):** When the user asks for a report, produce a **Word `.docx`** (not Excel) with the PDT-3483 structure. **Keep writing a Cursor canvas.** Procedure: **`.cursor/skills/word-report/SKILL.md`**. Exemplar: `Cursor-Project/reports/Chat reports/2026/September/18/PDT-3483_Final_Liability_Amount_Dev_Report.docx`. `/feedback` stays markdown.
+
 **Atlassian links:** Confluence → `https://asterbit.atlassian.net/wiki/spaces/Phoenix/pages/{id}/{slug}`; Jira PDT → `https://oppa-support.atlassian.net/browse/{KEY}`. Never `oppa-support` for wiki. See **`.cursor/rules/integrations/atlassian_link_format.mdc`**.
 
 **Do not:** create `Summary_*.md`, `BugValidation_*.md`, `Feedback_*.md`, or other report files after routine tasks, bug validation, or tests without **`/report`**, **`/feedback`**, or an explicit save request. **Do not** use `Cursor-Project/reports/YYYY-MM-DD/` as a report root.

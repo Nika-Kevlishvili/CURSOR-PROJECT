@@ -1,0 +1,274 @@
+{
+  "CompanyAddressList": [""],
+  "CompanyAddressTrslList": [""],
+  "CompanyManagerList": [""],
+  "CompanyManagerTrslList": [""],
+  "CompanyEmailList": [""],
+  "CompanyPhoneList": [""],
+  "CompanyBankList": [""],
+  "CompanyBicList": [""],
+  "CompanyIbanList": [""],
+  "CompanyIssuingPlaceList": [""],
+  "CompanyIssuingPlaceTrslList": [""],
+  "CompanyComplierList": [""],
+  "CompanyComplierTrslList": [""],
+  "CompanyUIC": "",
+  "CompanyVATNumber": "",
+  "CompanyExciseNumber": "",
+  "CompanyName": "",
+  "CompanyNameTrsl": "",
+  "CompanyHeadquarterAddress": "",
+  "CompanyHeadquarterAddressTrsl": "",
+  "CompanyLogo": null,
+  "IsReversed": null,
+  "CustomerNameComb": "",
+  "CustomerNameCombTrsl": "",
+  "CustomerIdentifer": "",
+  "CustomerVat": null,
+  "CustomerNumber": "",
+  "CustomerAddressComb": "",
+  "CustomerPopulatedPlace": "",
+  "CustomerZip": "",
+  "CustomerDistrict": "",
+  "CustomerQuarterRaType": "",
+  "CustomerQuarterRaName": "",
+  "CustomerStrBlvdType": "",
+  "CustomerStrBlvdName": "",
+  "CustomerStrBlvdNumber": "",
+  "CustomerBlock": null,
+  "CustomerEntrance": null,
+  "CustomerFloor": null,
+  "CustomerApartment": null,
+  "CustomerAdditionalInfo": "",
+  "CustomerSegments": [""],
+  "BillingRunNumber": "",
+  "FileGenerationDate": "",
+  "BillingGroup": "",
+  "ContractNumber": "",
+  "DocumentType": "",
+  "DocumentNumber": "",
+  "DocumentPrefix": "",
+  "DocumentDate": "",
+  "TaxEventDate": "",
+  "MeterReadingFrom": "",
+  "MeterReadingTo": "",
+  "InvoicedMonth": "",
+  "PaymentDeadline": "",
+  "BasisForIssuing": "",
+  "CurrencyPrintName": "",
+  "CurrencyAbr": "",
+  "CurrencyFullName": "",
+  "OtherCurrencyPrintName": "",
+  "OtherCurrencyAbr": "",
+  "OtherCurrencyFullName": "",
+  "TotalExclVat": null,
+  "TotalVat": null,
+  "TotalInclVat": null,
+  "TotalInclVatOtherCurrency": null,
+  "FinalLiabilityAmount": null,
+  "FinalLiabilityAmountWithWords": "",
+  "SD": [
+    {
+      "TotalExclVat": null,
+      "VatRate": null,
+      "TotalVat": null,
+      "TotalBeforeInterimDeduction": null,
+      "TotalAfterInterimDeduction": null,
+      "DirectPC": [
+        {
+          "PC": "",
+          "TotalVolumes": null,
+          "TotalVolumesUnit": "",
+          "Price": null,
+          "PriceOtherCurrency": null,
+          "PriceUnit": "",
+          "Value": null,
+          "ValueUnit": ""
+        }
+      ],
+      "IndirectPC": [
+        {
+          "PC": "",
+          "TotalVolumes": null,
+          "TotalVolumesUnit": "",
+          "Price": null,
+          "PriceOtherCurrency": null,
+          "PriceUnit": "",
+          "Value": null,
+          "ValueUnit": ""
+        }
+      ],
+      "PCG": [
+        {
+          "PC": "",
+          "Value": null,
+          "ValueUnit": ""
+        }
+      ],
+      "AdvancePayments": [
+        {
+          "PC": "",
+          "Value": null,
+          "ValueUnit": "",
+          "InterimInvoice": ""
+        }
+      ],
+      "DeductedAdvancePayments": [
+        {
+          "PC": "",
+          "Value": null,
+          "ValueUnit": "",
+          "InterimInvoice": ""
+        }
+      ]
+    }
+  ],
+  "SDExcludedPC": [
+    {
+      "PC": "",
+      "DocumentNumber": "",
+      "DocumentDate": "",
+      "TotalVolumes": null,
+      "TotalVolumesUnit": "",
+      "Price": null,
+      "PriceOtherCurrency": null,
+      "PriceUnit": "",
+      "PriceUnitOtherCurrency": null,
+      "Value": null,
+      "ValueUnit": ""
+    }
+  ],
+  "DD": [
+    {
+      "PODID": "",
+      "PODAdditionalID": null,
+      "PODName": "",
+      "PODAddressComb": "",
+      "PODPlace": "",
+      "PODZip": "",
+      "MeasurementTypeName": "",
+      "Profile": null,
+      "SLP": "",
+      "TablePCScales": [
+        {
+          "PeriodFrom": "",
+          "PeriodTo": "",
+          "PeriodCounter": "",
+          "Meter": "",
+          "Product": "",
+          "ListPC": [
+            {
+              "PC": "",
+              "ScaleCode": "",
+              "NewMR": null,
+              "OldMR": null,
+              "DifferenceM": null,
+              "Multiplier": null,
+              "Correction": null,
+              "Deducted": null,
+              "Value": null,
+              "ValueUnit": "",
+              "Price": null,
+              "PriceOtherCurrency": null,
+              "PriceUnit": "",
+              "PriceUnitOtherCurrency": null,
+              "TotalVolumes": null,
+              "TotalVolumesUnit": ""
+            }
+          ]
+        }
+      ],
+      "TablePCProfiles": [
+        {
+          "PC": "",
+          "PeriodFrom": "",
+          "PeriodTo": "",
+          "Value": null,
+          "ValueUnit": "",
+          "Price": null,
+          "PriceOtherCurrency": null,
+          "PriceUnit": "",
+          "PriceUnitOtherCurrency": null,
+          "TotalVolumes": null,
+          "TotalVolumesUnit": ""
+        }
+      ],
+      "TableExcludedPC": [
+        {
+          "PC": "",
+          "DocumentNumber": "",
+          "DocumentDate": "",
+          "TotalVolumes": null,
+          "TotalVolumesUnit": "",
+          "Price": null,
+          "PriceOtherCurrency": null,
+          "PriceUnit": "",
+          "PriceUnitOtherCurrency": null,
+          "Value": null,
+          "ValueUnit": ""
+        }
+      ],
+      "TableScalesData": [
+        {
+          "ScaleType": "",
+          "PeriodFrom": "",
+          "PeriodTo": "",
+          "NewMR": null,
+          "OldMR": null,
+          "Difference": null,
+          "Multiplier": null,
+          "Correction": null,
+          "Deducted": null,
+          "Volumes": null
+        }
+      ],
+      "TableCompensations": [
+        {
+          "Reason": "",
+          "DocumentNumber": "",
+          "DocumentDate": "",
+          "Period": "",
+          "Volumes": null,
+          "Price": null,
+          "Amount": null,
+          "Currency": "",
+          "AdditionalParameter1": "",
+          "AdditionalParameter2": "",
+          "AdditionalParameter3": "",
+          "AdditionalParameter4": "",
+          "AdditionalParameter5": "",
+          "AdditionalParameter6": "",
+          "AdditionalParameter7": "",
+          "AdditionalParameter8": "",
+          "AdditionalParameter9": "",
+          "AdditionalParameter10": "",
+          "AdditionalParameter11": "",
+          "AdditionalParameter12": ""
+        }
+      ]
+    }
+  ],
+  "ConnectedInvoice": [""],
+  "SDCompensations": [
+    {
+      "DocumentNumber": "",
+      "DocumentDate": "",
+      "Period": "",
+      "Volumes": null,
+      "Amount": null,
+      "Currency": "",
+      "AdditionalParameter1": "",
+      "AdditionalParameter2": "",
+      "AdditionalParameter3": "",
+      "AdditionalParameter4": "",
+      "AdditionalParameter5": "",
+      "AdditionalParameter6": "",
+      "AdditionalParameter7": "",
+      "AdditionalParameter8": "",
+      "AdditionalParameter9": "",
+      "AdditionalParameter10": "",
+      "AdditionalParameter11": "",
+      "AdditionalParameter12": ""
+    }
+  ]
+}

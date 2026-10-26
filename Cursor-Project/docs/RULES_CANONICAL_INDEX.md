@@ -30,6 +30,8 @@ Single map from **rule / topic** to the **primary procedural** file(s). When `wo
 | PHOENIX-BUG.0 | Phoenix Phase 2 Internal/External Bug reporting; Step 3.5 pre-create validation; hook (Internal Bug + Bug) + `.active-bugreview` sidecar; mandatory approval gate | `.cursor/rules/integrations/phoenix_bug_reporter.mdc`, `.cursor/skills/phoenix-bug-reporter/SKILL.md`, `.cursor/agents/phoenix-bug-reporter.md` |
 | PDR.0 | Production DB read | `.cursor/skills/production-data-reader/SKILL.md` |
 | Reporting / Slack | Paths and uploads | `Cursor-Project/config/template/Slack_reporting_paths.md`, `.cursor/rules/workflows/playwright_detailed_reporting.mdc` |
+| WR.0 Word report | User-requested reports are Word `.docx` (not Excel); canvas still required | **`.cursor/skills/word-report/SKILL.md`**, `.cursor/rules/workspace/word_report.mdc` |
+| Attach report to Jira | Comment on the existing ticket with the Word file; create the `.docx` first if it is missing | **`.cursor/commands/attach-report-to-jira.md`**, `.cursor/commands/attach-report-to-jira.ps1` |
 | File layout | Stories, reports, test_cases | `.cursor/rules/workspace/file_organization_rules.mdc`, `.cursor/rules/workspace/test_cases_structure.mdc` |
 
 **Rules index (navigation):** `.cursor/rules/main/phoenix.mdc`  

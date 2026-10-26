@@ -3,5 +3,8 @@
   "git.repositoryScanMaxDepth": 10,
   "git.detectSubmodules": true,
   "git.autofetch": false,
-  "git.fetchOnPull": false
+  "git.fetchOnPull": false,
+  "files.exclude": {
+    "**/config/tmp": true
+  }
 }

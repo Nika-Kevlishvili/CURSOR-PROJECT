@@ -1,7 +1,7 @@
 ---
 name: report-generator
 model: inherit
-description: Saves markdown under Cursor-Project/reports/ per reports/README.md only when the user/parent invokes **`/report`**, **`/feedback`**, or an explicit save request — not after routine tasks or Rule 32 alone.
+description: Saves Chat reports under Cursor-Project/reports/ per reports/README.md. User-requested reports are Word .docx (PDT-3483 layout, not Excel) plus optional .md; canvas still required. Only when /report, /feedback, or explicit save — not after routine tasks or Rule 32 alone.
 ---
 
 # Report Generator Subagent
@@ -31,7 +31,8 @@ Write files under **`Cursor-Project/reports/`** using:
 
 1. Determine **area** (Chat reports / Feedback).
 2. Compute **`<segment>`** = `YYYY/<english-month>/<DD>/` from the **current system date** per README.
-3. Write `Cursor-Project/reports/<area>/<segment>/<filename>.md`.
+3. Write `Cursor-Project/reports/<area>/<segment>/<filename>.md` when a markdown companion is needed.
+4. For a **user-requested report**, also write a **Word `.docx`** in that same folder per **`.cursor/skills/word-report/SKILL.md`** (not Excel). Still write a Cursor canvas. `/feedback` stays markdown only.
 
 ## Output
 

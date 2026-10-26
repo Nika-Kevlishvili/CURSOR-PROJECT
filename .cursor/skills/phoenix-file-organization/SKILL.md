@@ -26,12 +26,13 @@ Ensures new files are saved in the correct directories (Rule 31 under `workspace
 | Reports | **`Cursor-Project/reports/`** → `Chat reports/`, `Feedback/` | See `reports/README.md` |
 | Test cases | **`Cursor-Project/test_cases/Backend/<Topic>.md`** always; **`Frontend/<Topic>.md`** when TC-FRONTEND scope includes UI | Per `test_cases_structure.mdc` |
 | Phoenix code | `Cursor-Project/Phoenix/**` | AI: read-only (Rule 0.8) |
+| Local scratch | `Cursor-Project/config/tmp/` | Ticket dumps, extracts, probes. Gitignored and hidden. Not the workspace root, and not beside scripts. |
 
 **Optional Python agent package:** If `Cursor-Project/agents/` is reintroduced later, organize per project owner — it is **not** present in this workspace now.
 
 ## Reports
 
-- **Chat reports:** only when **`/report`** or explicit save — e.g. `Summary_{HHMM}.md`; `BugValidation_*.md` only if the user asks to persist after bug validation (Rule 32 default = chat only).
+- **Chat reports:** only when **`/report`** or explicit save — e.g. `Summary_{HHMM}.md` plus **Word `.docx`** for a user-requested report (Rule **WR.0**, not Excel); `BugValidation_*.md` only if the user asks to persist after bug validation (Rule 32 default = chat only).
 - **Chat reports:** `Summary_*.md`, `BugValidation_*.md`, `ScopedPlaywright_*.md` on explicit save.
 - **Feedback:** when **`/feedback`** runs or the user explicitly asks to save feedback under **Feedback** (e.g. `Feedback_{HHMM}.md`).
 

@@ -121,6 +121,8 @@ try {
     $json = $response | ConvertTo-Json -Depth 30
 
     if ($OutFile) {
+        . (Join-Path $PSScriptRoot 'resolve-scratch-outfile.ps1')
+        $OutFile = Resolve-ScratchOutFile -RequestedPath $OutFile
         $json | Set-Content -LiteralPath $OutFile -Encoding UTF8
         Write-Host "Wrote $OutFile"
     }

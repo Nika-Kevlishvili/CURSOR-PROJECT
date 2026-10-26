@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ASTERBIT — QA AI ერთწლიანი გეგმა</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f3efe6;
+      --surface: #fffdf8;
+      --ink: #1c1917;
+      --muted: #57534e;
+      --faint: #78716c;
+      --line: #e4ddd0;
+      --accent: #1d4ed8;
+      --accent-soft: #dbeafe;
+      --good: #15803d;
+      --good-soft: #dcfce7;
+      --warn: #b45309;
+      --warn-soft: #ffedd5;
+      --bad: #b91c1c;
+      --bad-soft: #fee2e2;
+      --info: #1d4ed8;
+      --info-soft: #dbeafe;
+      --shadow: 0 1px 0 rgba(28, 25, 23, 0.04);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1917;
+        --surface: #292524;
+        --ink: #f5f0e8;
+        --muted: #d6d3d1;
+        --faint: #a8a29e;
+        --line: #44403c;
+        --accent: #93c5fd;
+        --accent-soft: #1e3a5f;
+        --good: #86efac;
+        --good-soft: #14532d;
+        --warn: #fdba74;
+        --warn-soft: #7c2d12;
+        --bad: #fca5a5;
+        --bad-soft: #7f1d1d;
+        --info: #93c5fd;
+        --info-soft: #1e3a5f;
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: "Noto Sans Georgian", "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    a { color: var(--accent); }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 28px 20px 64px; }
+    .kicker { font-size: 12px; letter-spacing: 0.12em; font-weight: 700; color: var(--faint); }
+    h1 { font-size: 32px; line-height: 1.2; margin: 6px 0 8px; }
+    h2 { font-size: 22px; margin: 28px 0 12px; }
+    h3 { font-size: 16px; margin: 0 0 8px; }
+    .sub { color: var(--muted); margin: 0 0 18px; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0 20px; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      border: 1px solid var(--line); background: var(--surface);
+      color: var(--ink); border-radius: 999px; padding: 3px 10px;
+      font-size: 12px; font-weight: 600;
+    }
+    .pill.high { background: var(--bad-soft); color: var(--bad); border-color: transparent; }
+    .pill.medium { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+    .pill.low, .pill.todo { background: var(--surface); }
+    .pill.done { background: var(--good-soft); color: var(--good); border-color: transparent; }
+    .pill.progress { background: var(--info-soft); color: var(--info); border-color: transparent; }
+    .pill.hold { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+    .tabs { display: flex; gap: 8px; margin: 8px 0 20px; }
+    .tab {
+      border: 1px solid var(--line); background: var(--surface);
+      color: var(--ink); border-radius: 999px; padding: 7px 14px;
+      font: inherit; font-weight: 600; cursor: pointer;
+    }
+    .tab.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+    .card {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 12px; padding: 16px 18px; margin: 0 0 14px; box-shadow: var(--shadow);
+    }
+    details.card > summary {
+      cursor: pointer; font-weight: 700; list-style: none;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    }
+    details.card > summary::-webkit-details-marker { display: none; }
+    details.card > summary::after { content: "▾"; color: var(--faint); font-weight: 400; }
+    details.card:not([open]) > summary::after { content: "▸"; }
+    .card-body { margin-top: 16px; }
+    .vision {
+      border-left: 3px solid var(--accent); padding-left: 14px; margin: 8px 0 18px;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    @media (max-width: 800px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+    .muted { color: var(--muted); font-size: 14px; }
+    .faint { color: var(--faint); font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 12px; color: var(--faint); font-weight: 600; }
+    tr:nth-child(even) td { background: color-mix(in srgb, var(--bg) 55%, transparent); }
+    .callout {
+      border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin: 8px 0;
+      background: var(--info-soft);
+    }
+    .callout.warn { background: var(--warn-soft); }
+    .callout.success { background: var(--good-soft); }
+    .callout.neutral { background: var(--surface); }
+    .stat {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 10px; padding: 12px;
+    }
+    .stat b { display: block; font-size: 22px; }
+    .stat span { font-size: 12px; color: var(--muted); }
+    .kpi {
+      border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: var(--surface);
+    }
+    .kpi-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 8px; }
+    .ask { font-size: 13px; color: var(--muted); padding-left: 8px; border-left: 2px solid var(--line); margin: 4px 0; }
+    .bar-row { display: grid; grid-template-columns: 140px 1fr 42px; gap: 8px; align-items: center; margin: 6px 0; font-size: 13px; }
+    .bar { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+    .bar > i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+    .hidden { display: none; }
+    .footer { display: flex; justify-content: space-between; gap: 12px; color: var(--faint); font-size: 12px; margin-top: 28px; }
+    .jira a { font-weight: 600; text-decoration: none; }
+    .err { color: var(--bad); font-size: 13px; }
+    .section-label { font-weight: 700; margin: 16px 0 8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="kicker">ASTERBIT</div>
+    <h1 id="title">QA AI — ერთწლიანი გეგმა</h1>
+    <p class="sub" id="subtitle"></p>
+    <div class="meta-row" id="meta"></div>
+
+    <details class="card" id="pvm" open>
+      <summary id="pvm-title">PVM — Purpose, Vision, Mission</summary>
+      <div class="card-body" id="pvm-body"></div>
+    </details>
+
+    <div class="tabs">
+      <button class="tab active" data-view="roadmap" type="button" id="tab-plan">Plan</button>
+      <button class="tab" data-view="feedback" type="button" id="tab-feedback">Feedback</button>
+    </div>
+
+    <div id="view-roadmap"></div>
+    <div id="view-feedback" class="hidden"></div>
+
+    <div class="footer">
+      <div id="footer-text">ASTERBIT QA AI plan</div>
+      <div id="version"></div>
+    </div>
+  </div>
+
+  <script>
+    const state = { plan: null, map: null, jira: null, view: "roadmap" };
+    const $ = (id) => document.getElementById(id);
+    const ui = () => state.plan.ui;
+    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+
+    function issueFor(taskId) {
+      const key = state.map && state.map.tasks ? state.map.tasks[taskId] : null;
+      if (!key) return null;
+      const extra = (state.jira && state.jira.issues && state.jira.issues[key]) || {};
+      return Object.assign({ key: key }, extra);
+    }
+
+    function statusClass(issue) {
+      if (!issue || !issue.status) return "todo";
+      const cat = (issue.statusCategory || "").toLowerCase();
+      const raw = (issue.status || "").toLowerCase();
+      if (cat === "done" || raw.indexOf("done") >= 0 || raw.indexOf("closed") >= 0) return "done";
+      if (raw.indexOf("hold") >= 0 || raw.indexOf("block") >= 0) return "hold";
+      if (cat === "indeterminate" || raw.indexOf("progress") >= 0) return "progress";
+      return "todo";
+    }
+
+    function statusCell(issue) {
+      const t = ui();
+      if (!issue || !issue.status) return '<span class="pill">' + esc(t.noTicket) + "</span>";
+      return '<span class="pill ' + statusClass(issue) + '">' + esc(issue.status) + "</span>";
+    }
+
+    function jiraCell(issue) {
+      if (!issue || !issue.key) return "\u2014";
+      const href = issue.url || (state.plan.meta.jiraBase + "/" + issue.key);
+      const who = issue.assignee ? '<div class="faint">' + esc(issue.assignee) + "</div>" : "";
+      return '<a class="jira" href="' + esc(href) + '" target="_blank" rel="noreferrer">' +
+        esc(issue.key) + "</a>" + who;
+    }
+
+    function taskTable(tasks) {
+      const t = ui();
+      if (!tasks.length) return "";
+      const rows = tasks.map(function (tk) {
+        const issue = issueFor(tk.id);
+        return "<tr><td><b>" + esc(tk.id) + "</b></td><td>" + esc(tk.title) +
+          '<div class="faint">' + esc(tk.source) + "</div></td><td>" + esc(tk.serves) +
+          '</td><td><span class="pill ' + esc(tk.priority) + '">' + esc(tk.priority) +
+          "</span></td><td>" + statusCell(issue) + "</td><td>" + jiraCell(issue) + "</td></tr>";
+      }).join("");
+      return "<table><thead><tr><th>ID</th><th>" + esc(t.task) + "</th><th>" + esc(t.serves) +
+        "</th><th>" + esc(t.priority) + "</th><th>" + esc(t.status) +
+        "</th><th>Jira</th></tr></thead><tbody>" + rows + "</tbody></table>";
+    }
+
+    function renderPvm(plan) {
+      const p = plan.pvm;
+      const t = ui();
+      const achievements = plan.achievements.map(function (a) {
+        return "<tr><td>" + esc(a.id) + "</td><td>" + esc(a.text) + "</td><td>" +
+          esc(a.tasks) + "</td><td>" + esc(a.quarter) + "</td></tr>";
+      }).join("");
+      const rules = plan.howWeWork.map(function (rule, i) {
+        return "<tr><td>" + (i + 1) + "</td><td>" + esc(rule) + "</td></tr>";
+      }).join("");
+      $("pvm-body").innerHTML =
+        '<p class="muted">' + esc(t.pvmNote) + "</p>" +
+        '<div class="vision"><h3>' + esc(p.visionTitle) + "</h3><p>" + esc(p.vision) +
+        '</p><p class="muted">' + esc(p.visionGoal) + "</p></div>" +
+        '<div class="grid-2"><div><h3>Purpose</h3><div class="faint">' + esc(p.purposeLead) +
+        "</div><p>" + esc(p.purpose) + '</p><p class="muted">' + esc(p.purposeExtra) +
+        "</p></div><div><h3>Mission</h3><div class=\"faint\">" + esc(p.missionLead) +
+        "</div><p>" + esc(p.mission) + '</p><p class="muted">' + esc(p.missionExtra) +
+        "</p></div></div>" +
+        '<div class="grid-3" style="margin:16px 0"><div><h3>' + esc(t.forWhomLabel) +
+        '</h3><p class="muted">' + esc(p.forWhom) + "</p></div><div><h3>" + esc(t.changeLabel) +
+        '</h3><p class="muted">' + esc(p.whatWeChange) + "</p></div><div><h3>" + esc(t.humanLabel) +
+        '</h3><p class="muted">' + esc(p.whatStaysHuman) + "</p></div></div>" +
+        '<div class="callout"><b>Value Creation</b><div>' + esc(p.valueCreation) + "</div></div>" +
+        "<table><thead><tr><th>#</th><th>" + esc(t.visionPoint) + "</th><th>" + esc(t.tasksCol) +
+        "</th><th>" + esc(t.quarterCol) + "</th></tr></thead><tbody>" + achievements + "</tbody></table>" +
+        '<h3 style="margin-top:18px">How We Work</h3>' +
+        "<table><thead><tr><th>#</th><th>" + esc(t.principle) + "</th></tr></thead><tbody>" +
+        rules + "</tbody></table>";
+    }
+
+    function renderQuarter(q) {
+      const t = ui();
+      const team = q.tasks.filter(function (x) { return x.track === "team" && x.kind === "work"; });
+      const project = q.tasks.filter(function (x) { return x.track === "project" && x.kind === "work"; });
+      const pvm = q.tasks.filter(function (x) { return x.kind === "pvm"; });
+      function asksOf(items) {
+        return (items || []).map(function (g) { return '<div class="ask">' + esc(g) + "</div>"; }).join("");
+      }
+      const kpis = q.kpis.map(function (k) {
+        return '<div class="kpi"><b>' + esc(k.metric) + '</b><div class="kpi-row"><div><div class="faint">' +
+          esc(t.now) + '</div><div class="muted">' + esc(k.baseline) + "</div></div><div>\u2192</div>" +
+          '<div style="text-align:right"><div class="faint">' + esc(t.target) + "</div><div><b>" +
+          esc(k.target) + "</b></div></div></div></div>";
+      }).join("");
+      return '<details class="card"' + (q.defaultOpen ? " open" : "") + "><summary><span>" +
+        esc(q.label) + '</span><span><span class="pill">' + (team.length + project.length) + " " +
+        esc(t.work) + "</span>" + (pvm.length ? ' <span class="pill progress">' + pvm.length +
+        " PVM</span>" : "") + "</span></summary><div class=\"card-body\">" +
+        (pvm.length ? '<div class="section-label">' + esc(t.pvmProgress) + '</div><p class="faint">' +
+          esc(t.pvmHint) + "</p>" + taskTable(pvm) : "") +
+        '<div class="section-label">' + esc(t.part1) + '</div><div class="faint">' + esc(t.ask) +
+        "</div>" + asksOf(q.vision.team) + taskTable(team) +
+        '<div class="section-label">' + esc(t.part2) + '</div><div class="faint">' + esc(t.ask) +
+        "</div>" + asksOf(q.vision.project) + taskTable(project) +
+        '<div class="section-label">' + esc(t.doneHow) + '</div><div class="grid-2">' + kpis +
+        "</div></div></details>";
+    }
+
+    function jiraCoverage() {
+      const ids = {};
+      state.plan.quarters.forEach(function (q) {
+        q.tasks.forEach(function (task) { ids[task.id] = true; });
+      });
+      const unique = Object.keys(ids);
+      const mapped = unique.filter(function (id) { return state.map && state.map.tasks && state.map.tasks[id]; });
+      const live = mapped.filter(function (id) {
+        return state.jira && state.jira.issues && state.jira.issues[state.map.tasks[id]];
+      });
+      const done = live.filter(function (id) {
+        const issue = state.jira.issues[state.map.tasks[id]];
+        const st = (issue.status || "").toLowerCase();
+        const cat = (issue.statusCategory || "").toLowerCase();
+        return cat === "done" || st.indexOf("done") >= 0 || st.indexOf("closed") >= 0;
+      });
+      return { unique: unique.length, mapped: mapped.length, live: live.length, done: done.length };
+    }
+
+    function renderRoadmap() {
+      const t = ui();
+      const risks = state.plan.risks.map(function (r) {
+        return '<div class="callout ' + (r.severity === "high" ? "warn" : "neutral") + '"><b>' +
+          esc(r.quarter) + " \u2014 " + esc(r.risk) + "</b><div>" + esc(t.mitigation) + ": " +
+          esc(r.mitigation) + "</div></div>";
+      }).join("");
+      $("view-roadmap").innerHTML = "<h2>" + esc(t.roadmap) + "</h2>" +
+        state.plan.quarters.map(renderQuarter).join("") +
+        "<h2>" + esc(t.risks) + "</h2>" + risks;
+    }
+
+    function barList(items, max, labelFn, valueFn) {
+      return items.map(function (item) {
+        const v = valueFn(item);
+        const pct = Math.max(0, Math.min(100, (v / max) * 100));
+        return '<div class="bar-row"><div>' + esc(labelFn(item)) + '</div><div class="bar"><i style="width:' +
+          pct + '%"></i></div><div>' + esc(String(v)) + "</div></div>";
+      }).join("");
+    }
+
+    function renderFeedback() {
+      const f = state.plan.feedback;
+      const t = ui();
+      const avgH = (f.members.reduce(function (s, m) { return s + m.hours; }, 0) / f.members.length).toFixed(1);
+      const avgT = (f.members.reduce(function (s, m) { return s + m.trust; }, 0) / f.members.length).toFixed(1);
+      const memberRows = f.members.map(function (m) {
+        return "<tr><td>" + esc(m.name) + "</td><td>" + m.hours + "</td><td>" + m.trust +
+          "/5</td><td>" + esc(m.tools.join(", ")) + "</td></tr>";
+      }).join("");
+      const areaRows = f.usageAreas.map(function (a) {
+        const status = a.count >= 7 ? t.strong : (a.count <= 3 ? t.weak : t.mid);
+        return "<tr><td>" + esc(a.label) + "</td><td>" + a.count + "/9</td><td>" + esc(status) + "</td></tr>";
+      }).join("");
+      const painRows = f.painPoints.map(function (p) {
+        return "<tr><td>" + esc(p.issue) + "</td><td>" + p.votes + "/9</td></tr>";
+      }).join("");
+      const trainRows = f.trainingNeeds.map(function (x) {
+        return "<tr><td>" + esc(x.need) + "</td><td>" + esc(x.who) + "</td></tr>";
+      }).join("");
+      const quotes = f.quotes.map(function (q) {
+        return '<div class="callout ' + esc(q.tone) + '"><b>' + esc(q.who) + "</b><div>" +
+          esc(q.text) + "</div></div>";
+      }).join("");
+      $("view-feedback").innerHTML =
+        "<h2>" + esc(t.feedbackTitle) + '</h2><p class="sub">' + esc(t.feedbackIntro) +
+        ' <a href="' + esc(state.plan.meta.feedbackSource) + '" target="_blank" rel="noreferrer">' +
+        esc(t.interviews) + "</a></p>" +
+        '<div class="grid-4"><div class="stat"><b>' + avgH + "\u10e1\u10d7</b><span>" + esc(t.avgHours) +
+        "</span></div><div class=\"stat\"><b>" + avgT + "/5</b><span>" + esc(t.avgTrust) +
+        '</span></div><div class="stat"><b>9/9</b><span>' + esc(t.cursorUsers) +
+        '</span></div><div class="stat"><b>2/9</b><span>' + esc(t.feAuto) +
+        "</span></div></div>" +
+        '<div class="grid-3" style="margin:16px 0"><div><h3>' + esc(t.works) +
+        '</h3><p class="muted">' + esc(f.summary.works) + "</p></div><div><h3>" + esc(t.gap) +
+        '</h3><p class="muted">' + esc(f.summary.gap) + "</p></div><div><h3>" + esc(t.asks) +
+        '</h3><p class="muted">' + esc(f.summary.asks) + "</p></div></div>" +
+        '<details class="card" open><summary>' + esc(t.members) +
+        '</summary><div class="card-body"><table><thead><tr><th>' + esc(t.member) + "</th><th>" +
+        esc(t.hoursDay) + "</th><th>" + esc(t.trust) + "</th><th>" + esc(t.tools) +
+        "</th></tr></thead><tbody>" + memberRows + "</tbody></table></div></details>" +
+        '<details class="card" open><summary>' + esc(t.usageTrust) +
+        '</summary><div class="card-body"><h3>' + esc(t.trustByMember) + "</h3>" +
+        barList(f.members, 5, function (m) { return m.name; }, function (m) { return m.trust; }) +
+        '<h3 style="margin-top:18px">' + esc(t.hoursByMember) + "</h3>" +
+        barList(f.members, 5, function (m) { return m.name; }, function (m) { return m.hours; }) +
+        "</div></details>" +
+        '<details class="card" open><summary>' + esc(t.whereAi) +
+        '</summary><div class="card-body">' +
+        barList(f.usageAreas, 9, function (a) { return a.label; }, function (a) { return a.count; }) +
+        '<table style="margin-top:12px"><thead><tr><th>' + esc(t.area) + "</th><th>" +
+        esc(t.people) + "</th><th>" + esc(t.status) + "</th></tr></thead><tbody>" + areaRows +
+        "</tbody></table></div></details>" +
+        '<details class="card" open><summary>' + esc(t.pains) +
+        '</summary><div class="card-body"><table><thead><tr><th>' + esc(t.problem) + "</th><th>" +
+        esc(t.mentions) + "</th></tr></thead><tbody>" + painRows + "</tbody></table></div></details>" +
+        '<details class="card" open><summary>' + esc(t.training) +
+        '</summary><div class="card-body"><table><thead><tr><th>' + esc(t.request) + "</th><th>" +
+        esc(t.who) + "</th></tr></thead><tbody>" + trainRows + "</tbody></table></div></details>" +
+        '<details class="card"><summary>' + esc(t.quotes) +
+        '</summary><div class="card-body">' + quotes + "</div></details>";
+    }
+
+    function renderMeta() {
+      const t = ui();
+      const cov = jiraCoverage();
+      const synced = state.jira && state.jira.syncedAt
+        ? new Date(state.jira.syncedAt).toLocaleString("ka-GE")
+        : t.notSynced;
+      const epic = state.plan.meta.epic;
+      const epicUrl = state.plan.meta.jiraBase + "/" + epic;
+      $("title").textContent = state.plan.meta.title;
+      $("subtitle").textContent = state.plan.meta.period + " | " + state.plan.meta.subtitle;
+      $("version").textContent = "v" + state.plan.meta.version;
+      $("pvm-title").textContent = t.pvmTitle;
+      $("tab-plan").textContent = t.tabPlan;
+      $("tab-feedback").textContent = t.tabFeedback;
+      $("footer-text").textContent = t.footer;
+      $("meta").innerHTML =
+        '<span class="pill">' + esc(t.sync) + ": " + esc(synced) + "</span>" +
+        ' <a class="jira" href="' + esc(epicUrl) + '" target="_blank" rel="noreferrer"><span class="pill progress">Epic ' +
+        esc(epic) + "</span></a>" +
+        ' <span class="pill">' + cov.mapped + "/" + cov.unique + " " + esc(t.hasJira) + "</span>" +
+        ' <span class="pill done">' + cov.done + " " + esc(t.done) + "</span>" +
+        ' <span class="pill progress">' + cov.live + " " + esc(t.live) + "</span>";
+      if (state.jira && state.jira.errors && state.jira.errors.length) {
+        $("meta").insertAdjacentHTML("beforeend", ' <span class="err">' + state.jira.errors.length +
+          " " + esc(t.jiraErrors) + "</span>");
+      }
+    }
+
+    function renderAll() {
+      renderPvm(state.plan);
+      renderRoadmap();
+      renderFeedback();
+      renderMeta();
+    }
+
+    document.querySelectorAll(".tab").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.view = btn.getAttribute("data-view");
+        document.querySelectorAll(".tab").forEach(function (b) {
+          b.classList.toggle("active", b === btn);
+        });
+        $("view-roadmap").classList.toggle("hidden", state.view !== "roadmap");
+        $("view-feedback").classList.toggle("hidden", state.view !== "feedback");
+      });
+    });
+
+    Promise.all([
+      fetch("data/plan.json").then(function (r) { return r.json(); }),
+      fetch("data/jira-map.json").then(function (r) { return r.json(); }),
+      fetch("data/jira-status.json").then(function (r) { return r.json(); })
+    ]).then(function (parts) {
+      state.plan = parts[0];
+      state.map = parts[1];
+      state.jira = parts[2];
+      renderAll();
+    }).catch(function (err) {
+      $("subtitle").textContent = "Could not load data/*.json. Use scripts/serve.ps1";
+      console.error(err);
+    });
+</script>
+</body>
+</html>
