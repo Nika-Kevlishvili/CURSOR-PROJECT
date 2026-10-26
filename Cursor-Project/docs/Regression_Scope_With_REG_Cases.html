@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Regression scope rows and REG board test cases</title>
+  <style>
+    :root {
+      --text:#1f2328; --muted:#57606a; --line:#d0d7de; --bg:#f6f8fa; --card:#fff; --soft:#f6f8fa;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font:15px/1.45 "Segoe UI", sans-serif; }
+    main { max-width:980px; margin:0 auto; padding:24px 16px 80px; }
+    h1 { font-size:24px; margin:0 0 6px; }
+    h2 { font-size:16px; margin:0; font-weight:650; }
+    .lead { color:var(--muted); max-width:720px; }
+    .stats { display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin:16px 0; }
+    .stat { background:var(--card); border:1px solid var(--line); padding:10px 12px; }
+    .stat b { display:block; font-size:22px; line-height:1.1; }
+    .stat span { color:var(--muted); font-size:12px; }
+    .amt { color:var(--muted); font-size:13px; margin-left:6px; }
+    .toolbar {
+      position:sticky; top:0; z-index:3;
+      background:#fff; border:1px solid var(--line);
+      padding:10px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+    }
+    input[type="search"] {
+      flex:1; min-width:200px; font:inherit; padding:8px 10px; border:1px solid var(--line);
+    }
+    button { font:inherit; border:1px solid var(--line); background:#fff; padding:7px 10px; cursor:pointer; }
+    button.on { background:#1f2328; color:#fff; border-color:#1f2328; }
+    .hint { font-size:13px; color:var(--muted); margin:8px 0 0; }
+    section.block { margin:22px 0 8px; }
+    section.row {
+      background:var(--card); border:1px solid var(--line); margin:8px 0; padding:0;
+    }
+    header {
+      display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+      padding:12px 14px; cursor:pointer;
+    }
+    header:hover { background:#f6f8fa; }
+    section.row.open header { border-bottom:1px solid var(--line); }
+    .chev { width:14px; color:var(--muted); }
+    .body { display:none; padding:0 14px 12px; }
+    section.row.open .body { display:block; }
+    section.row.open .chev { transform:rotate(90deg); }
+    .pill { font-size:11px; font-weight:650; padding:2px 7px; letter-spacing:.02em; }
+    .pill.highest { background:#ffebe9; color:#82071e; }
+    .pill.high { background:#fff1e5; color:#6f4e00; }
+    .pill.medium { background:#ddf4ff; color:#0550ae; }
+    .pill.out { background:#eef1f4; color:#424a53; }
+    .pill.missing { background:#fff8c5; color:#6f4e00; }
+    .count { margin-left:auto; color:var(--muted); font-size:13px; }
+    .why { color:var(--muted); margin:10px 0; }
+    ul { list-style:none; margin:0; padding:0; }
+    li {
+      display:grid; grid-template-columns:92px 88px 1fr; gap:8px; align-items:baseline;
+      padding:7px 0; border-top:1px solid #eaeef2; font-size:14px;
+    }
+    li.none { display:block; color:var(--muted); border:0; }
+    a { color:#0969da; text-decoration:none; font-weight:650; }
+    a:hover { text-decoration:underline; }
+    .st, .bd { font-size:12px; }
+    .st.done { color:#116329; }
+    .st.fail { color:#82071e; }
+    .st.todo { color:#6f4e00; }
+    .bd { color:var(--muted); }
+    section.gap { background:#fff8c5; border-color:#d4a72c; }
+    section.gap header { cursor:default; }
+    section.gap header:hover { background:transparent; }
+    #unmatched { background:var(--card); border:1px solid var(--line); }
+    .pattern { background:var(--card); border:1px solid var(--line); padding:14px 16px; margin:14px 0 16px; }
+    .pattern h2 { font-size:16px; margin:0 0 6px; }
+    .pattern ol { margin:8px 0 10px; padding-left:22px; }
+    .pattern ol li { display:list-item; border:0; padding:3px 0; grid-template-columns:none; }
+    .pattern table { width:100%; border-collapse:collapse; margin-top:8px; font-size:14px; }
+    .pattern th, .pattern td { text-align:left; border-top:1px solid var(--line); padding:6px 8px 6px 0; vertical-align:top; }
+    .pattern th { color:var(--muted); font-weight:650; font-size:12px; }
+    @media (max-width:720px) {
+      .stats { grid-template-columns:1fr 1fr; }
+      li { grid-template-columns:1fr; gap:2px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Regression scope and REG test cases</h1>
+  <p class="lead">Click a row to see its test cases. Search by REG key or by words in the title. Yellow rows are important and are not on the Regression board yet.</p>
+  <section class="pattern">
+    <h2>How the rank is chosen</h2>
+    <p class="lead">Ask these in order. The first yes fixes the rank. A missing test does not raise the rank. This rank is not the Jira field Board 1, Board 1.1, or Board 1.2.</p>
+    <ol>
+      <li>If this case fails, does posted money change, or does who is billed or who has supply change? <span class="pill highest">HIGHEST</span> <span class="amt" id="amt-highest"></span></li>
+      <li>It does not post the amount itself, but it is the entrance to that chain or a neighboring process. <span class="pill high">HIGH</span> <span class="amt" id="amt-high"></span></li>
+      <li>It is catalog, a read, a message, or customer master data, and none of those create an amount. <span class="pill medium">MEDIUM</span> <span class="amt" id="amt-medium"></span></li>
+      <li>What remains is a screen, a group that does not block contract create, or a field format. <span class="pill out">SCREENS</span> <span class="amt" id="amt-out"></span></li>
+    </ol>
+    <p class="lead">Posted money is an invoice amount, a liability, a receivable, an offset, a cancellation or reversal that restores those balances, a late-payment fine, a deposit liability, or a manual offset. Who is billed is a signed contract plus an active point of delivery. Who has supply is the disconnection flag, the disconnection fee, and reconnection clearing that flag.</p>
+    <p class="lead">Highest chain, left to right: who is billed, what is billed, posted debt, debt rewritten, supply. Customer email for that document is High. The amount stays Highest.</p>
+    <table>
+      <thead><tr><th>Same area</th><th>Rank</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Invoice, liability, offset, payment reverse, late-payment fine</td><td>Highest</td><td>The balance changes</td></tr>
+        <tr><td>Invoice correction, manual credit or debit note</td><td>High</td><td>Neighbor of standard billing. Standard cancel and standard reversal stay Highest</td></tr>
+        <tr><td>Supply activation, deactivation, block for billing</td><td>Highest</td><td>Decides whether the point of delivery is invoiced</td></tr>
+        <tr><td>Disconnection execute, fee, reconnection</td><td>Highest</td><td>Sets or clears the supply flag, or posts the fee</td></tr>
+        <tr><td>Reminder and request-for-disconnection letter</td><td>High</td><td>They do not set the supply flag</td></tr>
+        <tr><td>Customer email for the generated document</td><td>High</td><td>The customer does not receive the document. The amount does not change</td></tr>
+        <tr><td>Mass email that is not that document</td><td>Medium</td><td>Message only</td></tr>
+        <tr><td>Price component, terms, penalty definition</td><td>Medium</td><td>Unused until a billing run, an order, or an action uses them</td></tr>
+        <tr><td>Listing, sorting, paging, permissions, translations</td><td>Screens</td><td>They do not change money, who is billed, or supply</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <div class="stats" id="stats"></div>
+  <div class="toolbar">
+    <input id="q" type="search" placeholder="Search REG-963, invoice, email, compensation…" />
+    <button class="on" data-f="ALL">All</button>
+    <button data-f="HIGHEST">Highest</button>
+    <button data-f="HIGH">High</button>
+    <button data-f="MEDIUM">Medium</button>
+    <button data-f="OUT">Screens</button>
+    <button data-f="GAP">Missing</button>
+    <button id="expand" type="button">Expand open rows</button>
+  </div>
+  <p class="hint" id="hint"></p>
+  <h2 class="block" id="on-board">On the board</h2>
+  
+<section class="row" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <h2>H-VAT — VAT base</h2>
+    <span class="count">2 on the board</span>
+  </header>
+  <p class="why">The VAT base on the REAL invoice equals the taxable amount.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1233">REG-1233</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> For volumes - Rounding - VAT calculated from rounded net (RND-03)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-963">REG-963</a> <span class="st">QA Failed</span> <span class="bd">Version 1.1</span> For volumes - vat base case</li></ul>
+</section>
+<section class="row" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <h2>H-LPF — Late payment fine</h2>
+    <span class="count">2 on the board</span>
+  </header>
+  <p class="why">The fine amount and due date match the open liability. Reverse removes the fine. REG-980 creates a fine by hand. The scheduled job is still missing.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1063">REG-1063</a> <span class="st">Done</span> <span class="bd">Version 1</span> Online Payment - When liabilities are overdue (Create + direct offsetting + LPF creation)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-980">REG-980</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> Late Payment Fine create - Create LPF By using manual liability (without billing group)</li></ul>
+</section>
+<section class="row" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <h2>H-SLOT — Invoice slot splitting</h2>
+    <span class="count">5 on the board</span>
+  </header>
+  <p class="why">The invoice is split by billing group, POD, or contract version. A failed split does not post a wrong invoice.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1020">REG-1020</a> <span class="st">Done</span> <span class="bd">Version 1</span> invoice slot splitting - split by price component</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1021">REG-1021</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> invoice slot splitting - split by billing group</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1022">REG-1022</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> invoice slot splitting - split by separate invoice for each pod checkbox</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1023">REG-1023</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> invoice slot splitting - split by contract versions</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1024">REG-1024</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> invoice slot splitting - invoice slot fail</li></ul>
+</section>
+<section class="row" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <h2>H-VOL — Standard billing — volumes, scales, profile, electricity, overtime, per piece</h2>
+    <span class="count">63 on the board</span>
+  </header>
+  <p class="why">A completed standard run produces one REAL invoice and a liability for the quantity and the price. VAT-base titles are on the VAT row.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1006">REG-1006</a> <span class="st">Done</span> <span class="bd">Version 1</span> For volumes - with compensation </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1007">REG-1007</a> <span class="st">Done</span> <span class="bd">Version 1</span> For volumes - With Discount 100%</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1008">REG-1008</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> For volumes - SLP regular flow </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1009">REG-1009</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> For volumes - Price component with restriction Aplication Based on volume (with percentage)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1012">REG-1012</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> For volumes - Max data - Combined flow </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1013">REG-1013</a> <span class="st">QA Failed</span> <span class="bd">Version 1.1</span> For volumes - Scale with tariff - Splitting with &quot;Calculation for number of days&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1018">REG-1018</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> For volumes - Different time zones in Price Parameter and Price component</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1026">REG-1026</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> For volumes - SLP With 2 Tariff and 2 Scale code - 15 minute price parameter</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1028">REG-1028</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> Standard Billing run - For volumes with electricity - Contract level</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1029">REG-1029</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> For Volumes - Price Profile flow </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1030">REG-1030</a> <span class="st">QA Failed</span> <span class="bd">Version 1.1</span> For volumes - SLP flow with Price Profile</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1037">REG-1037</a> <span class="st">QA Failed</span> <span class="bd">Version 1.1</span> For volumes - splitting when total amount of scale codes is zero and  &quot;Number or days&quot; checkbox does not selected</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1041">REG-1041</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> For volumes - tariff splitting when scale code total amount more then tariff amount</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1042">REG-1042</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> For volumes - tariff splitting when scale code total amount less then tariff amount</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1043">REG-1043</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> For volumes - tariff splitting when one of the scale code have total amount zero</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1051">REG-1051</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Discount - for volumes (50%, whole month)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1163">REG-1163</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> For volumes - Billing with list of PODs </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1164">REG-1164</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> For volumes - Billing with list of customers </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1165">REG-1165</a> <span class="st">Done</span> <span class="bd">Version 1</span> For volumes - Price component Restriction of volume with kWh ranges Less then range</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1166">REG-1166</a> <span class="st">Done</span> <span class="bd">Version 1</span> For volumes - Price component restriction for values (Between ranges)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1167">REG-1167</a> <span class="st">Done</span> <span class="bd">Version 1</span> For volumes - Price component restriction for values (More than ranges)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1168">REG-1168</a> <span class="st">Done</span> <span class="bd">Version 1</span> For volumes - Price component Restriction of volume with kWh ranges More then range</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1169">REG-1169</a> <span class="st">Done</span> <span class="bd">Version 1</span> For volumes - Price component Restriction of volume with kWh ranges Between the range</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1171">REG-1171</a> <span class="st">Done</span> <span class="bd">Version 1</span> CLONE - For volumes - Price component restriction for values (Less than ranges)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1172">REG-1172</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> Feedback - For volumes with electricity, electricity Deactivated POD should not be included invoice </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1231">REG-1231</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> For volumes - Rounding - invoice 2dp HALF_UP round up (RND-01)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1232">REG-1232</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> For volumes - Rounding - invoice 2dp HALF_UP round down (RND-02)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1234">REG-1234</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> For volumes - Rounding - group-then-round vs round-each-then-sum (RND-04)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1235">REG-1235</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> For volumes - Rounding - profile consumption scale 8 decimals (RND-05)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1236">REG-1236</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> For volumes - Rounding - SafeDivision formula 1/3 at 12dp (RND-06)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1237">REG-1237</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> For volumes - Rounding - scales number-of-days day-split volume reconcile (RND-07)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1294">REG-1294</a> <span class="st">Done</span> <span class="bd">Version 1</span> Overtime Periodical (For Product contract) - pod level</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1295">REG-1295</a> <span class="st">Done</span> <span class="bd">Version 1</span> Billing run - Over time one time (service contract)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1296">REG-1296</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> For volumes - combined flow (profile and scale matches)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1341">REG-1341</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> For volumes - FREQ=DAILY bills about the same as DAY_OF_MONTH ALL_DAYS</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1342">REG-1342</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> For volumes - FREQ=WEEKLY Monday bills about 5/31 of FREQ=DAILY</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1343">REG-1343</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> For volumes - FREQ=MONTHLY day 1 bills about 1/31 of FREQ=DAILY</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1344">REG-1344</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> For volumes - RRULE INTERVAL greater than 1 is rejected</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1345">REG-1345</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> For volumes - settlement hour TEN bills about 1/24 of ALL_HOURS</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1346">REG-1346</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> For volumes - settlement period stores EET and CET and bills</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1347">REG-1347</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> For volumes - two minute ranges bill about half of four</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1348">REG-1348</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> For volumes - identical hours on all four settlement periods still bill</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1363">REG-1363</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> For volumes - private customer, price type 103, RPS 1047</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1366">REG-1366</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> Over time periodical - POD level, RPS 1047</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1367">REG-1367</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> With electricity invoice - for volumes and discount, RPS 1047</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1369">REG-1369</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> For volumes - data by scale on an SLP POD</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1372">REG-1372</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> Condition POD_WITH_RPS=NO on over time periodical</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1373">REG-1373</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> Over time periodical service contract then product billing with RPS condition</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-276">REG-276</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Price Component - Per piece | Happy path </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-277">REG-277</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - Per piece | Full data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-278">REG-278</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - Per piece | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-296">REG-296</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Price Component - With electricity invoice | Happy path </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-299">REG-299</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - With electricity invoice | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-713">REG-713</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> For volumes - simple settlement flow | happy pass</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-873">REG-873</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> For volumes - Scale with scale code | happy pass</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-960">REG-960</a> <span class="st">Done</span> <span class="bd">Version 1</span> Overtime Periodical (For Product contract) - Happy path</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-961">REG-961</a> <span class="st">Done</span> <span class="bd">Version 1</span> Overtime Periodical (For Service contract) - Happy path</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-962">REG-962</a> <span class="st">QA Failed</span> <span class="bd">Version 1.1</span> For volumes - data by profile all type</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-973">REG-973</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Per Piece - happy path </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-974">REG-974</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> For volumes - combined flow (profile and scale doesn't match)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-977">REG-977</a> <span class="st">Done</span> <span class="bd">Version 1</span> Billing run - Over time one time</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-991">REG-991</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> Standard Billing run - For volumes with electricity - POD level</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-992">REG-992</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> For Volumes - Scale with tariff - Splitting with &quot;Scale for active electricity&quot;</li></ul>
+</section>
+<section class="row" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <h2>H-INT — Interim invoice and deduction</h2>
+    <span class="count">10 on the board</span>
+  </header>
+  <p class="why">An interim is deducted on the later standard invoice. A missing interim is not charged twice. Defining an interim product is on the catalog row.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1046">REG-1046</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> Standard Billing run - Interim with 'From previous invoice' separate billing runs</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1047">REG-1047</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Standard Billing run - Interim with 'From previous invoice' but previous invoice missing (service contract)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1374">REG-1374</a> <span class="st">To Do</span> <span class="bd">Version 1</span> Interim deduction (from longer payment term)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-715">REG-715</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Reversal - deducted invoice reversal</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-716">REG-716</a> <span class="st">Done</span> <span class="bd">Version 1</span> Standard billing run - interim invoice simple case | happy pass</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-718">REG-718</a> <span class="st">Done</span> <span class="bd">Version 1</span> Standard billing run - interim deduction (from same period)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-975">REG-975</a> <span class="st">Done</span> <span class="bd">Version 1</span> Standard Billing run - Interim with price component</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-976">REG-976</a> <span class="st">To Do</span> <span class="bd">Version 1</span> Standard Billing run - Interim with 'From previous invoice'</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-978">REG-978</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Standard Billing run - Interim with 'From previous invoice' but previous invoice missing (product contract)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-995">REG-995</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Invoice correction Volume change - deducted invoice correction </li></ul>
+</section>
+<section class="row" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <h2>H-CAN — Invoice cancellation</h2>
+    <span class="count">1 on the board</span>
+  </header>
+  <p class="why">Cancelling a real invoice reverses the liability, the receivable, and any compensation. A closed period rejects the cancel.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1068">REG-1068</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> Invoice cancellation - Manual invoice(credit note type) -&gt; All reverse process on receivable side (all possible object links)</li></ul>
+</section>
+<section class="row" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <h2>H-REV — Standard and manual invoice reversal</h2>
+    <span class="count">3 on the board</span>
+  </header>
+  <p class="why">Reversal restores the posted liability and receivable. Correction flows stay on the correction row.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-706">REG-706</a> <span class="st">Done</span> <span class="bd">Version 1</span> Reversal - Manual invoice reversal | happy pass</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-707">REG-707</a> <span class="st">QA Failed</span> <span class="bd">Version 1.1</span> Reversal - Standard invoice reversal</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-714">REG-714</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Reversal - Standard invoice reversal with correction debit/credit notes</li></ul>
+</section>
+<section class="row" data-rank="HIGH">
+  <header>
+    <span class="pill high">HIGH</span>
+    <h2>H-COR — Invoice correction and correction billing run</h2>
+    <span class="count">12 on the board</span>
+  </header>
+  <p class="why">A price or volume correction posts the difference. Half and full reversal do not both leave the original liability open.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1053">REG-1053</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Correct liability offset after single invoice correction</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-618">REG-618</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create Correction billing run - price change flow</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-619">REG-619</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create Correction billing run - volume change flow</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-622">REG-622</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create Correction billing run - mass import</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-631">REG-631</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit Correction billing run</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-637">REG-637</a> <span class="st">Done</span> <span class="bd">Version 1</span> Invoice Correction - Price Change flow | add new price with existing invoice slot</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1035">REG-1035</a> <span class="st">Done</span> <span class="bd">Version 1</span> Invoice Correction - Price Change flow | add new price with different invoice slot</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-636">REG-636</a> <span class="st">Done</span> <span class="bd">Version 1</span> Invoice Correction - Price Change flow | case 1 (happy pass)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-694">REG-694</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> Invoice Correction - Price + volume Change flow | case 1 (happy pass)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-703">REG-703</a> <span class="st">Done</span> <span class="bd">Version 1</span> Invoice Correction - volume Change flow | case 1 (happy pass)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-704">REG-704</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> Invoice Correction - volume Change flow | case 2 (full reversal)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-705">REG-705</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> Invoice Correction - volume Change flow | case 3 (half + full reversal)</li></ul>
+</section>
+<section class="row" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <h2>H-GC — Government compensation</h2>
+    <span class="count">2 on the board</span>
+  </header>
+  <p class="why">The run creates a customer liability and an institution receivable, offsets them, and does not create a zero receivable.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1044">REG-1044</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Government compensation</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1170">REG-1170</a> <span class="st">Done</span> <span class="bd">Version 1</span> Government compensation - Regeneration </li></ul>
+</section>
+<section class="row" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <h2>H-OFF — Offsetting and manual liability offset</h2>
+    <span class="count">14 on the board</span>
+  </header>
+  <p class="why">The invoice liability is closed by the matching receivable or deposit. The open balance equals the net.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1002">REG-1002</a> <span class="st">Done</span> <span class="bd">Version 1</span> MLO - Negative payment offset</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1005">REG-1005</a> <span class="st">Done</span> <span class="bd">Version 1</span> Offline Payment create + direct offsetting + receivable generation</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1014">REG-1014</a> <span class="st">Done</span> <span class="bd">Version 1</span> Block for offsetting - list of customers </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1031">REG-1031</a> <span class="st">Done</span> <span class="bd">Version 1</span> Offline Payment create + automatic offsetting + receivable generation</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1033">REG-1033</a> <span class="st">Done</span> <span class="bd">Version 1</span> Payment reverse - Reverse payment, without liability connection (without offsetting)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1034">REG-1034</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> Payment reverse - Reverse payment, which took part in offsetting process (direct + manual + overdue liability)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1036">REG-1036</a> <span class="st">Done</span> <span class="bd">Version 1</span> Online Payment - Create + Direct offsetting, when combined is checked in collection channel(Easy-pay integration)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1207">REG-1207</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Claimed penalty offsetting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1350">REG-1350</a> <span class="st">To Do</span> <span class="bd">Version 1</span> Deposit offset against a liability creates another liability of 100</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1359">REG-1359</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> MLO reverse - deposit and liability</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1360">REG-1360</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> MLO reverse - liability and receivable</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-831">REG-831</a> <span class="st">Done</span> <span class="bd">Version 1</span> Create MLO -  With liability and receivable offsetting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-832">REG-832</a> <span class="st">Done</span> <span class="bd">Version 1</span> Create MLO - With With liability and deposit offsetting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-929">REG-929</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> MLO reverse - Negative case - reverse MLO, which used negative payment and receivable/deposit</li></ul>
+</section>
+<section class="row" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <h2>H-PAY — Payment, reverse, and online collection</h2>
+    <span class="count">16 on the board</span>
+  </header>
+  <p class="why">A payment offsets the liability. Reverse restores it. An amount above the liability opens a receivable for the remainder.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1003">REG-1003</a> <span class="st">To Do</span> <span class="bd">Version 1</span> Payment mass import - partner side</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1004">REG-1004</a> <span class="st">To Do</span> <span class="bd">Version 1</span> Payment mass import - Bank side</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1016">REG-1016</a> <span class="st">Done</span> <span class="bd">Version 1</span> Block for payment for list of customers</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1174">REG-1174</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> [DEV 2] - Online payment - Bulgarian post integration: happy pass on one customer, liability from manual invoice, combined is unchecked on collection channel</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1176">REG-1176</a> <span class="st">To Do</span> <span class="bd">Version 1</span> [Dev 2] Configuration - Virtual POS </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1177">REG-1177</a> <span class="st">To Do</span> <span class="bd">Version 1</span> [Dev 2] Configuration Easy pay </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1180">REG-1180</a> <span class="st">To Do</span> <span class="bd">Version 1</span> [Dev 2] Integration new online payment partners - Virtual POS terminal</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1192">REG-1192</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> [Dev 2] Integration new online payment partners - Cash terminal</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1209">REG-1209</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Get: Payment details by ID</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1212">REG-1212</a> <span class="st">QA Failed</span> <span class="bd">No Regression Scope field</span> Online payment - Bulgarian post integration: happy pass on one customer, multiple liability, with combined channel</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1259">REG-1259</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-19 [CONTRACT][INTERIM_ADVANCE_PAYMENT=NO]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1317">REG-1317</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> Sales portal get payment details by ID returns 200</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1318">REG-1318</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> Sales portal get payment details includes customer linkage</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1319">REG-1319</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> Sales portal get payment details rejects zero and negative payment id</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1351">REG-1351</a> <span class="st">To Do</span> <span class="bd">Version 1</span> Create payment package</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1358">REG-1358</a> <span class="st">To Do</span> <span class="bd">Version 1</span> Create payment</li></ul>
+</section>
+<section class="row" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <h2>H-DEP — Deposit offset</h2>
+    <span class="count">7 on the board</span>
+  </header>
+  <p class="why">A deposit can offset a liability. Create-only titles stay on this process.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-723">REG-723</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Deposits create - With maximal data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-724">REG-724</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Deposits create - With minimal data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-730">REG-730</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Deposits preview </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-731">REG-731</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> Deposit process - Automatic Liability creation</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-732">REG-732</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> Deposit process - Job process</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-733">REG-733</a> <span class="st">Done</span> <span class="bd">Version 1</span> Deposits process - Refund process</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-734">REG-734</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Deposits process - Deletion process</li></ul>
+</section>
+<section class="row" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <h2>H-SUP — Disconnection execute, fee, and reconnection</h2>
+    <span class="count">5 on the board</span>
+  </header>
+  <p class="why">Execute sets the supply flag and can post the fee. Reconnection clears the flag.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1038">REG-1038</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> Reconnection create with one pod (express disconnection in the way / charge fee Request for disconnection in the way)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1045">REG-1045</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> Request for disconnection - happy pass</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1048">REG-1048</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> Disconnection of power supply - reconnection invoice regeneration (tax change)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1161">REG-1161</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> Cancelation of Request for disconnection - Happy pass </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1320">REG-1320</a> <span class="st">To Do</span> <span class="bd">Version 1</span> Disconnection of power supply - Save and Execute after FEE_CHARGED with Express reconnection invoice</li></ul>
+</section>
+<section class="row" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <h2>H-ACT — Supply activation and deactivation</h2>
+    <span class="count">5 on the board</span>
+  </header>
+  <p class="why">A POD that was never activated is not invoiced. Deactivation stops the next invoice.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1330">REG-1330</a> <span class="st">Done</span> <span class="bd">Version 1</span> PHN-2620 TC-BE-3 - Manual supply activation after re-signing blocks contract creation</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-76">REG-76</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Supply Activation - Valid | Check description</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-77">REG-77</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Supply Deactivation - Valid | Check description </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-78">REG-78</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Supply Deactivation - Not Valid | Check description </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-79">REG-79</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Supply Activation - Not valid | Check description</li></ul>
+</section>
+<section class="row" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <h2>H-RES — Rescheduling</h2>
+    <span class="count">1 on the board</span>
+  </header>
+  <p class="why">Executing a draft splits the liability. Reversal is rejected unless status is EXECUTED.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1155">REG-1155</a> <span class="st">Done</span> <span class="bd">Version 1</span> Rescheduling - interest with first installment - happy pass </li></ul>
+</section>
+<section class="row" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <h2>H-PEN — Penalty that posts a liability</h2>
+    <span class="count">4 on the board</span>
+  </header>
+  <p class="why">On Dev the action posts the liability. On Dev2 the claimed penalty posts it. Reverse and offset restore the balance.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1183">REG-1183</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> [Dev 2] Claimed penalty objection Creation - via Action </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1197">REG-1197</a> <span class="st">QA Failed</span> <span class="bd">Version 1.1</span> [Dev 2] Claimed penalty - Reversal</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1349">REG-1349</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> Change of coordinator objection after a claimed penalty</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-921">REG-921</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Create -Action Happy path with penalty and termination</li></ul>
+</section>
+<section class="row" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <h2>H-BLK — Blocks that stop offset, payment, or interest</h2>
+    <span class="count">3 on the board</span>
+  </header>
+  <p class="why">The blocked write does not happen. Lifting the block allows it.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1049">REG-1049</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> Block for supply termination - list of customer</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1356">REG-1356</a> <span class="st">To Do</span> <span class="bd">Version 1</span> Create mass operation for blocking</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1375">REG-1375</a> <span class="st">To Do</span> <span class="bd">Version 1</span> Block for interest charging - Exclude calculation logic</li></ul>
+</section>
+<section class="row" data-rank="HIGH">
+  <header>
+    <span class="pill high">HIGH</span>
+    <h2>G-EMAIL — Customer email created by a process</h2>
+    <span class="count">11 on the board</span>
+  </header>
+  <p class="why">Accounting, cancellation, reconnection, order invoice, manual offset, reminder, and signed contract each create an email to the customer. PAPER and a zero-amount invoice or credit note do not. The send job then moves that email.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1010">REG-1010</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> Reminder create - Create reminder + sending SMS + sending Email </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1011">REG-1011</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> RFD create + Sending SMS + Sending Email + Generate document</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1054">REG-1054</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> Reminder create with conditions + SMS sending + Email sending -&gt; On every trigger</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1175">REG-1175</a> <span class="st">To Do</span> <span class="bd">Version 1</span> [DEV 2] Configuration - Communication data sub-object validation </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1191">REG-1191</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> Handling Missed communication Data - create CRM object (without email/number)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1196">REG-1196</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> [Dev 2] New options for communication channel in RFD &quot;email&gt;sms&gt;paper&quot;/add new option on RFD object</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-148">REG-148</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create Customer | Legal Entity | Date logics inside &quot;Managers&quot; &amp; &quot;Communication data -&gt; Contact Person&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-181">REG-181</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit Customer | Legal Entity | Date logics inside &quot;Managers&quot; &amp; &quot;Communication data -&gt; Contact Person&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-185">REG-185</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create Customer | Private Customer | Date logics inside &quot;Communication data -&gt; Contact Person&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-186">REG-186</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create Customer | Private Customer + Business Activity | Date logics inside &quot;Managers&quot; &amp; &quot;Communication data -&gt; Contact Person&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-987">REG-987</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Email - Create</li></ul>
+</section>
+<section class="row" data-rank="HIGH">
+  <header>
+    <span class="pill high">HIGH</span>
+    <h2>G-CON — Contract version, resign, product new version</h2>
+    <span class="count">33 on the board</span>
+  </header>
+  <p class="why">The next bill uses the new price and the new POD interval.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1154">REG-1154</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Interim with From previous invoice but previous invoice found (product contract)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1178">REG-1178</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> [Dev 2] Re-signing Process - Wait Yes | First day of month following signing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1220">REG-1220</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> [Dev 2] Re-signing  Process - Wait Yes |  Exact day</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1222">REG-1222</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> [Dev 2] Re-signing  Process - Wait No | Exact day</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1223">REG-1223</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> [Dev 2] Re-signing  Process - Wait No | First day of month following signing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1224">REG-1224</a> <span class="st">QA Failed</span> <span class="bd">No Regression Scope field</span> [Dev 2] Re-signing Product validation during contract creation</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1225">REG-1225</a> <span class="st">QA Failed</span> <span class="bd">No Regression Scope field</span> [Dev 2] Re-signing from two old contracts</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1226">REG-1226</a> <span class="st">QA Failed</span> <span class="bd">No Regression Scope field</span> [DEV2] Create product contract at READY — product not compatible</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1228">REG-1228</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> [Dev2] Re-signing process for NON Re-signing product</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1331">REG-1331</a> <span class="st">Done</span> <span class="bd">Version 1</span> PHN-2620 TC-BE-4 - Re-signing blocked when the customer has no active contract</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1332">REG-1332</a> <span class="st">Done</span> <span class="bd">Version 1</span> PHN-2620 TC-BE-6 - Re-signing blocked when all PODs are already re-signed</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1333">REG-1333</a> <span class="st">Done</span> <span class="bd">Version 1</span> PHN-2620 TC-BE-7 - SIGNED by customer passes re-signing validation</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1334">REG-1334</a> <span class="st">Done</span> <span class="bd">Version 1</span> PHN-2620 TC-BE-8 - SIGNED by EPRES passes re-signing validation</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1335">REG-1335</a> <span class="st">Done</span> <span class="bd">Version 1</span> PHN-2620 TC-BE-9 - Active in perpetuity old contract passes re-signing validation</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1336">REG-1336</a> <span class="st">Done</span> <span class="bd">Version 1</span> PHN-2620 TC-BE-10 - Re-signing passes when at least one POD is still eligible</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1337">REG-1337</a> <span class="st">Done</span> <span class="bd">Version 1</span> PHN-2620 TC-BE-11 - PUT to READY passes re-signing validation</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1338">REG-1338</a> <span class="st">Done</span> <span class="bd">Version 1</span> PHN-2620 TC-BE-12 - Edit to an incompatible re-signing product is blocked</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1339">REG-1339</a> <span class="st">Done</span> <span class="bd">Version 1</span> PHN-2620 TC-BE-13 - Another customer's active contract does not allow re-signing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1340">REG-1340</a> <span class="st">Done</span> <span class="bd">Version 1</span> PHN-2620 TC-BE-14 - POD without an activation date blocks re-signing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1361">REG-1361</a> <span class="st">Done</span> <span class="bd">Version 1</span> Edit energy product contract</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-193">REG-193</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create new version - Via Mass Import</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-267">REG-267</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Edit - Goods | Create new version</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-356">REG-356</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Group Of Terms | Create new version</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-375">REG-375</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Parameter | Create New version - 15 min type</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-376">REG-376</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Parameter | Create New version - 1 hour type</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-377">REG-377</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Parameter | Create New version - 1 day type</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-379">REG-379</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Parameter | Create New version - 1 month type</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-419">REG-419</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Group Of Terminations | Create new version</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-440">REG-440</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Group of Price Components | Create new version</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-492">REG-492</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Service Contract</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-920">REG-920</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Create Service contract - Happy path with POD </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-926">REG-926</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Creating Customer and POD from express contract  </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-984">REG-984</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Express Contract - Creating Service contract | With Customer Creation</li></ul>
+</section>
+<section class="row" data-rank="HIGH">
+  <header>
+    <span class="pill high">HIGH</span>
+    <h2>G-IMP — Mass import into a billable object</h2>
+    <span class="count">10 on the board</span>
+  </header>
+  <p class="why">A contract, payment, or compensation file creates the same objects as a single create.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-191">REG-191</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create Customer - Via Mass Import</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-192">REG-192</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit Customer - Via Mass Import</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-33">REG-33</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Mass Import - Create | Unwanted Customer </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-34">REG-34</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Mass Import - Edit | Unwanted Customer </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-385">REG-385</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Parameter | Mass Import - 15 min type </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-393">REG-393</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Parameter | Mass Import - 1 hour type </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-404">REG-404</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Parameter | Mass Import - 1 day type </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-405">REG-405</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Parameter | Mass Import - 1 month type </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-981">REG-981</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> POD - Mass import </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-983">REG-983</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Meters  - Mass import</li></ul>
+</section>
+<section class="row" data-rank="HIGH">
+  <header>
+    <span class="pill high">HIGH</span>
+    <h2>G-ORD — Goods order, service order, express path</h2>
+    <span class="count">5 on the board</span>
+  </header>
+  <p class="why">An order invoice is a separate document from a standard volume invoice.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-932">REG-932</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> Create Service Order with PODS on Third Tab</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-933">REG-933</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create Service Order with Contracts on Third Tab</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-934">REG-934</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Service Order with Service without third Tab</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-935">REG-935</a> <span class="st">To Do</span> <span class="bd">Version 1</span> Invoice Generation from service order</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-945">REG-945</a> <span class="st">QA Failed</span> <span class="bd">Version 1.1</span> Create Goods order - Happy path - Invoice generation</li></ul>
+</section>
+<section class="row" data-rank="MEDIUM">
+  <header>
+    <span class="pill medium">MEDIUM</span>
+    <h2>M-CAT — Catalog: price component, terms, interim definition, penalty definition</h2>
+    <span class="count">167 on the board</span>
+  </header>
+  <p class="why">Create stores the object. No invoice is asserted until a billing run uses it.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1221">REG-1221</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> SLP flow with shifted hour price parameter</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-249">REG-249</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Create - Terms</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-262">REG-262</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> Create - Group Of Terms</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-270">REG-270</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Terms | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-279">REG-279</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Price Component - By settlement period | Happy path </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-280">REG-280</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - By settlement period | Full data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-281">REG-281</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - By settlement period | Full data - Date of the month</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-282">REG-282</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - By settlement period | Full data - RRule Formula</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-283">REG-283</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - By settlement period | Copy From - Happy path</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-284">REG-284</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - By settlement period | Copy From - &quot;Date of the month&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-285">REG-285</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - By settlement period | Copy From - &quot;RRule Formula&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-286">REG-286</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Price Component - By scale | Happy path </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-287">REG-287</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - By Scale | Full data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-288">REG-288</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - By Scale | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-289">REG-289</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Price Component - Periodically | Happy path </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-290">REG-290</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - Periodically | Full data </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-291">REG-291</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - Periodically | Full data - &quot;Date of the month&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-292">REG-292</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - Periodically | Full data - &quot;RRule formula&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-293">REG-293</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Price Component - Periodically | Happy path - Contract level</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-294">REG-294</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Price Component - One time | Happy path </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-295">REG-295</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - One time | Happy path - Together with the first invoice</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-297">REG-297</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - Periodically | Copy from</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-298">REG-298</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Component - One time | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-300">REG-300</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - Periodically | Happy path </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-301">REG-301</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - Periodically | Full data </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-302">REG-302</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - Periodically | Full data - &quot;Date of the month&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-303">REG-303</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - Periodically | Full data - &quot;RRule formula&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-304">REG-304</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - Periodically | Happy path - Contract level</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-305">REG-305</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - One time | Happy path </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-307">REG-307</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - Periodically | Copy from</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-308">REG-308</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - One time | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-313">REG-313</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - By settlement period | Happy path </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-314">REG-314</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - By settlement period | Full data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-315">REG-315</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - By settlement period | Full data - Date of the month</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-316">REG-316</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - By settlement period | Full data - RRule Formula</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-317">REG-317</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - By settlement period | Copy From - Happy path</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-318">REG-318</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - By settlement period | Copy From - &quot;Date of the month&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-319">REG-319</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - By settlement period | Copy From - &quot;RRule Formula&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-320">REG-320</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - By scale | Happy path </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-321">REG-321</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - By Scale | Full data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-322">REG-322</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - By Scale | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-334">REG-334</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Conditions - Price Component | Nomenclatures should load in the condition list</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-335">REG-335</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Conditions - Price Component | Hardcoded conditions </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-336">REG-336</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Conditions - Price Component | Buttons</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-343">REG-343</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Price Parameter | Happy path - 15 Min </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-344">REG-344</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Price Parameter | Happy path -  1 Hour</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-345">REG-345</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Price Parameter | Happy path - 1 Day</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-346">REG-346</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Price Parameter | Happy path - 1 Month</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-347">REG-347</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Price Parameter | Time zone | For 15 min &amp; 1 hour type </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-348">REG-348</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Parameter | Change &quot;Display period&quot; </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-351">REG-351</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Terms Button | Group Of Terms</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-352">REG-352</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Group Of Terms | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-353">REG-353</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Group Of Terms</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-354">REG-354</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Group Of Terms | Terms Button  </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-355">REG-355</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Group Of Terms | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-359">REG-359</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Parameter | Copy button - 15 min type</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-362">REG-362</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Parameter | Copy button - 1 hour type</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-363">REG-363</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Parameter | Copy button - 1 day type</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-365">REG-365</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Parameter | Copy button - 1  month type</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-367">REG-367</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Edit - Price Parameter | Happy path - 15 Min </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-368">REG-368</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Parameter | Happy path -  1 Hour</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-370">REG-370</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Parameter | Happy path - 1 Day</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-371">REG-371</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Parameter | Happy path - 1 Month</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-373">REG-373</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Parameter | Change &quot;Display period&quot; </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-435">REG-435</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Group of Price Components | Happy path</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-437">REG-437</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Group of Price Components | Copy from</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-438">REG-438</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Group of Price Components | Happy path</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-439">REG-439</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Group of Price Components | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-460">REG-460</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - %From Previous Invoice Amount -Match the invoice date  | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-461">REG-461</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - %From Previous Invoice Amount -Match the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-589">REG-589</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - %From Previous Invoice Amount - Date of the month | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-591">REG-591</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Interim And Advance Payment - %From Previous Invoice Amount - Working days after the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-593">REG-593</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - %From Previous Invoice Amount - Periodical - Day of the week and period of the year - Year round | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-595">REG-595</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Exact Amount - Match the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-598">REG-598</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Exact Amount - Date of the month | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-600">REG-600</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Exact Amount - Working days after the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-604">REG-604</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Interim And Advance Payment - Exact Amount - Periodical | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-608">REG-608</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Price Component - Match the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-610">REG-610</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Price Component - Date of the month | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-612">REG-612</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Interim And Advance Payment - Price Component - Working days after the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-614">REG-614</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Price Component - Periodical | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-638">REG-638</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - %From Previous Invoice Amount - Date of the month | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-639">REG-639</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From -Interim And Advance Payment - %From Previous Invoice Amount - Working days after the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-640">REG-640</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - %From Previous Invoice Amount - Periodical | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-641">REG-641</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - Exact Amount - Match the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-642">REG-642</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - Exact Amount - Date of the month | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-643">REG-643</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - Exact Amount - Working days after the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-644">REG-644</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - Exact Amount - Periodical | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-645">REG-645</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - Price Component - Match the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-646">REG-646</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - Price Component - Date of the month | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-647">REG-647</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - Price Component - Working days after the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-648">REG-648</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - Price Component - Periodical | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-687">REG-687</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Group of interim and advance payments | Happy Path | Only Mandatory Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-688">REG-688</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Group of interim and advance payments | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-689">REG-689</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Group of interim and advance payments | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-690">REG-690</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Edit - Group of interim and advance payments | Happy Path | Only Mandatory Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-691">REG-691</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Group of interim and advance payments | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-692">REG-692</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Group of interim and advance payments | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-708">REG-708</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Payment Terms - Working Days | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-709">REG-709</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Payment Terms - Working Days| Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-711">REG-711</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Payment Terms - Certain Days - Next working day | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-712">REG-712</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Payment Terms - Certain Days - Previous working day | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-728">REG-728</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Obligatory | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-729">REG-729</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - At least one | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-737">REG-737</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Payment Terms - Calendar Day - Next working day | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-738">REG-738</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Payment Terms - Calendar Day - Previous working day | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-739">REG-739</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Payment Terms - Working Days| Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-741">REG-741</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Payment Terms - Certain Date - Next working day | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-742">REG-742</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Payment Terms - Certain Days - Previous working day | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-745">REG-745</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Payment Terms - Calendar Day - Next working day | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-746">REG-746</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Payment Terms - Calendar Day - Previous working day | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-747">REG-747</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - %From Previous Invoice Amount - Working days after the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-748">REG-748</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - %From Previous Invoice Amount - Periodical | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-749">REG-749</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From - Interim And Advance Payment - %From Previous Invoice Amount -Match the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-750">REG-750</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From - Interim And Advance Payment - %From Previous Invoice Amount - Date of the month | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-751">REG-751</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From -Interim And Advance Payment - %From Previous Invoice Amount - Working days after the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-752">REG-752</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From - Interim And Advance Payment - %From Previous Invoice Amount - Periodical | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-753">REG-753</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - %From Previous Invoice Amount -Match the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-754">REG-754</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - %From Previous Invoice Amount - Date of the month | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-755">REG-755</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Obligatory | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-756">REG-756</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Obligatory | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-757">REG-757</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Price Component - Match the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-758">REG-758</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Price Component - Date of the month | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-759">REG-759</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Price Component - Working days after the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-760">REG-760</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Price Component - Periodical | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-761">REG-761</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From - Interim And Advance Payment - Price Component - Match the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-762">REG-762</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From - Interim And Advance Payment - Price Component - Date of the month | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-763">REG-763</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From - Interim And Advance Payment - Price Component - Working days after the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-764">REG-764</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From - Interim And Advance Payment - Price Component - Periodical | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-765">REG-765</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Exact Amount - Match the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-766">REG-766</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Exact Amount - Date of the month | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-767">REG-767</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Exact Amount - Working days after the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-768">REG-768</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Exact Amount - Periodical | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-769">REG-769</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From - Interim And Advance Payment - Exact Amount - Match the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-770">REG-770</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From - Interim And Advance Payment - Exact Amount - Date of the month | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-771">REG-771</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From - Interim And Advance Payment - Exact Amount - Working days after the invoice date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-772">REG-772</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From - Interim And Advance Payment - Exact Amount - Periodical | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-779">REG-779</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Price Component - Price</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-780">REG-780</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Price Component - Price parameter</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-781">REG-781</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Price Component - Price Profile</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-782">REG-782</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Price Component - Price + Price parameter + Price profile</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-783">REG-783</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - Price Component - Price Formula</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-784">REG-784</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - %From Previous Invoice Amount - Periodical - Date of the month | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-785">REG-785</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - Price Component - Price + Price parameter + Price profile</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-786">REG-786</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Interim And Advance Payment - %From Previous Invoice Amount - Periodical - Day of the week and period of the year - Add Period of the Year | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-787">REG-787</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - Payment Terms - Working Days| Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-788">REG-788</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - Payment Terms - Certain Days - Next working day | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-789">REG-789</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - Payment Terms - Certain Days - Previous working day | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-790">REG-790</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - Payment Terms - Calendar Day - Next working day | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-791">REG-791</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Interim And Advance Payment - Payment Terms - Calendar Day - Previous working day | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-792">REG-792</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From - Interim And Advance Payment - Payment Terms - Certain Days - Next working day | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-793">REG-793</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From - Interim And Advance Payment - Payment Terms - Certain Days - Previous working day | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-794">REG-794</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From - Interim And Advance Payment - Payment Terms - Calendar Day - Next working day | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-795">REG-795</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From - Interim And Advance Payment - Payment Terms - Calendar Day - Previous working day | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-796">REG-796</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - %From Previous Invoice Amount - Periodical - Day of the week and period of the year - Add Period of the Year | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-797">REG-797</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - %From Previous Invoice Amount - Periodical - Date of the month | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-798">REG-798</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Price Component - Price</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-799">REG-799</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Price Component - Price parameter</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-800">REG-800</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Price Component - Price Profile</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-801">REG-801</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Price Component - Price + Price parameter + Price profile</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-802">REG-802</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Interim And Advance Payment - Price Component - Price Formula</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-803">REG-803</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit | Copy From - Interim And Advance Payment - Price Component - Price + Price parameter + Price profile</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-811">REG-811</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Standard Energy Product - Group of Terms | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-843">REG-843</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Individual Energy Product - Group of Terms | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-846">REG-846</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create | Copy From - Standard Energy Product - Group of Terms | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-848">REG-848</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create | Copy From - Individual Energy Product - Group of Terms | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-990">REG-990</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Penalty</li></ul>
+</section>
+<section class="row" data-rank="MEDIUM">
+  <header>
+    <span class="pill medium">MEDIUM</span>
+    <h2>M-CUS — Customer master data</h2>
+    <span class="count">69 on the board</span>
+  </header>
+  <p class="why">Create and version store the customer. No amount is asserted.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1015">REG-1015</a> <span class="st">QA Failed</span> <span class="bd">Version 1</span> Block interest charging for list of customers</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1017">REG-1017</a> <span class="st">Done</span> <span class="bd">Version 1</span> Block list of customer for reminder letter</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1189">REG-1189</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> [Dev 2] Put: update additional contact person for the customer</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1190">REG-1190</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> [Dev 2] Put: update customer data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1199">REG-1199</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> [Dev 2] Customer Get - Sales portal</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1201">REG-1201</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Object customer - add KYC check fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1203">REG-1203</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Get: List of all liability for customer</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1205">REG-1205</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Get POD by Customer ID</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1238">REG-1238</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create Customer | Legal Entity | Field validation errors</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1239">REG-1239</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create Customer | Private Customer | Field validation errors</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1240">REG-1240</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create Customer | Private Customer + Business Activity | Field validation errors</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1244">REG-1244</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-04 [CUSTOMER][POD_WITH_RPS=YES]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1247">REG-1247</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-07 [CUSTOMER][VOLTAGE_LEVEL=LOW]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1260">REG-1260</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-20 [CUSTOMER][CONTRACT=PRODUCT_CONTRACT]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1261">REG-1261</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-21 [CUSTOMER][PRODUCT]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1262">REG-1262</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-22 [CUSTOMER][CUSTOMER_TYPE=LEGAL_ENTITY]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1263">REG-1263</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-23 [CUSTOMER][CUSTOMER_SEGMENT]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1275">REG-1275</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-07 [CUSTOMER_TYPE=LEGAL_ENTITY]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1277">REG-1277</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-09 [CUSTOMER_SEGMENT]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1278">REG-1278</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-10 [CUSTOMER_PREFERENCES]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1300">REG-1300</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> LIST-01 [CUSTOMER][list identifier]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1310">REG-1310</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> Sales portal update individual customer with registered address</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1311">REG-1311</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> Sales portal update legal entity customer</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1312">REG-1312</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> Sales portal update individual customer with unregistered address</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1313">REG-1313</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> Sales portal get customers by coordinates</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1316">REG-1316</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> Sales portal product list with customer identifier returns standard and POD products</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1321">REG-1321</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> PHN-2865 TC-BE-1 - Create customer with one manager, one phone and one email</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1353">REG-1353</a> <span class="st">To Do</span> <span class="bd">Version 1</span> Create customer receivable</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1354">REG-1354</a> <span class="st">To Do</span> <span class="bd">Version 1</span> Create customer assessment</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1370">REG-1370</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> Condition POD_WITH_RPS=YES and customer number</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-145">REG-145</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create Customer | Legal Entity | Happy Path - Only Mandatory fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-146">REG-146</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create Customer | Legal Entity | Full data - All fields/Sub objects with max data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-147">REG-147</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create Customer | Legal Entity | Headquarters and address of management </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-150">REG-150</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create Customer | Private Customer | Happy path - Only Mandatory fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-151">REG-151</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create Customer | Private Customer | Full data - All fields/Sub objects with max data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-152">REG-152</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create Customer | Private Customer | Headquarters and address of management </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-157">REG-157</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Create Customer | Private Customer + Business Activity | Happy path - Only Mandatory fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-158">REG-158</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Create Customer | Private Customer + Business Activity | Full data - All fields/Sub objects with max data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-159">REG-159</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create Customer | Private Customer + Business Activity | Headquarters and address of management </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-160">REG-160</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create Customer | Private Customer + Business Activity | Unrecognized UIC/PN (turn off validation)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-161">REG-161</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create Customer | Private Customer | Unrecognized UIC/PN (turn off validation)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-162">REG-162</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create Customer | Legal Entity | Unrecognized UIC/PN (turn off validation)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-163">REG-163</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Edit Customer | Private Customer + Business Activity | Happy path - Edit only Mandatory fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-165">REG-165</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit Customer | Private Customer + Business Activity | Full data - All fields/Sub objects with max data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-166">REG-166</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit  Customer | Private Customer + Business Activity | Headquarters and address of management</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-167">REG-167</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create New version - Customer | Private Customer + Business Activity | Easy - change nothing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-168">REG-168</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create new version - Customer | Private Customer + Business Activity | Full data - All fields/Sub objects with max data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-169">REG-169</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit Customer | Private Customer + Business Activity | Add Task to the customer</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-170">REG-170</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Edit Customer | Private Customer | Happy path - Edit only Mandatory fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-171">REG-171</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit Customer | Private Customer | Full data - All fields/Sub objects with max data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-172">REG-172</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit Customer | Private Customer | Headquarters and address of management</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-173">REG-173</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create new version - Customer | Private Customer | Edit nothing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-174">REG-174</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create new version - Customer | Private Customer | Full data - All fields/Sub objects with max data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-175">REG-175</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit Customer | Private Customer | Add Task to the customer</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-176">REG-176</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit Customer | Private Customer + Business Activity | Edit object as NON Business Activity</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-177">REG-177</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit Customer | Private Customer | Edit object as Business Activity</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-178">REG-178</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Edit Customer | Legal Entity | Happy Path - Edit only Mandatory fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-179">REG-179</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit Customer | Legal Entity | Full data - All fields/Sub objects with max data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-180">REG-180</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit Customer | Legal Entity | Headquarters and address of management</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-182">REG-182</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create new version - Customer | Legal Entity | Change nothing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-183">REG-183</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create new version - Customer | Legal Entity | Full data - All fields/Sub objects with max data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-184">REG-184</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit Customer | Legal Entity | Add Task to the customer</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-226">REG-226</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Edit group of connected customer</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-28">REG-28</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Create - Unwanted Customer</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-29">REG-29</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Edit - Unwanted Customer</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-37">REG-37</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Create - Group of connected customer | With few customer added </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-951">REG-951</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Task create - Create task on customer/assessment</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-954">REG-954</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Task Create - Create task on Customer Communication</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-966">REG-966</a> <span class="st">Done</span> <span class="bd">Version 1</span> Pulling - customer, contract, pod level</li></ul>
+</section>
+<section class="row" data-rank="OUT">
+  <header>
+    <span class="pill out">OUT</span>
+    <h2>OUT — Screens, permissions, translations</h2>
+    <span class="count">157 on the board</span>
+  </header>
+  <p class="why">Listing, sorting, paging, permissions, and translations. They do not post money or change supply.</p>
+  <ul><li><a href="https://oppa-support.atlassian.net/browse/REG-1206">REG-1206</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Handling Missed communication Data - new statuses and permissions</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-142">REG-142</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Customer Listing - Filter dropdowns | Fully Test of Search items</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-143">REG-143</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Customer Listing - Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-144">REG-144</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Customer Listing - Paging | Fully Testing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-187">REG-187</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Customer Listing - Filter dropdowns | Search items smoke testing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-188">REG-188</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Customer Listing - Search and &quot;X&quot; clear button </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-189">REG-189</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Customer Listing - Exclude old versions</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-190">REG-190</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Customer Listing - Paging | Smoke Testing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-194">REG-194</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Customer | Create/Edit/View/Delete/Edit locked</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-195">REG-195</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Customer | Segment</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-196">REG-196</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Customer | TAB permissions</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-197">REG-197</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Customer | GDPR permission</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-198">REG-198</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Customer | Account Manager permissions</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-199">REG-199</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Customer | Customer delete potential</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-200">REG-200</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Customer | Mass Import - Create/Edit</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-201">REG-201</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Customer | Mass Import - Edit Segment</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-202">REG-202</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Customer | Mass Import - Edit as Account Manager</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-209">REG-209</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Customer Listing - Search and &quot;X&quot; clear button</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-210">REG-210</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Translates - Unwanted Customer</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-213">REG-213</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Mass Import Unwated Customer | Create/Edit </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-216">REG-216</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission Unwanted Customer | Create/Edit/View Basic/View Deleted/Delete</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-218">REG-218</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Group of connected customer | Search and &quot;X&quot; clear button</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-223">REG-223</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Translates - Group Of Connected Customer</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-236">REG-236</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Goods - Filter | Search</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-237">REG-237</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Goods - Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-238">REG-238</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Goods - Paging</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-239">REG-239</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Goods - Search and &quot;X&quot; clear button</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-240">REG-240</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Translates - Goods</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-241">REG-241</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission Goods | Create/Edit/View Basic/View Deleted/Delete</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-242">REG-242</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Goods- Exclude old versions</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-251">REG-251</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Terms | Search | Filter</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-252">REG-252</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Terms | Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-253">REG-253</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Terms | Paging</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-254">REG-254</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Terms - Search and &quot;X&quot; clear button</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-255">REG-255</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission Terms | Create/Edit/View Basic/View Deleted/Delete</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-256">REG-256</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Translates - Terms</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-275">REG-275</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Translates - Price Component </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-30">REG-30</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Unwanted Customer - Filter | Search  </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-31">REG-31</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Unwanted Customer - Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-32">REG-32</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Unwanted Customer - Paging</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-323">REG-323</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Price Component | Filter dropdowns Search items smoke testing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-324">REG-324</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Price Component | Paging Smoke Testing </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-325">REG-325</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Price Component | Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-326">REG-326</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Price Component | Search and &quot;X&quot; clear button</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-327">REG-327</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Price Component | Fully Test of Search items</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-328">REG-328</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Price Component | Paging Fully Testing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-330">REG-330</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Price Component | View/Create/Edit/Delete</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-331">REG-331</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Price Component | Edit locked</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-332">REG-332</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Price Component | View deleted</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-342">REG-342</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Translates - Price Parameter</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-349">REG-349</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Parameter | Paging of object | Smoke Testing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-350">REG-350</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Price Parameter | Paging of object | Fully Testing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-357">REG-357</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Group Of Terms - Filter | Search</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-358">REG-358</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Group Of Terms - Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-360">REG-360</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Group Of Terms - Paging</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-361">REG-361</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Group Of Terms - Search and &quot;X&quot; clear button</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-364">REG-364</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Group Of Terms - Exclude old versions</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-366">REG-366</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Group Of Terms - Exclude future versions</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-369">REG-369</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Translates - Groups of Terms</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-372">REG-372</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission Group Of Terms | Create/Edit/View Basic/View Deleted/Delete</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-374">REG-374</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Parameter | Paging of object | Smoke Testing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-39">REG-39</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Group of connected customer | Search | Filter</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-392">REG-392</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Terminations - Filter | Search</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-394">REG-394</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Terminations- Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-395">REG-395</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Terminations - Paging</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-396">REG-396</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Terminations - Search and &quot;X&quot; clear button</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-397">REG-397</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Translates - Terminations</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-398">REG-398</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission Terminations | Create/Edit/View Basic/View Deleted/Delete</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-40">REG-40</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Group of connected customer  | Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-406">REG-406</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Parameter | Paging of object | Fully Testing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-407">REG-407</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Price Parameter | Filter dropdowns Search items</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-408">REG-408</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Price Parameter | Paging Smoke Testing </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-409">REG-409</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Price Parameter | Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-41">REG-41</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Group of connected customer  | Paging</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-410">REG-410</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Price Parameter | Search and &quot;X&quot; clear button</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-411">REG-411</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Price Parameter | Paging Fully Testing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-412">REG-412</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Price Parameter | Exclude old versions</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-420">REG-420</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Group Of Terminations - Filter | Search</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-421">REG-421</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Group Of Terminations - Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-422">REG-422</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Price Parameter | View/Create/Edit/Delete</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-423">REG-423</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Price Parameter | Edit locked</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-424">REG-424</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Price Parameter | View deleted</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-430">REG-430</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Group Of Terminations - Paging</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-431">REG-431</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Group Of Terminations - Search and &quot;X&quot; clear button</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-432">REG-432</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Group Of Terminations - Exclude old versions</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-433">REG-433</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Group Of Terminations - Exclude future versions</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-434">REG-434</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission Group Of Terminations | Create/Edit/View Basic/View Deleted/Delete</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-436">REG-436</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Translates - Groups of Terminations</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-441">REG-441</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Group of Price Component | Filter dropdowns Search items</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-442">REG-442</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Group of Price Component | Paging Smoke Testing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-443">REG-443</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Group of Price Component | Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-444">REG-444</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Group of Price Component | Search and &quot;X&quot; clear button</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-445">REG-445</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Group of Price Component | Paging Fully Testing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-447">REG-447</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Group of Price Component | Exclude old version </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-448">REG-448</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Group of Price Component | Exclude future versions </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-449">REG-449</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Group of Price Component | Exclude old version &amp; Exclude future version</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-450">REG-450</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Translates - Group of Price Components</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-451">REG-451</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Group of Price Components | View/Create/Edit/Delete</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-452">REG-452</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Group of Price Components | Edit locked</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-453">REG-453</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Group of Price Components | View deleted</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-465">REG-465</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Interim And Advance Payments - Filter | Search</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-466">REG-466</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Interim And Advance Payments - Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-467">REG-467</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Interim And Advance Payments - Paging</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-468">REG-468</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Interim And Advance Payment - Search and &quot;X&quot; clear button</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-469">REG-469</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission Interim And Advance Payments| Create/Edit/View Basic/View Deleted/Delete</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-470">REG-470</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Translates - Interim and Advance Payments</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-576">REG-576</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission - Segment | Edit/View</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-583">REG-583</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Penalties Listing - Filter dropdowns | Fully Test of Search items</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-584">REG-584</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Penalties Listing - Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-585">REG-585</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Penalties Listing - Paging | Fully Testing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-586">REG-586</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Penalties Listing - Search and &quot;X&quot; clear button </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-597">REG-597</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create Penalty – Permission &quot;create penalty&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-601">REG-601</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit Penalty – Permission &quot;edit penalty&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-607">REG-607</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> View Penalty (Basic) – Permission &quot;view penalty basic&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-617">REG-617</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit Locked Penalty – Permission &quot;edit locked penalty&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-624">REG-624</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Penalties - Delete Icon Disabled Without Permission</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-632">REG-632</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permissions - Correction billing run</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-693">REG-693</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Groups of Interim and Advance Payments | Search | Filter</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-695">REG-695</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Group of Interim and Advance Payments | Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-696">REG-696</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing - Group of Interim and Advance Payments | Paging</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-697">REG-697</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Group of Interim and Advance Payments - Search and &quot;X&quot; clear button</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-698">REG-698</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Group of Interim and Advance Payments - Exclude old versions</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-699">REG-699</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Group of Interim and Advance Payments - Exclude Future versions</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-700">REG-700</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Translates - Group of Interim and Advance Payments</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-701">REG-701</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission Group of Interim and Advance Payments | Create/Edit/View Basic/View Deleted/Delete</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-702">REG-702</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission Terms | Create/Edit/View Basic/View Deleted/Delete</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-719">REG-719</a> <span class="st">QA Failed</span> <span class="bd">Version 1.2</span> Deposits Listing - Dropdown filters + search</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-720">REG-720</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> Deposits Listing - sorting </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-721">REG-721</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> Deposits Listing - Paging </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-722">REG-722</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Deposits Listing - Action</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-778">REG-778</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Translates - Energy Products</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-804">REG-804</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Energy Products - Filter | Search</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-805">REG-805</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Energy Products - Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-806">REG-806</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Energy Product - Paging</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-807">REG-807</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Energy Product - Search and &quot;X&quot; clear button</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-808">REG-808</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Energy Product - Exclude old versions</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-809">REG-809</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission Energy Product | Create/Edit/View Basic/View Deleted/Delete</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-889">REG-889</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Objection Withdrawal - Filter | Search</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-890">REG-890</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Objection Withdrawal - Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-891">REG-891</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Objection Withdrawal - Paging</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-892">REG-892</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Objection Withdrawal - Search and &quot;X&quot; clear button</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-893">REG-893</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Translates - Objection Withdrawal</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-894">REG-894</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission Objection Withdrawal | View/Edit</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-897">REG-897</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Change of Coordinator Objection - Filter | Search</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-898">REG-898</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Change of Coordinator Objection - Sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-899">REG-899</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Change of Coordinator Objection - Paging</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-900">REG-900</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Listing Change of Coordinator Objection - Search and &quot;X&quot; clear button</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-901">REG-901</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Permission Change of Coordinator Objection | Create/Edit/save and send draft/View Deleted/ View Delete/Delete</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-902">REG-902</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Translate - Change of Coordinator Objection</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-937">REG-937</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> MLO listing - sorting</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-938">REG-938</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> MLO listing - Search</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-940">REG-940</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> MLO listing - Filters and filters with search</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-948">REG-948</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Task Listing - Filters + search </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-949">REG-949</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Task Listing - Column orderings</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-950">REG-950</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Task Listing - Paging</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-958">REG-958</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Task Edit - Edit without super user permissions</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-959">REG-959</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Task Edit - Edit with super user edit permission </li></ul>
+</section>
+  <h2 class="block" id="missing">Not on the board yet</h2>
+  
+<section class="row gap" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <span class="pill missing">Not on the board</span>
+    <h2>H-28 — Close an accounting period while a billing run is still in progress</h2>
+  </header>
+  <p class="why">Close is rejected until the run is COMPLETED. No REG Test Case summary matches this.</p>
+</section>
+<section class="row gap" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <span class="pill missing">Not on the board</span>
+    <h2>H-29 — Contract status and termination jobs</h2>
+  </header>
+  <p class="why">Status and termination schedulers stop billing after the contract is no longer billable. No REG Test Case.</p>
+</section>
+<section class="row gap" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <span class="pill missing">Not on the board</span>
+    <h2>H-30 — Paid proforma update</h2>
+  </header>
+  <p class="why">A paid proforma is no longer open. No REG Test Case.</p>
+</section>
+<section class="row gap" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <span class="pill missing">Not on the board</span>
+    <h2>H-31 — Remove an overdue order invoice</h2>
+  </header>
+  <p class="why">The overdue proforma order invoice and its liability are removed. No REG Test Case.</p>
+</section>
+<section class="row gap" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <span class="pill missing">Not on the board</span>
+    <h2>H-32 — Dev2 collection channels Bulgaria Post, Cash Terminal, Systech</h2>
+  </header>
+  <p class="why">Each channel posts a payment that offsets a liability on Dev2. The board has EasyPay and Virtual POS configuration only.</p>
+</section>
+<section class="row gap" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <span class="pill missing">Not on the board</span>
+    <h2>H-33 — Late-payment-fine scheduled job</h2>
+  </header>
+  <p class="why">The job creates one fine and does not create a second fine on the next run. REG-980, on the late-payment-fine row, creates a fine by hand. It does not run the job.</p>
+</section>
+<section class="row gap" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <span class="pill missing">Not on the board</span>
+    <h2>H-34 — One-time billing creation job</h2>
+  </header>
+  <p class="why">The scheduler creates one periodical one-time run per due period. No REG Test Case.</p>
+</section>
+<section class="row gap" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <span class="pill missing">Not on the board</span>
+    <h2>H-19b — Never-activated POD is not invoiced</h2>
+  </header>
+  <p class="why">Scale data on a POD that was never manually activated does not become a REAL invoice. No REG Test Case states this.</p>
+</section>
+<section class="row gap" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <span class="pill missing">Not on the board</span>
+    <h2>H-20b — Payment larger than the liability opens a receivable for the remainder</h2>
+  </header>
+  <p class="why">Liability current amount becomes 0 and a receivable is created for the difference. Confirm REG-1005 and REG-1031 assert the remainder. If they only create the payment, this assert is still missing.</p>
+</section>
+<section class="row gap" data-rank="HIGHEST">
+  <header>
+    <span class="pill highest">HIGHEST</span>
+    <span class="pill missing">Not on the board</span>
+    <h2>H-07b — Compensation after credit note, debit note, or correction</h2>
+  </header>
+  <p class="why">The later document changes the compensation net. Zero receivable is not created. The board has three compensation titles and does not name credit-note offset or empty interest.</p>
+</section>
+<section class="row gap" data-rank="HIGH">
+  <header>
+    <span class="pill high">HIGH</span>
+    <span class="pill missing">Not on the board</span>
+    <h2>G-09b — Cancellation email, order-invoice email, manual-offset email</h2>
+  </header>
+  <p class="why">Each process creates an email object with the document attached when email contacts exist. No REG Test Case states the email object.</p>
+</section>
+<section class="row gap" data-rank="HIGH">
+  <header>
+    <span class="pill high">HIGH</span>
+    <span class="pill missing">Not on the board</span>
+    <h2>G-09d — Signed contract email job</h2>
+  </header>
+  <p class="why">ContractEmailScheduledService emails signed product and service contract documents. No REG Test Case.</p>
+</section>
+<section class="row gap" data-rank="HIGH">
+  <header>
+    <span class="pill high">HIGH</span>
+    <span class="pill missing">Not on the board</span>
+    <h2>G-09e — Email send pipeline</h2>
+  </header>
+  <p class="why">After the email object exists, the body job and the retry job move send status. No REG Test Case.</p>
+</section>
+<section class="row gap" data-rank="HIGH">
+  <header>
+    <span class="pill high">HIGH</span>
+    <span class="pill missing">Not on the board</span>
+    <h2>G-09f — Invoice email rules</h2>
+  </header>
+  <p class="why">EMAIL sends. PAPER does not. ACCORDING_TO_THE_CONTRACT sends only when the billing group mode is email. A zero-amount invoice or credit note does not send. A deleted communication header does not send. No REG Test Case states these rules.</p>
+</section>
+<section class="row gap" data-rank="HIGH">
+  <header>
+    <span class="pill high">HIGH</span>
+    <span class="pill missing">Not on the board</span>
+    <h2>G-20 — xEnergie deal sync</h2>
+  </header>
+  <p class="why">The sync job sends the signed contract version and POD dates. No REG Test Case.</p>
+</section>
+<section class="row gap" data-rank="MEDIUM">
+  <header>
+    <span class="pill medium">MEDIUM</span>
+    <span class="pill missing">Not on the board</span>
+    <h2>M-11 — QES signing job</h2>
+  </header>
+  <p class="why">The document is marked signed after the QES job moves the file. No REG Test Case.</p>
+</section>
+  <section class="row" id="unmatched" data-rank="OUT">
+  <header>
+    <span class="pill out">REVIEW</span>
+    <h2>Board cases not matched to a row</h2>
+    <span class="count">178 titles</span>
+  </header>
+  <div class="body">
+  <p class="why">These titles did not match a scope row, plus edit titles taken off Highest. Search still finds them.</p>
+  <ul>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-306">REG-306</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - With electricity invoice | Happy path </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-309">REG-309</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - With electricity invoice | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-310">REG-310</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - Per piece | Happy path </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-311">REG-311</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - Per piece | Full data</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-312">REG-312</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Price Component - Per piece | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-727">REG-727</a> <span class="st">QA Failed</span> <span class="bd">Version 1.2</span> Deposits Edit - When object took part in offsetting process</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-725">REG-725</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> Deposits Edit - Newly created deposit</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-726">REG-726</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> Deposits Edit - Refunded</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-620">REG-620</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Point of delivery | Block for disconnection </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-621">REG-621</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Point of delivery | Block for billing</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1052">REG-1052</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> სატესტო ტესტ ქეისი - Test Case Creation Verification</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1060">REG-1060</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> should be deleted</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1062">REG-1062</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> test case 1 for audit logs</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1156">REG-1156</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Pod - status change in one contract life cycle </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1158">REG-1158</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> System configuration - Email and SMS mandatority</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1159">REG-1159</a> <span class="st">QA Failed</span> <span class="bd">Version 1.1</span> Reminder - New type of reminder(Trigger is RFD) + communication object generation</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1160">REG-1160</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Reminder - New type of reminder(Trigger is RFD) + communication object generation (list of contract, with postponoment in days value)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1162">REG-1162</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Invoice amount calculation for all types</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1195">REG-1195</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> [Dev 2]&quot;On Paper&quot; Object Create Via process </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1198">REG-1198</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> [Dev 2] Contract Get -Sales portal </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1200">REG-1200</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> [Dev 2] Get POD - Sales protal</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1202">REG-1202</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> [Dev 2] Get: liability details by ID</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1204">REG-1204</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Get:  List of products based on pod ID</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1229">REG-1229</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> .</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1241">REG-1241</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-01 [POD][POD_WITH_RPS=YES]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1242">REG-1242</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-02 [POD][POD_WITH_RPS=NO]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1243">REG-1243</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-03 [CONTRACT][POD_WITH_RPS=YES]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1245">REG-1245</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-05 [POD][VOLTAGE_LEVEL=LOW]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1246">REG-1246</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-06 [CONTRACT][VOLTAGE_LEVEL=LOW]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1248">REG-1248</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-08 [POD][PURPOSE_OF_CONSUMPTION=NON_HOUSEHOLD]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1249">REG-1249</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-09 [CONTRACT][PURPOSE_OF_CONSUMPTION=NON_HOUSEHOLD]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1250">REG-1250</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-10 [POD][POD_TYPE=CONSUMER]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1251">REG-1251</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-11 [CONTRACT][POD_TYPE=CONSUMER]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1252">REG-1252</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-12 [POD][POD_MEASUREMENT_TYPE=SETTLEMENT_PERIOD]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1253">REG-1253</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-13 [POD][POD_GRID_OP]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1255">REG-1255</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-15 [CONTRACT][CONTRACT=PRODUCT_CONTRACT]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1256">REG-1256</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-16 [CONTRACT][PRODUCT]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1257">REG-1257</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-17 [CONTRACT][PRODUCT_TYPE]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1258">REG-1258</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-18 [CONTRACT][CONTRACT_TYPE]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1264">REG-1264</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COMB-01 [CONTRACT][AND same-POD RPS+VOLTAGE]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1269">REG-1269</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-01 [POD_VOLTAGE_LEVEL=LOW]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1270">REG-1270</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-02 [POD_VOLTAGE_LEVEL&lt;&gt;HIGH]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1271">REG-1271</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-03 [PURPOSE_OF_CONSUMPTION=NON_HOUSEHOLD]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1272">REG-1272</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-04 [POD_MEASUREMENT_TYPE=SETTLEMENT_PERIOD]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1273">REG-1273</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-05 [POD_GRID_OP]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1274">REG-1274</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-06 [CONTRACT_TYPE=COMBINED]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1276">REG-1276</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-08 [CONTRACT_TYPE=COMBINED AND POD_VOLTAGE_LEVEL&lt;&gt;HIGH]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1279">REG-1279</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-11 [MONTHS_DIFFERENCE_BETWEEN_CURRENT_DATE_CONTRACT_ACTIVATION_DATE=0]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1280">REG-1280</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-12 [MONTHS_DIFFERENCE_BETWEEN_MAX_DATE_OF_BILLING_RUN_CONTRACT_ACTIVATION_DATE=0]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1281">REG-1281</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-13 [POD_ADDITIONAL_PARAMETER]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1282">REG-1282</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-14 [POD_COUNTRY]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1283">REG-1283</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-15 [POD_REGION]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1284">REG-1284</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-16 [POD_POPULATED_PLACE]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1285">REG-1285</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-17 [POD_PROVIDED_POWER]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1286">REG-1286</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-18 [POD_MULTIPLIER]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1287">REG-1287</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-19 [DIRECT_DEBIT=$YES$]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1288">REG-1288</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-20 [CONTRACT_SUB_STATUS_IN_PERPETUITY=$NO$]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1289">REG-1289</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-21 [ACTIVE_POWER_SUPPLY_TERMINATION=$NO$]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1290">REG-1290</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-22 [PRODUCT_TYPE]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1291">REG-1291</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-23 [RISK_ASSESSMENT_ADDITIONAL_CONDITIONS]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1292">REG-1292</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> PCC-24 [CONTRACT_CAMPAIGN]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1297">REG-1297</a> <span class="st">QA Failed</span> <span class="bd">No Regression Scope field</span> Manual interim billing run - standard invoice deduction (from same period)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1298">REG-1298</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> COND-14 [POD][POD_RPS_NUMBER=1047]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1299">REG-1299</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> COMB-02 [CONTRACT][IN AND OR NOT no match]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1301">REG-1301</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> LIST-02 [CONTRACT][list contract number]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1302">REG-1302</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> LIST-03 [POD][list identifier]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1303">REG-1303</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-08 [POD][PURPOSE_OF_CONSUMPTION=NON_HOUSEHOLD] | no match</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1304">REG-1304</a> <span class="st">Done</span> <span class="bd">Version 1.2</span> COND-09 [CONTRACT][PURPOSE_OF_CONSUMPTION=NON_HOUSEHOLD] | no match</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1308">REG-1308</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> Sales portal additional contacts happy path</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1309">REG-1309</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> Sales portal additional contacts empty list</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1314">REG-1314</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> Sales portal product list for unknown POD returns standard products</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1315">REG-1315</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> Sales portal product list for existing POD returns standard and POD products</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1322">REG-1322</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> PHN-2865 TC-BE-2 - Multiple phones on the same manager</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1323">REG-1323</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> PHN-2865 TC-BE-3 - Multiple emails on the same manager</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1324">REG-1324</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> PHN-2865 TC-BE-4 - PUT clears manager phones and emails</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1325">REG-1325</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> PHN-2865 TC-BE-5 - Reject manager phone with a disallowed character</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1326">REG-1326</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> PHN-2865 TC-BE-6 - Reject manager phone longer than 32 characters</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1327">REG-1327</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> PHN-2865 TC-BE-7 - Accept manager phone of exactly 32 characters</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1328">REG-1328</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> PHN-2865 TC-BE-8 - Reject manager email with an invalid format</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1329">REG-1329</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> PHN-2865 TC-BE-9 - Reject manager email longer than 256 characters</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1352">REG-1352</a> <span class="st">To Do</span> <span class="bd">Version 1</span> Create collection channel</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1355">REG-1355</a> <span class="st">To Do</span> <span class="bd">Version 1</span> Create interest rate</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1357">REG-1357</a> <span class="st">To Do</span> <span class="bd">Version 1</span> Create reminder</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1362">REG-1362</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> Discount - RPS 1047, invoice generation waited</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1364">REG-1364</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> Discount - RPS 1047, invoice due date type DATE</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1365">REG-1365</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> Discount - two PODs with RPS 1047</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1368">REG-1368</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> Discount - PODs with RPS 1047 and 49</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1371">REG-1371</a> <span class="st">To Do</span> <span class="bd">Version 1.1</span> Condition POD_WITH_RPS=YES on two PODs</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1376">REG-1376</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> PCC-26 [IN AND OR NOT match both PODs via OR]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-1377">REG-1377</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> PCC-27 [IN AND OR NOT no match]</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-234">REG-234</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Goods | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-235">REG-235</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Edit - Goods | Happy Path | Only Mandatory Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-250">REG-250</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Terms</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-263">REG-263</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Goods | Happy Path | Only Mandatory Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-264">REG-264</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Goods | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-265">REG-265</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Edit - Goods | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-266">REG-266</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Goods | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-271">REG-271</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Terms | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-386">REG-386</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Terminations | Happy Path | Only Mandatory Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-387">REG-387</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Terminations | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-388">REG-388</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Terminations | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-389">REG-389</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Terminations | Happy Path | Only Mandatory Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-390">REG-390</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Terminations | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-391">REG-391</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Terminations | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-413">REG-413</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Groups of Terminations</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-414">REG-414</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Terminations Button | Group Off Terminations </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-415">REG-415</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Group Of Terminations | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-416">REG-416</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Edit - Groups of Terminations</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-417">REG-417</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Terminations Button | Group Off Terminations</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-418">REG-418</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Group Of Terminations | Copy From</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-472">REG-472</a> <span class="st">Done</span> <span class="bd">Version 1</span> Create Contract | Happy path - Only mandatory fields </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-474">REG-474</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Grid operator create | Happy path - Only mandatory fields </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-475">REG-475</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Point of Delivery |  Happy path of Settlement period type POD - Mandatory fields </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-476">REG-476</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Point of Delivery | Happy path of SLP type POD - Mandatory fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-568">REG-568</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Segment </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-569">REG-569</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Segment | Name edit</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-570">REG-570</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Segment | Make inactive</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-571">REG-571</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Segment | Inactive </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-572">REG-572</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Segment | Create default nomenclature</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-573">REG-573</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Segment | Make default segment</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-574">REG-574</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Delete - Segment</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-575">REG-575</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Segment | Make active from inactive</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-577">REG-577</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Point of Delivery | Full data - All fields </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-578">REG-578</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Point of Delivery | Happy path - According to the grid operator code </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-579">REG-579</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Edit - Point of Delivery | Happy path - Only mandatory fields | Settlement period</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-580">REG-580</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Edit - Point of Delivery | Happy path - Only mandatory fields | SLP</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-582">REG-582</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Point of Delivery | Full data - all fields </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-602">REG-602</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Delete Penalty – Permisson &quot;delete penalty&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-605">REG-605</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> View Deleted Penalty – Permisson &quot;view penalty deleted&quot;</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-616">REG-616</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Point of delivery | Address of the point of delivery </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-623">REG-623</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span>  Penalties -  Delete Icon Visibility </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-625">REG-625</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Penalties - Delete Penalty – Confirmation Popup</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-626">REG-626</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Penalties - Delete Penalty – Cancel from Confirmation</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-627">REG-627</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Penalties - Delete Penalty – Confirmation popup  Success Case</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-628">REG-628</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Penalties - Delete Penalty Connected to Group</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-629">REG-629</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Penalties - Delete Penalty Connected to Product</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-630">REG-630</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Penalties - Delete Penalty Connected to Service</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-710">REG-710</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Koala</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-735">REG-735</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Koala</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-736">REG-736</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Koala</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-740">REG-740</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Koala</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-743">REG-743</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Koala</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-744">REG-744</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Koala</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-810">REG-810</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Standard Energy Product - Groups of Terms | Happy Path | Only Mandatory Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-827">REG-827</a> <span class="st">Done</span> <span class="bd">No Regression Scope field</span> Liability create</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-840">REG-840</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Standard Energy Product - Terms | Happy Path | Only Mandatory Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-841">REG-841</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Standard Energy Product - Terms | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-842">REG-842</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Individual Energy Product - Groups of Terms | Happy Path | Only Mandatory Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-844">REG-844</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Individual Energy Product - Terms | Happy Path | Only Mandatory Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-845">REG-845</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Individual Energy Product - Terms | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-847">REG-847</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Standard Energy Product - Terms | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-849">REG-849</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create | Copy From - Individual Energy Product - Terms | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-850">REG-850</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Standard Energy Product -  Contract Terms - Period | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-851">REG-851</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Individual Energy Product - Contract Terms - Period | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-852">REG-852</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Standard Energy Product - Contract Terms - Certain Date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-853">REG-853</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Individual Energy Product - Contract Terms - Certain Date | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-854">REG-854</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Standard Energy Product - Contract Terms - Without Terms | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-855">REG-855</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Create - Individual Energy Product - Contract Terms - Without Terms | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-887">REG-887</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create - Objection Withdrawal | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-888">REG-888</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Objection Withdrawal | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-895">REG-895</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Create - Change of Coordinator Objection | Full Data | All Fields</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-896">REG-896</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Edit - Change of Coordinator Objection</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-931">REG-931</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Create and Generate Invoice with Unrecognised PODS</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-952">REG-952</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Task Create - Create task on contract/order</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-953">REG-953</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Task Create - Create task on billing run</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-955">REG-955</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Task Create - Create Internal task</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-956">REG-956</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Task Create - Create task on Receivable management's objects</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-957">REG-957</a> <span class="st">To Do</span> <span class="bd">No Regression Scope field</span> Task preview - Get request and add comment</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-965">REG-965</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Pulling - pod has no gaps </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-967">REG-967</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Pulling - pod has gaps</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-968">REG-968</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Pulling - one pod has gap, second one doesn't</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-969">REG-969</a> <span class="st">QA Failed</span> <span class="bd">Version 1.1</span> Pulling - pod has different measurement types in 2 contracts</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-970">REG-970</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> Pulling - one chain fails another chain</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-971">REG-971</a> <span class="st">Done</span> <span class="bd">Version 1</span> Pulling - pod has no gaps (data by scale flow)</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-972">REG-972</a> <span class="st">Done</span> <span class="bd">Version 1</span> Pulling - 3 contracts, 2 pulling chains</li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-982">REG-982</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Meters - Create Happy path </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-985">REG-985</a> <span class="st">Done</span> <span class="bd">Version 1.1</span> SMS creating </li>
+<li><a href="https://oppa-support.atlassian.net/browse/REG-989">REG-989</a> <span class="st">To Do</span> <span class="bd">Version 1.2</span> Service - Create | happy path</li></ul>
+  </div>
+  </section>
+</main>
+<script>
+  const rows = [...document.querySelectorAll("section.row")];
+  rows.forEach((sec) => {
+    const header = sec.querySelector("header");
+    const chev = document.createElement("span");
+    chev.className = "chev";
+    chev.textContent = "›";
+    header.prepend(chev);
+    const body = document.createElement("div");
+    body.className = "body";
+    let n = header.nextSibling;
+    while (n) {
+      const next = n.nextSibling;
+      body.appendChild(n);
+      n = next;
+    }
+    sec.appendChild(body);
+    if (sec.classList.contains("gap")) sec.classList.add("open");
+    header.addEventListener("click", () => {
+      if (!sec.classList.contains("gap")) sec.classList.toggle("open");
+    });
+    sec.querySelectorAll(".st").forEach((el) => {
+      const t = el.textContent.trim().toLowerCase();
+      if (t === "done") el.classList.add("done");
+      else if (t.includes("fail")) el.classList.add("fail");
+      else el.classList.add("todo");
+    });
+    sec.querySelectorAll(".bd").forEach((el) => {
+      el.textContent = el.textContent
+        .replace("No Regression Scope field", "No board rank")
+        .replace("Version 1.2", "Board 1.2")
+        .replace("Version 1.1", "Board 1.1")
+        .replace("Version 1", "Board 1");
+    });
+  });
+
+  const stats = document.getElementById("stats");
+  const byRank = (rank) => rows.filter((r) => r.dataset.rank === rank && r.id !== "unmatched");
+  const boardCount = (rank) => byRank(rank)
+    .filter((r) => !r.classList.contains("gap"))
+    .reduce((n, r) => n + r.querySelectorAll("li a").length, 0);
+  const missingCount = (rank) => byRank(rank).filter((r) => r.classList.contains("gap")).length;
+  const ranks = [
+    ["HIGHEST", "Highest", "amt-highest"],
+    ["HIGH", "High", "amt-high"],
+    ["MEDIUM", "Medium", "amt-medium"],
+    ["OUT", "Screens", "amt-out"]
+  ];
+  stats.innerHTML = ranks.map(([rank, label]) => {
+    const onBoard = boardCount(rank);
+    const missing = missingCount(rank);
+    return `<div class="stat"><b>${onBoard + missing}</b><span>${label}: ${onBoard} on the board, ${missing} missing</span></div>`;
+  }).join("");
+  ranks.forEach(([rank, , id]) => {
+    const onBoard = boardCount(rank);
+    const missing = missingCount(rank);
+    document.getElementById(id).textContent = `${onBoard} on the board, ${missing} missing`;
+  });
+  ranks.forEach(([rank, label]) => {
+    const button = document.querySelector(`.toolbar button[data-f="${rank}"]`);
+    if (button) button.textContent = `${label} ${boardCount(rank)}`;
+  });
+
+  const q = document.getElementById("q");
+  const hint = document.getElementById("hint");
+  const filterButtons = [...document.querySelectorAll(".toolbar button[data-f]")];
+  let filter = "ALL";
+
+  function apply() {
+    const query = q.value.trim().toLowerCase();
+    let shown = 0;
+    rows.forEach((sec) => {
+      const gap = sec.classList.contains("gap");
+      const rank = sec.dataset.rank;
+      let rankOk = filter === "ALL" || (filter === "GAP" ? gap : !gap && rank === filter);
+      const lis = [...sec.querySelectorAll("li")];
+      let any = !query;
+      lis.forEach((li) => {
+        const hit = !query || li.textContent.toLowerCase().includes(query);
+        li.style.display = hit ? "" : "none";
+        if (hit) any = true;
+      });
+      const titleHit = !query || sec.querySelector("h2").textContent.toLowerCase().includes(query)
+        || (sec.querySelector(".why") && sec.querySelector(".why").textContent.toLowerCase().includes(query));
+      const show = rankOk && (any || titleHit);
+      sec.style.display = show ? "" : "none";
+      if (show) shown += 1;
+      if (query && show && !gap) sec.classList.add("open");
+    });
+    document.querySelectorAll(".block").forEach((h) => {
+      h.style.display = filter === "GAP" && h.id === "on-board" ? "none"
+        : filter !== "ALL" && filter !== "GAP" && h.id === "missing" ? "none" : "";
+    });
+    hint.textContent = query
+      ? `${shown} rows match “${q.value.trim()}”.`
+      : "Click a row to open it. Board 1, Board 1.1, and Board 1.2 are the Jira Regression Scope field, not this page’s rank.";
+  }
+
+  filterButtons.forEach((b) => b.addEventListener("click", () => {
+    filterButtons.forEach((x) => x.classList.remove("on"));
+    b.classList.add("on");
+    filter = b.dataset.f;
+    apply();
+  }));
+  q.addEventListener("input", apply);
+  document.getElementById("expand").addEventListener("click", () => {
+    const open = document.getElementById("expand").dataset.open === "1";
+    rows.forEach((sec) => {
+      if (sec.style.display === "none" || sec.classList.contains("gap")) return;
+      sec.classList.toggle("open", !open);
+    });
+    document.getElementById("expand").dataset.open = open ? "0" : "1";
+    document.getElementById("expand").textContent = open ? "Expand open rows" : "Collapse rows";
+  });
+  apply();
+</script>
+</body>
+</html>

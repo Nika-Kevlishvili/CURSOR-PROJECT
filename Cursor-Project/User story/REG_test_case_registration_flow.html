@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>REG test case registration</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1c1917;
+      --muted: #57534e;
+      --line: #a8a29e;
+      --paper: #fafaf9;
+      --card: #ffffff;
+      --exit: #9a3412;
+      --todo: #44403c;
+      --deploy: #c2410c;
+      --done: #3f6212;
+      --deploy-bg: #fff7ed;
+      --done-bg: #f7fee7;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 16px/1.45 "Segoe UI", sans-serif;
+    }
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    h1 { font-size: 28px; font-weight: 600; margin: 0 0 8px; }
+    .lead { color: var(--muted); margin: 0 0 28px; }
+    section { margin: 0 0 36px; }
+    h2 { font-size: 18px; font-weight: 600; margin: 0 0 14px; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .lane, .card, .outcome {
+      background: var(--card);
+      border: 1.5px solid var(--ink);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .step { display: flex; gap: 12px; align-items: flex-start; }
+    .num {
+      flex: none;
+      width: 28px;
+      height: 28px;
+      border: 1.5px solid var(--ink);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .title { font-weight: 600; }
+    .sub, .exit, .arrow { color: var(--muted); font-size: 14px; }
+    .exit { color: var(--exit); margin-top: 4px; }
+    .arrow {
+      margin: 6px 0 6px 22px;
+      padding-left: 16px;
+      border-left: 1.5px solid var(--line);
+    }
+    .outcomes { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 12px; }
+    .outcome.deploy { background: var(--deploy-bg); border-color: var(--deploy); }
+    .outcome.done { background: var(--done-bg); border-color: var(--done); }
+    .tag { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; }
+    .tag.todo { color: var(--todo); }
+    .tag.deploy { color: var(--deploy); }
+    .tag.done { color: var(--done); }
+    @media (max-width: 700px) {
+      .split, .outcomes { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>REG test case registration</h1>
+    <p class="lead">How the registration agent creates one Test Case on the REG board. The arrow is the path forward. The rust line on a card is a side exit.</p>
+
+    <section>
+      <h2>1. Entry</h2>
+      <div class="split">
+        <div class="lane">
+          <div class="step">
+            <span class="num">1</span>
+            <div>
+              <div class="title">Quality gate</div>
+              <div class="sub">Markdown is already saved</div>
+            </div>
+          </div>
+          <div class="arrow">Next</div>
+          <div class="step">
+            <span class="num">2</span>
+            <div>
+              <div class="title">One question</div>
+              <div class="sub">The whole batch</div>
+              <div class="exit">If no — stop</div>
+            </div>
+          </div>
+          <div class="arrow">Yes</div>
+        </div>
+        <div class="lane">
+          <div class="step">
+            <span class="num">1</span>
+            <div>
+              <div class="title">Direct request</div>
+              <div class="sub">A spec path, test title, or scenario</div>
+              <div class="exit">Consent is already given</div>
+            </div>
+          </div>
+          <div class="arrow">Next</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>2. Before create, for each case</h2>
+      <article class="card">
+        <div class="step">
+          <span class="num">1</span>
+          <div>
+            <div class="title">Search REG</div>
+            <div class="sub">Same title or spec path</div>
+            <div class="exit">If found — return the key and skip</div>
+          </div>
+        </div>
+      </article>
+      <div class="arrow">Next</div>
+      <article class="card">
+        <div class="step">
+          <span class="num">2</span>
+          <div>
+            <div class="title">ENV</div>
+            <div class="sub">Dev or Dev2</div>
+            <div class="exit">If unnamed — ask and wait</div>
+          </div>
+        </div>
+      </article>
+      <div class="arrow">Next</div>
+      <article class="card">
+        <div class="step">
+          <span class="num">3</span>
+          <div>
+            <div class="title">Regression Scope</div>
+            <div class="sub">Version 1, Version 1.1, or Version 1.2</div>
+            <div class="exit">If same outcome — leave it in the markdown</div>
+            <div class="exit">If out of scope — ask once whether to create</div>
+          </div>
+        </div>
+      </article>
+      <div class="arrow">Next</div>
+      <article class="card">
+        <div class="step">
+          <span class="num">4</span>
+          <div>
+            <div class="title">REG topic</div>
+            <div class="sub">One topic, linked later with Relates</div>
+            <div class="exit">If unclear — ask and wait</div>
+          </div>
+        </div>
+      </article>
+      <div class="arrow">Next</div>
+      <article class="card">
+        <div class="step">
+          <span class="num">5</span>
+          <div>
+            <div class="title">Description</div>
+            <div class="sub">Description, reproduce steps, expected result</div>
+            <div class="exit">If one section is missing — ask and wait</div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section>
+      <h2>3. Automation</h2>
+      <article class="card">
+        <div class="step">
+          <span class="num">1</span>
+          <div>
+            <div class="title">Stay on cursor</div>
+            <div class="sub">The EnergoTS branch is not changed</div>
+          </div>
+        </div>
+      </article>
+      <div class="arrow">fetch origin main</div>
+      <article class="card">
+        <div class="step">
+          <span class="num">2</span>
+          <div>
+            <div class="title">Read origin/main</div>
+            <div class="sub">Read only. No checkout, merge, or rebase</div>
+            <div class="exit">If fetch fails — use the origin/main already on disk</div>
+          </div>
+        </div>
+      </article>
+      <div class="arrow">Next</div>
+      <article class="card">
+        <div class="step">
+          <span class="num">3</span>
+          <div>
+            <div class="title">Find the spec</div>
+            <div class="sub">Path or test title, including uncommitted files</div>
+          </div>
+        </div>
+      </article>
+      <div class="outcomes">
+        <article class="outcome">
+          <div class="tag todo">To Do</div>
+          <div class="sub">No matching spec in the working tree and none on origin/main</div>
+        </article>
+        <article class="outcome deploy">
+          <div class="tag deploy">Needs to be deployed</div>
+          <div class="sub">The spec exists, but the file or this test is not on origin/main</div>
+        </article>
+        <article class="outcome done">
+          <div class="tag done">Done</div>
+          <div class="sub">The file is on origin/main, and the test title is in that file when the title is known</div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>4. After the fields are set</h2>
+      <article class="card">
+        <div class="step">
+          <span class="num">1</span>
+          <div>
+            <div class="title">Create</div>
+            <div class="sub">One REG Test Case</div>
+            <div class="exit">If create fails — report keys already created and stop</div>
+          </div>
+        </div>
+      </article>
+      <div class="arrow">Next</div>
+      <article class="card">
+        <div class="step">
+          <span class="num">2</span>
+          <div>
+            <div class="title">Relates</div>
+            <div class="sub">Link the new case to the topic</div>
+          </div>
+        </div>
+      </article>
+      <div class="arrow">Next</div>
+      <article class="card">
+        <div class="step">
+          <span class="num">3</span>
+          <div>
+            <div class="title">References</div>
+            <div class="sub">Append the new key in the source markdown</div>
+            <div class="exit">If there is no markdown file — skip the write-back</div>
+          </div>
+        </div>
+      </article>
+      <div class="arrow">Next</div>
+      <article class="card">
+        <div class="step">
+          <span class="num">4</span>
+          <div>
+            <div class="title">Reply</div>
+            <div class="sub">Browse link, Automation value, and the spec path used as evidence</div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

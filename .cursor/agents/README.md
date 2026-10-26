@@ -28,6 +28,7 @@ Subagents delegate work to specialized contexts. Each file under **`.cursor/agen
 | **energo-ts-test.md** | EnergoTSTestAgent (Rule 0.8.1) | **MANDATORY:** read `config/playwright_generation/playwright instructions/` before `.spec.ts`; Playwright under `EnergoTS/tests/` only. |
 | **energo-ts-run.md** | Playwright runner (Rule 36) | `npx playwright test` from EnergoTS; `cursor` branch only. JSON→MD + Slack uploads for **scoped Slack path 2**; ad-hoc runs: generator only if user explicitly asks (**Rule DPR.0**). |
 | **jira-bug.md** | Jira bug (Rule JIRA.0) | Experiments board only. |
+| **register-regression-test-cases.md** | REG Test Case registration | After TC markdown, or a direct request to write the automation test case. REG **Test Case** only. Not Bugs. Automation is Done only when the spec is on EnergoTS `origin/main`. |
 | **phoenix-bug-reporter.md** | Phoenix Phase 2 bug reporter (Rule PHOENIX-BUG.0) | Review file → Step 3.5 **bug-validator** (parent prefetch) → APPROVE + `.active-bugreview` sidecar → `createJiraIssue`; hook guards Internal Bug + Bug; reporter from `.env`; Internal tester from QA/Test subtask. |
 | **playwright-test-validator.md** | Playwright QA gate | Spec vs test cases + **`playwright instructions/`** (Rule 35 / energo-ts-test quality gate). |
 | **production-data-reader.md** | Production data (Rule PDR.0) | PostgreSQLProd MCP readonly. |

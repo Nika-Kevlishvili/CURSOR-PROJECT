@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>რეგრესიის სკოუპის რანგი</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --text: #1f2328;
+      --muted: #57606a;
+      --line: #d0d7de;
+      --bg: #ffffff;
+      --soft: #f6f8fa;
+      --info: #ddf4ff;
+      --warn: #fff8c5;
+      --highest: #cf222e;
+      --high: #9a6700;
+      --medium: #0969da;
+      --out: #6e7781;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 16px/1.45 "Segoe UI", sans-serif;
+    }
+    main { max-width: 980px; margin: 0 auto; padding: 32px 20px 64px; }
+    h1 { font-size: 24px; margin: 0 0 8px; }
+    h2 { font-size: 18px; margin: 28px 0 8px; }
+    h3 { font-size: 15px; margin: 16px 0 8px; }
+    p { margin: 0 0 10px; }
+    .muted { color: var(--muted); }
+    .small { font-size: 13px; color: var(--muted); }
+    .callout { border: 1px solid var(--line); padding: 12px 14px; margin: 16px 0; }
+    .callout.info { background: var(--info); }
+    .callout.warn { background: var(--warn); }
+    .callout strong { display: block; margin-bottom: 4px; }
+    .step { display: flex; gap: 12px; }
+    .num {
+      width: 28px; height: 28px; border-radius: 14px; background: var(--soft);
+      display: flex; align-items: center; justify-content: center; font-weight: 600; flex: none;
+    }
+    .rail { width: 1px; height: 16px; background: var(--line); margin-left: 14px; }
+    .chain { display: flex; gap: 8px; align-items: stretch; overflow-x: auto; padding-bottom: 4px; }
+    .node { min-width: 160px; flex: 1; border: 1px solid var(--line); background: var(--soft); padding: 10px 12px; }
+    .node b { display: block; margin-bottom: 4px; }
+    .node span { display: block; color: var(--muted); font-size: 13px; }
+    .arrow { align-self: center; color: var(--muted); }
+    .box { border: 1px solid var(--line); padding: 14px; }
+    .box header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+    button {
+      border: 1px solid var(--line); background: var(--bg); color: var(--text);
+      border-radius: 999px; padding: 4px 12px; font: inherit; cursor: pointer;
+    }
+    button.active { background: var(--text); color: var(--bg); }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+    th { background: var(--soft); }
+    tr.HIGHEST td:first-child { box-shadow: inset 3px 0 var(--highest); }
+    tr.HIGH td:first-child { box-shadow: inset 3px 0 var(--high); }
+    tr.MEDIUM td:first-child { box-shadow: inset 3px 0 var(--medium); }
+    tr.out td:first-child { box-shadow: inset 3px 0 var(--out); }
+    .bars { display: grid; gap: 8px; margin-top: 12px; }
+    .bar-row { display: grid; grid-template-columns: 140px 1fr 40px; gap: 8px; align-items: center; font-size: 14px; }
+    .bar { height: 18px; background: #0969da; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>რეგრესიის სკოუპის რანგი</h1>
+  <p class="muted">რანგი და Jira-ს Regression Scope ერთი გადაწყვეტილებაა. HIGHEST არის Version 1 და პირველ ტალღაში ეშვება. HIGH არის Version 1.1. MEDIUM არის Version 1.2. LOW არ არსებობს.</p>
+
+  <div class="callout info">
+    <strong>ერთი კითხვა</strong>
+    თუ ეს ქეისი ჩავარდება, დარჩება არასწორი დარიცხვა, არასწორი ვალი ან არასწორი მიწოდება?
+  </div>
+
+  <h2>გადაწყვეტის გზა</h2>
+  <p class="small">კითხვები ზემოდან ქვემოთ მიდის. პირველი დადებითი პასუხი რანგს აფიქსირებს.</p>
+  <div class="step"><div class="num">1</div><div><p><b>ჩავარდნა ცვლის დარიცხულ თანხას, ვალს, ან იმას, ვის ერიცხება და ჩართულია თუ არა მიწოდება?</b></p><p class="small">დიახ — HIGHEST. ინვოისი, ვალდებულება, ჩათვლა, გაუქმება, ჯარიმა, დეპოზიტი, მიწოდების გათიშვის ნიშანი.</p></div></div>
+  <div class="rail"></div>
+  <div class="step"><div class="num">2</div><div><p><b>თავად თანხას არ არიცხავს, მაგრამ ამ ჯაჭვის შესასვლელი ან მომიჯნავე პროცესია?</b></p><p class="small">დიახ — HIGH. კონტრაქტი, POD-ის შექმნა, ხელახალი ხელმოწერა, კორექტირება, შეხსენება, არხის კონფიგურაცია, xEnergie.</p></div></div>
+  <div class="rail"></div>
+  <div class="step"><div class="num">3</div><div><p><b>საქმე ეხება კატალოგს, წაკითხვას, წერილს ან კლიენტის ძირითად მონაცემებს, და არც ერთი მათგანი თანხას არ ქმნის?</b></p><p class="small">დიახ — MEDIUM. ფასის კომპონენტის შექმნა, კლიენტის შექმნა, ელფოსტა, გაყიდვების პორტალის წაკითხვა.</p></div></div>
+  <div class="rail"></div>
+  <div class="step"><div class="num">4</div><div><p><b>რჩება მხოლოდ ეკრანი, ჯგუფი, რომელიც კონტრაქტს არ ბლოკავს, ან ველის ფორმატი?</b></p><p class="small">სკოუპის გარეთ. სია, დაკავშირებული ჯგუფი, ტელეფონის სიგრძე, მეტა-შემოწმება.</p></div></div>
+
+  <h2>HIGHEST ჯაჭვი</h2>
+  <div class="box">
+    <header><span>თანხისა და მიწოდების ჯაჭვი</span><span>HIGHEST</span></header>
+    <div class="chain">
+      <div class="node"><b>ვის ერიცხება</b><span>ხელმოწერილი კონტრაქტი და აქტიური POD</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>რა ერიცხება</b><span>ბილინგის გაშვება და REAL ინვოისი</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>დარიცხული ვალი</b><span>ვალდებულება ან მოთხოვნა</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>ვალის შეცვლა</b><span>გადახდა, ჯარიმა, დეპოზიტი, ჩათვლა</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>მიწოდება</b><span>გათიშვის ნიშანი და აღდგენა</span></div>
+    </div>
+    <p class="small">ყოველი ჩანაწერი ღია სააღრიცხვო პერიოდს მოითხოვს. გარე არხები — EasyPay და Virtual POS, Dev2-ზე კი Bulgaria Post, Cash Terminal და Systech — იმავე ანგარიშსწორებას გარედან ატარებენ. ჯარიმის ვალდებულებას Dev-ზე action ქმნის, Dev2-ზე კი claimed penalty. ორივე გარემოში რანგი HIGHEST-ია, რადგან შედეგი ვალდებულებაა.</p>
+    <h3>რა დგას ჯაჭვის გვერდით</h3>
+    <p class="small">HIGH ჯაჭვის შესასვლელია: კონტრაქტის შექმნა, POD-ის შექმნა, ხელახალი ხელმოწერა, შეკვეთა, ექსპრეს-კონტრაქტი, კორექტირება, ხელით დარიცხვა, შეხსენება, მასობრივი იმპორტი, xEnergie, არხის კონფიგურაცია, დოკუმენტი.</p>
+    <p class="small">MEDIUM კატალოგსა და წაკითხვას მოიცავს, რომლებიც ამ ჯაჭვს თანხად არ აქცევს: ფასის კომპონენტის შექმნა, საქონლის კატალოგი, ჯარიმის განსაზღვრება, სანამ action ან claimed penalty მას გამოიყენებს, კლიენტის შექმნა, ელფოსტა და SMS.</p>
+  </div>
+
+  <h2>მსგავსი საგანი, სხვადასხვა რანგი</h2>
+  <div class="filters" id="filters"></div>
+  <table>
+    <thead><tr><th>ქეისი</th><th>რანგი</th><th>რატომ ეს რანგი</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <p class="small">წყარო: დამოუკიდებელი რეგრესიის მოდელი, 29 სექტემბერი, 2026. მაგალითები სათაურში დასახელებულ პროცესს ასახავს.</p>
+
+  <h2>REG ტესტ-ქეისები დამოუკიდებელი რანგით</h2>
+  <p class="small">ჰორიზონტალური ღერძი რანგია. ვერტიკალური ღერძი ტესტ-ქეისების რაოდენობაა. 396 ქეისს Regression Scope უკვე მინიჭებული აქვს.</p>
+  <div class="bars" id="bars"></div>
+  <p class="small">წყარო: Jira REST, project REG, issuetype Test Case, customfield_11285 შევსებულია. დაყოფა სათაურის მიხედვით გაკეთდა, 29 სექტემბერი, 2026. თითოეული ქეისის აღწერა და ნაბიჯები ცალ-ცალკე არ შემოწმებულა.</p>
+
+  <h2>რა იქმნება Jira-ში</h2>
+  <div class="callout info">
+    <strong>ერთი ქეისი, ერთი შედეგი</strong>
+    ჯერ რანგი წყდება. შემდეგ ერთ რანგში ერთი REG ქეისი იქმნება თითო განსხვავებულ შედეგზე. იგივე არასწორი ნაშთის, იგივე მხარის ან იგივე მიწოდების მეორე ვარიანტი, რომელიც მხოლოდ რაოდენობას, პერიოდს ან იმავე სახის მეორე ობიექტს ცვლის, Jira-ში არ იქმნება და ფაილში რჩება.
+  </div>
+  <p>HIGHEST და Version 1 ერთი ფაქტია. დარეგისტრირებული HIGHEST პირველ ტალღაში ეშვება. ფულადი ვარიანტის Version 1.1-ში გადატანა ტალღას არ ამცირებს: Version 1.1 ნიშნავს, რომ ქეისი თანხას არ ამოწმებს.</p>
+
+  <div class="callout warn">
+    <strong>რას წარმოადგენს ეს მოდელი</strong>
+    ეს ოთხი საფეხური Confluence-ში პრიორიტეტის ველად არ წერია. ეს ანალიზის წესია: რომელი ჩავარდნა უტოვებს მომხმარებელს არასწორ ვალს ან არასწორ მიწოდებას. რანგს არ განსაზღვრავს ავტომატიზაციის, გვერდის ან API-ის უბრალო არსებობა.
+  </div>
+</main>
+<script>
+const examples = [
+  ["Supply activation", "HIGHEST", "აქტიური POD ინვოისში შედის. გათიშულ ან ჯერ გაუმქმედებელ POD-ზე დარიცხვა არ უნდა მოხდეს."],
+  ["Invoice cancellation", "HIGHEST", "გაუქმება უკვე დარიცხულ ვალდებულებას, მოთხოვნასა და გადახდას საწყის მდგომარეობაში აბრუნებს. დახურული სააღრიცხვო პერიოდი გაუქმებას არ დაუშვებს."],
+  ["Payment offset and reverse", "HIGHEST", "გადახდა ვალდებულებას ფარავს ან უკან ბრუნდება. ნაშთი მოთხოვნად იქცევა."],
+  ["Rescheduling, LPF, deposit, MLO", "HIGHEST", "ვალი განვადებად იყოფა, დაგვიანების ჯარიმა ვალდებულებას ამატებს, დეპოზიტი ვალდებულებას ქმნის, ხელით ჩათვლა კი ვალდებულებასა და მოთხოვნას ერთმანეთს აკლებს."],
+  ["Disconnection and reconnection", "HIGHEST", "გათიშვა აყენებს disconnectionPowerSupply-ს და საფასურს არიცხავს. მიწოდების აღდგენა ამ ნიშანს ხსნის."],
+  ["Create payment", "HIGHEST", "პროცესი ანგარიშსწორებაა. სათაური შეიძლება მხოლოდ ობიექტის შექმნას აღწერდეს და ჩათვლის თანხას არ ამოწმებდეს."],
+  ["Create contract", "HIGH", "კონტრაქტი წყვეტს, ვის შეიძლება დაერიცხოს. ეს სათაური ინვოისსა და მიწოდების გათიშვის ნიშანს არ ამოწმებს."],
+  ["Re-signing", "HIGH", "ამოწმებს, დაიშვება თუ არა შემდეგი კონტრაქტი. მიწოდების გათიშვის ნიშანს არ აყენებს."],
+  ["Invoice correction", "HIGH", "ეს დარიცხვის ალტერნატიული ტიპია. სტანდარტული მოცულობის ჯაჭვი და მისი გაუქმება ცალკე ფასდება."],
+  ["Collection channel and Virtual POS config", "HIGH", "არხი გადახდამდეა საჭირო. კონფიგურაცია თავად ვალდებულებას არ ფარავს."],
+  ["Reminder and RFD", "HIGH", "შეხსენებასა და დოკუმენტს აგზავნის. მიწოდების გათიშვის ნიშანს არ აყენებს და ინვოისს არ ქმნის."],
+  ["Create POD", "HIGH", "POD არის წერტილი, რომელსაც დარიცხვა შეიძლება. შექმნა ინვოისს არ ამოწმებს. სტატუსის ცვლილება უკვე HIGHEST-ია."],
+  ["Price component create", "MEDIUM", "ეს კატალოგის ჩანაწერია, სანამ ბილინგის გაშვება ამ ფასს ინვოისში არ გადაიტანს."],
+  ["Customer create", "MEDIUM", "ეს კლიენტის ძირითადი მონაცემია. დარიცხვა იწყება ხელმოწერილი კონტრაქტისა და აქტიური POD-ის შემდეგ."],
+  ["Email and SMS", "MEDIUM", "გაგზავნა ვალდებულებას არ ქმნის და მიწოდებას არ ცვლის."],
+  ["Deposit listing, sort, page", "Out of scope", "სიის, სორტირებისა და გვერდების შემოწმება რეგრესიის საგანი არ არის."],
+  ["Connected group", "Out of scope", "ჯგუფი კონტრაქტის შექმნას არ ბლოკავს და ვალდებულებას არ ქმნის."],
+  ["Manager phone length", "Out of scope", "ველის ფორმატი დარიცხვას, ვალსა და მიწოდებას არ ცვლის."]
+];
+const labels = { All: "ყველა", "Out of scope": "სკოუპის გარეთ" };
+let current = "All";
+function rankLabel(rank) { return rank === "Out of scope" ? "სკოუპის გარეთ" : rank; }
+function draw(filter) {
+  current = filter;
+  document.getElementById("rows").innerHTML = examples
+    .filter((row) => filter === "All" || row[1] === filter)
+    .map((row) => `<tr class="${row[1] === "Out of scope" ? "out" : row[1]}"><td>${row[0]}</td><td>${rankLabel(row[1])}</td><td>${row[2]}</td></tr>`)
+    .join("");
+  document.querySelectorAll("#filters button").forEach((button) => {
+    button.classList.toggle("active", button.dataset.rank === filter);
+  });
+}
+const filters = document.getElementById("filters");
+["All", "HIGHEST", "HIGH", "MEDIUM", "Out of scope"].forEach((rank) => {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.dataset.rank = rank;
+  button.textContent = labels[rank] || rank;
+  button.addEventListener("click", () => draw(rank));
+  filters.appendChild(button);
+});
+draw("All");
+const counts = [["HIGHEST", 228], ["HIGH", 81], ["MEDIUM", 69], ["სკოუპის გარეთ", 18]];
+const max = 228;
+document.getElementById("bars").innerHTML = counts.map(([name, n]) =>
+  `<div class="bar-row"><span>${name}</span><div class="bar" style="width:${Math.round(n / max * 100)}%"></div><span>${n}</span></div>`
+).join("");
+</script>
+</body>
+</html>

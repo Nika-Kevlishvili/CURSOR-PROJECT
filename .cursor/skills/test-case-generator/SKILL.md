@@ -193,6 +193,12 @@ Before writing the final `.md` files, score each TC against the quality rubric i
 
 - Confluence references, codebase analysis, file paths where test cases were saved (e.g. `test_cases/Backend/Invoice_cancellation.md` and `test_cases/Frontend/Invoice_cancellation.md`).
 
+### 7. Offer REG registration (after the quality gate)
+
+After the files are saved and the quality gate has passed, read **`Cursor-Project/docs/regression-scope-method.md`** in full (same-area table included; visual: `Cursor-Project/docs/regression-scope-pattern.html`). Rank **each** TC before the offer. The first yes fixes the rank. Rank the outcome the steps assert when the title and the steps differ. A create-only title on an HIGHEST process stays in that process.
+
+Show the rank next to each title. Mark which scenarios are the one REG case for that outcome and which stay in the markdown because they repeat it (`regression-scope-method.md`, **What is created on the REG board**). Do not ask which Regression Scope to use. HIGHEST, HIGH, and MEDIUM are written by the method: Version 1, Version 1.1, Version 1.2. Do not offer a HIGHEST variant as Version 1.1 or Version 1.2. For each out-of-scope case, ask whether that case should be created. **No** skips it. **Yes** registers it with **Regression Scope** left empty. Then load **`.cursor/skills/register-regression-test-cases/SKILL.md`** and ask once whether to register the selected cases on the REG board. Name the topic **subtask** the cases will Relates to. Do not name the parent task as the link. **No** ends that offer. **Yes** follows that skill. This step is not part of Rule 35 generation. Do not create Jira issues from this file.
+
 ## READ-ONLY for Phoenix
 
 - Do not modify Phoenix/production code. Only write test-case markdown under `Cursor-Project/test_cases/` (or legacy `generated_test_cases/` if explicitly requested).
@@ -203,7 +209,7 @@ Before writing the final `.md` files, score each TC against the quality rubric i
 - **Rule 0.3:** no Python IntegrationService here.
 - PhoenixExpert if needed (reuse context from cross-dependency-finder when provided).
 - Optional markdown under `reports/` only if the user requests a saved run log (Rule 0.6 default; no Python ReportingService).
-- End with: "Agents involved: TestCaseGeneratorAgent, CrossDependencyFinderAgent" (and PhoenixExpert if consulted).
+- End with: "Agents involved: TestCaseGeneratorAgent, CrossDependencyFinderAgent" (and PhoenixExpert if consulted). If the user agrees to REG registration, also include `register-regression-test-cases`.
 
 ## Confidence Score (Rule CONF.1 — Three-Zone) [MANDATORY]
 

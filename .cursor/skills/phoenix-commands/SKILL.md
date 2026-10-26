@@ -34,6 +34,7 @@ Rules load first (**Rule 0.0**) from **`.cursor/rules/`**.
 | Resolve environment for Phoenix workflows | **`environment-resolver`** subagent — `.cursor/agents/environment-resolver.md` |
 | Cross-dependencies / impact | **`cross-dependency-finder`** subagent + skill (**Rules 35, 35a**) |
 | Test cases (.md, Backend + Frontend) | **`cross-dependency-finder`** then **`test-case-generator`** — `.cursor/skills/test-case-generator/SKILL.md` |
+| Register automation test cases on the REG board | **`register-regression-test-cases`** — `.cursor/skills/register-regression-test-cases/SKILL.md`. After TC markdown, or a direct request. REG **Test Case** only. |
 | Run EnergoTS Playwright | **`energo-ts-run`** — `.cursor/agents/energo-ts-run.md`, skill (**Rules 36, ENERGOTS.0**) |
 | Author EnergoTS `.spec.ts` | **`energo-ts-test`** — `.cursor/agents/energo-ts-test.md` (**Rule 0.8.1**, Swagger **Rule 41**) |
 | Scoped Playwright Slack | **`.cursor/commands/send-playwright-results-slack.md`** — user-triggered test results to Slack |

@@ -23,6 +23,7 @@ Use this file as the **single map** from “agent role” to **where it lives to
 | **database-query.md** | PostgreSQL (Dev/Test/Prod) | `phoenix-database` | DB questions; `database_workflow.mdc` |
 | **production-data-reader.md** | Production DB (read-only) | `production-data-reader` | Rule PDR.0; PostgreSQLProd MCP |
 | **jira-bug.md** | Jira bug text (Experiments) | `jira-bug-template` | Rule JIRA.0; `/jira-bug` |
+| **register-regression-test-cases.md** | REG Test Case registration | `register-regression-test-cases` | After TC markdown, or "write the automation test case". Automation: Done only on EnergoTS `origin/main`; Needs to be deployed when the spec is not on main; To Do when no spec exists. |
 | **postman-collection.md** | Postman collections | — (stub; consult PhoenixExpert) | Postman generation flows |
 | **environment-access.md** | Dev / Dev2 access | — (stub agent) | Rule 10; browser/MCP |
 | **report-generator.md** | Persisted reports (Rule 0.6) | `phoenix-reporting` | **`/report`**; **`/feedback`**; explicit save |
