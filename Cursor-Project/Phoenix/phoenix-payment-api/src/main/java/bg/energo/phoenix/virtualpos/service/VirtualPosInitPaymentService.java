@@ -2,19 +2,22 @@ package bg.energo.phoenix.virtualpos.service;
 
 import bg.energo.phoenix.model.CheckLiabilityDetails;
 import bg.energo.phoenix.model.CustomerWrapper;
-import bg.energo.phoenix.model.entity.Configuration;
 import bg.energo.phoenix.model.entity.customer.Customer;
 import bg.energo.phoenix.model.entity.receivable.collectionChannel.CollectionChannel;
-import bg.energo.phoenix.repository.ConfigurationRepository;
 import bg.energo.phoenix.model.response.customer.CustomerPaymentInfo;
 import bg.energo.phoenix.repository.customer.CustomerDetailsRepository;
 import bg.energo.phoenix.repository.customer.CustomerRepository;
 import bg.energo.phoenix.repository.receivable.collectionChannel.CollectionChannelRepository;
+import bg.energo.phoenix.repository.receivable.customerLiability.CustomerLiabilityRepository;
 import bg.energo.phoenix.util.epb.EPBJsonUtils;
 import bg.energo.phoenix.utils.EPBFunctionUtils;
 import bg.energo.phoenix.utils.EPBPaymentCalculationUtils;
 import bg.energo.phoenix.utils.EPBSignatureUtils;
 import bg.energo.phoenix.utils.EPBStringUtils;
+import bg.energo.phoenix.virtualpos.model.entity.VirtualPosPaymentDetailsEntity;
+import bg.energo.phoenix.virtualpos.model.entity.VirtualPosPaymentEntity;
+import bg.energo.phoenix.virtualpos.model.entity.VirtualPosVerifyDetailsEntity;
+import bg.energo.phoenix.virtualpos.model.entity.VirtualPosVerifyEntity;
 import bg.energo.phoenix.virtualpos.model.enums.VirtualPosRequestType;
 import bg.energo.phoenix.virtualpos.model.enums.VirtualPosStatusCode;
 import bg.energo.phoenix.virtualpos.model.request.VirtualPosInitPayRequest;
@@ -28,7 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -43,10 +45,10 @@ public class VirtualPosInitPaymentService extends VirtualPosBaseService {
             CollectionChannelRepository collectionChannelRepository,
             CustomerDetailsRepository customerDetailsRepository,
             CustomerRepository customerRepository,
+            CustomerLiabilityRepository customerLiabilityRepository,
             VirtualPosMapperService virtualPosMapperService,
             VirtualPosVerifyRepository virtualPosVerifyRepository,
-            VirtualPosVerifyDetailsRepository virtualPosVerifyDetailsRepository,
-            ConfigurationRepository configurationRepository
+            VirtualPosVerifyDetailsRepository virtualPosVerifyDetailsRepository
     ) {
         super(
                 virtualPosPaymentDetailRepository,
@@ -54,8 +56,8 @@ public class VirtualPosInitPaymentService extends VirtualPosBaseService {
                 collectionChannelRepository,
                 customerDetailsRepository,
                 customerRepository,
-                virtualPosMapperService,
-                configurationRepository
+                customerLiabilityRepository,
+                virtualPosMapperService
         );
         this.virtualPosVerifyRepository = virtualPosVerifyRepository;
         this.virtualPosVerifyDetailsRepository = virtualPosVerifyDetailsRepository;
@@ -166,14 +168,7 @@ public class VirtualPosInitPaymentService extends VirtualPosBaseService {
 
     private VirtualPosInitPaymentResponse validateRequest(VirtualPosInitPayRequest request, String requestCheckSum) {
         log.info("Validating request checksum...");
-        Optional<Configuration> currentConfiguration = configurationRepository.findLatestConfiguration();
-        String secretKeyFromConfig = null;
-        if (currentConfiguration.isPresent()) {
-            secretKeyFromConfig = currentConfiguration.get().getVirtualPosSecretKey();
-        }
-        String finalSecretKey = secretKeyFromConfig == null ? secretKey : secretKeyFromConfig;
-
-        if (EPBSignatureUtils.isInvalidVirtualPosInitSignature(request, requestCheckSum, finalSecretKey)) {
+        if (EPBSignatureUtils.isInvalidVirtualPosInitSignature(request, requestCheckSum, secretKey)) {
             return createErrorResponse(
                     VirtualPosStatusCode.INVALID_CHECKSUM,
                     "The checksum for the request is invalid.",
@@ -220,7 +215,7 @@ public class VirtualPosInitPaymentService extends VirtualPosBaseService {
             Long convertedCoinTotalAmount,
             VirtualPosRequestType requestType
     ) {
-        bg.energo.phoenix.virtualpos.model.entity.VirtualPosPaymentEntity existing = findPaymentByTransactionId(tid);
+        VirtualPosPaymentEntity existing = findPaymentByTransactionId(tid);
         if (existing == null) {
             log.info("No existing payment details found for transaction ID: {}. Proceeding to save new payment details.", tid);
 
@@ -230,27 +225,21 @@ public class VirtualPosInitPaymentService extends VirtualPosBaseService {
             String billingGroupNumber = customerWrapper.billingGroupNumber();
             log.debug("Started saving payment details for customer: {} in channel: {} with transaction ID: {}", customerIdentifier, collectionChannelId, tid);
 
-            java.util.List<bg.energo.phoenix.virtualpos.model.entity.VirtualPosPaymentDetailsEntity> paymentDetails = virtualPosMapperService.mapToDetailEntities(liabilities, virtualPosMapperService::mapToPaymentDetailEntity);
+            java.util.List<VirtualPosPaymentDetailsEntity> paymentDetails = virtualPosMapperService.mapToDetailEntities(liabilities, virtualPosMapperService::mapToPaymentDetailEntity);
             log.debug("Mapped {} liability details to VirtualPosPaymentDetailsEntity", paymentDetails.size());
 
-            java.math.BigDecimal totalAmount = EPBPaymentCalculationUtils.calculateTotalAmount(paymentDetails, bg.energo.phoenix.virtualpos.model.entity.VirtualPosPaymentDetailsEntity::getAmount);
-            java.math.BigDecimal totalLfpAmount = EPBPaymentCalculationUtils.calculateTotalAmount(paymentDetails, bg.energo.phoenix.virtualpos.model.entity.VirtualPosPaymentDetailsEntity::getLfpAmount);
-            java.math.BigDecimal totalSumAmount = EPBPaymentCalculationUtils.calculateTotalAmount(paymentDetails, bg.energo.phoenix.virtualpos.model.entity.VirtualPosPaymentDetailsEntity::getTotalAmount);
+            java.math.BigDecimal totalAmount = EPBPaymentCalculationUtils.calculateTotalAmount(paymentDetails, VirtualPosPaymentDetailsEntity::getAmount);
+            java.math.BigDecimal totalLfpAmount = EPBPaymentCalculationUtils.calculateTotalAmount(paymentDetails, VirtualPosPaymentDetailsEntity::getLfpAmount);
+            java.math.BigDecimal totalSumAmount = EPBPaymentCalculationUtils.calculateTotalAmount(paymentDetails, VirtualPosPaymentDetailsEntity::getTotalAmount);
             log.debug("Calculated totals: Amount = {}, LFP Amount = {}, Total Amount = {}", totalAmount, totalLfpAmount, totalSumAmount);
 
-            Optional<Configuration> currentConfiguration = configurationRepository.findLatestConfiguration();
-            String merchantIdFromConfig = null;
-            if (currentConfiguration.isPresent()) {
-                merchantIdFromConfig = currentConfiguration.get().getVirtualPosMerchantId();
-            }
-            String finalMerchantId = merchantIdFromConfig == null ? merchantCode : merchantIdFromConfig;
 
-            bg.energo.phoenix.virtualpos.model.entity.VirtualPosPaymentEntity entity = virtualPosMapperService.buildVirtualPosPaymentEntity(
+            VirtualPosPaymentEntity entity = virtualPosMapperService.buildVirtualPosPaymentEntity(
                     tid,
                     collectionChannelId,
                     liabilities.stream().findFirst().map(CheckLiabilityDetails::getCurrencyId).orElse(null),
                     customerId,
-                    finalMerchantId,
+                    merchantCode,
                     customerIdentifier,
                     billingGroupNumber,
                     totalAmount,
@@ -281,25 +270,18 @@ public class VirtualPosInitPaymentService extends VirtualPosBaseService {
             VirtualPosRequestType requestType
     ) {
         log.debug("Started saving verify details for customer: {} in channel: {}", customerIdentifier, collectionChannelId);
-        java.util.List<bg.energo.phoenix.virtualpos.model.entity.VirtualPosVerifyDetailsEntity> verifyDetails = virtualPosMapperService.mapToDetailEntities(liabilities, virtualPosMapperService::mapToVerifyDetailEntity);
+        List<VirtualPosVerifyDetailsEntity> verifyDetails = virtualPosMapperService.mapToDetailEntities(liabilities, virtualPosMapperService::mapToVerifyDetailEntity);
         log.debug("Mapped {} liability details to VirtualPosVerifyDetailsEntity", verifyDetails.size());
 
-        java.math.BigDecimal totalAmount = EPBPaymentCalculationUtils.calculateTotalAmount(verifyDetails, bg.energo.phoenix.virtualpos.model.entity.VirtualPosVerifyDetailsEntity::getAmount);
-        java.math.BigDecimal totalLfpAmount = EPBPaymentCalculationUtils.calculateTotalAmount(verifyDetails, bg.energo.phoenix.virtualpos.model.entity.VirtualPosVerifyDetailsEntity::getLfpAmount);
-        java.math.BigDecimal totalSumAmount = EPBPaymentCalculationUtils.calculateTotalAmount(verifyDetails, bg.energo.phoenix.virtualpos.model.entity.VirtualPosVerifyDetailsEntity::getTotalAmount);
+        java.math.BigDecimal totalAmount = EPBPaymentCalculationUtils.calculateTotalAmount(verifyDetails, VirtualPosVerifyDetailsEntity::getAmount);
+        java.math.BigDecimal totalLfpAmount = EPBPaymentCalculationUtils.calculateTotalAmount(verifyDetails, VirtualPosVerifyDetailsEntity::getLfpAmount);
+        java.math.BigDecimal totalSumAmount = EPBPaymentCalculationUtils.calculateTotalAmount(verifyDetails, VirtualPosVerifyDetailsEntity::getTotalAmount);
         log.debug("Calculated totals: Amount = {}, LFP Amount = {}, Total Amount = {}", totalAmount, totalLfpAmount, totalSumAmount);
 
-        Optional<Configuration> currentConfiguration = configurationRepository.findLatestConfiguration();
-        String merchantIdFromConfig = null;
-        if (currentConfiguration.isPresent()) {
-            merchantIdFromConfig = currentConfiguration.get().getVirtualPosMerchantId();
-        }
-        String finalMerchantId = merchantIdFromConfig == null ? merchantCode : merchantIdFromConfig;
-
-        bg.energo.phoenix.virtualpos.model.entity.VirtualPosVerifyEntity verifyEntity = virtualPosMapperService.buildVirtualPosVerifyEntity(
+        VirtualPosVerifyEntity verifyEntity = virtualPosMapperService.buildVirtualPosVerifyEntity(
                 collectionChannelId,
                 liabilities.stream().findFirst().map(CheckLiabilityDetails::getCurrencyId).orElse(null),
-                finalMerchantId,
+                merchantCode,
                 customerIdentifier,
                 billingGroupNumber,
                 totalAmount,
@@ -315,12 +297,12 @@ public class VirtualPosInitPaymentService extends VirtualPosBaseService {
     }
 
     private void savePaymentEntities(
-            bg.energo.phoenix.virtualpos.model.entity.VirtualPosPaymentEntity paymentEntity,
-            java.util.List<bg.energo.phoenix.virtualpos.model.entity.VirtualPosPaymentDetailsEntity> paymentDetailsEntities
+            VirtualPosPaymentEntity paymentEntity,
+            java.util.List<VirtualPosPaymentDetailsEntity> paymentDetailsEntities
     ) {
         virtualPosPaymentRepository.saveAndFlush(paymentEntity);
 
-        java.util.List<bg.energo.phoenix.virtualpos.model.entity.VirtualPosPaymentDetailsEntity> collected = paymentDetailsEntities
+        java.util.List<VirtualPosPaymentDetailsEntity> collected = paymentDetailsEntities
                 .stream()
                 .peek(detail -> detail.setVirtualPosPaymentId(paymentEntity.getId()))
                 .toList();
@@ -330,12 +312,12 @@ public class VirtualPosInitPaymentService extends VirtualPosBaseService {
     }
 
     private void saveVerifyEntities(
-            bg.energo.phoenix.virtualpos.model.entity.VirtualPosVerifyEntity verifyEntity,
-            java.util.List<bg.energo.phoenix.virtualpos.model.entity.VirtualPosVerifyDetailsEntity> verifyDetailsEntities
+            VirtualPosVerifyEntity verifyEntity,
+            java.util.List<VirtualPosVerifyDetailsEntity> verifyDetailsEntities
     ) {
         virtualPosVerifyRepository.saveAndFlush(verifyEntity);
 
-        java.util.List<bg.energo.phoenix.virtualpos.model.entity.VirtualPosVerifyDetailsEntity> collected = verifyDetailsEntities
+        java.util.List<VirtualPosVerifyDetailsEntity> collected = verifyDetailsEntities
                 .stream()
                 .peek(detail -> detail.setVirtualPosVerifyId(verifyEntity.getId()))
                 .toList();

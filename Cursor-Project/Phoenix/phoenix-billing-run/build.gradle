@@ -10,8 +10,8 @@ version = '0.0.1-SNAPSHOT'
 def eproSnapshotDomain = "https://nexus.energo-pro.bg//repository/epro-maven-snapshots/"
 def eproReleaseDomain = "https://nexus.energo-pro.bg/repository/epro-maven-releases/"
 def profile = project.hasProperty('profile') ? project.getProperty('profile') : 'dev'
-def devVersion = '1.39.85-SNAPSHOT'
-def testVersion = '0.0.26'
+def devVersion = '1.35.94-SNAPSHOT'
+def testVersion = '0.0.27'
 
 println "Profile: ${profile}"
 ext {
@@ -45,7 +45,7 @@ repositories {
 }
 
 dependencies {
-    implementation group: "bg.energo", name: "phoenix-core-lib2", version: "${coreLibVersion}"
+    implementation group: "bg.energo", name: "phoenix-core-lib", version: "${coreLibVersion}"
     implementation 'org.springframework.boot:spring-boot-starter'
 
     implementation("org.springframework.cloud:spring-cloud-starter-vault-config:4.2.1")
@@ -90,12 +90,3 @@ tasks.register('clearDependencyCache') {
         println("names ${names}")
     }
 }
-
-jar {
-    archiveBaseName = 'phoenix-billing-run'
-}
-
-bootJar {
-    archiveBaseName = 'phoenix-billing-run'
-}
-

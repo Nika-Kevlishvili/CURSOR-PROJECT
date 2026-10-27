@@ -2,7 +2,10 @@ package bg.energo.phoenix.service;
 
 import bg.energo.phoenix.model.CheckLiabilityDetails;
 import bg.energo.phoenix.model.CustomerWrapper;
-import bg.energo.phoenix.model.entity.*;
+import bg.energo.phoenix.model.entity.EasyPayPaymentDetailsEntity;
+import bg.energo.phoenix.model.entity.EasyPayPaymentEntity;
+import bg.energo.phoenix.model.entity.EasyPayVerifyDetailsEntity;
+import bg.energo.phoenix.model.entity.EasyPayVerifyEntity;
 import bg.energo.phoenix.model.entity.customer.Customer;
 import bg.energo.phoenix.model.entity.receivable.collectionChannel.CollectionChannel;
 import bg.energo.phoenix.model.enums.EPayStatusCode;
@@ -11,7 +14,10 @@ import bg.energo.phoenix.model.enums.EasyPayRequestType;
 import bg.energo.phoenix.model.request.InitPayRequest;
 import bg.energo.phoenix.model.response.EasyPayInitPaymentResponse;
 import bg.energo.phoenix.model.response.customer.CustomerPaymentInfo;
-import bg.energo.phoenix.repository.*;
+import bg.energo.phoenix.repository.EasyPayPaymentDetailsRepository;
+import bg.energo.phoenix.repository.EasyPayPaymentRepository;
+import bg.energo.phoenix.repository.EasyPayVerifyDetailsRepository;
+import bg.energo.phoenix.repository.EasyPayVerifyRepository;
 import bg.energo.phoenix.repository.customer.CustomerDetailsRepository;
 import bg.energo.phoenix.repository.customer.CustomerRepository;
 import bg.energo.phoenix.repository.receivable.collectionChannel.CollectionChannelRepository;
@@ -28,9 +34,6 @@ import org.springframework.util.CollectionUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -48,8 +51,7 @@ public class EasyPayInitPaymentService extends EasyPayBaseService {
             EasyPayMapperService easyPayMapperService,
             EasyPayVerifyRepository easyPayVerifyRepository,
             EasyPayVerifyDetailsRepository easyPayVerifyDetailsRepository,
-            CustomerLiabilityRepository customerLiabilityRepository,
-            ConfigurationRepository configurationRepository
+            CustomerLiabilityRepository customerLiabilityRepository
     ) {
         super(
                 easyPayPaymentDetailRepository,
@@ -58,8 +60,7 @@ public class EasyPayInitPaymentService extends EasyPayBaseService {
                 customerDetailsRepository,
                 customerRepository,
                 easyPayMapperService,
-                customerLiabilityRepository,
-                configurationRepository
+                customerLiabilityRepository
         );
         this.easyPayVerifyRepository = easyPayVerifyRepository;
         this.easyPayVerifyDetailsRepository = easyPayVerifyDetailsRepository;
@@ -114,26 +115,6 @@ public class EasyPayInitPaymentService extends EasyPayBaseService {
                 customer.getId(),
                 customerWrapper.billingGroupNumber()
         );
-
-        // For selected payment sources (TID AID), hide pro-forma reconnection liabilities
-        if (EasyPayRequestType.BILLING.equals(request.getTYPE())
-                && EPBFunctionUtils.shouldHideProformaReconnectionLiabilities(request.getTID())
-                && !CollectionUtils.isEmpty(liabilities)) {
-            List<Long> liabilityIds = liabilities.stream()
-                    .map(CheckLiabilityDetails::getLiabilityId)
-                    .filter(Objects::nonNull)
-                    .toList();
-            Set<Long> proformaReconnectionIds = findProformaReconnectionLiabilityIds(liabilityIds);
-            if (!proformaReconnectionIds.isEmpty()) {
-                log.info(
-                        "Excluding {} pro-forma reconnection liabilities for TID ending with {}",
-                        proformaReconnectionIds.size(),
-                        request.getTID().substring(request.getTID().length() - 6)
-                );
-                liabilities = EPBFunctionUtils.excludeLiabilitiesByIds(liabilities, proformaReconnectionIds);
-            }
-        }
-
         if (CollectionUtils.isEmpty(liabilities)) {
             return createErrorResponse(
                     EPayStatusCode.NO_OBLIGATION,
@@ -227,14 +208,7 @@ public class EasyPayInitPaymentService extends EasyPayBaseService {
      */
     private EasyPayInitPaymentResponse validateRequest(InitPayRequest request, String requestCheckSum) {
         log.info("Validating request checksum...");
-        Optional<Configuration> currentConfiguration = configurationRepository.findLatestConfiguration();
-        String secretKeyFromConfig = null;
-        if (currentConfiguration.isPresent()) {
-            secretKeyFromConfig = currentConfiguration.get().getEasyPaySecretKey();
-        }
-        String finalSecretKey = secretKeyFromConfig == null ? secretKey : secretKeyFromConfig;
-
-        if (EPBSignatureUtils.isInvalidInitSignature(request, requestCheckSum, finalSecretKey)) {
+        if (EPBSignatureUtils.isInvalidInitSignature(request, requestCheckSum, secretKey)) {
             return createErrorResponse(
                     EPayStatusCode.INVALID_CHECKSUM,
                     "The checksum for the request is invalid.",
@@ -307,18 +281,12 @@ public class EasyPayInitPaymentService extends EasyPayBaseService {
             BigDecimal totalSumAmount = EPBPaymentCalculationUtils.calculateTotalAmount(paymentDetails, EasyPayPaymentDetailsEntity::getTotalAmount);
             log.debug("Calculated totals: Amount = {}, LFP Amount = {}, Total Amount = {}", totalAmount, totalLfpAmount, totalSumAmount);
 
-            Optional<Configuration> currentConfiguration = configurationRepository.findLatestConfiguration();
-            String merchantIdFromConfig = null;
-            if (currentConfiguration.isPresent()) {
-                merchantIdFromConfig = currentConfiguration.get().getEasyPayMerchantId();
-            }
-            String finalMerchantId = merchantIdFromConfig == null ? easyPayMerchantCode : merchantIdFromConfig;
             EasyPayPaymentEntity easyPayPaymentEntity = easyPayMapperService.buildEasyPayPaymentEntity(
                     tid,
                     collectionChannelId,
                     liabilities.stream().findFirst().map(CheckLiabilityDetails::getCurrencyId).orElse(null),
                     customerId,
-                    finalMerchantId,
+                    easyPayMerchantCode,
                     customerIdentifier,
                     billingGroupNumber,
                     totalAmount,
@@ -368,17 +336,10 @@ public class EasyPayInitPaymentService extends EasyPayBaseService {
         BigDecimal totalSumAmount = EPBPaymentCalculationUtils.calculateTotalAmount(verifyDetails, EasyPayVerifyDetailsEntity::getTotalAmount);
         log.debug("Calculated totals: Amount = {}, LFP Amount = {}, Total Amount = {}", totalAmount, totalLfpAmount, totalSumAmount);
 
-        Optional<Configuration> currentConfiguration = configurationRepository.findLatestConfiguration();
-        String merchantIdFromConfig = null;
-        if (currentConfiguration.isPresent()) {
-            merchantIdFromConfig = currentConfiguration.get().getEasyPayMerchantId();
-        }
-        String finalMerchantId = merchantIdFromConfig == null ? easyPayMerchantCode : merchantIdFromConfig;
-
         EasyPayVerifyEntity easyPayVerifyEntity = easyPayMapperService.buildEasyPayVerifyEntity(
                 collectionChannelId,
                 liabilities.stream().findFirst().map(CheckLiabilityDetails::getCurrencyId).orElse(null),
-                finalMerchantId,
+                easyPayMerchantCode,
                 customerIdentifier,
                 billingGroupNumber,
                 totalAmount,

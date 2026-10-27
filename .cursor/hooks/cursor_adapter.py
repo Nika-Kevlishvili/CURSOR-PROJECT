@@ -6,15 +6,14 @@ Cursor's hook payload (seen live, Cursor 3.23.23): a shell command arrives as to
 "Delete", both with tool_input.file_path — and before a Write, Cursor first asks about a
 "Read" of the same file, so a denied read also stops the write; a subagent's tool calls carry
 `parent_tool_call_id`, which equals the `subagent_id` its subagentStart announced. This
-script runs the checks in this folder (guard.py, commit_secrets.py, memory_context.py,
-event_log.py) and answers in Cursor's format:
+script runs the checks in this folder (guard.py, commit_secrets.py, event_log.py) and answers in Cursor's format:
 
     shell           beforeShellExecution  guard (block / ask) and the staged-secret scan
     tool            preToolUse            secret-file reads and writes; read-only engine agents
-    session-start   sessionStart          project memory as additional_context, main-model note
-    post-tool       postToolUse           event log; the checkpoint request after a compaction
+    session-start   sessionStart          main-model note only; chat memory is not loaded
+    post-tool       postToolUse           event log; no checkpoint request
     tool-failure    postToolUseFailure    event log
-    pre-compact     preCompact            compaction log; arms the checkpoint request
+    pre-compact     preCompact            compaction log only; does not ask for a handoff
     subagent-start  subagentStart         remembers which engine agent a tool call belongs to
     subagent-stop   subagentStop          event log; forgets the agent
 
@@ -36,8 +35,6 @@ from secret_patterns import is_secret_file  # noqa: E402
 
 GUARD = "ASTERBIT-GUARD"
 SECRETS = "ASTERBIT-SECRETS"
-MEMORY = "ASTERBIT-MEMORY"
-MONITOR = "ASTERBIT-CONTEXT-MONITOR"
 EXPECTED_CODER = "claude-sonnet-5-5"           # ADR-0007 option A: the main chat codes on Sonnet 5.5
 READ_ONLY_AGENTS = {"auditor", "verifier", "architect", "scout", "advisor"}
 NO_SHELL_AGENTS = {"architect", "scout"}       # their roles need no commands at all
@@ -53,14 +50,6 @@ def logs() -> Path:
 
 def session_key(session_id: str) -> str:
     return re.sub(r"[^A-Za-z0-9]", "", session_id)[:8] or "unknown"
-
-
-def handoff_path(session: str) -> str:
-    """This session's single handoff file: the existing one, else today's new name."""
-    key = session_key(session)
-    existing = sorted((PROJECT / "memory/episodic/handoffs").glob(f"*-{key}.md"))
-    target = existing[-1] if existing else PROJECT / f"memory/episodic/handoffs/{dt.date.today():%Y-%m-%d}-{key}.md"
-    return target.relative_to(PROJECT).as_posix()
 
 
 def registry(subagent_id: str) -> Path:
@@ -131,17 +120,14 @@ def tool(event: dict) -> dict:
 
 
 def session_start(event: dict) -> dict:
-    import memory_context
     model = str(event.get("model_id") or event.get("model") or "unknown")
     note = (f"ASTERBIT-RUNTIME: Cursor {event.get('cursor_version', '?')}, main model {model}; "
             f"ADR-0007 expects {EXPECTED_CODER} (effort high) for the coder.")
     if not model.startswith(EXPECTED_CODER):
         note += " The main model differs — say so in your first reply; the person you work with picks it in the model picker."
-    return {"additional_context": note + "\n" + memory_context.build_context(PROJECT)}
-
-
-def checkpoint_flag(session: str) -> Path:
-    return logs() / f"cursor-checkpoint-{session_key(session)}.json"
+    note += (" Chat notes are not loaded. Do not read memory/now.md or memory/episodic/handoffs/ "
+             "unless the person asks for that file. Do not write a handoff after compaction.")
+    return {"additional_context": note}
 
 
 def log_call(event: dict, outcome: str) -> None:
@@ -157,18 +143,7 @@ def log_call(event: dict, outcome: str) -> None:
 
 def post_tool(event: dict) -> dict:
     log_call(event, "ok")
-    session = str(event.get("conversation_id") or "")
-    if event.get("parent_tool_call_id"):
-        return {}
-    try:
-        checkpoint_flag(session).unlink()   # parallel tool calls: only the one that removes the flag asks
-    except FileNotFoundError:
-        return {}
-    return {"additional_context": (
-        f"{MONITOR}: Cursor has just compacted this conversation. Before anything else, write a checkpoint into this "
-        f"session's handoff `{handoff_path(session)}` (one file per session; create it if missing), in the order of "
-        "AGENTS.md 'Checkpoints' and following the owner's principles in memory/README.md: where we are, what is done, "
-        "the exact next step, decisions with reasons, verbatim facts. Say plainly what the summary may have lost.")}
+    return {}
 
 
 def tool_failure(event: dict) -> dict:
@@ -185,10 +160,7 @@ def pre_compact(event: dict) -> dict:
               "first": event.get("is_first_compaction"), "keys": sorted(event)}
     with (logs() / "compactions.jsonl").open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(record) + "\n")
-    if not event.get("parent_tool_call_id"):
-        checkpoint_flag(session).write_text(json.dumps({"percent": percent}), encoding="utf-8")
-    return {"user_message": f"{MEMORY}: Cursor is compacting the context ({percent}% used); right after it the agent "
-                            "is asked to write this session's checkpoint into memory/episodic/handoffs/."}
+    return {}
 
 
 def subagent_start(event: dict) -> dict:

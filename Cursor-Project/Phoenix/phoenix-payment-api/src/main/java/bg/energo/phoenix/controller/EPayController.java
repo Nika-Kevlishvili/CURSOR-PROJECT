@@ -1,11 +1,9 @@
 package bg.energo.phoenix.controller;
 
-import bg.energo.phoenix.model.entity.Configuration;
 import bg.energo.phoenix.model.request.ConfirmPayRequest;
 import bg.energo.phoenix.model.request.InitPayRequest;
 import bg.energo.phoenix.model.response.EasyPayConfirmPaymentResponse;
 import bg.energo.phoenix.model.response.EasyPayInitPaymentResponse;
-import bg.energo.phoenix.repository.ConfigurationRepository;
 import bg.energo.phoenix.service.EasyPayConfirmPaymentService;
 import bg.energo.phoenix.service.EasyPayInitPaymentService;
 import bg.energo.phoenix.utils.EPBSignatureUtils;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,7 +27,6 @@ public class EPayController {
 
     private final EasyPayInitPaymentService easyPayInitPaymentService;
     private final EasyPayConfirmPaymentService ePayConfirmPayService;
-    private final ConfigurationRepository configurationRepository;
 
     @Value("${easypay.secret.key}")
     protected String secretKey;
@@ -47,17 +43,9 @@ public class EPayController {
 
     @GetMapping("/calculate-check-sum-confirm")
     public String calculateCheckSumConf(@Valid ConfirmPayRequest request) {
-
-        Optional<Configuration> currentConfiguration = configurationRepository.findLatestConfiguration();
-        String secretKeyFromConfig = null;
-        if (currentConfiguration.isPresent()) {
-            secretKeyFromConfig = currentConfiguration.get().getEasyPaySecretKey();
-        }
-        String finalSecretKey = secretKeyFromConfig == null ? secretKey : secretKeyFromConfig;
-
         String checkSum;
         try {
-            checkSum = EPBSignatureUtils.calculateHMAC(finalSecretKey, EPBSignatureUtils.formatConfirmPayRequestFields(request));
+            checkSum = EPBSignatureUtils.calculateHMAC(secretKey, EPBSignatureUtils.formatConfirmPayRequestFields(request));
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
@@ -67,15 +55,8 @@ public class EPayController {
     @GetMapping("/calculate-check-sum-init")
     public String calculateCheckSumInit(@Valid InitPayRequest request) {
         String checkSum;
-        Optional<Configuration> currentConfiguration = configurationRepository.findLatestConfiguration();
-        String secretKeyFromConfig = null;
-        if (currentConfiguration.isPresent()) {
-            secretKeyFromConfig = currentConfiguration.get().getEasyPaySecretKey();
-        }
-        String finalSecretKey = secretKeyFromConfig == null ? secretKey : secretKeyFromConfig;
-
         try {
-            checkSum = EPBSignatureUtils.calculateHMAC(finalSecretKey, EPBSignatureUtils.formatInitRequestFields(request));
+            checkSum = EPBSignatureUtils.calculateHMAC(secretKey, EPBSignatureUtils.formatInitRequestFields(request));
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }

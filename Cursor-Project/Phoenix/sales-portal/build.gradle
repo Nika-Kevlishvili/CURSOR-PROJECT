@@ -16,7 +16,7 @@ configurations {
 def eproSnapshotDomain = "https://nexus.energo-pro.bg//repository/epro-maven-snapshots/"
 def eproReleaseDomain = "https://nexus.energo-pro.bg/repository/epro-maven-releases/"
 def profile = project.hasProperty('profile') ? project.getProperty('profile') : 'dev'
-def devVersion = '1.39.81-SNAPSHOT'
+def devVersion = '1.39.12-SNAPSHOT'
 def testVersion = '0.0.26'
 
 

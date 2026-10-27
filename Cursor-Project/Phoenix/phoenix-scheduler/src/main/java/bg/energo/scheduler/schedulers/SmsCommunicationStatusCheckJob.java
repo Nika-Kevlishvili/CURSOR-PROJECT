@@ -23,18 +23,4 @@ public class SmsCommunicationStatusCheckJob {
         log.info("Starting SMS communication status check job");
         smsCommunicationStatusCheckJobService.executeSmsStatusCheck();
     }
-
-    @Scheduled(fixedDelay = 300000)
-    @ExecutionTimeLogger(value = "SmsCommunicationResendJob")
-    public void resend() {
-        log.info("Starting SMS communication resend job");
-        smsCommunicationStatusCheckJobService.executeSmsResend();
-    }
-
-    @Scheduled(fixedDelay = 3600000)
-    @ExecutionTimeLogger(value = "SmsCommunicationTimeoutJob")
-    public void expireTimedOut() {
-        log.info("Starting SMS communication timeout-expiry job");
-        smsCommunicationStatusCheckJobService.updateTimedOutSmsCommunications();
-    }
 }

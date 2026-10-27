@@ -203,7 +203,9 @@ public class VirtualPosMapperService {
                 )
         );
         response.setVALIDTO(
-                liability.getDueDate() == null ? "0" : EPBFunctionUtils.dateStringFromLocalDate(liability.getDueDate())
+                EPBFunctionUtils.dateStringFromLocalDate(
+                        EPBFunctionUtils.resolveValidToDate(liability.getDueDate(), LocalDate.now())
+                )
         );
         return response;
     }

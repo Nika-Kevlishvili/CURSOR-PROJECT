@@ -2,8 +2,6 @@ package bg.energo.phoenix.utils;
 
 import bg.energo.phoenix.model.request.ConfirmPayRequest;
 import bg.energo.phoenix.model.request.InitPayRequest;
-import bg.energo.phoenix.cashterminal.model.request.CashTerminalConfirmPayRequest;
-import bg.energo.phoenix.cashterminal.model.request.CashTerminalInitPayRequest;
 import bg.energo.phoenix.virtualpos.model.request.VirtualPosConfirmPayRequest;
 import bg.energo.phoenix.virtualpos.model.request.VirtualPosInitPayRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -167,72 +165,6 @@ public class EPBSignatureUtils {
      * If no fields are non-null, the method returns an empty string.
      */
     public static String formatConfirmPayRequestFields(ConfirmPayRequest confirmPayRequest) {
-        StringBuilder sb = new StringBuilder();
-        if (Objects.nonNull(confirmPayRequest.getDATE())) {
-            sb.append("DATE").append(confirmPayRequest.getDATE()).append('\n');
-        }
-        if (Objects.nonNull(confirmPayRequest.getIDN())) {
-            sb.append("IDN").append(confirmPayRequest.getIDN()).append('\n');
-        }
-        if (Objects.nonNull(confirmPayRequest.getINVOICES())) {
-            sb.append("INVOICES").append(confirmPayRequest.getINVOICES()).append('\n');
-        }
-        if (Objects.nonNull(confirmPayRequest.getMERCHANTID())) {
-            sb.append("MERCHANTID").append(confirmPayRequest.getMERCHANTID()).append('\n');
-        }
-        if (Objects.nonNull(confirmPayRequest.getTID())) {
-            sb.append("TID").append(confirmPayRequest.getTID()).append('\n');
-        }
-        if (Objects.nonNull(confirmPayRequest.getTOTAL())) {
-            sb.append("TOTAL").append(confirmPayRequest.getTOTAL()).append('\n');
-        }
-        if (Objects.nonNull(confirmPayRequest.getTYPE())) {
-            sb.append("TYPE").append(confirmPayRequest.getTYPE()).append('\n');
-        }
-
-        return sb.toString();
-    }
-
-    public static boolean isInvalidCashTerminalInitSignature(CashTerminalInitPayRequest request, String requestCheckSum, String key) {
-        String checkSum;
-        try {
-            checkSum = EPBSignatureUtils.calculateHMAC(key, EPBSignatureUtils.formatCashTerminalInitRequestFields(request));
-            return StringUtils.isEmpty(checkSum) || !Objects.equals(requestCheckSum, checkSum);
-        } catch (NoSuchAlgorithmException | InvalidKeyException | IllegalArgumentException e) {
-            return true;
-        }
-    }
-
-    public static boolean isInvalidCashTerminalPaySignature(CashTerminalConfirmPayRequest request, String requestCheckSum, String key) {
-        String checkSum;
-        try {
-            checkSum = EPBSignatureUtils.calculateHMAC(key, EPBSignatureUtils.formatCashTerminalConfirmPayRequestFields(request));
-            return StringUtils.isEmpty(checkSum) || !Objects.equals(requestCheckSum, checkSum);
-        } catch (NoSuchAlgorithmException | InvalidKeyException | IllegalArgumentException e) {
-            return true;
-        }
-    }
-
-    public static String formatCashTerminalInitRequestFields(CashTerminalInitPayRequest initPayRequest) {
-        StringBuilder sb = new StringBuilder();
-
-        if (Objects.nonNull(initPayRequest.getIDN())) {
-            sb.append("IDN").append(initPayRequest.getIDN()).append('\n');
-        }
-        if (Objects.nonNull(initPayRequest.getMERCHANTID())) {
-            sb.append("MERCHANTID").append(initPayRequest.getMERCHANTID()).append('\n');
-        }
-        if (Objects.nonNull(initPayRequest.getTID())) {
-            sb.append("TID").append(initPayRequest.getTID()).append('\n');
-        }
-        if (Objects.nonNull(initPayRequest.getTYPE())) {
-            sb.append("TYPE").append(initPayRequest.getTYPE()).append('\n');
-        }
-
-        return sb.toString();
-    }
-
-    public static String formatCashTerminalConfirmPayRequestFields(CashTerminalConfirmPayRequest confirmPayRequest) {
         StringBuilder sb = new StringBuilder();
         if (Objects.nonNull(confirmPayRequest.getDATE())) {
             sb.append("DATE").append(confirmPayRequest.getDATE()).append('\n');

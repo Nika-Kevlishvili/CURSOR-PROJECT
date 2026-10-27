@@ -229,6 +229,7 @@ export function buildCompensationPayload(
     reason?: string;
     volumes?: number;
     price?: number;
+    documentCurrencyId?: number | string;
   },
 ): CompensationPayload {
   const template = GeneratePayload.energyData.compensation() as CompensationPayload;
@@ -247,7 +248,7 @@ export function buildCompensationPayload(
     customerId: opts.customerId,
     podId: opts.podId,
     recipientId: opts.recipientId,
-    documentCurrencyId: template.documentCurrencyId ?? envVariables.currency,
+    documentCurrencyId: opts.documentCurrencyId ?? template.documentCurrencyId ?? envVariables.currency,
     volumes,
     price,
     documentAmount,
@@ -856,6 +857,7 @@ export async function createStandardDraftBillingRun(
  */
 export async function runMultiPodForVolumesPrechain(
   ctx: Pdt3087Fx,
+  opts?: { priceExpression?: string },
 ): Promise<MultiPodPrechainResult> {
   const { Request, GeneratePayload, Responses, Endpoints } = ctx;
 
@@ -877,7 +879,7 @@ export async function runMultiPodForVolumesPrechain(
 
   await test.step('Precondition: price component (priceSettlement)', async () => {
     const payload = GeneratePayload.productAndServices.priceSettlement();
-    payload.formulaRequest.expression = '100';
+    payload.formulaRequest.expression = opts?.priceExpression ?? '100';
     payload.applicationModelRequest.settlementPeriodsRequest.profiles = [
       { profileId: envVariables.profiles, percentage: 100 },
     ];

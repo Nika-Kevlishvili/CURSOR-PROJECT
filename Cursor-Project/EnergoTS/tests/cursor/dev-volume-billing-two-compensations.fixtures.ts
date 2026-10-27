@@ -200,7 +200,7 @@ export function buildTwoDistinctCompensationPayloads(
 }
 
 export function buildDevInvoicePreviewLink(invoiceId: number): string {
-  return `${DEV_PORTAL_BASE}/billing-run/invoices/preview/basic-parameters?id=${invoiceId}`;
+  return `${DEV_PORTAL_BASE}/invoices/preview/basic-data?id=${invoiceId}`;
 }
 
 export function buildDevBillingRunPreviewLink(billingRunId: number): string {
@@ -208,7 +208,7 @@ export function buildDevBillingRunPreviewLink(billingRunId: number): string {
 }
 
 export function buildDevCompensationPreviewLink(compensationId: number): string {
-  return `${DEV_PORTAL_BASE}/government-compensations/preview?id=${compensationId}`;
+  return `${DEV_PORTAL_BASE}/compensation/preview?id=${compensationId}`;
 }
 
 /**

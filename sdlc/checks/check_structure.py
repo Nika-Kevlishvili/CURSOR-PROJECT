@@ -178,6 +178,11 @@ def check_cursor(root: Path, report: Report) -> None:
                      f"{rule.relative_to(root)}: front matter needs a description and alwaysApply or globs")
 
 
+def rel_of(path: Path, root: Path) -> str:
+    """Forward slashes, so a defect line matches on Windows and on Linux."""
+    return path.relative_to(root).as_posix()
+
+
 def status_of(path: Path) -> str:
     raw = (front_matter(path.read_bytes().decode("utf-8").replace("\r\n", "\n").replace("\r", "\n")) or {}).get("status", "")
     return re.sub(r"\s#.*$", "", raw).strip().strip("'\"").lower()
@@ -192,7 +197,7 @@ def check_trace(root: Path, source: Path, pattern: re.Pattern, haystack: str, ta
     """Every ID the pattern finds in the source must appear in the target text (spec-kit 'analyze', made deterministic)."""
     for item in sorted(set(pattern.findall("\n".join(content_lines(source))))):
         report.check(re.search(rf"\b{re.escape(item)}\b", haystack) is not None,
-                     f"{source.relative_to(root)}: {what} {item} reaches no {target}")
+                     f"{rel_of(source, root)}: {what} {item} reaches no {target}")
 
 
 def check_artifacts(root: Path, report: Report) -> None:
@@ -205,19 +210,19 @@ def check_artifacts(root: Path, report: Report) -> None:
         docs = {name: folder / f"{name}.md" for name in ARTIFACTS if (folder / f"{name}.md").exists()}
         statuses = {name: status_of(path) for name, path in docs.items()}
         for name, status in statuses.items():
-            report.check(status in KNOWN_STATUSES, f"{docs[name].relative_to(root)}: unknown status '{status}' — artifact checks cannot run")
+            report.check(status in KNOWN_STATUSES, f"{rel_of(docs[name], root)}: unknown status '{status}' — artifact checks cannot run")
         approved = {name for name, status in statuses.items() if status in DONE_STATUSES}
         for name in sorted(approved):
             lines = docs[name].read_text(encoding="utf-8").splitlines()
             text = "\n".join(l.replace(CLARIFY_PLACEHOLDER, "") if l.lstrip().startswith(">") else l for l in lines)
             report.check(CLARIFY.lower() not in text.lower(),
-                         f"{docs[name].relative_to(root)}: approved but still has {CLARIFY}]")
+                         f"{rel_of(docs[name], root)}: approved but still has {CLARIFY}]")
         if "prd" in approved:
             report.check(bool(FEATURE_ROW.search("\n".join(content_lines(docs["prd"])))),
-                         f"{docs['prd'].relative_to(root)}: approved but no P-n feature row found — the trace proves nothing")
+                         f"{rel_of(docs['prd'], root)}: approved but no P-n feature row found — the trace proves nothing")
         if "spec" in approved:
             report.check(bool(REQUIREMENT.search("\n".join(content_lines(docs["spec"])))),
-                         f"{docs['spec'].relative_to(root)}: approved but no FR-n/NFR-n requirement found — the trace proves nothing")
+                         f"{rel_of(docs['spec'], root)}: approved but no FR-n/NFR-n requirement found — the trace proves nothing")
         if {"prd", "spec"} <= approved:
             requirement_lines = "\n".join(l for l in content_lines(docs["spec"]) if REQUIREMENT.match(l))
             check_trace(root, docs["prd"], MUST_FEATURE, requirement_lines, "requirement line in spec.md", "must-priority feature", report)

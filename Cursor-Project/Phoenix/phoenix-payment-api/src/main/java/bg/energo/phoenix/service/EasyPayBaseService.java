@@ -2,14 +2,12 @@ package bg.energo.phoenix.service;
 
 import bg.energo.phoenix.model.CheckLiabilityDetails;
 import bg.energo.phoenix.model.CustomerWrapper;
-import bg.energo.phoenix.model.entity.Configuration;
 import bg.energo.phoenix.model.entity.EasyPayPaymentEntity;
 import bg.energo.phoenix.model.entity.customer.Customer;
 import bg.energo.phoenix.model.entity.receivable.collectionChannel.CollectionChannel;
 import bg.energo.phoenix.model.enums.EasyPayRequestType;
 import bg.energo.phoenix.model.enums.customer.CustomerStatus;
 import bg.energo.phoenix.model.response.receivable.customerLiability.LiabilityInvoiceDate;
-import bg.energo.phoenix.repository.ConfigurationRepository;
 import bg.energo.phoenix.repository.EasyPayPaymentDetailsRepository;
 import bg.energo.phoenix.repository.EasyPayPaymentRepository;
 import bg.energo.phoenix.repository.customer.CustomerDetailsRepository;
@@ -26,13 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.CollectionUtils;
 
 import java.sql.Date;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -45,7 +41,6 @@ public abstract class EasyPayBaseService {
     protected final CustomerRepository customerRepository;
     protected final EasyPayMapperService easyPayMapperService;
     protected final CustomerLiabilityRepository customerLiabilityRepository;
-    protected final ConfigurationRepository configurationRepository;
     @PersistenceContext
     protected EntityManager entityManager;
     @Value("${easypay.secret.key}")
@@ -185,32 +180,6 @@ public abstract class EasyPayBaseService {
         return validLiabilities;
     }
 
-    /**
-     * Returns liability IDs from the given set that belong to pro-forma reconnection invoices
-     * ({@code document_type = PROFORMA_INVOICE} and {@code invoice_type = RECONNECTION}).
-     */
-    @SuppressWarnings("unchecked")
-    protected Set<Long> findProformaReconnectionLiabilityIds(List<Long> liabilityIds) {
-        if (CollectionUtils.isEmpty(liabilityIds)) {
-            return Set.of();
-        }
-
-        List<Number> rows = entityManager.createNativeQuery("""
-                        SELECT cl.id
-                        FROM receivable.customer_liabilities cl
-                                 JOIN invoice.invoices i ON i.id = cl.invoice_id
-                        WHERE cl.id IN (:liabilityIds)
-                          AND i.document_type = 'PROFORMA_INVOICE'
-                          AND i.type = 'RECONNECTION'
-                        """)
-                .setParameter("liabilityIds", liabilityIds)
-                .getResultList();
-
-        return rows.stream()
-                .map(Number::longValue)
-                .collect(Collectors.toSet());
-    }
-
     private CallableStatement createLiabilityCallableStatement(
             Connection connection,
             Long collectionChannelId,
@@ -261,14 +230,7 @@ public abstract class EasyPayBaseService {
     }
 
     protected boolean isInvalidMerchantId(String merchantId) {
-        Optional<Configuration> currentConfiguration = configurationRepository.findLatestConfiguration();
-        String merchantIdFromConfig = null;
-        if (currentConfiguration.isPresent()) {
-            merchantIdFromConfig = currentConfiguration.get().getEasyPayMerchantId();
-        }
-        String finalMerchantId = merchantIdFromConfig == null ? easyPayMerchantCode : merchantIdFromConfig;
-        log.info("finalMerchantId- {}", finalMerchantId);
-        return !Objects.equals(merchantId, finalMerchantId);
+        return !Objects.equals(merchantId, easyPayMerchantCode);
     }
 
     protected boolean isBillingRequestWithInvalidTid(EasyPayRequestType easyPayRequestType, String tid) {

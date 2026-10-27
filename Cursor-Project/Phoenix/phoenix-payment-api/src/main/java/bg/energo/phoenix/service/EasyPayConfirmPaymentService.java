@@ -1,7 +1,6 @@
 package bg.energo.phoenix.service;
 
 import bg.energo.phoenix.model.CustomerWrapper;
-import bg.energo.phoenix.model.entity.Configuration;
 import bg.energo.phoenix.model.entity.EasyPayPaymentDetailsEntity;
 import bg.energo.phoenix.model.entity.EasyPayPaymentEntity;
 import bg.energo.phoenix.model.entity.receivable.collectionChannel.CollectionChannel;
@@ -9,13 +8,13 @@ import bg.energo.phoenix.model.enums.EPayStatusCode;
 import bg.energo.phoenix.model.enums.EasyPayPaymentStatus;
 import bg.energo.phoenix.model.request.ConfirmPayRequest;
 import bg.energo.phoenix.model.response.EasyPayConfirmPaymentResponse;
-import bg.energo.phoenix.repository.ConfigurationRepository;
 import bg.energo.phoenix.repository.EasyPayPaymentDetailsRepository;
 import bg.energo.phoenix.repository.EasyPayPaymentRepository;
 import bg.energo.phoenix.repository.customer.CustomerDetailsRepository;
 import bg.energo.phoenix.repository.customer.CustomerRepository;
 import bg.energo.phoenix.repository.receivable.collectionChannel.CollectionChannelRepository;
 import bg.energo.phoenix.repository.receivable.customerLiability.CustomerLiabilityRepository;
+import bg.energo.phoenix.util.epb.BulgariaTimeUtils;
 import bg.energo.phoenix.util.epb.EPBJsonUtils;
 import bg.energo.phoenix.utils.EPBFunctionUtils;
 import bg.energo.phoenix.utils.EPBSignatureUtils;
@@ -26,10 +25,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -50,8 +46,7 @@ public class EasyPayConfirmPaymentService extends EasyPayBaseService {
             PaymentCreationTransactionalService paymentCreationTransactionalService,
             CustomerLiabilityRepository customerLiabilityRepository,
             PaymentOffsettingTransactionalService paymentOffsettingTransactionalService,
-            BillingGroupHelperService billingGroupHelperService,
-            ConfigurationRepository configurationRepository
+            BillingGroupHelperService billingGroupHelperService
     ) {
         super(
                 easyPayPaymentDetailRepository,
@@ -60,8 +55,7 @@ public class EasyPayConfirmPaymentService extends EasyPayBaseService {
                 customerDetailsRepository,
                 customerRepository,
                 easyPayMapperService,
-                customerLiabilityRepository,
-                configurationRepository
+                customerLiabilityRepository
         );
         this.paymentCreationTransactionalService = paymentCreationTransactionalService;
         this.paymentOffsettingTransactionalService = paymentOffsettingTransactionalService;
@@ -237,12 +231,13 @@ public class EasyPayConfirmPaymentService extends EasyPayBaseService {
                 easyPayPaymentEntity.getId()
         );
         log.info("Found {} payment details for TID: {}", easyPayPaymentDetailsEntities.size(), request.getTID());
-        LocalDateTime date = EPBFunctionUtils.localDateTimeFromDateString(request.getDATE());
+
+        var paymentDate = EPBFunctionUtils.localDateTimeFromDateString(request.getDATE()).toLocalDate();
         Long paymentId = paymentCreationTransactionalService.createOnlinePayment(
                 request.getTOTAL(),
                 customerWrapper.customer(),
-                date.toLocalDate(),
-                billingGroupHelperService.fetchAccountPeriodId(date),
+                paymentDate,
+                billingGroupHelperService.fetchAccountPeriodIdForDateWithFallback(paymentDate),
                 collectionChannel,
                 billingGroupHelperService.fetchContractBillingGroupIdForCustomer(customerWrapper.billingGroupNumber(), easyPayPaymentDetailsEntities)
         );
@@ -329,13 +324,13 @@ public class EasyPayConfirmPaymentService extends EasyPayBaseService {
         );
         if (CollectionUtils.isNotEmpty(partialPaidDetailEntities)) {
             log.info("Found partial paid details for TID: {}. Creating online payment.", tid);
-            LocalDateTime date = EPBFunctionUtils.localDateTimeFromDateString(request.getDATE());
 
+            var paymentDate = EPBFunctionUtils.localDateTimeFromDateString(request.getDATE()).toLocalDate();
             Long paymentId = paymentCreationTransactionalService.createOnlinePayment(
                     request.getTOTAL(),
                     customerWrapper.customer(),
-                    date.toLocalDate(),
-                    billingGroupHelperService.fetchAccountPeriodId(date),
+                    paymentDate,
+                    billingGroupHelperService.fetchAccountPeriodIdForDateWithFallback(paymentDate),
                     collectionChannel,
                     billingGroupHelperService.fetchContractBillingGroupIdForCustomer(
                             easyPayPaymentEntity.getBillingGroupNumber(),
@@ -446,14 +441,7 @@ public class EasyPayConfirmPaymentService extends EasyPayBaseService {
         log.info("Validating request checksum...");
         String tid = request.getTID();
 
-        Optional<Configuration> currentConfiguration = configurationRepository.findLatestConfiguration();
-        String secretKeyFromConfig = null;
-        if (currentConfiguration.isPresent()) {
-            secretKeyFromConfig = currentConfiguration.get().getEasyPaySecretKey();
-        }
-        String finalSecretKey = secretKeyFromConfig == null ? secretKey : secretKeyFromConfig;
-
-        if (EPBSignatureUtils.isInvalidPaySignature(request, requestCheckSum, finalSecretKey)) {
+        if (EPBSignatureUtils.isInvalidPaySignature(request, requestCheckSum, secretKey)) {
             return createErrorResponse(
                     EPayStatusCode.INVALID_CHECKSUM,
                     tid,
@@ -487,7 +475,7 @@ public class EasyPayConfirmPaymentService extends EasyPayBaseService {
             );
         }
 
-        if (localDateTime.isAfter(LocalDateTime.now(ZoneId.of("Europe/Sofia")))) {
+        if (localDateTime.isAfter(BulgariaTimeUtils.nowBulgaria())) {
             return createErrorResponse(
                     EPayStatusCode.GENERAL_ERROR,
                     tid,

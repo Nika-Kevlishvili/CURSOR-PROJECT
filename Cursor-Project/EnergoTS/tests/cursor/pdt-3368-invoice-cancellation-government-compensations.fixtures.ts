@@ -303,7 +303,13 @@ export async function assertAmountZero(
 export async function accountGcsOnRealDebit(
   ctx: Pdt3368Fx,
   pre: DevVolCompPrechainResult,
-  amounts: Array<{ documentAmount: number; podId: number; reason: string; documentPeriod?: string }>,
+  amounts: Array<{
+    documentAmount: number;
+    podId: number;
+    reason: string;
+    documentPeriod?: string;
+    documentCurrencyId?: number | string;
+  }>,
 ): Promise<RealDebitWithGc> {
   const created: RealDebitWithGc['gcs'] = [];
   for (const row of amounts) {
@@ -316,6 +322,7 @@ export async function accountGcsOnRealDebit(
       volumes: 1,
       price: Math.abs(row.documentAmount),
       reason: row.reason,
+      documentCurrencyId: row.documentCurrencyId,
     });
     created.push({
       id: gc.id,

@@ -1,15 +1,9 @@
-"""Project memory for the start of a chat (ADR-0004, ADR-0006, ADR-0008).
+"""Former session-start loader. Not called.
 
-.cursor/hooks/cursor_adapter.py injects build_context() on sessionStart: memory/now.md, the
-Current State and Next Steps of PROGRESS.md and the newest handoff by time, not by file name
-(it may come from another person's session). The text is capped so it cannot flood the
-context: now.md and PROGRESS share one budget, and the handoff has its own, where only the
-middle is cut — its head (phase, task in flight) and its tail (done / next / blocked) always
-stay. A head-only cut once handed a new session a stale next step (owner, 2026-10-08). Then
-it is fenced with a random nonce (forged fence markers inside are neutralised) so it
-reads as stored data, not instructions. The whole injected text is scanned for injection-like
-text when it is loaded (no flag stored in a file is trusted), so anything an agent wrote by
-hand, or a file from another machine, is covered too; a hit adds a warning at the top.
+cursor_adapter.session_start does not call build_context (2026-10-27, GB-1830). A new chat
+does not receive memory/now.md, PROGRESS.md, or the newest handoff. Those notes made the
+next chat treat an old next step as a current fact. Do not wire this function back into
+sessionStart.
 """
 from __future__ import annotations
 

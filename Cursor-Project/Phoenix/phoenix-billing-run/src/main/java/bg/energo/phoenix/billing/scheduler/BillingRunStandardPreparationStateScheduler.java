@@ -1,6 +1,6 @@
 package bg.energo.phoenix.billing.scheduler;
 
-import bg.energo.phoenix.billingRun.generation.service.BillingRunStandardPreparationStateHandler;
+import bg.energo.phoenix.billingRun.service.BillingRunStandardPreparationStateHandler;
 import bg.energo.phoenix.utils.LoggerUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

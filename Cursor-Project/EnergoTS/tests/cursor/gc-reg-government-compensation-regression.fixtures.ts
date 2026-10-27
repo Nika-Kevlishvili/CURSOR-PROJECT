@@ -400,6 +400,7 @@ export async function createGcExpectingCreated(
     volumes?: number;
     price?: number;
     number?: string;
+    documentCurrencyId?: number | string;
   },
 ): Promise<{ id: number; payload: CompensationPayload; status: number }> {
   const { Request, GeneratePayload, Responses, Endpoints } = ctx;
@@ -412,6 +413,7 @@ export async function createGcExpectingCreated(
     reason: opts.reason ?? 'GC-REG',
     volumes: opts.volumes,
     price: opts.price,
+    documentCurrencyId: opts.documentCurrencyId,
   });
   payload.date = todayIso();
   if (opts.number) {

@@ -1,7 +1,6 @@
 package bg.energo.phoenix.service.salesportal;
 
 import bg.energo.phoenix.model.enums.contract.express.ExpressContractType;
-import bg.energo.phoenix.model.enums.contract.products.ContractDetailsSubStatus;
 import bg.energo.phoenix.model.enums.customer.CustomerType;
 import bg.energo.phoenix.model.enums.product.product.ContractType;
 import bg.energo.phoenix.model.enums.product.product.PaymentGuarantee;
@@ -66,16 +65,6 @@ class SalesPortalExpressContractRequestEnricherTest {
         assertThat(enricher.enrich(request)).isEmpty();
 
         assertThat(request.getExpressContractParameters().getSigningDate()).isEqualTo(LocalDate.now());
-    }
-
-    @Test
-    void enrich_leavesSigningDateEmpty_whenSignedByCustomer() {
-        ExpressContractRequest request = minimalProductRequest();
-        request.getExpressContractParameters().setSubStatus(ContractDetailsSubStatus.SIGNED_BY_CUSTOMER);
-
-        enricher.enrich(request);
-
-        assertThat(request.getExpressContractParameters().getSigningDate()).isNull();
     }
 
     @Test
@@ -205,7 +194,6 @@ class SalesPortalExpressContractRequestEnricherTest {
         ExpressContractParameters parameters = new ExpressContractParameters();
         parameters.setProductId(1001L);
         parameters.setProductVersionId(1L);
-        parameters.setSubStatus(ContractDetailsSubStatus.SIGNED_BY_BOTH_SIDES);
         request.setExpressContractParameters(parameters);
         ExpressContractCustomerRequest customer = new ExpressContractCustomerRequest();
         customer.setIdentifier("19900101AB12");

@@ -2,7 +2,6 @@ package bg.energo.phoenix.utils;
 
 import bg.energo.phoenix.model.CheckLiabilityDetails;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -10,19 +9,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Slf4j
 public class EPBFunctionUtils {
-
-    /**
-     * Payment-source AIDs (last 6 symbols of TID) for which pro-forma reconnection
-     * liabilities must be hidden from EasyPay BILLING responses.
-     */
-    public static final Set<String> PROFORMA_RECONNECTION_EXCLUDED_AIDS = Set.of(
-            "700020", "700021", "700022", "700023", "700024",
-            "700025", "700026", "700027", "700028", "700029"
-    );
 
     /**
      * Converts a LocalDateTime object into a formatted string.
@@ -160,38 +149,6 @@ public class EPBFunctionUtils {
      */
     public static LocalDate resolveValidToDate(LocalDate dueDate, LocalDate currentDate) {
         return dueDate != null ? dueDate : currentDate.plusDays(PROFORMA_VALID_TO_DAYS);
-    }
-
-    /**
-     * Returns whether pro-forma reconnection liabilities must be excluded for this TID.
-     * Uses the last 6 symbols of the TID (AID / payment source).
-     *
-     * @param tid transaction ID from an EasyPay BILLING request
-     * @return true when the TID ends with one of {@link #PROFORMA_RECONNECTION_EXCLUDED_AIDS}
-     */
-    public static boolean shouldHideProformaReconnectionLiabilities(String tid) {
-        if (StringUtils.isBlank(tid) || tid.length() < 6) {
-            return false;
-        }
-        String aid = tid.substring(tid.length() - 6);
-        return PROFORMA_RECONNECTION_EXCLUDED_AIDS.contains(aid);
-    }
-
-    /**
-     * Removes liabilities whose IDs are in {@code idsToExclude}.
-     * Returns the original list when there is nothing to exclude.
-     */
-    public static List<CheckLiabilityDetails> excludeLiabilitiesByIds(
-            List<CheckLiabilityDetails> liabilities,
-            Set<Long> idsToExclude
-    ) {
-        if (liabilities == null || liabilities.isEmpty()
-                || idsToExclude == null || idsToExclude.isEmpty()) {
-            return liabilities;
-        }
-        return liabilities.stream()
-                .filter(liability -> !idsToExclude.contains(liability.getLiabilityId()))
-                .toList();
     }
 
     /**

@@ -1,5 +1,6 @@
 package bg.energo.phoenix;
 
+import bg.energo.phoenix.config.DataSourceProxyConfiguration;
 import bg.energo.phoenix.service.signing.qes.QesSigningService;
 import bg.energo.phoenix.service.signing.qes.QesSocketSender;
 import org.springframework.boot.SpringApplication;
@@ -12,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @ComponentScan(
         basePackages = {"bg.energo.phoenix"},
         excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
-                classes = {QesSigningService.class, QesSocketSender.class}
+                classes = {QesSigningService.class, QesSocketSender.class, DataSourceProxyConfiguration.class}
         )
 )
 @SpringBootApplication(exclude = {RedisRepositoriesAutoConfiguration.class})

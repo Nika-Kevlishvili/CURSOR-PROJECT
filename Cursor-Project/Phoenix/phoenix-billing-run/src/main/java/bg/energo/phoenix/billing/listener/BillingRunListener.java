@@ -1,6 +1,6 @@
 package bg.energo.phoenix.billing.listener;
 
-import bg.energo.phoenix.billingRun.generation.service.BillingRunStandardInvoiceGenerationService;
+import bg.energo.phoenix.billingRun.service.BillingRunStandardInvoiceGenerationService;
 import bg.energo.phoenix.event.billing.BillingRunStartAccountingEvent;
 import bg.energo.phoenix.event.billing.BillingRunStartGenerationEvent;
 import bg.energo.phoenix.service.billing.billingRun.actions.startAccounting.BillingRunStartAccountingService;

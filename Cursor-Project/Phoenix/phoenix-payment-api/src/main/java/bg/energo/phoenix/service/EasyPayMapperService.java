@@ -2,6 +2,7 @@ package bg.energo.phoenix.service;
 
 import bg.energo.phoenix.model.CheckLiabilityDetails;
 import bg.energo.phoenix.model.EasyPayInvoiceResponse;
+import bg.energo.phoenix.model.response.customer.CustomerPaymentInfo;
 import bg.energo.phoenix.model.entity.EasyPayPaymentDetailsEntity;
 import bg.energo.phoenix.model.entity.EasyPayPaymentEntity;
 import bg.energo.phoenix.model.entity.EasyPayVerifyDetailsEntity;
@@ -11,8 +12,8 @@ import bg.energo.phoenix.model.entity.receivable.collectionChannel.CollectionCha
 import bg.energo.phoenix.model.entity.receivable.paymentPackage.PaymentPackage;
 import bg.energo.phoenix.model.enums.EasyPayPaymentStatus;
 import bg.energo.phoenix.model.enums.EasyPayRequestType;
+import bg.energo.phoenix.model.enums.receivable.paymentPackage.PaymentPackageLockStatus;
 import bg.energo.phoenix.model.request.receivable.payment.CreatePaymentRequest;
-import bg.energo.phoenix.model.response.customer.CustomerPaymentInfo;
 import bg.energo.phoenix.utils.EPBFunctionUtils;
 import bg.energo.phoenix.utils.EPBPaymentCalculationUtils;
 import bg.energo.phoenix.utils.EPBStringUtils;

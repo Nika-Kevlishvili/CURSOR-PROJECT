@@ -2,7 +2,6 @@ package bg.energo.phoenix.service.salesportal;
 
 import bg.energo.phoenix.exception.IllegalArgumentsProvidedException;
 import bg.energo.phoenix.model.enums.contract.express.ExpressContractType;
-import bg.energo.phoenix.model.enums.contract.products.ContractDetailsSubStatus;
 import bg.energo.phoenix.model.request.contract.express.ExpressContractCustomerRequest;
 import bg.energo.phoenix.model.request.contract.express.ExpressContractParameters;
 import bg.energo.phoenix.model.request.contract.express.ExpressContractRequest;
@@ -50,8 +49,8 @@ class SalesPortalExpressContractServiceTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = SystemSoureEnum.class, names = {"PHOENIX", "SALES_PORTAL", "SELF_SERVICE_PORTAL", "VCOK"})
-    void create_acceptsAllowedSources(SystemSoureEnum portalSource) {
+    @EnumSource(value = SystemSoureEnum.class, names = {"SALES_PORTAL", "SELF_SERVICE_PORTAL"})
+    void create_acceptsPortalSources(SystemSoureEnum portalSource) {
         ExpressContractRequest request = request();
         request.getCustomer().setSystemSourceId(portalSource);
         when(expressContractService.create(request)).thenReturn(4242L);
@@ -73,36 +72,15 @@ class SalesPortalExpressContractServiceTest {
     }
 
     @Test
-    void create_rejectsMissingSubStatus() {
+    void create_rejectsNonPortalSystemSourceId() {
         ExpressContractRequest request = request();
-        request.getExpressContractParameters().setSubStatus(null);
+        request.getCustomer().setSystemSourceId(SystemSoureEnum.PHOENIX);
 
         assertThatThrownBy(() -> service.create(request))
                 .isInstanceOf(IllegalArgumentsProvidedException.class)
-                .hasMessage("expressContractParameters.subStatus-subStatus is mandatory;");
+                .hasMessage("customer.systemSourceId-Only SALES_PORTAL and SELF_SERVICE_PORTAL are allowed;");
 
         verify(expressContractService, never()).create(any());
-    }
-
-    @Test
-    void create_rejectsUnsupportedSubStatus() {
-        ExpressContractRequest request = request();
-        request.getExpressContractParameters().setSubStatus(ContractDetailsSubStatus.DRAFT);
-
-        assertThatThrownBy(() -> service.create(request))
-                .isInstanceOf(IllegalArgumentsProvidedException.class)
-                .hasMessage("expressContractParameters.subStatus-Only SIGNED_BY_BOTH_SIDES and SIGNED_BY_CUSTOMER are allowed;");
-
-        verify(expressContractService, never()).create(any());
-    }
-
-    @Test
-    void create_acceptsSignedByCustomer() {
-        ExpressContractRequest request = request();
-        request.getExpressContractParameters().setSubStatus(ContractDetailsSubStatus.SIGNED_BY_CUSTOMER);
-        when(expressContractService.create(request)).thenReturn(4242L);
-
-        assertThat(service.create(request)).isEqualTo(4242L);
     }
 
     @Test
@@ -146,7 +124,6 @@ class SalesPortalExpressContractServiceTest {
         ExpressContractParameters parameters = new ExpressContractParameters();
         parameters.setProductId(1001L);
         parameters.setProductVersionId(1L);
-        parameters.setSubStatus(ContractDetailsSubStatus.SIGNED_BY_BOTH_SIDES);
         request.setExpressContractParameters(parameters);
         ExpressContractCustomerRequest customer = new ExpressContractCustomerRequest();
         customer.setIdentifier("19900101AB12");

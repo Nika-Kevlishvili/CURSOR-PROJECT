@@ -3,7 +3,6 @@ package bg.energo.scheduler.schedulers;
 import bg.energo.phoenix.model.customAnotations.aspects.ExecutionTimeLogger;
 import bg.energo.phoenix.model.entity.receivable.collectionChannel.CollectionChannel;
 import bg.energo.phoenix.model.entity.receivable.collectionChannel.PaymentFTPFiles;
-import bg.energo.phoenix.model.enums.receivable.collectionChannel.TypeOfFile;
 import bg.energo.phoenix.process.massImport.PaymentMassImportService;
 import bg.energo.phoenix.repository.receivable.collectionChannel.CollectionChannelRepository;
 import bg.energo.phoenix.repository.receivable.collectionChannel.PaymentFTPFilesRepository;
@@ -59,10 +58,6 @@ public class CollectionChannelJobService {
                     if(!folderNotNull) {
                         log.debug("Folder for receiving collection channel is null! for collection channel : {}",cc.getId());
                     }
-                    if (TypeOfFile.RPS_PAYMENT.equals(cc.getTypeOfFile())) {
-                        log.debug("Skipping RPS payment collection channel from automatic import: {}", cc.getId());
-                        return false;
-                    }
                     return rruleValid && folderNotNull;
                 })
                 .toList();
@@ -93,10 +88,6 @@ public class CollectionChannelJobService {
     }
 
     public void processFiles(CollectionChannel collectionChannel,List<MultipartFile> files) {
-        if (TypeOfFile.RPS_PAYMENT.equals(collectionChannel.getTypeOfFile())) {
-            log.debug("Skipping automatic processing of RPS payment files for collection channel {}", collectionChannel.getId());
-            return;
-        }
         files.forEach(file-> {
             try {
                 if(!checkIfAlreadyProcessed(file.getName())) {
@@ -150,7 +141,7 @@ public class CollectionChannelJobService {
                     if(folderNotNull) {
                         log.debug("Folder for receiving collection channel is null! for collection channel : {}", cc.getId());
                     }
-                    return folderNotNull && !TypeOfFile.RPS_PAYMENT.equals(cc.getTypeOfFile());
+                    return folderNotNull;
                 }).toList();
 
         log.debug("List of marked collection channels {}",markedOfflineCollectionChannels);

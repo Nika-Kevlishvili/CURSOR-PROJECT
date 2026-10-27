@@ -19,7 +19,7 @@ $warnings = @()
 function Add-Failure([string]$Msg) { $script:failures += $Msg }
 function Add-Warning([string]$Msg) { $script:warnings += $Msg }
 
-# --- Six core alwaysApply rules (Phase 3 target) + Senior QA mission (Rule QA.0)
+# --- Seven core alwaysApply rules + three engine rules (workspace paths, Graph RAG).
 $expectedAlwaysApply = @(
     'main\core_rules.mdc',
     'safety\safety_rules.mdc',
@@ -27,7 +27,10 @@ $expectedAlwaysApply = @(
     'main\evidence_only_project_answers.mdc',
     'main\senior_qa_product_quality.mdc',
     'workflows\workflow_rules.mdc',
-    'agents\agent_rules.mdc'
+    'agents\agent_rules.mdc',
+    'workspace\workspace_paths.mdc',
+    'integrations\graph_rag_integration.mdc',
+    'integrations\graph_rag_ingest.mdc'
 )
 
 $actualAlwaysApply = @()
@@ -43,7 +46,7 @@ $expectedNorm = $expectedAlwaysApply | Sort-Object
 $actualNorm = $actualAlwaysApply | Sort-Object
 
 foreach ($extra in ($actualNorm | Where-Object { $_ -notin $expectedNorm })) {
-    Add-Failure "Unexpected alwaysApply:true rule (target: 7 core only): rules\$extra"
+    Add-Failure "Unexpected alwaysApply:true rule (not in the expected list): rules\$extra"
 }
 foreach ($missing in ($expectedNorm | Where-Object { $_ -notin $actualNorm })) {
     Add-Failure "Missing expected alwaysApply:true rule: rules\$missing"

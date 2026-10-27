@@ -10,7 +10,7 @@ version = '0.0.1-SNAPSHOT'
 def eproSnapshotDomain = "https://nexus.energo-pro.bg//repository/epro-maven-snapshots/"
 def eproReleaseDomain = "https://nexus.energo-pro.bg/repository/epro-maven-releases/"
 def profile = project.hasProperty('profile') ? project.getProperty('profile') : 'dev'
-def devVersion = '1.39.85-SNAPSHOT'
+def devVersion = '1.35.97-SNAPSHOT'
 def testVersion = '0.0.26'
 
 java {
@@ -65,7 +65,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
-    implementation (group: "bg.energo", name: "phoenix-core-lib2", version: "${coreLibVersion}")
+    implementation (group: "bg.energo", name: "phoenix-core-lib", version: "${coreLibVersion}")
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -74,11 +74,4 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
-}
-jar {
-    archiveBaseName = 'phoenix-scheduler'
-}
-
-bootJar {
-    archiveBaseName = 'phoenix-scheduler'
 }

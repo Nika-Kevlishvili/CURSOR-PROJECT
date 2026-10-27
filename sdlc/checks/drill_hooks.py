@@ -79,16 +79,42 @@ def report(drill: Drill) -> int:
     return 0
 
 
+def remove_tree(path: Path) -> None:
+    """Delete a drill copy. On Windows the extended-length prefix is required, or a long name
+    cannot be removed and the parent then raises WinError 145 (directory not empty)."""
+    if not path.exists() and not (os.name == "nt" and os.path.exists("\\\\?\\" + os.path.abspath(path))):
+        return
+    target = "\\\\?\\" + os.path.abspath(path) if os.name == "nt" else path
+
+    def onerror(func, failed, exc_info) -> None:
+        long = str(failed)
+        if os.name == "nt" and not long.startswith("\\\\?\\"):
+            long = "\\\\?\\" + os.path.abspath(failed)
+        try:
+            os.chmod(long, 0o666)
+            func(long)
+        except OSError:
+            pass
+
+    shutil.rmtree(target, onerror=onerror)
+
+
 def main() -> int:
     if shutil.which("git") is None:
         print("RESULT: INCONCLUSIVE — git is not installed")
         return 2
     drill = Drill()
-    with tempfile.TemporaryDirectory(prefix="asterbit-drill-") as tmp:
-        drill_cursor(drill, Path(tmp))
-        drill_structure_check(drill, Path(tmp))
-        drill_engine_checks(drill, Path(tmp))
-    return report(drill)
+    tmp = Path(tempfile.mkdtemp(prefix="asterbit-drill-"))
+    try:
+        drill_cursor(drill, tmp)
+        drill_structure_check(drill, tmp)
+        drill_engine_checks(drill, tmp)
+        return report(drill)
+    finally:
+        try:
+            remove_tree(tmp)
+        except OSError:
+            pass
 
 
 if __name__ == "__main__":

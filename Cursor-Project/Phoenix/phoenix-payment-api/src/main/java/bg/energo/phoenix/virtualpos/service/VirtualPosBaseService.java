@@ -2,14 +2,14 @@ package bg.energo.phoenix.virtualpos.service;
 
 import bg.energo.phoenix.model.CheckLiabilityDetails;
 import bg.energo.phoenix.model.CustomerWrapper;
-import bg.energo.phoenix.model.entity.Configuration;
 import bg.energo.phoenix.model.entity.customer.Customer;
 import bg.energo.phoenix.model.entity.receivable.collectionChannel.CollectionChannel;
 import bg.energo.phoenix.model.enums.customer.CustomerStatus;
-import bg.energo.phoenix.repository.ConfigurationRepository;
 import bg.energo.phoenix.repository.customer.CustomerDetailsRepository;
 import bg.energo.phoenix.repository.customer.CustomerRepository;
+import bg.energo.phoenix.model.response.receivable.customerLiability.LiabilityInvoiceDate;
 import bg.energo.phoenix.repository.receivable.collectionChannel.CollectionChannelRepository;
+import bg.energo.phoenix.repository.receivable.customerLiability.CustomerLiabilityRepository;
 import bg.energo.phoenix.utils.EPBDatabaseFunctionUtils;
 import bg.energo.phoenix.utils.EPBFunctionUtils;
 import bg.energo.phoenix.utils.EPBPaymentCalculationUtils;
@@ -21,10 +21,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.sql.Date;
 import java.sql.*;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public abstract class VirtualPosBaseService {
@@ -34,8 +36,8 @@ public abstract class VirtualPosBaseService {
     protected final CollectionChannelRepository collectionChannelRepository;
     protected final CustomerDetailsRepository customerDetailsRepository;
     protected final CustomerRepository customerRepository;
+    protected final CustomerLiabilityRepository customerLiabilityRepository;
     protected final VirtualPosMapperService virtualPosMapperService;
-    protected final ConfigurationRepository configurationRepository;
     @PersistenceContext
     protected EntityManager entityManager;
     @Value("${virtualpos.secret.key}")
@@ -136,7 +138,36 @@ public abstract class VirtualPosBaseService {
             );
         }
 
-        return checkLiabilityDetailsList.stream().filter(EPBPaymentCalculationUtils::isValidLiability).toList();
+        List<CheckLiabilityDetails> validLiabilities = checkLiabilityDetailsList.stream()
+                .filter(EPBPaymentCalculationUtils::isValidLiability)
+                .toList();
+
+        if (!validLiabilities.isEmpty()) {
+            List<Long> liabilityIds = validLiabilities.stream()
+                    .map(CheckLiabilityDetails::getLiabilityId)
+                    .filter(Objects::nonNull)
+                    .toList();
+
+            if (!liabilityIds.isEmpty()) {
+                Map<Long, LiabilityInvoiceDate> invoiceDataMap = customerLiabilityRepository
+                        .findInvoiceDatesByLiabilityIds(liabilityIds)
+                        .stream()
+                        .collect(Collectors.toMap(
+                                LiabilityInvoiceDate::getLiabilityId,
+                                Function.identity()
+                        ));
+
+                validLiabilities.forEach(liability -> {
+                    LiabilityInvoiceDate invoiceData = invoiceDataMap.get(liability.getLiabilityId());
+                    if (invoiceData != null) {
+                        liability.setDocumentDate(invoiceData.getdocumentDate());
+                        liability.setDocumentNumber(invoiceData.getdocumentNumber());
+                    }
+                });
+            }
+        }
+
+        return validLiabilities;
     }
 
     private CallableStatement createLiabilityCallableStatement(
@@ -189,13 +220,7 @@ public abstract class VirtualPosBaseService {
     }
 
     protected boolean isInvalidMerchantId(String merchantId) {
-        Optional<Configuration> currentConfiguration = configurationRepository.findLatestConfiguration();
-        String merchantIdFromConfig = null;
-        if (currentConfiguration.isPresent()) {
-            merchantIdFromConfig = currentConfiguration.get().getVirtualPosMerchantId();
-        }
-        String finalMerchantId = merchantIdFromConfig == null ? merchantCode : merchantIdFromConfig;
-        return !Objects.equals(merchantId, finalMerchantId);
+        return !Objects.equals(merchantId, merchantCode);
     }
 
     protected boolean isBillingRequestWithInvalidTid(bg.energo.phoenix.virtualpos.model.enums.VirtualPosRequestType requestType, String tid) {

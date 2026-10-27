@@ -14,6 +14,7 @@ import bg.energo.phoenix.repository.EasyPayPaymentRepository;
 import bg.energo.phoenix.repository.receivable.paymentPackage.PaymentPackageRepository;
 import bg.energo.phoenix.service.receivable.payment.PaymentService;
 import bg.energo.phoenix.service.receivable.paymentPackage.PaymentPackageService;
+import bg.energo.phoenix.util.epb.BulgariaTimeUtils;
 import bg.energo.phoenix.utils.EPBFunctionUtils;
 import bg.energo.phoenix.utils.EPBPaymentCalculationUtils;
 import jakarta.persistence.EntityManager;
@@ -67,8 +68,8 @@ public class PaymentCreationTransactionalService {
      * @param amount                 The amount to be paid in the smallest unit of currency (e.g., cents or pence).
      *                               This is used to calculate the payment's final amount.
      * @param customer               The {@link Customer} object representing the customer making the payment.
-     * @param paymentDate            The date on which the payment is made. This date is used to record
-     *                               the payment and associate it with the correct accounting period.
+     * @param paymentDateTime        The UTC date-time on which the payment is made. This is converted
+     *                               to a BG business date for payment package lookup and recording.
      * @param accountingPeriodId     The ID of the accounting period during which the payment is made.
      *                               This is used to fetch the relevant {@link PaymentPackage}.
      * @param collectionChannel      The {@link CollectionChannel} used for the payment, representing
@@ -230,7 +231,7 @@ public class PaymentCreationTransactionalService {
             Long totalAmount,
             Long paymentId
     ) {
-        easyPayPaymentEntity.setConfirmDate(EPBFunctionUtils.localDateTimeFromDateString(requestDateString));
+        easyPayPaymentEntity.setConfirmDate(BulgariaTimeUtils.bgToUtc(EPBFunctionUtils.localDateTimeFromDateString(requestDateString)));
         easyPayPaymentEntity.setConfirmedAmount(EPBPaymentCalculationUtils.convertToUnitAmount(totalAmount));
         easyPayPaymentEntity.setPaymentStatus(EasyPayPaymentStatus.CONFIRMED);
         easyPayPaymentEntity.setConfirmedTotalCoinAmount(totalAmount);

@@ -17,6 +17,7 @@ import bg.energo.phoenix.repository.nomenclature.billing.IncomeAccountNameReposi
 import bg.energo.phoenix.repository.nomenclature.product.CurrencyRepository;
 import bg.energo.phoenix.repository.receivable.customerLiability.CustomerLiabilityRepository;
 import bg.energo.phoenix.repository.receivable.customerReceivables.CustomerReceivableRepository;
+import bg.energo.phoenix.service.BillingGroupHelperService;
 import bg.energo.phoenix.service.receivable.latePaymentFine.LatePaymentFineService;
 import bg.energo.phoenix.util.epb.EPBListUtils;
 import bg.energo.phoenix.virtualpos.model.entity.VirtualPosPaymentDetailsEntity;
@@ -55,6 +56,7 @@ public class VirtualPosPaymentOffsettingTransactionalService {
 
     private final VirtualPosInitPaymentService virtualPosInitPaymentService;
     private final VirtualPosBillingGroupHelperService virtualPosBillingGroupHelperService;
+    private final BillingGroupHelperService billingGroupHelperService;
     private final LatePaymentFineService latePaymentFineService;
     private final CustomerReceivableRepository customerReceivableRepository;
     private final IncomeAccountNameRepository incomeAccountNameRepository;
@@ -64,7 +66,7 @@ public class VirtualPosPaymentOffsettingTransactionalService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void startPaymentOffsetting(
             List<VirtualPosPaymentDetailsEntity> paymentDetails,
             VirtualPosPaymentEntity paymentEntity,
@@ -77,6 +79,15 @@ public class VirtualPosPaymentOffsettingTransactionalService {
                 paymentEntity.getCollectionChannelId(),
                 paymentEntity.getCustomerId(),
                 paymentEntity.getBillingGroupNumber()
+        );
+
+        log.info(
+                "Offsetting paymentId: {} for customerId: {}, billingGroupNumber: [{}]. Init snapshot liabilities: {}. Currently open liabilities: {}",
+                paymentId,
+                paymentEntity.getCustomerId(),
+                paymentEntity.getBillingGroupNumber(),
+                paymentDetails.stream().map(VirtualPosPaymentDetailsEntity::getLiabilityId).toList(),
+                currentLiabilities.stream().map(CheckLiabilityDetails::getLiabilityId).toList()
         );
 
         if (CollectionUtils.isNotEmpty(currentLiabilities)) {
@@ -97,6 +108,12 @@ public class VirtualPosPaymentOffsettingTransactionalService {
                             threadReceivableAmount
                     );
                 } else {
+                    log.warn(
+                            "Liability {} from the init snapshot is no longer open for paymentId: {}. Amount {} will be booked as a receivable.",
+                            detail.getLiabilityId(),
+                            paymentId,
+                            detail.getTotalAmount()
+                    );
                     threadReceivableAmount.merge(
                             paymentId,
                             detail.getTotalAmount(),
@@ -117,6 +134,7 @@ public class VirtualPosPaymentOffsettingTransactionalService {
                         paymentId,
                         totalReceivableAmount,
                         virtualPosBillingGroupHelperService.fetchContractBillingGroupIdForCustomer(
+                                paymentEntity.getCustomerId(),
                                 paymentEntity.getBillingGroupNumber(),
                                 paymentDetails
                         ),
@@ -125,12 +143,20 @@ public class VirtualPosPaymentOffsettingTransactionalService {
             }
 
         } else {
+            log.warn(
+                    "No open liabilities for customerId: {}, billingGroupNumber: [{}]. Full confirmed amount {} will be booked as a receivable for paymentId: {}.",
+                    paymentEntity.getCustomerId(),
+                    paymentEntity.getBillingGroupNumber(),
+                    paymentEntity.getConfirmedAmount(),
+                    paymentId
+            );
             createAndOffsetReceivable(
                     paymentEntity.getCustomerId(),
                     paymentEntity.getCurrencyId(),
                     paymentId,
                     paymentEntity.getConfirmedAmount(),
                     virtualPosBillingGroupHelperService.fetchContractBillingGroupIdForCustomer(
+                            paymentEntity.getCustomerId(),
                             paymentEntity.getBillingGroupNumber(),
                             paymentDetails
                     ),
@@ -406,6 +432,15 @@ public class VirtualPosPaymentOffsettingTransactionalService {
             LocalDateTime paymentOffsetDate,
             ConcurrentHashMap<Long, BigDecimal> concurrentHashMap
     ) {
+        if (liabilityId == null) {
+            concurrentHashMap.merge(
+                    paymentId,
+                    offsetAmount,
+                    BigDecimal::add
+            );
+            return false;
+        }
+
         Pair<Long, String> offsetingPair = liabilityDirectOffsettingStatementJpa(
                 paymentId,
                 liabilityId,
@@ -415,15 +450,22 @@ public class VirtualPosPaymentOffsettingTransactionalService {
         );
 
         if (offsetingPair.getKey() == null || offsetingPair.getKey() <= 0) {
+            log.error(
+                    "Liability offsetting rejected for paymentId: {}, liabilityId: {}, amount: {}: {}. Amount will be booked as a receivable.",
+                    paymentId,
+                    liabilityId,
+                    offsetAmount,
+                    offsetingPair.getValue()
+            );
             concurrentHashMap.merge(
                     paymentId,
                     offsetAmount,
                     BigDecimal::add
             );
             return false;
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -436,6 +478,15 @@ public class VirtualPosPaymentOffsettingTransactionalService {
             LocalDateTime paymentOffsetDate,
             ConcurrentHashMap<Long, BigDecimal> concurrentHashMap
     ) {
+        if (liabilityId == null) {
+            concurrentHashMap.merge(
+                    paymentId,
+                    checkAmount,
+                    BigDecimal::add
+            );
+            return false;
+        }
+
         Pair<Long, String> offsetingPair = liabilityDirectOffsettingStatementJpa(
                 paymentId,
                 liabilityId,
@@ -443,25 +494,14 @@ public class VirtualPosPaymentOffsettingTransactionalService {
                 currencyId,
                 paymentOffsetDate
         );
-        if (offsetingPair.getKey() != null && offsetingPair.getKey() > 0) {
-            log.info(
-                    "Direct offsetting successful for paymentId: {}, liabilityId: {}, offsetAmount: {}. Updating receivable with remaining amount.",
+        if (offsetingPair.getKey() == null || offsetingPair.getKey() <= 0) {
+            log.error(
+                    "Partial liability offsetting rejected for paymentId: {}, liabilityId: {}, offsetAmount: {}, checkAmount: {}: {}. Full checkAmount will be booked as a receivable.",
                     paymentId,
                     liabilityId,
-                    offsetAmount
-            );
-            concurrentHashMap.merge(
-                    paymentId,
-                    checkAmount.subtract(offsetAmount),
-                    BigDecimal::add
-            );
-            return true;
-        } else {
-            log.warn(
-                    "Direct offsetting failed for paymentId: {}, liabilityId: {}, offsetAmount: {}. Adding full checkAmount to receivable.",
-                    paymentId,
-                    liabilityId,
-                    offsetAmount
+                    offsetAmount,
+                    checkAmount,
+                    offsetingPair.getValue()
             );
             concurrentHashMap.merge(
                     paymentId,
@@ -470,6 +510,19 @@ public class VirtualPosPaymentOffsettingTransactionalService {
             );
             return false;
         }
+
+        log.info(
+                "Direct offsetting successful for paymentId: {}, liabilityId: {}, offsetAmount: {}. Updating receivable with remaining amount.",
+                paymentId,
+                liabilityId,
+                offsetAmount
+        );
+        concurrentHashMap.merge(
+                paymentId,
+                checkAmount.subtract(offsetAmount),
+                BigDecimal::add
+        );
+        return true;
     }
 
     /**
@@ -490,6 +543,8 @@ public class VirtualPosPaymentOffsettingTransactionalService {
         if (Objects.isNull(customerLiability)) {
             return null;
         }
+
+        entityManager.refresh(customerLiability);
 
         String json = customerLiabilityRepository.calculateLatePaymentAndInterestRateForOnlinePayment(liabilityId, initDate);
         if (StringUtils.isBlank(json)) {
@@ -551,7 +606,7 @@ public class VirtualPosPaymentOffsettingTransactionalService {
             Long billingGroupId,
             LocalDate occurrenceDate
     ) {
-        Long accountingPeriodId = virtualPosBillingGroupHelperService.fetchAccountPeriodId();
+        Long accountingPeriodId = billingGroupHelperService.fetchAccountPeriodIdForDateWithFallback(occurrenceDate);
 
         Currency currency = currencyRepository
                 .findByIdAndStatus(currencyId, List.of(NomenclatureItemStatus.ACTIVE))
@@ -631,8 +686,30 @@ public class VirtualPosPaymentOffsettingTransactionalService {
             query.setParameter(5, "system");
             query.setParameter(8, offsettingAmount);
             query.setParameter(9, currencyId);
-            query.setParameter(10, paymentOffsetDate);
+            query.setParameter(10, null); // pass null to let DB procedure handle date setting
             query.setParameter(11, OperationContext.OPO.name());
+
+            log.info(
+                    "Setting query parameters: [" +
+                            "PAYMENT Type: {}, " +
+                            "Payment ID: {}, " +
+                            "Liability ID: {}, " +
+                            "System User: {}, " +
+                            "System User: {}, " +
+                            "Offsetting Amount: {}, " +
+                            "Currency ID: {}, " +
+                            "Payment Offset Date: {}, " +
+                            "Context: {}]",
+                    DirectOffsettingSourceType.PAYMENT.name(),
+                    paymentId,
+                    liabilityId,
+                    "system",
+                    "system",
+                    offsettingAmount,
+                    currencyId,
+                    paymentOffsetDate,
+                    OperationContext.OPO.name()
+            );
 
             query.execute();
 
@@ -643,10 +720,19 @@ public class VirtualPosPaymentOffsettingTransactionalService {
 
             if ("OK".equals(message.get())) {
                 transactionId.set((Long) query.getOutputParameterValue(6));
+            } else {
+                log.error(
+                        "Liability offsetting failed for paymentId: {}, liabilityId: {}. Stored procedure message: [{}]",
+                        paymentId,
+                        liabilityId,
+                        message.get()
+                );
             }
 
         } catch (Exception e) {
-            log.error("An error occurred during liability offsetting: ", e);
+            log.error("An error occurred during liability offsetting for paymentId: {}, liabilityId: {}: ",
+                    paymentId, liabilityId, e);
+            message.set("Exception during offsetting: " + e.getMessage());
         }
 
         return Pair.of(transactionId.get(), message.get());
@@ -698,10 +784,18 @@ public class VirtualPosPaymentOffsettingTransactionalService {
 
             if ("OK".equals(message.get())) {
                 transactionId.set((Long) query.getOutputParameterValue(6));
+            } else {
+                log.error(
+                        "Receivable offsetting failed for paymentId: {}, receivableId: {}. Stored procedure message: [{}]",
+                        paymentId,
+                        receivableId,
+                        message.get()
+                );
             }
 
         } catch (Exception e) {
-            log.error("An error occurred during receivable offsetting: ", e);
+            log.error("An error occurred during receivable offsetting for paymentId: {}, receivableId: {}: ",
+                    paymentId, receivableId, e);
         }
 
         return Pair.of(transactionId.get(), message.get());

@@ -23,17 +23,4 @@ public class PowerSupplyDisconnectionReminderJobService {
         powerSupplyDisconnectionReminderService.documentGenerationJob();
     }
 
-    // EMAIL_SMS_ON_PAPER cascade: the delivery-report delays (receivable.rfd_delay) are applied by the jobs' query
-    @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.MINUTES)
-    @ExecutionTimeLogger(value = "PowerSupplyDisconnectionReminderEmailInProgressJob")
-    public void emailInProgress() {
-        powerSupplyDisconnectionReminderService.emailInProgressJob();
-    }
-
-    @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.MINUTES)
-    @ExecutionTimeLogger(value = "PowerSupplyDisconnectionReminderSmsInProgressJob")
-    public void smsInProgress() {
-        powerSupplyDisconnectionReminderService.smsInProgressJob();
-    }
-
 }

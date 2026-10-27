@@ -41,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -257,15 +256,9 @@ public class PaymentOffsettingTransactionalService {
                         "Full liability offset complete: {}",
                         liabilityCheckedDetails.getLiabilityId()
                 );
-                BigDecimal liveLfp = liabilityCurrentDetails.getLfpAmount();
-                BigDecimal initLfp = liabilityCheckedDetails.getLfpAmount();
-                boolean hasLfp = (liveLfp != null && liveLfp.compareTo(BigDecimal.ZERO) > 0)
-                        || (initLfp != null && initLfp.compareTo(BigDecimal.ZERO) > 0);
-                if (hasLfp) {
+                if (liabilityCurrentDetails.getLfpAmount() != null && liabilityCurrentDetails.getLfpAmount().compareTo(BigDecimal.ZERO) > 0) {
                     log.info(
-                            "Full liability offset complete. LFP present (live={}, init={}), starting late payment create and offset for liabilityId: {}",
-                            liveLfp,
-                            initLfp,
+                            "Full liability offset complete. LFP amount is greater than zero, starting late payment create and offset for liabilityId: {}",
                             liabilityCheckedDetails.getLiabilityId()
                     );
                     startLatePaymentLiabilityOffsetting(
@@ -288,87 +281,35 @@ public class PaymentOffsettingTransactionalService {
                     concurrentHashMap
             );
         } else {
-            // Principal decreased since init (e.g. another receivable covered part of the liability)
-            handleLiabilityDecreasedSinceInit(
-                    paymentId,
-                    currencyId,
-                    paymentOffsetDate,
-                    liabilityCurrentDetails,
-                    liabilityCheckedDetails,
-                    concurrentHashMap
+            // Case when the checked amount is greater than the current amount
+            log.info(
+                    "Checked amount is greater than current amount for liabilityId: {}. Performing partial liability offset.",
+                    liabilityCheckedDetails.getLiabilityId()
             );
-        }
-    }
-
-    /**
-     * Confirm-time handling when principal decreased since init.
-     * Remaining principal is covered by this payment (full clear of open balance). Per Solution 1,
-     * LPF from the init snapshot must still be generated and applied — otherwise the interest
-     * portion of the confirmed amount stays on the payment.
-     */
-    private void handleLiabilityDecreasedSinceInit(
-            Long paymentId,
-            Long currencyId,
-            LocalDateTime paymentOffsetDate,
-            CheckLiabilityDetails liabilityCurrentDetails,
-            EasyPayPaymentDetailsEntity liabilityCheckedDetails,
-            ConcurrentHashMap<Long, BigDecimal> concurrentHashMap
-    ) {
-        BigDecimal initLfp = liabilityCheckedDetails.getLfpAmount();
-        Long liabilityId = liabilityCheckedDetails.getLiabilityId();
-
-        log.info(
-                "Principal decreased since init for liabilityId: {}. current={}, initPrincipal={}, initLfp={}",
-                liabilityId,
-                liabilityCurrentDetails.getCurrentAmount(),
-                liabilityCheckedDetails.getAmount(),
-                initLfp
-        );
-
-        // Create LPF before covering remaining principal so interest calc still sees an open overdue liability
-        Long latePaymentLiabilityId = null;
-        if (initLfp != null && initLfp.compareTo(BigDecimal.ZERO) > 0) {
-            latePaymentLiabilityId = createLatePaymentFineAndLiability(
-                    liabilityId,
-                    paymentOffsetDate.toLocalDate(),
-                    initLfp
-            );
-        }
-
-        boolean principalCovered = offsetLiabilityPartialAmount(
-                paymentId,
-                liabilityId,
-                currencyId,
-                liabilityCurrentDetails.getCurrentAmount(),
-                liabilityCheckedDetails.getAmount(),
-                paymentOffsetDate,
-                concurrentHashMap
-        );
-
-        if (!principalCovered) {
-            return;
-        }
-
-        if (initLfp == null || initLfp.compareTo(BigDecimal.ZERO) <= 0) {
-            return;
-        }
-
-        if (latePaymentLiabilityId != null && latePaymentLiabilityId > 0) {
-            offsetLiabilityFullAmount(
+            boolean principalCovered = offsetLiabilityPartialAmount(
                     paymentId,
-                    latePaymentLiabilityId,
+                    liabilityCurrentDetails.getLiabilityId(),
                     currencyId,
-                    initLfp,
+                    liabilityCurrentDetails.getCurrentAmount(),
+                    liabilityCheckedDetails.getAmount(),
                     paymentOffsetDate,
                     concurrentHashMap
             );
-        } else {
-            log.warn(
-                    "LPF liability was not created for liabilityId: {}. Parking init LFP amount {} on receivable.",
-                    liabilityId,
-                    initLfp
-            );
-            concurrentHashMap.merge(paymentId, initLfp, BigDecimal::add);
+
+            if (principalCovered && liabilityCheckedDetails.getLfpAmount() != null && liabilityCheckedDetails.getLfpAmount().compareTo(BigDecimal.ZERO) > 0) {
+                log.info(
+                        "Principal reduced since init check. Offsetting init LFP amount for liabilityId: {}",
+                        liabilityCheckedDetails.getLiabilityId()
+                );
+                offsetInitLfpSnapshot(
+                        paymentId,
+                        currencyId,
+                        paymentOffsetDate,
+                        liabilityCurrentDetails,
+                        liabilityCheckedDetails,
+                        concurrentHashMap
+                );
+            }
         }
     }
 
@@ -421,8 +362,7 @@ public class PaymentOffsettingTransactionalService {
         BigDecimal remainingAfterPrincipal = received.subtract(currentPrincipal);
         Long latePaymentLiabilityId = createLatePaymentFineAndLiability(
                 liabilityCurrentDetails.getLiabilityId(),
-                paymentOffsetDate.toLocalDate(),
-                initLfp
+                paymentOffsetDate.toLocalDate()
         );
         if (latePaymentLiabilityId == null || latePaymentLiabilityId <= 0) {
             if (remainingAfterPrincipal.compareTo(BigDecimal.ZERO) > 0) {
@@ -444,6 +384,64 @@ public class PaymentOffsettingTransactionalService {
         }
     }
 
+    /**
+     * Creates a late payment fine and offsets the init-check LFP snapshot against the new LFP liability.
+     * Used when principal decreased between init and confirm ({@code comparison < 0}) so live vs init LFP
+     */
+    private void offsetInitLfpSnapshot(
+            Long paymentId,
+            Long currencyId,
+            LocalDateTime paymentOffsetDate,
+            CheckLiabilityDetails liabilityCurrentDetails,
+            EasyPayPaymentDetailsEntity liabilityCheckedDetails,
+            ConcurrentHashMap<Long, BigDecimal> concurrentHashMap
+    ) {
+        Long latePaymentLiabilityId = createLatePaymentFineAndLiability(
+                liabilityCurrentDetails.getLiabilityId(),
+                paymentOffsetDate.toLocalDate()
+        );
+        if (latePaymentLiabilityId != null && latePaymentLiabilityId > 0) {
+            offsetLiabilityFullAmount(
+                    paymentId,
+                    latePaymentLiabilityId,
+                    currencyId,
+                    liabilityCheckedDetails.getLfpAmount(),
+                    paymentOffsetDate,
+                    concurrentHashMap
+            );
+        } else {
+            concurrentHashMap.merge(
+                    paymentId,
+                    liabilityCheckedDetails.getLfpAmount(),
+                    BigDecimal::add
+            );
+        }
+    }
+
+    /**
+     * Initiates the late payment liability offsetting process based on the comparison of the late payment
+     * amount (LFP amount) from the current liability and the checked payment details. Depending on the
+     * comparison, it either offsets the full late payment amount, merges the amount into a concurrent map,
+     * or performs partial offsetting of the liability. If the late payment liability is created successfully,
+     * it proceeds with offsetting the full amount.
+     * This method operates within a transactional context (REQUIRED), meaning it participates in an
+     * existing transaction if one exists.
+     *
+     * @param paymentId               The ID of the payment being processed.
+     * @param currencyId              The currency ID for the payment.
+     * @param paymentOffsetDate       The date when the payment offset takes place.
+     * @param liabilityCurrentDetails The current liability details, including the late payment fine (LFP) amount.
+     * @param liabilityCheckedDetails The checked liability details, including the late payment fine (LFP) amount.
+     * @param concurrentHashMap       A map to track the accumulated offset amounts for each payment ID.
+     *                                The method follows these steps based on the comparison between the current late payment amount
+     *                                and the checked late payment amount:
+     *                                If the amounts are equal, it attempts to offset the full late payment liability amount. If the
+     *                                late payment liability is successfully created, it proceeds with the offset.
+     *                                If the current late payment amount is greater than the checked amount, it adds the checked
+     *                                amount to the concurrent map for further processing.
+     *                                If the checked late payment amount is greater than the current amount, it proceeds with partial
+     *                                liability offsetting based on the current late payment amount.
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public void startLatePaymentLiabilityOffsetting(
             Long paymentId,
@@ -461,24 +459,14 @@ public class PaymentOffsettingTransactionalService {
         // Compare the current amount of the liability with the checked amount to determine the next action
         Long latePaymentLiabilityId = createLatePaymentFineAndLiability(
                 liabilityCurrentDetails.getLiabilityId(),
-                paymentOffsetDate.toLocalDate(),
-                liabilityCheckedDetails.getLfpAmount()
+                paymentOffsetDate.toLocalDate()
         );
 
-        BigDecimal liveLfp = liabilityCurrentDetails.getLfpAmount();
-        BigDecimal initLfp = liabilityCheckedDetails.getLfpAmount();
-        if (liveLfp == null) {
-            liveLfp = BigDecimal.ZERO;
-        }
-        if (initLfp == null) {
-            initLfp = BigDecimal.ZERO;
-        }
-
-        int latePaymentComparison = liveLfp.compareTo(initLfp);
+        int latePaymentComparison = liabilityCurrentDetails.getLfpAmount().compareTo(liabilityCheckedDetails.getLfpAmount());
         log.info(
                 "Comparing amounts: current LFP amount = {}, checked LFP amount = {}",
-                liveLfp,
-                initLfp
+                liabilityCurrentDetails.getLfpAmount(),
+                liabilityCheckedDetails.getLfpAmount()
         );
 
         if (latePaymentComparison == 0) {
@@ -492,7 +480,7 @@ public class PaymentOffsettingTransactionalService {
                         paymentId,
                         latePaymentLiabilityId,
                         currencyId,
-                        initLfp,
+                        liabilityCheckedDetails.getLfpAmount(),
                         paymentOffsetDate,
                         concurrentHashMap
                 );
@@ -502,7 +490,7 @@ public class PaymentOffsettingTransactionalService {
                 );
                 concurrentHashMap.merge(
                         paymentId,
-                        initLfp,
+                        liabilityCheckedDetails.getLfpAmount(),
                         BigDecimal::add
                 );
             }
@@ -513,7 +501,7 @@ public class PaymentOffsettingTransactionalService {
             // Case when the current amount is greater than the checked amount
             concurrentHashMap.merge(
                     paymentId,
-                    initLfp,
+                    liabilityCheckedDetails.getLfpAmount(),
                     BigDecimal::add
             );
         } else {
@@ -521,19 +509,15 @@ public class PaymentOffsettingTransactionalService {
                     "Checked liability amount is greater than current amount. Proceeding to offset partial liability amount."
             );
             // Case when the checked amount is greater than the current amount
-            if (latePaymentLiabilityId != null && latePaymentLiabilityId > 0) {
-                offsetLiabilityPartialAmount(
-                        paymentId,
-                        latePaymentLiabilityId,
-                        currencyId,
-                        liveLfp,
-                        initLfp,
-                        paymentOffsetDate,
-                        concurrentHashMap
-                );
-            } else {
-                concurrentHashMap.merge(paymentId, initLfp, BigDecimal::add);
-            }
+            offsetLiabilityPartialAmount(
+                    paymentId,
+                    latePaymentLiabilityId,
+                    currencyId,
+                    liabilityCurrentDetails.getLfpAmount(),
+                    liabilityCheckedDetails.getLfpAmount(),
+                    paymentOffsetDate,
+                    concurrentHashMap
+            );
         }
     }
 
@@ -673,21 +657,6 @@ public class PaymentOffsettingTransactionalService {
             Long liabilityId,
             LocalDate initDate
     ) {
-        return createLatePaymentFineAndLiability(liabilityId, initDate, null);
-    }
-
-    /**
-     * Creates LPF + liability for online payment. When recalculation returns zero/empty but
-     * {@code fallbackAmount} from init is present, uses the init snapshot so interest confirmed
-     * by the payer is not left stranded on the payment.
-     * <p>Not annotated with {@code @Transactional}: only called via self-invocation from
-     * transactional callers (or the 2-arg proxy entry), so a local annotation would be a no-op.
-     */
-    public Long createLatePaymentFineAndLiability(
-            Long liabilityId,
-            LocalDate initDate,
-            BigDecimal fallbackAmount
-    ) {
         List<String> errorMessages = new ArrayList<>();
 
         CustomerLiability customerLiability = latePaymentFineService.getCustomerLiability(liabilityId);
@@ -696,19 +665,11 @@ public class PaymentOffsettingTransactionalService {
             return null;
         }
 
+        entityManager.refresh(customerLiability);
+
         String json = customerLiabilityRepository.calculateLatePaymentAndInterestRateForOnlinePayment(liabilityId, initDate);
         if (StringUtils.isBlank(json)) {
             log.warn("No JSON response received for late payment calculation for liabilityId: {}", liabilityId);
-            if (fallbackAmount != null && fallbackAmount.compareTo(BigDecimal.ZERO) > 0) {
-                log.warn("Using init LFP fallback amount {} for liabilityId {}", fallbackAmount, liabilityId);
-                return latePaymentFineService.createLatePaymentFineAndLiabilityFromOnlinePayment(
-                        customerLiability,
-                        fallbackAmount,
-                        initDate,
-                        errorMessages,
-                        List.of()
-                );
-            }
             return null;
         }
 
@@ -716,20 +677,6 @@ public class PaymentOffsettingTransactionalService {
             InterestCalculationResponseDTO interestCalc = objectMapper.readValue(json, InterestCalculationResponseDTO.class);
             BigDecimal latePaymentAmount = interestCalc.getCalculatedInterest();
             List<ResultItemDTO> resultRows = interestCalc.getResults();
-
-            if ((latePaymentAmount == null || latePaymentAmount.compareTo(BigDecimal.ZERO) <= 0)
-                    && fallbackAmount != null && fallbackAmount.compareTo(BigDecimal.ZERO) > 0) {
-                log.warn(
-                        "LPF recalc returned {} for liabilityId {}. Using init fallback amount {}",
-                        latePaymentAmount,
-                        liabilityId,
-                        fallbackAmount
-                );
-                latePaymentAmount = fallbackAmount;
-                if (resultRows == null) {
-                    resultRows = List.of();
-                }
-            }
 
             if (latePaymentAmount != null && latePaymentAmount.compareTo(BigDecimal.ZERO) > 0) {
                 log.info("Late payment amount calculated: {} for liabilityId: {}", latePaymentAmount, liabilityId);
@@ -781,8 +728,7 @@ public class PaymentOffsettingTransactionalService {
             Long billingGroupId,
             LocalDate occurrenceDate
     ) {
-        LocalDateTime date = LocalDateTime.now(ZoneId.of("Europe/Sofia"));
-        Long accountingPeriodId = billingGroupHelperService.fetchAccountPeriodId(date);
+        Long accountingPeriodId = billingGroupHelperService.fetchAccountPeriodIdForDateWithFallback(occurrenceDate);
 
         Currency currency = currencyRepository
                 .findByIdAndStatus(currencyId, List.of(NomenclatureItemStatus.ACTIVE))

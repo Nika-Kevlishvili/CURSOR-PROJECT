@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import bg.energo.phoenix.util.epb.BulgariaTimeUtils;
+
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 
@@ -25,15 +27,15 @@ import static bg.energo.phoenix.model.enums.billing.accountingsPeriods.Accountin
 public class AccountingPeriodsCreateJob {
     private final AccountingPeriodService accountingPeriodService;
 
-    @Scheduled(cron = "${accounting.period.creation.cron}")
+    @Scheduled(cron = "${accounting.period.creation.cron}", zone = "Europe/Sofia")
     @ExecutionTimeLogger(value = "AccountingPeriodsCreateJob")
     public void work() {
         try {
             log.debug("Accounting Period Adding");
-            YearMonth currentYearMonth = YearMonth.now();
-            LocalDateTime startOfMonth = currentYearMonth.atDay(1).atStartOfDay();
-            LocalDateTime endOfMonth = currentYearMonth.atEndOfMonth().atTime(23, 59, 59);
-            String name = String.format("ACCOUNTING%s%s", startOfMonth.getYear(), String.format("%02d", startOfMonth.getMonthValue()));
+            YearMonth currentYearMonth = BulgariaTimeUtils.currentYearMonthBulgaria();
+            LocalDateTime startOfMonth = BulgariaTimeUtils.bgStartOfMonthAsUtc(currentYearMonth);
+            LocalDateTime endOfMonth = BulgariaTimeUtils.bgEndOfMonthAsUtc(currentYearMonth);
+            String name = String.format("ACCOUNTING%s%s", currentYearMonth.getYear(), String.format("%02d", currentYearMonth.getMonthValue()));
 
             AccountingPeriods accountingPeriods = new AccountingPeriods();
             accountingPeriods.setName(name);

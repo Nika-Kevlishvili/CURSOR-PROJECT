@@ -18,10 +18,10 @@ import org.springframework.stereotype.Service;
 public class ProductContractStatusJob {
     private final ProductContractService productContractService;
 
-//    @PostConstruct
-//    public void init() {
-//        new Thread(this::work).start();
-//    }
+    @PostConstruct
+    public void init() {
+        new Thread(this::work).start();
+    }
     @Scheduled(cron = "0 0 0 * * *")
     @ExecutionTimeLogger(value = "ProductContractStatusJob")
     public void work() {

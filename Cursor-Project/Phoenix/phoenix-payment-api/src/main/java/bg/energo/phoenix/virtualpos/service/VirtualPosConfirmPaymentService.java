@@ -1,14 +1,13 @@
 package bg.energo.phoenix.virtualpos.service;
 
 import bg.energo.phoenix.model.CustomerWrapper;
-import bg.energo.phoenix.model.entity.Configuration;
 import bg.energo.phoenix.model.entity.receivable.collectionChannel.CollectionChannel;
-import bg.energo.phoenix.repository.ConfigurationRepository;
 import bg.energo.phoenix.repository.customer.CustomerDetailsRepository;
 import bg.energo.phoenix.repository.customer.CustomerRepository;
 import bg.energo.phoenix.repository.receivable.collectionChannel.CollectionChannelRepository;
 import bg.energo.phoenix.repository.receivable.customerLiability.CustomerLiabilityRepository;
 import bg.energo.phoenix.service.BillingGroupHelperService;
+import bg.energo.phoenix.util.epb.BulgariaTimeUtils;
 import bg.energo.phoenix.util.epb.EPBJsonUtils;
 import bg.energo.phoenix.utils.EPBFunctionUtils;
 import bg.energo.phoenix.utils.EPBSignatureUtils;
@@ -22,15 +21,15 @@ import bg.energo.phoenix.virtualpos.repository.VirtualPosPaymentDetailsRepositor
 import bg.energo.phoenix.virtualpos.repository.VirtualPosPaymentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -38,9 +37,9 @@ public class VirtualPosConfirmPaymentService extends VirtualPosBaseService {
 
     private final VirtualPosPaymentOffsettingTransactionalService paymentOffsettingTransactionalService;
     private final VirtualPosPaymentCreationTransactionalService paymentCreationTransactionalService;
-    private final CustomerLiabilityRepository customerLiabilityRepository;
     private final BillingGroupHelperService billingGroupHelperService;
     private final VirtualPosBillingGroupHelperService virtualPosBillingGroupHelperService;
+    private final TransactionTemplate transactionTemplate;
 
     public VirtualPosConfirmPaymentService(
             VirtualPosPaymentDetailsRepository virtualPosPaymentDetailRepository,
@@ -54,7 +53,7 @@ public class VirtualPosConfirmPaymentService extends VirtualPosBaseService {
             VirtualPosPaymentOffsettingTransactionalService paymentOffsettingTransactionalService,
             BillingGroupHelperService billingGroupHelperService,
             VirtualPosBillingGroupHelperService virtualPosBillingGroupHelperService,
-            ConfigurationRepository configurationRepository
+            PlatformTransactionManager transactionManager
     ) {
         super(
                 virtualPosPaymentDetailRepository,
@@ -62,18 +61,39 @@ public class VirtualPosConfirmPaymentService extends VirtualPosBaseService {
                 collectionChannelRepository,
                 customerDetailsRepository,
                 customerRepository,
-                virtualPosMapperService,
-                configurationRepository
+                customerLiabilityRepository,
+                virtualPosMapperService
         );
         this.paymentCreationTransactionalService = paymentCreationTransactionalService;
         this.paymentOffsettingTransactionalService = paymentOffsettingTransactionalService;
-        this.customerLiabilityRepository = customerLiabilityRepository;
         this.billingGroupHelperService = billingGroupHelperService;
         this.virtualPosBillingGroupHelperService = virtualPosBillingGroupHelperService;
+        this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
-    @Transactional
+    /**
+     * Public entry point. Runs the confirm work in a programmatic transaction and catches {@link DataAccessException}
+     * OUTSIDE it: a failing offsetting stored procedure aborts the database transaction, so the next statement fails
+     * with a persistence error. {@link TransactionTemplate#execute} rolls the transaction back and completes that
+     * rollback before rethrowing, so we can return a normal payment-protocol answer (STATUS 96) instead of letting
+     * the failure surface as an HTTP 500. Only database failures are caught — validation and other errors still
+     * propagate.
+     */
     public VirtualPosConfirmPaymentResponse confirmPay(VirtualPosConfirmPayRequest request, String requestCheckSum) {
+        try {
+            return transactionTemplate.execute(status -> doConfirmPay(request, requestCheckSum));
+        } catch (DataAccessException e) {
+            log.error("Confirm pay failed with a database error for TID: {}. Returning STATUS {}.",
+                    request.getTID(), VirtualPosStatusCode.GENERAL_ERROR.getCode(), e);
+            return createErrorResponse(
+                    VirtualPosStatusCode.GENERAL_ERROR,
+                    request.getTID(),
+                    "The payment could not be confirmed due to a processing error."
+            );
+        }
+    }
+
+    private VirtualPosConfirmPaymentResponse doConfirmPay(VirtualPosConfirmPayRequest request, String requestCheckSum) {
         log.info("Received confirm pay request: {}, requestCheckSum: {}", EPBJsonUtils.asJsonString(request), requestCheckSum);
 
         VirtualPosConfirmPaymentResponse responseAfterValidation = validateRequest(request, requestCheckSum);
@@ -188,16 +208,17 @@ public class VirtualPosConfirmPaymentService extends VirtualPosBaseService {
                 paymentEntity.getId()
         );
         log.info("Found {} payment details for TID: {}", paymentDetailsEntities.size(), request.getTID());
-        LocalDateTime date = EPBFunctionUtils.localDateTimeFromDateString(request.getDATE());
 
+        var paymentDate = EPBFunctionUtils.localDateTimeFromDateString(request.getDATE()).toLocalDate();
         Long paymentId = paymentCreationTransactionalService.createOnlinePayment(
                 request.getTOTAL(),
                 customerWrapper.customer(),
-                date.toLocalDate(),
-                billingGroupHelperService.fetchAccountPeriodId(date),
+                paymentDate,
+                billingGroupHelperService.fetchAccountPeriodIdForDateWithFallback(paymentDate),
                 collectionChannel,
                 virtualPosBillingGroupHelperService.fetchContractBillingGroupIdForCustomer(
-                        customerWrapper.billingGroupNumber(),
+                        customerWrapper.customer().getId(),
+                        paymentEntity.getBillingGroupNumber(),
                         paymentDetailsEntities
                 )
         );
@@ -211,12 +232,10 @@ public class VirtualPosConfirmPaymentService extends VirtualPosBaseService {
             );
             log.info("Payment confirmation details saved for TID: {} with payment ID: {}", request.getTID(), paymentId);
 
-            CompletableFuture.runAsync(
-                    () -> paymentOffsettingTransactionalService.startPaymentOffsetting(
-                            paymentDetailsEntities,
-                            paymentEntity,
-                            paymentId
-                    )
+            paymentOffsettingTransactionalService.startPaymentOffsetting(
+                    paymentDetailsEntities,
+                    paymentEntity,
+                    paymentId
             );
             log.info("Payment and liabilities offsetting process started for TID: {}", request.getTID());
 
@@ -265,15 +284,16 @@ public class VirtualPosConfirmPaymentService extends VirtualPosBaseService {
         );
         if (CollectionUtils.isNotEmpty(partialPaidDetailEntities)) {
             log.info("Found partial paid details for TID: {}. Creating online payment.", tid);
-            LocalDateTime date = EPBFunctionUtils.localDateTimeFromDateString(request.getDATE());
 
+            var paymentDate = EPBFunctionUtils.localDateTimeFromDateString(request.getDATE()).toLocalDate();
             Long paymentId = paymentCreationTransactionalService.createOnlinePayment(
                     request.getTOTAL(),
                     customerWrapper.customer(),
-                    date.toLocalDate(),
-                    billingGroupHelperService.fetchAccountPeriodId(date),
+                    paymentDate,
+                    billingGroupHelperService.fetchAccountPeriodIdForDateWithFallback(paymentDate),
                     collectionChannel,
                     virtualPosBillingGroupHelperService.fetchContractBillingGroupIdForCustomer(
+                            customerWrapper.customer().getId(),
                             paymentEntity.getBillingGroupNumber(),
                             partialPaidDetailEntities
                     )
@@ -289,12 +309,10 @@ public class VirtualPosConfirmPaymentService extends VirtualPosBaseService {
                 );
                 log.info("Payment confirmation details saved for TID: {}", tid);
 
-                CompletableFuture.runAsync(
-                        () -> paymentOffsettingTransactionalService.startPaymentOffsetting(
-                                partialPaidDetailEntities,
-                                paymentEntity,
-                                paymentId
-                        )
+                paymentOffsettingTransactionalService.startPaymentOffsetting(
+                        partialPaidDetailEntities,
+                        paymentEntity,
+                        paymentId
                 );
                 log.info("Payment and liabilities offsetting process started for TID: {}", tid);
 
@@ -333,10 +351,16 @@ public class VirtualPosConfirmPaymentService extends VirtualPosBaseService {
             }
         }
         if (totalPaidAmount.equals(totalRequestAmount)) {
-            return virtualPosPaymentDetailRepository.findByLiabilityIdInAndVirtualPosPaymentId(
-                    partialPaidLiabilities,
-                    virtualPosPaymentId
-            );
+            List<VirtualPosPaymentDetailsEntity> partialPaidEntities =
+                    virtualPosPaymentDetailRepository.findByLiabilityIdInAndVirtualPosPaymentId(
+                            partialPaidLiabilities,
+                            virtualPosPaymentId
+                    );
+
+            if (CollectionUtils.isNotEmpty(partialPaidEntities)
+                    && partialPaidEntities.size() == partialPaidLiabilities.size()) {
+                return partialPaidEntities;
+            }
         }
         return null;
     }
@@ -369,14 +393,7 @@ public class VirtualPosConfirmPaymentService extends VirtualPosBaseService {
         log.info("Validating request checksum...");
         String tid = request.getTID();
 
-        Optional<Configuration> currentConfiguration = configurationRepository.findLatestConfiguration();
-        String secretKeyFromConfig = null;
-        if (currentConfiguration.isPresent()) {
-            secretKeyFromConfig = currentConfiguration.get().getVirtualPosSecretKey();
-        }
-        String finalSecretKey = secretKeyFromConfig == null ? secretKey : secretKeyFromConfig;
-
-        if (EPBSignatureUtils.isInvalidVirtualPosPaySignature(request, requestCheckSum, finalSecretKey)) {
+        if (EPBSignatureUtils.isInvalidVirtualPosPaySignature(request, requestCheckSum, secretKey)) {
             return createErrorResponse(
                     VirtualPosStatusCode.INVALID_CHECKSUM,
                     tid,
@@ -410,7 +427,7 @@ public class VirtualPosConfirmPaymentService extends VirtualPosBaseService {
             );
         }
 
-        if (localDateTime.isAfter(LocalDateTime.now(ZoneId.of("Europe/Sofia")))) {
+        if (localDateTime.isAfter(BulgariaTimeUtils.nowBulgaria())) {
             return createErrorResponse(
                     VirtualPosStatusCode.GENERAL_ERROR,
                     tid,

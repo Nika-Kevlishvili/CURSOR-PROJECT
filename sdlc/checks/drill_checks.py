@@ -7,6 +7,7 @@ Imported by drill_hooks.py, which owns the Drill harness, the report and the exi
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -16,6 +17,14 @@ ROOT = Path(__file__).resolve().parents[2]
 CHECKS = ROOT / "sdlc/checks"
 
 
+def _extended(path: Path) -> str:
+    """Windows MAX_PATH is 260. The \\\\?\\ prefix is how a copy of this tree can include long names."""
+    text = os.path.abspath(path)
+    if os.name == "nt" and not text.startswith("\\\\?\\"):
+        return "\\\\?\\" + text
+    return text
+
+
 def tracked_copy(dst: Path, root: Path = ROOT) -> Path:
     """A hermetic copy of the working tree as git sees it, in a fresh repository.
 
@@ -23,14 +32,28 @@ def tracked_copy(dst: Path, root: Path = ROOT) -> Path:
     a tracked file may already link to a new file that is not committed yet, and leaving that
     file out made a clean control fail on a dirty tree (engine assessment B5). Ignored files —
     a local .env, logs — never leak into a drill. Works from a git worktree too (there .git is
-    a file, not a folder).
+    a file, not a folder). Names come from git -z so a non-ASCII path is not quoted, and on
+    Windows the copy uses the extended-length prefix so a long EnergoTS path is not dropped.
     """
-    files = subprocess.run(["git", "-C", str(root), "ls-files", "--cached", "--others", "--exclude-standard"],
-                           capture_output=True, text=True, check=True).stdout
-    for rel in files.splitlines():
-        if (root / rel).is_file():
-            (dst / rel).parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(root / rel, dst / rel)
+    files = subprocess.run(
+        ["git", "-C", str(root), "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+        capture_output=True, check=True).stdout
+    for raw in files.split(b"\0"):
+        if not raw:
+            continue
+        rel = raw.decode("utf-8", "surrogateescape")
+        src = root / rel
+        if not os.path.isfile(_extended(src)):
+            continue
+        dest = dst / rel
+        parent = _extended(dest.parent)
+        try:
+            os.makedirs(parent, exist_ok=True)
+        except OSError:
+            # Windows can raise WinError 145 when the extended path already exists and is not empty.
+            if not os.path.isdir(parent):
+                raise
+        shutil.copy2(_extended(src), _extended(dest))
     subprocess.run(["git", "init", "-q", str(dst)], check=True)
     return dst
 
@@ -116,7 +139,9 @@ def drill_artifact_checks(drill, scratch: Path) -> None:
 
 
 def script(name: str, *args: str) -> subprocess.CompletedProcess:
-    return subprocess.run([sys.executable, str(CHECKS / name), *args], capture_output=True, text=True, timeout=60)
+    env = dict(os.environ, PYTHONIOENCODING="utf-8")
+    return subprocess.run([sys.executable, str(CHECKS / name), *args], capture_output=True, text=True,
+                          encoding="utf-8", errors="replace", env=env, timeout=60)
 
 
 def drill_memory_hygiene(drill, scratch: Path) -> None:

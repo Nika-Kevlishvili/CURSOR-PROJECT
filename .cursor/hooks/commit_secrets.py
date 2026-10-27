@@ -5,7 +5,8 @@ the built-in patterns (always run, no dependencies) and gitleaks when it is inst
 the answer names the scanners that actually ran. A scan that cannot run raises, and the
 adapter blocks — no evidence is not a pass. A commit that would include anything not yet
 staged (`git add … && git commit`, `-a`, `-i`, `-o`, `-p`, file names) is blocked too,
-because the scan only sees what is already staged.
+because the scan only sees what is already staged. `cd` and `git -C` select the
+repository that is scanned; the session directory is the default when neither is present.
 """
 from __future__ import annotations
 
@@ -15,7 +16,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from guard import git_calls, segments_of  # noqa: E402
+from guard import GIT_OPTIONS_WITH_VALUE, git_calls, segments_of  # noqa: E402
 from secret_patterns import find_secrets, is_secret_file  # noqa: E402
 
 MARKER = "ASTERBIT-SECRETS"
@@ -77,6 +78,48 @@ def gitleaks_scan(cwd: str) -> tuple[str, list[str]]:
     raise RuntimeError(f"gitleaks exited {result.returncode}")
 
 
+def _absolute(base: str, raw: str) -> str:
+    return os.path.normpath(raw if os.path.isabs(raw) else os.path.join(base, raw))
+
+
+def commit_worktrees(command: str, cwd: str) -> list[str]:
+    """Directories a `git commit` in this command writes, after `cd` and `git -C`.
+
+    The session cwd is not enough: `cd other && git commit` and `git -C other commit`
+    stage into `other`. A relative `cd` or `-C` is resolved from the directory in force
+    at that point in the command.
+    """
+    here = cwd
+    found: list[str] = []
+    for segment in segments_of(command):
+        if not segment:
+            continue
+        if os.path.basename(segment[0]) == "cd" and len(segment) >= 2 and not segment[1].startswith("-"):
+            here = _absolute(here, segment[1])
+            continue
+        index = 0
+        while index < len(segment):
+            if os.path.basename(segment[index]) != "git":
+                index += 1
+                continue
+            work, cursor = here, index + 1
+            while cursor < len(segment) and segment[cursor].startswith("-"):
+                option = segment[cursor]
+                if option == "-C" and cursor + 1 < len(segment):
+                    work = _absolute(here, segment[cursor + 1])
+                    cursor += 2
+                    continue
+                if option.startswith("-C="):
+                    work = _absolute(here, option.split("=", 1)[1])
+                    cursor += 1
+                    continue
+                cursor += 2 if option in GIT_OPTIONS_WITH_VALUE else 1
+            if cursor < len(segment) and segment[cursor] == "commit":
+                found.append(os.path.normpath(work))
+            index = cursor + 1 if cursor < len(segment) else cursor
+    return list(dict.fromkeys(found))
+
+
 def check(command: str, cwd: str) -> tuple[int, str]:
     """(0, "") when the command makes no commit; (0, scanners used) when the staged changes are clean;
     (2, reason) when the commit is blocked. Raises when the scan cannot run — the caller blocks."""
@@ -89,10 +132,14 @@ def check(command: str, cwd: str) -> tuple[int, str]:
         why = reason or "files are staged in the same command"
         return 2, (f"{MARKER}: blocked — {why}, so the secret scan cannot see them. Stage with `git add <files>` "
                    "first, then run `git commit -m …` (or `-F file`) as a separate command.")
-    findings = builtin_scan(cwd)
-    gitleaks_label, gitleaks_findings = gitleaks_scan(cwd)
+    roots = commit_worktrees(command, cwd) or [cwd]
+    findings: list[str] = []
+    gitleaks_label = "gitleaks not installed"
+    for root in roots:
+        findings += builtin_scan(root)
+        gitleaks_label, gitleaks_findings = gitleaks_scan(root)
+        findings += gitleaks_findings
     scanners = f"built-in patterns + {gitleaks_label}"
-    findings += gitleaks_findings
     if findings:
         return 2, "\n  ".join([f"{MARKER}: blocked — possible secret in the commit ({scanners}):", *findings])
     return 0, f"{MARKER}: staged changes are clean ({scanners})."

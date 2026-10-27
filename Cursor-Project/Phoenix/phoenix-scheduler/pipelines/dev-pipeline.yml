@@ -7,7 +7,7 @@ stages:
 variables:
   DOCKER_DRIVER: overlay
   IMAGE_NAME: git.domain.internal/asterbit/phoenix-scheduler
-  CONTAINER_PORT: 8095
+  CONTAINER_PORT: 8093
   APP_NAME: phoenix-scheduler-app
   serverUrl: http://10.236.20.11:8098
   profile: dev
@@ -46,7 +46,7 @@ container-deploy:
   stage: deploy
   script:
     - sudo docker rm -f $APP_NAME > /dev/null 2>&1
-    - sudo docker run -m 7g --memory-swap 10g -v /data2:/data -v /phoenix/xenergy:/usr/share/xEnergie/reports -v /data:/data -v /Phxsign_140:/Phxsign_140 -v /phoenix/cert/:/usr/share/certs/ -v /phoenix/jsingpdf/:/usr/share/jsingpdf/ -v /usr/share/fonts:/usr/share/fonts --env serverUrl=$serverUrl --env profile=$profile
+    - sudo docker run -m 7g --memory-swap 10g -v /phoenix/xenergy:/usr/share/xEnergie/reports -v /data:/data -v /Phxsign_140:/Phxsign_140 -v /phoenix/cert/:/usr/share/certs/ -v /phoenix/jsingpdf/:/usr/share/jsingpdf/ -v /usr/share/fonts:/usr/share/fonts --env serverUrl=$serverUrl --env profile=$profile
       -p $CONTAINER_PORT:8080 -d --restart unless-stopped  --name $APP_NAME $IMAGE_NAME
     - sudo docker system prune -f
   tags:

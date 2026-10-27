@@ -44,20 +44,11 @@ public class SalesPortalExpressContractController {
                     with a single option per adjustable field, only these are required:
                     - `expressContractType`
                     - `expressContractParameters.productId` / `productVersionId`
-                    - `expressContractParameters.subStatus` (`SIGNED_BY_BOTH_SIDES` or `SIGNED_BY_CUSTOMER`)
                     - `customer.identifier`
                     - `customer.systemSourceId`
                     - `podDetailIds`
 
-                    `subStatus` = `SIGNED_BY_BOTH_SIDES` makes `signingDate` mandatory; an omitted date is
-                    set to today. `subStatus` = `SIGNED_BY_CUSTOMER` does not use `signingDate`.
-
-                    `expressContractParameters.contractNumber` may be omitted (the system generates
-                    PREFIX + origin digit + YYMM + six-digit serial) or supplied in that same format.
-                    Origin digit is 1 for `PHOENIX`, 2 for `SALES_PORTAL` and `SELF_SERVICE_PORTAL`,
-                    and 3 for `VCOK`.
-
-                    Omitted fields are auto-filled (estimatedTotalConsumption from
+                    Omitted fields are auto-filled (signingDate=today, estimatedTotalConsumption from
                     CONSUMER PODs, customer profile from DB, productParameters from single-option product
                     version, proxyRequest=[]). Values that **are** provided are validated and never overwritten.
                     A partial `customer.privateCustomerDetails` (e.g. only `kycPassed`) still gets omitted
@@ -65,9 +56,9 @@ public class SalesPortalExpressContractController {
                     `expressContractParameters.bankingDetails` may be omitted entirely — the contract is then
                     created without direct debit (`bankId` / `iban` are only required when `directDebit: true`).
 
-                    `customer.systemSourceId` is **mandatory**. Allowed values are `PHOENIX`,
-                    `SALES_PORTAL`, `SELF_SERVICE_PORTAL` and `VCOK`. The value is saved on the contract
-                    and on the customer and communication data created from the request.
+                    `customer.systemSourceId` is **mandatory** and must be `SALES_PORTAL` or
+                    `SELF_SERVICE_PORTAL` (PHN-3011); it drives the origin digit of the generated contract
+                    number — digit 2 for `SALES_PORTAL`.
 
                     ### When `customer.identifier` is NOT yet in Phoenix
 
@@ -128,8 +119,7 @@ public class SalesPortalExpressContractController {
                                                       "expressContractType": "PRODUCT",
                                                       "expressContractParameters": {
                                                         "productId": 44,
-                                                        "productVersionId": 1,
-                                                        "subStatus": "SIGNED_BY_BOTH_SIDES"
+                                                        "productVersionId": 1
                                                       },
                                                       "customer": {
                                                         "identifier": "7007178018",
@@ -146,7 +136,6 @@ public class SalesPortalExpressContractController {
                                                       "expressContractParameters": {
                                                         "productId": 44,
                                                         "productVersionId": 1,
-                                                        "subStatus": "SIGNED_BY_BOTH_SIDES",
                                                         "procurementLaw": false,
                                                         "signingDate": "2026-08-21",
                                                         "estimatedTotalConsumption": 12.000,
@@ -192,8 +181,7 @@ public class SalesPortalExpressContractController {
                                                       "expressContractType": "PRODUCT",
                                                       "expressContractParameters": {
                                                         "productId": 44,
-                                                        "productVersionId": 1,
-                                                        "subStatus": "SIGNED_BY_BOTH_SIDES"
+                                                        "productVersionId": 1
                                                       },
                                                       "customer": {
                                                         "identifier": "9505124512",
@@ -241,7 +229,6 @@ public class SalesPortalExpressContractController {
                                                       "expressContractParameters": {
                                                         "productId": 44,
                                                         "productVersionId": 1,
-                                                        "subStatus": "SIGNED_BY_BOTH_SIDES",
                                                         "signingDate": "2026-08-21",
                                                         "estimatedTotalConsumption": 12.000,
                                                         "bankingDetails": { "directDebit": true, "bankId": 1000, "iban": "BG80BNBG96611020345678" }

@@ -7,12 +7,15 @@ import bg.energo.phoenix.model.entity.EntityStatus;
 import bg.energo.phoenix.model.entity.receivable.customerLiability.CustomerLiability;
 import bg.energo.phoenix.repository.billing.accountingPeriods.AccountingPeriodsRepository;
 import bg.energo.phoenix.repository.receivable.customerLiability.CustomerLiabilityRepository;
+import bg.energo.phoenix.util.epb.BulgariaTimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 
@@ -78,11 +81,36 @@ public class BillingGroupHelperService {
      * @return the ID of the accounting period valid for the current date and time.
      * @throws DomainEntityNotFoundException if no accounting period is found for the current date and time.
      */
-    public Long fetchAccountPeriodId(LocalDateTime paymentDate) {
+    public Long fetchAccountPeriodId() {
+        return fetchAccountPeriodIdForDate(LocalDate.now());
+    }
+
+    /**
+     * Retrieves the ID of the open accounting period that contains the given date.
+     *
+     * @param date the date used to resolve the accounting period
+     * @return the ID of the matching open accounting period
+     * @throws DomainEntityNotFoundException if no open accounting period exists for the given date
+     */
+    public Long fetchAccountPeriodIdForDate(LocalDate date) {
         return accountingPeriodsRepository
-                .findAccountingPeriodsByDate(paymentDate)
+                .findAccountingPeriodsByDate(BulgariaTimeUtils.bgStartOfDayAsUtc(date))
                 .map(CacheObject::getId)
-                .orElseThrow(() -> new DomainEntityNotFoundException("Accounting period not found!;"));
+                .orElseThrow(() -> new DomainEntityNotFoundException(
+                        "Accounting period not found for date [%s];".formatted(date)
+                ));
+    }
+
+    public Long fetchAccountPeriodIdForDateWithFallback(LocalDate date) {
+        return accountingPeriodsRepository
+                .findAccountingPeriodsByDate(BulgariaTimeUtils.bgStartOfDayAsUtc(date))
+                .map(CacheObject::getId)
+                .orElseGet(() -> accountingPeriodsRepository
+                        .findAccountingPeriodsByDate(LocalDateTime.now(ZoneOffset.UTC))
+                        .map(CacheObject::getId)
+                        .orElseThrow(() -> new DomainEntityNotFoundException(
+                                "Accounting period not found for date [%s] or current date;".formatted(date)
+                        )));
     }
 
     /**

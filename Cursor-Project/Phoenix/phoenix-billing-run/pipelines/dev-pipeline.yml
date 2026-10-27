@@ -45,7 +45,7 @@ container-deploy:
   stage: deploy
   script:
     - sudo docker rm -f $APP_NAME > /dev/null 2>&1
-    - sudo docker run -v /data2:/data -v /usr/share/fonts:/usr/share/fonts --env serverUrl=$serverUrl --env profile=$profile -d --restart unless-stopped --name $APP_NAME $IMAGE_NAME
+    - sudo docker run -v /data:/data -v /Phxsign_140:/Phxsign_140 -v /phoenix/cert/:/usr/share/certs/ -v /phoenix/jsingpdf/:/usr/share/jsingpdf/  -v /usr/share/fonts:/usr/share/fonts --env serverUrl=$serverUrl --env profile=$profile -d --restart unless-stopped --name $APP_NAME $IMAGE_NAME
     - echo "Exposed on $serverUrl"
     - sudo docker system prune -f
   tags:

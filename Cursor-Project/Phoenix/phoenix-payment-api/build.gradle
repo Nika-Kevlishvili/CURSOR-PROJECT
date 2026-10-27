@@ -9,8 +9,8 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
 def profile = project.hasProperty('profile') ? project.getProperty('profile') : 'dev'
-def devVersion = '1.39.85-SNAPSHOT'
-def testVersion = '0.0.26'
+def devVersion = '1.35.99-SNAPSHOT'
+def testVersion = '0.0.61'
 
 //java {
 //	toolchain {
@@ -60,7 +60,7 @@ repositories {
 }
 
 dependencies {
-	implementation group: "bg.energo", name: "phoenix-core-lib2", version: "${coreLibVersion}"
+	implementation group: "bg.energo", name: "phoenix-core-lib", version: "${coreLibVersion}"
 //	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
 //	implementation 'com.sun.xml.bind:jaxb-impl:4.0.1'
 //	implementation 'javax.xml.bind:jaxb-api:2.3.1'
@@ -121,15 +121,15 @@ tasks.named('test') {
 tasks.register('clearDependencyCache') {
 	doLast {
 		def startNames = []
-		fileTree("${rootProject.gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/bg.energo").visit { details ->
+		fileTree("${rootProject.gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/bg.energo").visit { FileVisitDetails details ->
 			startNames << details.file.path
 		}
 		println("startNames ${startNames}")
 
-		project.delete("${rootProject.gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/bg.energo/phoenix-core-lib2")
-		println("${rootProject.gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/bg.energo/phoenix-core-lib2")
+		project.delete("${rootProject.gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/bg.energo/phoenix-core-lib")
+		println("${rootProject.gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/bg.energo/phoenix-core-lib")
 		def names = []
-		fileTree("${rootProject.gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/bg.energo").visit { details ->
+		fileTree("${rootProject.gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/bg.energo").visit { FileVisitDetails details ->
 			names << details.file.path
 		}
 		println("names ${names}")

@@ -214,34 +214,4 @@ public class SalesPortalContractController {
         return salesPortalService.getContractOutgoingDocument(fileId);
     }
 
-    @GetMapping("/additional-document/{fileId}")
-    @Operation(
-            summary = "Download external additional document",
-            description = """
-                    Downloads an additional document that is marked External and linked to a product contract.
-
-                    **Auth:** OAuth2 client-credentials Bearer JWT.
-
-                    **Path:** `fileId` — additional document id from `additionalDocuments` on
-                    `GET /product-contract/{id}/version/{versionID}`.
-
-                    Documents marked Internal, deleted documents, and documents not linked to a contract
-                    are not returned.
-
-                    Returns **400** with `errorCode: DOMAIN_ENTITY_NOT_FOUND` when the file cannot be downloaded.""",
-            security = @SecurityRequirement(name = "bearer-token"))
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "File bytes with Content-Disposition attachment header.",
-                    content = @Content(mediaType = "application/octet-stream",
-                            schema = @Schema(type = "string", format = "binary")))
-    })
-    @SalesPortalStandardApiResponses
-    public HttpEntity<ByteArrayResource> getAdditionalDocument(
-            @PathVariable("fileId") Long fileId
-    ) {
-        return salesPortalService.getAdditionalDocument(fileId);
-    }
-
 }

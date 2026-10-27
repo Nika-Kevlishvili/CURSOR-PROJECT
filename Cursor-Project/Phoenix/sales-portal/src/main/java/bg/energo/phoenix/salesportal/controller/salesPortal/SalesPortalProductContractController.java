@@ -189,11 +189,7 @@ public class SalesPortalProductContractController {
             summary = "Get contract version detail",
             description = """
                     Returns full detail for a product contract version: delivery/payment methods, product,
-                    PODs, customer, business contacts, documents, external additional documents, and signing date.
-
-                    `additionalDocuments` lists only additional documents marked External (`fileId`, `name`).
-                    Additional documents marked Internal are omitted. Download an external additional document
-                    with `GET /contract/additional-document/{fileId}`.
+                    PODs, customer, business contacts, documents, and signing date.
 
                     **Auth:** OAuth2 client-credentials Bearer JWT.
 

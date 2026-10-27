@@ -12,7 +12,7 @@ sourceCompatibility = '17'
 def eproSnapshotDomain = "https://nexus.energo-pro.bg//repository/epro-maven-snapshots/"
 def eproReleaseDomain = "https://nexus.energo-pro.bg/repository/epro-maven-releases/"
 def profile = project.hasProperty('profile') ? project.getProperty('profile') : 'dev'
-def devVersion = '1.39.85-SNAPSHOT'
+def devVersion = '1.35.98-SNAPSHOT'
 def testVersion = '0.0.27'
 
 java {
@@ -63,7 +63,7 @@ dependencyManagement {
 }
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation (group: "bg.energo", name: "phoenix-core-lib2", version: "${coreLibVersion}")
+	implementation (group: "bg.energo", name: "phoenix-core-lib", version: "${coreLibVersion}")
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -73,12 +73,4 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
-}
-
-jar {
-    archiveBaseName = 'phoenix-mass-import'
-}
-
-bootJar {
-    archiveBaseName = 'phoenix-mass-import'
 }

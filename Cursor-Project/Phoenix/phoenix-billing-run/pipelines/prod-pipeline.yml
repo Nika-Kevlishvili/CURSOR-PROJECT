@@ -42,7 +42,7 @@ container-deploy:
   stage: deploy
   script:
     - sudo docker rm -f $APP_NAME > /dev/null 2>&1
-    - sudo docker run -v /usr/share/fonts:/usr/share/fonts -v /data2:/data --env serverUrl=$serverUrl --env vault_secret=$vault_secret --env profile=$profile -d --restart unless-stopped --name $APP_NAME $IMAGE_NAME
+    - sudo docker run -v /usr/share/fonts:/usr/share/fonts -v /data:/data --env serverUrl=$serverUrl --env vault_secret=$vault_secret --env profile=$profile -d --restart unless-stopped --name $APP_NAME $IMAGE_NAME
     - sudo docker system prune -f
   tags:
     - production_billing

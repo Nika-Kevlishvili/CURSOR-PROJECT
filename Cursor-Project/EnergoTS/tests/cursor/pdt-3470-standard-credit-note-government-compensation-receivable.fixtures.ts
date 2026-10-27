@@ -295,7 +295,14 @@ export function pdt3470PortalExtraLinks(opts: {
  */
 export async function buildPdt3470IapRealChain(
   fx: Pdt3470Fx,
-  opts: { includeUnrelatedPod?: boolean; iapExactAmount?: number; volumeKwh?: number; anchor?: Pdt2376BillingAnchor } = {},
+  opts: {
+    includeUnrelatedPod?: boolean;
+    iapExactAmount?: number;
+    volumeKwh?: number;
+    anchor?: Pdt2376BillingAnchor;
+    /** Overrides the period-end invoice and tax-event dates. Must fall inside the anchor period. */
+    invoiceDate?: string;
+  } = {},
 ): Promise<Pdt3470IapReadyChain> {
   const { Request, GeneratePayload, Responses, Endpoints } = fx;
   const includeUnrelatedPod = opts.includeUnrelatedPod === true;
@@ -305,7 +312,10 @@ export async function buildPdt3470IapRealChain(
   // period invoice below the interim so the document is a CREDIT_NOTE.
   const volumeKwh = opts.volumeKwh ?? 1;
 
-  const anchor = opts.anchor ?? (await resolvePdt3470OpenAnchor(Request));
+  const resolvedAnchor = opts.anchor ?? (await resolvePdt3470OpenAnchor(Request));
+  const anchor = opts.invoiceDate
+    ? { ...resolvedAnchor, invoiceDate: opts.invoiceDate, taxEventDate: opts.invoiceDate }
+    : resolvedAnchor;
   const documentPeriod = monthStartFromPeriod(anchor.profileStart);
 
   const billed = await test.step('Precondition: billed legal customer', async () =>
