@@ -73,16 +73,16 @@ Ask only what is still unknown. Do not re-ask a value already in the chat, the s
 
 4. **Regression Scope** (`customfield_11285`) on **each** case that will be created. Before assigning any value, read **`Cursor-Project/docs/regression-scope-method.md`** in full, including **What is created on the REG board**, the same-area table, and the rule that a bare create on an HIGHEST process stays in that process. The visual is `Cursor-Project/docs/regression-scope-pattern.html`. Read the summary and the expected result. Name the outcome the steps assert. The first yes fixes the rank. If the summary and the steps protect different outcomes, rank the outcome the steps assert and say so in the reply. A rank already chosen at test-case generation is reused only when it matches this read. If it does not, the method wins.
 
-   Rank every scenario. Register one case per distinct outcome inside that rank. The section **What is created on the REG board** defines a same outcome: the same wrong balance, billed party, or supply flag, with only a count, a period, a second object of the same kind, or an extra error text changing. Do not create REG issues for those variants. Leave them in the source markdown. Fold a check that is one more call on the same setup into the representative case. Do not move a HIGHEST variant to Version 1.1 or Version 1.2 to shrink the first wave. Do not invent LOW. HIGHEST is Version 1, and that case runs in the first wave.
+   Rank every scenario. Register one case per distinct outcome inside that rank. The section **What is created on the REG board** defines a same outcome: the same wrong balance, billed party, or supply flag, with only a count, a period, a second object of the same kind, or an extra error text changing. Do not create REG issues for those variants. Leave them in the source markdown. Fold a check that is one more call on the same setup into the representative case. Do not move a HIGHEST variant to Version 1.1 or Version 1.2 to shrink the first wave. Do not invent a LOW Regression Scope. HIGHEST is Version 1, and that case runs in the first wave. Priority still follows the rank in the table below.
 
-   | Rank from the method | Jira value | Option id |
-   |----------------------|------------|-----------|
-   | HIGHEST | `Version 1` | `10454` |
-   | HIGH | `Version 1.1` | `10455` |
-   | MEDIUM | `Version 1.2` | `10456` |
-   | Out of scope | omit the field | — |
+   | Rank from the method | Regression Scope | Option id | Priority |
+   |----------------------|------------------|-----------|----------|
+   | HIGHEST | `Version 1` | `10454` | `Highest` |
+   | HIGH | `Version 1.1` | `10455` | `High` |
+   | MEDIUM | `Version 1.2` | `10456` | `Medium` |
+   | Out of scope | omit the field | — | `Low` |
 
-   Do not ask which Version to use. HIGHEST, HIGH, and MEDIUM are written from the method with no scope question. Out of scope means listing, sorting, paging, a screen, a field format, or a group that does not block contract create and does not post money. For each out-of-scope case, ask once whether to create it. **No** skips that case. **Yes** creates it and leaves **Regression Scope** empty. Same-outcome variants are not created and are not asked. Do not copy the topic ticket's scope. Do not invent a version.
+   Do not ask which Version or which Priority to use. HIGHEST, HIGH, and MEDIUM are written from the method with no scope question. **Priority** is that same rank, passed as the `priority` name on `createJiraIssue`. Out of scope means listing, sorting, paging, a screen, a field format, or a group that does not block contract create and does not post money. For each out-of-scope case, ask once whether to create it. **No** skips that case. **Yes** creates it, leaves **Regression Scope** empty, and sets Priority to `Low`. Same-outcome variants are not created and are not asked. Do not copy the topic ticket's scope. Do not invent a version. Do not invent a LOW Regression Scope. Do not leave Priority at Jira's default.
 
 5. **Topic subtask**, once per request. Test Case is not a subtask. Link with **Relates** to the topic's **subtask** only. Do not link the parent task, and do not set the parent field.
    - Determine the subject first. Use a REG key the user already named. Otherwise search `project = REG AND issuetype != "Test Case" AND summary ~ "<topic>"`. One clear match: use it. Zero or several matches: ask for the REG topic key and wait.
@@ -130,6 +130,7 @@ Stay on `cursor`. Do not checkout, switch, merge, pull, or rebase. From `Cursor-
 |----------|--------|
 | `projectKey` | `REG` |
 | `issueType` | `Test Case` |
+| `priority` | Same rank as Regression Scope: `Highest` for Version 1, `High` for Version 1.1, `Medium` for Version 1.2, `Low` when scope is omitted. Name only. Do not ask. |
 | `summary` | Case title |
 | `description` | Filled from the description template section. Markdown. |
 | `labels` | `Backend_Automation` for `TC-BE-*` or a backend spec. `Frontend_Automation` for `TC-FE-*` or a frontend spec. If the layer is unclear, ask. |
@@ -140,17 +141,17 @@ Stay on `cursor`. Do not checkout, switch, merge, pull, or rebase. From `Cursor-
 | Field | Value |
 |-------|--------|
 | ENV | `DEV` or `DEV2` (`10420` / `10421`) |
-| Regression Scope | Rank from `regression-scope-method.md`: HIGHEST → `Version 1` (`10454`), HIGH → `Version 1.1` (`10455`), MEDIUM → `Version 1.2` (`10456`). Do not ask. Out of scope: ask whether to create; on yes, omit this field. |
+| Regression Scope | Rank from `regression-scope-method.md`: HIGHEST → `Version 1` (`10454`), HIGH → `Version 1.1` (`10455`), MEDIUM → `Version 1.2` (`10456`). Do not ask. Out of scope: ask whether to create; on yes, omit this field. Priority follows this rank (`Highest` / `High` / `Medium`, or `Low` when the field is omitted). |
 | Automation layer | `Backend Automation` (`10933`) and/or `Frontend Automation` (`10932`). Array. |
 | Regression | `Yes` (`10283`). Required. |
 | Automation | From **Automation status (EnergoTS main)**. `Done` (`10112`) only when this case's spec is on EnergoTS `origin/main`. `Needs to be deployed ` (`11288`, trailing space; send the id) when a spec exists but is not on `origin/main`. `To Do` (`10110`) when no spec exists. Do not ask. |
 | Bulgarian bug | PDT browse URL, or omit |
 
-Set **assignee** to the current user. Jira sets that same user as **reporter**. Do not set priority. Do not set **Failed ENV**. If the user names a different assignee, use that person instead.
+Set **assignee** to the current user. Jira sets that same user as **reporter**. Set **Priority** from the Regression Scope rank in the table above. Do not set **Failed ENV**. If the user names a different assignee, use that person instead.
 
 ## Reply
 
-List created keys as browse links, the Automation value for each created case and why (spec path, on `origin/main` or not), skipped existing keys, cases not created because they repeat an outcome already registered, and any case not created because a gap is still open.
+List created keys as browse links, the Priority and Regression Scope for each created case, the Automation value and why (spec path, on `origin/main` or not), skipped existing keys, cases not created because they repeat an outcome already registered, and any case not created because a gap is still open.
 
 **Confidence: XX% (ZONE)** from the Jira evidence you actually used (createmeta values above are verified for REG Test Case `10405`).  
 `Agents involved: register-regression-test-cases`

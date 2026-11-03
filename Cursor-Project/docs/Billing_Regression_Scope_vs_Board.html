@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Billing regression scope compared with the REG board</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --text: #1f2328;
+      --muted: #57606a;
+      --line: #d0d7de;
+      --bg: #ffffff;
+      --soft: #f6f8fa;
+      --info: #ddf4ff;
+      --match: #1a7f37;
+      --higher: #9a6700;
+      --lower: #0969da;
+      --empty: #6e7781;
+      --missing: #cf222e;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.45 "Segoe UI", sans-serif; }
+    main { max-width: 1100px; margin: 0 auto; padding: 28px 20px 64px; }
+    h1 { font-size: 24px; font-weight: 500; margin: 0 0 8px; }
+    h2 { font-size: 18px; font-weight: 500; margin: 28px 0 8px; }
+    p { margin: 0 0 10px; }
+    a { color: var(--lower); }
+    .muted { color: var(--muted); }
+    .small { font-size: 13px; color: var(--muted); }
+    .answer { border: 1px solid var(--line); background: var(--info); padding: 12px 14px; margin: 16px 0; }
+    .answer strong { font-weight: 500; }
+    .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 16px 0; }
+    .stat { border: 1px solid var(--line); padding: 10px 12px; }
+    .stat b { display: block; font-size: 22px; font-weight: 500; }
+    .stat span { display: block; font-size: 13px; color: var(--muted); }
+    .bar { display: flex; height: 22px; width: 100%; border: 1px solid var(--line); margin: 8px 0 4px; }
+    .bar i { display: block; height: 100%; }
+    .legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 13px; margin-bottom: 8px; }
+    .legend b { font-weight: 500; }
+    .swatch { display: inline-block; width: 10px; height: 10px; margin-right: 4px; vertical-align: -1px; }
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; align-items: center; }
+    button, input {
+      border: 1px solid var(--line); background: var(--bg); color: var(--text);
+      border-radius: 999px; padding: 4px 12px; font: inherit;
+    }
+    button { cursor: pointer; }
+    button.active { background: var(--text); color: var(--bg); }
+    input { border-radius: 6px; min-width: 220px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+    th { background: var(--soft); font-weight: 500; position: sticky; top: 0; }
+    tr.match td:first-child { box-shadow: inset 3px 0 var(--match); }
+    tr.assigned-higher td:first-child { box-shadow: inset 3px 0 var(--higher); }
+    tr.board-higher td:first-child { box-shadow: inset 3px 0 var(--lower); }
+    tr.empty td:first-child { box-shadow: inset 3px 0 var(--empty); }
+    tr.missing td:first-child { box-shadow: inset 3px 0 var(--missing); }
+    .tag { font-size: 13px; }
+    caption { text-align: left; caption-side: bottom; padding-top: 8px; }
+    @media (max-width: 800px) {
+      .stats { grid-template-columns: 1fr 1fr; }
+      table { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Billing regression scope compared with the REG board</h1>
+  <p class="muted">Assigned scope is the 26 October 2026 rescore in Billing_Regression_Cases_scoped.xlsx. Board scope is Jira Regression Scope on the same REG key.</p>
+  <div class="answer" id="answer"></div>
+  <div class="stats" id="stats"></div>
+  <div class="bar" id="bar" role="img" aria-label="Share of the 88 REG keys by comparison result"></div>
+  <div class="legend" id="legend"></div>
+  <h2>Cases</h2>
+  <div class="filters">
+    <button type="button" class="active" data-filter="all">All 88</button>
+    <button type="button" data-filter="assigned-higher">Assigned higher</button>
+    <button type="button" data-filter="board-higher">Board higher</button>
+    <button type="button" data-filter="empty">Board empty</button>
+    <button type="button" data-filter="missing">Not on board</button>
+    <button type="button" data-filter="match">Match</button>
+    <input id="find" type="search" aria-label="Find a key or title" placeholder="Find a key or title" />
+  </div>
+  <table>
+    <thead>
+      <tr><th>Key</th><th>Title</th><th>Assigned</th><th>Board</th><th>Result</th></tr>
+    </thead>
+    <tbody id="rows"></tbody>
+    <caption class="small" id="shown"></caption>
+  </table>
+  <p class="small">Version 1 is HIGHEST, Version 1.1 is HIGH, Version 1.2 is MEDIUM. Assigned higher means the spreadsheet puts the case in an earlier wave than the board. A search of these 88 keys returned 75 issues. The other 13 keys were not in that result. 64 kept rows use a PDT, CONF, RPS, or DIAG id and are not in this table.</p>
+</main>
+<script>
+const DATA = {"counts": {"assigned-higher": 27, "board-higher": 7, "empty": 11, "missing": 13, "match": 30}, "total": 88, "on_board": 75, "filled": 64, "non_reg": 64, "items": [{"key": "REG-707", "n": 707, "title": "Reversal - Standard invoice reversal", "sheet": "11_Reversal", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-714", "n": 714, "title": "[REG-714]: Reversal - Standard invoice reversal with correction debit/credit notes", "sheet": "11_Reversal", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-715", "n": 715, "title": "Reversal - deducted invoice reversal", "sheet": "11_Reversal", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-962", "n": 962, "title": "For volumes - data by profile all type", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-963", "n": 963, "title": "For volumes - vat base case", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-973", "n": 973, "title": "Per Piece - happy path ", "sheet": "05_PerPiece", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-974", "n": 974, "title": "For volumes - combined flow (profile and scale doesn't match)", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-978", "n": 978, "title": "Standard Billing run - Interim with 'From previous invoice' but previous invoice missing (product contract)", "sheet": "07_Interim", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1009", "n": 1009, "title": "For volumes - Price component with restriction Aplication Based on volume (with percentage)", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1012", "n": 1012, "title": "For volumes - Max data - Combined flow ", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1013", "n": 1013, "title": "For volumes - Scale with tariff - Splitting with \"Calculation for number of days\"", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1018", "n": 1018, "title": "For volumes - Different time zones in Price Parameter and Price component", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1021", "n": 1021, "title": "invoice slot splitting - split by billing group", "sheet": "09_Slot_Splitting", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1022", "n": 1022, "title": "invoice slot splitting - split by separate invoice for each pod checkbox", "sheet": "09_Slot_Splitting", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1023", "n": 1023, "title": "invoice slot splitting - split by contract versions", "sheet": "09_Slot_Splitting", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1024", "n": 1024, "title": "invoice slot splitting - invoice slot fail", "sheet": "09_Slot_Splitting", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1026", "n": 1026, "title": "For volumes - SLP With 2 Tariff and 2 Scale code - 15 minute price parameter", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1028", "n": 1028, "title": "Standard Billing run - For volumes with electricity - Contract level", "sheet": "06_With_Electricity", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1030", "n": 1030, "title": "For volumes - SLP flow with Price Profile", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1037", "n": 1037, "title": "For volumes - splitting when total amount of scale codes is zero and  \"Number or days\" checkbox does not selected", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1041", "n": 1041, "title": "For volumes - tariff splitting when scale code total amount more then tariff amount", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1042", "n": 1042, "title": "For volumes - tariff splitting when scale code total amount less then tariff amount", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1043", "n": 1043, "title": "For volumes - tariff splitting when one of the scale code have total amount zero", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1051", "n": 1051, "title": "Discount - for volumes (50%, whole month)", "sheet": "08_Discount", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1053", "n": 1053, "title": "Correct liability offset after single invoice correction", "sheet": "10_Correction", "assigned": "Version 1.1", "board": "Version 1.2", "verdict": "assigned-higher"}, {"key": "REG-1163", "n": 1163, "title": "For volumes - Billing with list of PODs ", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-1164", "n": 1164, "title": "For volumes - Billing with list of customers ", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1.1", "verdict": "assigned-higher"}, {"key": "REG-636", "n": 636, "title": "Invoice Correction - Price Change flow | case 1 (happy pass)", "sheet": "10_Correction", "assigned": "Version 1.1", "board": "Version 1", "verdict": "board-higher"}, {"key": "REG-637", "n": 637, "title": "Invoice Correction - Price Change flow | add new price with existing invoice slot", "sheet": "10_Correction", "assigned": "Version 1.1", "board": "Version 1", "verdict": "board-higher"}, {"key": "REG-703", "n": 703, "title": "Invoice Correction - volume Change flow | case 1 (happy pass)", "sheet": "10_Correction", "assigned": "Version 1.1", "board": "Version 1", "verdict": "board-higher"}, {"key": "REG-706", "n": 706, "title": "Reversal - Manual invoice reversal | happy pass", "sheet": "11_Reversal", "assigned": "Version 1.1", "board": "Version 1", "verdict": "board-higher"}, {"key": "REG-966", "n": 966, "title": "Pulling - customer, contract, pod level", "sheet": "03_Pulling", "assigned": "Version 1.1", "board": "Version 1", "verdict": "board-higher"}, {"key": "REG-971", "n": 971, "title": "Pulling - pod has no gaps (data by scale flow)", "sheet": "03_Pulling", "assigned": "Version 1.1", "board": "Version 1", "verdict": "board-higher"}, {"key": "REG-1035", "n": 1035, "title": "Invoice Correction - Price Change flow | add new price with different invoice slot", "sheet": "10_Correction", "assigned": "Version 1.1", "board": "Version 1", "verdict": "board-higher"}, {"key": "REG-622", "n": 622, "title": "Create Correction billing run - mass import", "sheet": "10_Correction", "assigned": "Version 1.1", "board": "", "verdict": "empty"}, {"key": "REG-694", "n": 694, "title": "Invoice Correction - Price + volume Change flow | case 1 (happy pass)", "sheet": "10_Correction", "assigned": "Version 1.1", "board": "", "verdict": "empty"}, {"key": "REG-704", "n": 704, "title": "Invoice Correction - volume Change flow | case 2 (full reversal)", "sheet": "10_Correction", "assigned": "Version 1.1", "board": "", "verdict": "empty"}, {"key": "REG-705", "n": 705, "title": "Invoice Correction - volume Change flow | case 3 (half + full reversal)", "sheet": "10_Correction", "assigned": "Version 1.1", "board": "", "verdict": "empty"}, {"key": "REG-1221", "n": 1221, "title": "[REG-1221]: shifted hour case", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "", "verdict": "empty"}, {"key": "REG-1231", "n": 1231, "title": "For volumes - Rounding - invoice 2dp HALF_UP round up (RND-01)", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "", "verdict": "empty"}, {"key": "REG-1232", "n": 1232, "title": "For volumes - Rounding - invoice 2dp HALF_UP round down (RND-02)", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "", "verdict": "empty"}, {"key": "REG-1233", "n": 1233, "title": "For volumes - Rounding - VAT calculated from rounded net (RND-03)", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "", "verdict": "empty"}, {"key": "REG-1234", "n": 1234, "title": "For volumes - Rounding - group-then-round vs round-each-then-sum (RND-04)", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "", "verdict": "empty"}, {"key": "REG-1235", "n": 1235, "title": "For volumes - Rounding - profile consumption scale 8 decimals (RND-05)", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "", "verdict": "empty"}, {"key": "REG-1236", "n": 1236, "title": "For volumes - Rounding - SafeDivision formula 1/3 at 12dp (RND-06)", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "", "verdict": "empty"}, {"key": "REG-1055", "n": 1055, "title": "Verify invoice cancellation succeeds without errors (PDT-2437)", "sheet": "12_Cancellation", "assigned": "Version 1", "board": "", "verdict": "missing"}, {"key": "REG-1056", "n": 1056, "title": "Verify invoice cancellation with online payment reversal (PDT-2437)", "sheet": "11_Reversal", "assigned": "Version 1", "board": "", "verdict": "missing"}, {"key": "REG-1057", "n": 1057, "title": "Feedback - Verify invoice cancellation with already-reversed receivable (PDT-2437)", "sheet": "12_Cancellation", "assigned": "Version 1", "board": "", "verdict": "missing"}, {"key": "REG-1058", "n": 1058, "title": "Verify invoice cancellation with locked payment package (PDT-2437)", "sheet": "12_Cancellation", "assigned": "Version 1", "board": "", "verdict": "missing"}, {"key": "REG-1087", "n": 1087, "title": "Invoice Reversal - issued proforma invoice (PDT-2321)", "sheet": "11_Reversal", "assigned": "Version 1", "board": "", "verdict": "missing"}, {"key": "REG-1091", "n": 1091, "title": "ZDISKA scale is not invoiced (PDT-2295)", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "", "verdict": "missing"}, {"key": "REG-1106", "n": 1106, "title": "Invoice - Credit and debit notes from interim deduction assigned to Interim invoice (PDT-2141)", "sheet": "07_Interim", "assigned": "Version 1", "board": "", "verdict": "missing"}, {"key": "REG-1107", "n": 1107, "title": "Invoice correction - Correct behavior when correcting Credit note (PDT-2140)", "sheet": "10_Correction", "assigned": "Version 1.1", "board": "", "verdict": "missing"}, {"key": "REG-1122", "n": 1122, "title": "Invoice reversal with compensation alternative recipient (PDT-1949)", "sheet": "11_Reversal", "assigned": "Version 1", "board": "", "verdict": "missing"}, {"key": "REG-1129", "n": 1129, "title": "Invoice cancellation possible when alternative recipient exists (PDT-1889)", "sheet": "12_Cancellation", "assigned": "Version 1", "board": "", "verdict": "missing"}, {"key": "REG-1134", "n": 1134, "title": "Invoice cancellation and pro-forma cancellation correct payment amount restore (PDT-1885)", "sheet": "12_Cancellation", "assigned": "Version 1", "board": "", "verdict": "missing"}, {"key": "REG-1135", "n": 1135, "title": "Request for disconnection - no fee charge for executed cancellation (PDT-1881)", "sheet": "12_Cancellation", "assigned": "Version 1", "board": "", "verdict": "missing"}, {"key": "REG-1136", "n": 1136, "title": "Invoice correction with compensation Do not include in VAT base alternative recipient (PDT-1925)", "sheet": "10_Correction", "assigned": "Version 1", "board": "", "verdict": "missing"}, {"key": "REG-713", "n": 713, "title": "For volumes - simple settlement flow | happy pass", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-716", "n": 716, "title": "Standard billing run - interim invoice simple case | happy pass", "sheet": "07_Interim", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-718", "n": 718, "title": "Standard billing run - interim deduction (from same period)", "sheet": "07_Interim", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-873", "n": 873, "title": "For volumes - Scale with scale code | happy pass", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-960", "n": 960, "title": "[REG-960]: Periodical for Product Contract - happy pass", "sheet": "04_OverTime", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-961", "n": 961, "title": "[REG-961]: Periodical for Service Contract - happy pass", "sheet": "04_OverTime", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-965", "n": 965, "title": "Pulling - pod has no gaps ", "sheet": "03_Pulling", "assigned": "Version 1.1", "board": "Version 1.1", "verdict": "match"}, {"key": "REG-967", "n": 967, "title": "Pulling - pod has gaps", "sheet": "03_Pulling", "assigned": "Version 1.1", "board": "Version 1.1", "verdict": "match"}, {"key": "REG-968", "n": 968, "title": "Pulling - one pod has gap, second one doesn't", "sheet": "03_Pulling", "assigned": "Version 1.1", "board": "Version 1.1", "verdict": "match"}, {"key": "REG-969", "n": 969, "title": "Pulling - pod has different measurement types in 2 contracts", "sheet": "03_Pulling", "assigned": "Version 1.1", "board": "Version 1.1", "verdict": "match"}, {"key": "REG-970", "n": 970, "title": "Pulling - one chain fails another chain", "sheet": "03_Pulling", "assigned": "Version 1.1", "board": "Version 1.1", "verdict": "match"}, {"key": "REG-975", "n": 975, "title": "Standard Billing run - Interim with price component", "sheet": "07_Interim", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-976", "n": 976, "title": "Standard Billing run - Interim with 'From previous invoice'", "sheet": "07_Interim", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-977", "n": 977, "title": "[REG-977]: Over time one time  - happy pass", "sheet": "04_OverTime", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-991", "n": 991, "title": "Standard Billing run - For volumes with electricity - POD level", "sheet": "06_With_Electricity", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-992", "n": 992, "title": "For Volumes - Scale with tariff - Splitting with \"Scale for active electricity\"", "sheet": "02_For_Volumes, 06_With_Electricity", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-995", "n": 995, "title": "Invoice correction Volume change - deducted invoice correction ", "sheet": "10_Correction", "assigned": "Version 1.1", "board": "Version 1.1", "verdict": "match"}, {"key": "REG-1006", "n": 1006, "title": "For volumes - with compensation ", "sheet": "13_Compensation", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-1007", "n": 1007, "title": "For volumes - With Discount 100%", "sheet": "08_Discount", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-1008", "n": 1008, "title": "For volumes - SLP regular flow ", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-1020", "n": 1020, "title": "invoice slot splitting - split by price component", "sheet": "09_Slot_Splitting", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-1029", "n": 1029, "title": "For Volumes - Price Profile flow ", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-1046", "n": 1046, "title": "Standard Billing run - Interim with 'From previous invoice' separate billing runs", "sheet": "07_Interim", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-1068", "n": 1068, "title": "Invoice cancellation - Manual invoice(credit note type) -> All reverse process on receivable side (all possible object links)", "sheet": "12_Cancellation", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-1165", "n": 1165, "title": "For volumes - Price component Restriction of volume with kWh ranges Less then range", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-1166", "n": 1166, "title": "For volumes - Price component restriction for values (Between ranges)", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-1169", "n": 1169, "title": "For volumes - Price component Restriction of volume with kWh ranges Between the range", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-1170", "n": 1170, "title": "[REG-1170]: Compensation Regeneration", "sheet": "13_Compensation", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-1171", "n": 1171, "title": "CLONE - For volumes - Price component restriction for values (Less than ranges)", "sheet": "02_For_Volumes", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}, {"key": "REG-1172", "n": 1172, "title": "Feedback - For volumes with electricity, electricity Deactivated POD should not be included invoice ", "sheet": "06_With_Electricity", "assigned": "Version 1", "board": "Version 1", "verdict": "match"}]};
+const LABELS = {
+  "assigned-higher": "Assigned higher",
+  "board-higher": "Board higher",
+  "empty": "Board empty",
+  "missing": "Not on board",
+  "match": "Match"
+};
+const COLORS = {
+  "assigned-higher": "#9a6700",
+  "board-higher": "#0969da",
+  "empty": "#6e7781",
+  "missing": "#cf222e",
+  "match": "#1a7f37"
+};
+const ORDER = ["assigned-higher", "board-higher", "empty", "missing", "match"];
+const answer = document.getElementById("answer");
+const filled = DATA.filled;
+const match = DATA.counts.match;
+answer.innerHTML = "<strong>" + match + " of " + DATA.on_board + " cases on the board match (" + Math.round(100 * match / DATA.on_board) + "%).</strong> Where the board field is filled, " + match + " of " + filled + " match (" + Math.round(100 * match / filled) + "%).";
+const stats = document.getElementById("stats");
+ORDER.forEach(function (key) {
+  const el = document.createElement("div");
+  el.className = "stat";
+  el.innerHTML = "<b>" + DATA.counts[key] + "</b><span>" + LABELS[key] + "</span>";
+  stats.appendChild(el);
+});
+const bar = document.getElementById("bar");
+const legend = document.getElementById("legend");
+ORDER.forEach(function (key) {
+  const i = document.createElement("i");
+  i.style.width = (100 * DATA.counts[key] / DATA.total) + "%";
+  i.style.background = COLORS[key];
+  i.title = LABELS[key] + ": " + DATA.counts[key];
+  bar.appendChild(i);
+  const s = document.createElement("span");
+  s.innerHTML = '<i class="swatch" style="background:' + COLORS[key] + '"></i><b>' + DATA.counts[key] + "</b> " + LABELS[key];
+  legend.appendChild(s);
+});
+const tbody = document.getElementById("rows");
+DATA.items.forEach(function (item) {
+  const tr = document.createElement("tr");
+  tr.className = item.verdict;
+  tr.dataset.verdict = item.verdict;
+  tr.dataset.text = (item.key + " " + item.title + " " + item.sheet).toLowerCase();
+  const board = item.board || (item.verdict === "missing" ? "Not on board" : "Empty");
+  const keyCell = document.createElement("td");
+  const keyNode = item.verdict === "missing" ? document.createElement("span") : document.createElement("a");
+  if (item.verdict !== "missing") {
+    keyNode.href = "https://oppa-support.atlassian.net/browse/" + item.key;
+  }
+  keyNode.textContent = item.key;
+  const sheet = document.createElement("div");
+  sheet.className = "small";
+  sheet.textContent = item.sheet;
+  keyCell.appendChild(keyNode);
+  keyCell.appendChild(sheet);
+  tr.appendChild(keyCell);
+  ["title", "assigned"].forEach(function (field) {
+    const td = document.createElement("td");
+    td.textContent = item[field];
+    tr.appendChild(td);
+  });
+  const boardCell = document.createElement("td");
+  boardCell.textContent = board;
+  tr.appendChild(boardCell);
+  const result = document.createElement("td");
+  result.className = "tag";
+  result.textContent = LABELS[item.verdict];
+  tr.appendChild(result);
+  tbody.appendChild(tr);
+});
+let filter = "all";
+let query = "";
+function paint() {
+  let shown = 0;
+  Array.prototype.forEach.call(tbody.rows, function (tr) {
+    const ok = (filter === "all" || tr.dataset.verdict === filter) && (query === "" || tr.dataset.text.indexOf(query) !== -1);
+    tr.hidden = !ok;
+    if (ok) shown += 1;
+  });
+  document.getElementById("shown").textContent = shown + " shown";
+}
+document.querySelectorAll("button[data-filter]").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    filter = btn.dataset.filter;
+    document.querySelectorAll("button[data-filter]").forEach(function (b) { b.classList.toggle("active", b === btn); });
+    paint();
+  });
+});
+document.getElementById("find").addEventListener("input", function (event) {
+  query = event.target.value.trim().toLowerCase();
+  paint();
+});
+paint();
+</script>
+</body>
+</html>
