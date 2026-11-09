@@ -8,6 +8,9 @@
 #   pwsh -NoProfile -File .claude/commands/setup-new-machine.ps1 -SkipClone -SkipBrowsers
 #   pwsh -NoProfile -File .claude/commands/setup-new-machine.ps1 -InstallGitHooks
 #
+# When credentials are missing or rejected, the script lists the files and keys to fill,
+# waits for you to fill them, and checks again. Use -NoPrompt to skip the wait.
+#
 # Exit codes: 0 = ready, 2 = finished with items to fix, 1 = cannot continue.
 
 param(
@@ -17,6 +20,8 @@ param(
     [switch]$SkipBrowsers,      # do not download Playwright browsers
     [switch]$ForceEnv,          # overwrite EnergoTS/.env and secrets.env from the templates
     [switch]$InstallGitHooks,   # point core.hooksPath at Cursor-Project/scripts/git-hooks
+    [switch]$NoPrompt,          # never wait for input (report the credentials to fill and exit)
+    [switch]$SkipLiveChecks,    # do not log in to Confluence, Slack and the portal to test the credentials
     [ValidateSet('cursorMerged', 'staging', 'cursor')]
     [string]$EnergoTSBranch = 'cursorMerged'
 )
@@ -44,8 +49,9 @@ function Write-Info { param([string]$Message) Write-Host "       $Message" -Fore
 
 # Status: OK | WARN (optional, does not change the exit code) | FAIL (must fix) .
 function Add-Result {
-    param([string]$Name, [string]$Status, [string]$Detail = '', [string]$Fix = '')
-    $script:Results.Add([pscustomobject]@{ Name = $Name; Status = $Status; Detail = $Detail; Fix = $Fix })
+    # -CredFile marks a credentials item: the file the user has to edit to fix it.
+    param([string]$Name, [string]$Status, [string]$Detail = '', [string]$Fix = '', [string]$CredFile = '')
+    $script:Results.Add([pscustomobject]@{ Name = $Name; Status = $Status; Detail = $Detail; Fix = $Fix; CredFile = $CredFile })
     $color = switch ($Status) { 'OK' { 'Green' } 'WARN' { 'Yellow' } default { 'Red' } }
     $suffix = if ($Detail) { " - $Detail" } else { '' }
     Write-Host ("  {0,-4} {1}{2}" -f $Status, $Name, $suffix) -ForegroundColor $color
@@ -157,6 +163,70 @@ function Get-EmptyKeys {
     return @($empty | Select-Object -Unique)
 }
 
+# Value of one key, unquoted. Used only to call the service the key belongs to; never printed.
+function Get-EnvFileValue {
+    param([string]$Path, [string]$Key)
+    foreach ($line in (Get-Content -LiteralPath $Path -ErrorAction SilentlyContinue)) {
+        if ($line -match "^\s*$([regex]::Escape($Key))\s*=\s*(.*)$") {
+            $v = $Matches[1].Trim()
+            if ($v.Length -ge 2 -and (($v.StartsWith('"') -and $v.EndsWith('"')) -or ($v.StartsWith("'") -and $v.EndsWith("'")))) { $v = $v.Substring(1, $v.Length - 2) }
+            return $v.Trim()
+        }
+    }
+    return ''
+}
+
+# Log in to each service with the filled credentials. A rejected login is a FAIL,
+# an unreachable service (VPN off, no network) is a WARN.
+function Invoke-LiveChecks {
+    $projEnv = Join-Path $cp '.env'
+    $energoEnv = Join-Path $energo '.env'
+    $projLabel = 'Cursor-Project/.env'
+    $energoLabel = 'Cursor-Project/EnergoTS/.env'
+
+    # Confluence (same Atlassian token the Jira attachment script uses)
+    $cql = Join-Path (Join-Path (Join-Path $cp 'config') 'confluence') 'search-confluence-cql-rest.ps1'
+    if ((Test-Path -LiteralPath $cql) -and @(Get-EmptyKeys -Path $projEnv -Only @('JIRA_EMAIL', 'JIRA_API_TOKEN')).Count -eq 0) {
+        $out = & pwsh -NoProfile -File $cql -Cql 'type=page' -Limit 1 2>&1 | Out-String
+        if ($out -match 'Total size') { Add-Result 'Confluence login' 'OK' 'token accepted' }
+        elseif ($out -match '\b(401|403)\b|Unauthorized|Forbidden') { Add-Result 'Confluence login' 'FAIL' 'email or token rejected' "Correct JIRA_EMAIL and JIRA_API_TOKEN in $projLabel." -CredFile $projEnv }
+        else { Add-Result 'Confluence login' 'WARN' 'could not reach Confluence' "Check the network and CONFLUENCE_URL in $projLabel, then check again." }
+    }
+
+    # Slack (the Slack scripts read the token from EnergoTS/.env)
+    $token = Get-EnvFileValue -Path $energoEnv -Key 'SLACK_API_TOKEN'
+    if (-not $token) { $token = Get-EnvFileValue -Path $energoEnv -Key 'SLACK_BOT_TOKEN' }
+    if ($token) {
+        try {
+            $r = Invoke-RestMethod -Uri 'https://slack.com/api/auth.test' -Headers @{ Authorization = "Bearer $token" } -Method Get -TimeoutSec 20
+            if ($r.ok) { Add-Result 'Slack login' 'OK' "workspace $($r.team)" }
+            else { Add-Result 'Slack login' 'FAIL' "token rejected ($($r.error))" "Correct SLACK_BOT_TOKEN (or SLACK_API_TOKEN) in $energoLabel." -CredFile $energoEnv }
+        }
+        catch { Add-Result 'Slack login' 'WARN' 'could not reach Slack' 'Check the network, then check again.' }
+    }
+    $token = $null
+
+    # Portal login used by every Playwright run (Test environment endpoint)
+    $authUrl = Get-EnvFileValue -Path $energoEnv -Key 'TESTAUTHAPI'
+    $user = Get-EnvFileValue -Path $energoEnv -Key 'PORTAL_USER'
+    $pass = Get-EnvFileValue -Path $energoEnv -Key 'PASSWORD'
+    if ($authUrl -and $user -and $pass) {
+        try {
+            $body = @{ user = $user; password = $pass } | ConvertTo-Json -Compress
+            $r = Invoke-RestMethod -Uri $authUrl -Method Post -ContentType 'application/json' -Body $body -TimeoutSec 20
+            if ($r.jwt) { Add-Result 'Portal login (Test)' 'OK' 'user and password accepted' }
+            else { Add-Result 'Portal login (Test)' 'FAIL' 'no token returned' "Correct PORTAL_USER and PASSWORD in $energoLabel." -CredFile $energoEnv }
+        }
+        catch {
+            $code = 0
+            if ($_.Exception.Response) { $code = [int]$_.Exception.Response.StatusCode }
+            if ($code -ge 400 -and $code -lt 500) { Add-Result 'Portal login (Test)' 'FAIL' "rejected (HTTP $code)" "Correct PORTAL_USER and PASSWORD in $energoLabel." -CredFile $energoEnv }
+            else { Add-Result 'Portal login (Test)' 'WARN' 'could not reach the portal' 'Connect to the VPN, then check again.' }
+        }
+    }
+    $pass = $null; $body = $null
+}
+
 # ---------- dependencies ----------
 # Browser folders this EnergoTS Playwright version needs but that are not downloaded yet.
 # Returns $null when Playwright itself is not installed.
@@ -247,6 +317,7 @@ function Invoke-Wiring {
 # ---------- verify ----------
 function Invoke-Verify {
     Write-Step 'Verify'
+    $script:Results.Clear()
     $runCmd = 'pwsh -NoProfile -File .claude/commands/setup-new-machine.ps1'
 
     # Required tools
@@ -308,14 +379,16 @@ function Invoke-Verify {
 
     # Env and secrets (key names only, never values)
     $envChecks = @(
-        @{ Label = 'Cursor-Project/.env'; Path = (Join-Path $cp '.env'); Keys = @('JIRA_EMAIL', 'JIRA_API_TOKEN', 'JIRA_BASE_URL', 'CONFLUENCE_URL', 'SLACK_BOT_TOKEN'); Use = 'Confluence reads, Jira attachments, Slack uploads' },
-        @{ Label = 'Cursor-Project/EnergoTS/.env'; Path = (Join-Path $energo '.env'); Keys = @('PORTAL_USER', 'PASSWORD', 'DEVAUTHAPI', 'TESTAUTHAPI'); Use = 'Playwright test runs' }
+        @{ Label = 'Cursor-Project/.env'; Path = (Join-Path $cp '.env'); Keys = @('JIRA_EMAIL', 'JIRA_API_TOKEN', 'JIRA_BASE_URL', 'CONFLUENCE_URL'); Use = 'Confluence reads, Jira attachments' },
+        @{ Label = 'Cursor-Project/EnergoTS/.env'; Path = (Join-Path $energo '.env'); Keys = @('PORTAL_USER', 'PASSWORD', 'DEVAUTHAPI', 'TESTAUTHAPI'); Use = 'Playwright test runs, Slack reports'; Slack = $true }
     )
     foreach ($c in $envChecks) {
         if (-not (Test-Path -LiteralPath $c.Path)) { Add-Result $c.Label 'FAIL' 'missing' "Re-run: $runCmd"; continue }
         $empty = @(Get-EmptyKeys -Path $c.Path -Only $c.Keys)
+        # The Slack scripts read EnergoTS/.env and accept either token name.
+        if ($c.Slack -and -not (Get-EnvFileValue -Path $c.Path -Key 'SLACK_API_TOKEN') -and -not (Get-EnvFileValue -Path $c.Path -Key 'SLACK_BOT_TOKEN')) { $empty += 'SLACK_BOT_TOKEN' }
         if ($empty.Count -eq 0) { Add-Result $c.Label 'OK' 'required keys filled' }
-        else { Add-Result $c.Label 'FAIL' "empty: $($empty -join ', ')" "Open $($c.Label) and fill those keys (used for: $($c.Use))." }
+        else { Add-Result $c.Label 'FAIL' "empty: $($empty -join ', ')" "Open $($c.Label) and fill those keys (used for: $($c.Use))." -CredFile $c.Path }
     }
     $secretChecks = @(
         @{ Label = 'Cursor-Project/config/postgres/secrets.env'; Path = (Join-Path $postgresDir 'secrets.env'); Use = 'database queries; fill PGPASSWORD_<ENV> for each environment you will query' },
@@ -325,8 +398,9 @@ function Invoke-Verify {
         if (-not (Test-Path -LiteralPath $c.Path)) { Add-Result $c.Label 'WARN' 'missing' "Re-run: $runCmd to create it from the template, then fill what you need ($($c.Use))."; continue }
         $empty = @(Get-EmptyKeys -Path $c.Path)
         if ($empty.Count -eq 0) { Add-Result $c.Label 'OK' 'all keys filled' }
-        else { Add-Result $c.Label 'WARN' "empty: $($empty -join ', ')" "Open $($c.Label) and fill what you need ($($c.Use))." }
+        else { Add-Result $c.Label 'WARN' "empty: $($empty -join ', ')" "Open $($c.Label) and fill what you need ($($c.Use))." -CredFile $c.Path }
     }
+    if ($SkipLiveChecks) { Write-Info 'live credential checks skipped (-SkipLiveChecks)' } else { Invoke-LiveChecks }
 
     # Installed packages
     $elasticBin = Join-Path (Join-Path (Join-Path $elasticDir 'node_modules') '.bin') 'elastic'
@@ -396,26 +470,61 @@ else {
     Invoke-Wiring
 }
 
+function Write-Summary {
+    $fails = @($script:Results | Where-Object { $_.Status -eq 'FAIL' })
+    $warns = @($script:Results | Where-Object { $_.Status -eq 'WARN' })
+    $oks = @($script:Results | Where-Object { $_.Status -eq 'OK' })
+    Write-Host ''
+    Write-Host "Summary: $($oks.Count) OK, $($fails.Count) to fix, $($warns.Count) optional" -ForegroundColor $(if ($fails.Count) { 'Yellow' } else { 'Green' })
+    if ($fails.Count) {
+        Write-Host ''
+        Write-Host 'To fix:' -ForegroundColor Red
+        $i = 1
+        foreach ($f in $fails) { Write-Host ("  {0}. {1}: {2}" -f $i, $f.Name, $f.Fix); $i++ }
+    }
+    if ($warns.Count) {
+        Write-Host ''
+        Write-Host 'Optional (each one enables a single integration):' -ForegroundColor Yellow
+        foreach ($w in $warns) { Write-Host ("  - {0}: {1}" -f $w.Name, $w.Fix) }
+    }
+    Write-Host ''
+}
+
+# Credential items still open: required ones (FAIL) and optional ones (WARN).
+function Get-CredItems { return @($script:Results | Where-Object { $_.CredFile -and $_.Status -ne 'OK' }) }
+
+function Write-CredentialsToFill {
+    Write-Host ''
+    Write-Host '=== Credentials to fill ===' -ForegroundColor Cyan
+    Write-Host '  Open each file below in an editor, fill or correct the keys, and save.' -ForegroundColor Gray
+    Write-Host '  Type the values into the files only. Do not paste them into a chat.' -ForegroundColor Gray
+    foreach ($group in (Get-CredItems | Group-Object CredFile)) {
+        Write-Host ''
+        Write-Host "  $($group.Name)" -ForegroundColor White
+        foreach ($item in $group.Group) {
+            $tag = if ($item.Status -eq 'FAIL') { 'required' } else { 'optional' }
+            Write-Host ("    [{0}] {1} - {2}" -f $tag, $item.Detail, $item.Fix) -ForegroundColor $(if ($item.Status -eq 'FAIL') { 'Red' } else { 'Yellow' })
+        }
+    }
+    Write-Host ''
+}
+
 Invoke-Verify
 
-$fails = @($script:Results | Where-Object { $_.Status -eq 'FAIL' })
-$warns = @($script:Results | Where-Object { $_.Status -eq 'WARN' })
-$oks = @($script:Results | Where-Object { $_.Status -eq 'OK' })
+# Ask for the credentials, wait, and check again until the required ones are filled and accepted.
+$canPrompt = -not $NoPrompt -and -not $VerifyOnly -and [Environment]::UserInteractive -and -not [Console]::IsInputRedirected
+while (@(Get-CredItems).Count -gt 0) {
+    Write-CredentialsToFill
+    if (-not $canPrompt) { break }
+    $required = @(Get-CredItems | Where-Object { $_.Status -eq 'FAIL' }).Count
+    $hint = if ($required) { 'Press Enter when the files are saved to check again, or type s to stop' } else { 'Only optional keys are left. Press Enter to check again, or type s to finish' }
+    $answer = Read-Host $hint
+    if ("$answer".Trim() -match '^(s|skip|q|quit)$') { break }
+    Invoke-Verify
+}
 
-Write-Host ''
-Write-Host "Summary: $($oks.Count) OK, $($fails.Count) to fix, $($warns.Count) optional" -ForegroundColor $(if ($fails.Count) { 'Yellow' } else { 'Green' })
-if ($fails.Count) {
-    Write-Host ''
-    Write-Host 'To fix:' -ForegroundColor Red
-    $i = 1
-    foreach ($f in $fails) { Write-Host ("  {0}. {1}: {2}" -f $i, $f.Name, $f.Fix); $i++ }
-}
-if ($warns.Count) {
-    Write-Host ''
-    Write-Host 'Optional (each one enables a single integration):' -ForegroundColor Yellow
-    foreach ($w in $warns) { Write-Host ("  - {0}: {1}" -f $w.Name, $w.Fix) }
-}
-Write-Host ''
+Write-Summary
+$fails = @($script:Results | Where-Object { $_.Status -eq 'FAIL' })
 if (-not $fails.Count) { Write-Host 'Ready. Open this folder in Claude Code.' -ForegroundColor Green }
 else { Write-Host "Fix the items above, then check again: pwsh -NoProfile -File .claude/commands/setup-new-machine.ps1 -VerifyOnly" -ForegroundColor Gray }
 Write-Host ''

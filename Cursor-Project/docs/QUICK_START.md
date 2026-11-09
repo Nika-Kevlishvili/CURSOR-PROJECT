@@ -33,7 +33,9 @@ This will:
 - Clone all submodules (EnergoTS + Phoenix repositories) and put EnergoTS on `cursorMerged`
 - Create `Cursor-Project/.env`, `Cursor-Project/EnergoTS/.env`, `config/postgres/secrets.env` and `config/elasticsearch/secrets.env` from their templates (existing files are kept)
 - Install the Elastic CLI, the EnergoTS packages and the Playwright browsers
-- Check tools, Claude Code config, repositories, env keys and optional integrations, then print a **To fix** list
+- Check tools, Claude Code config, repositories, env keys and optional integrations
+- List the credential files and keys to fill, wait while you fill them, then check again and test the Confluence, Slack and portal logins
+- Print a **To fix** list for anything still open
 
 Options and details: [`.claude/commands/setup-new-machine.md`](../../.claude/commands/setup-new-machine.md)
 
