@@ -6,11 +6,11 @@
 
 **Scope (legacy long Slack):** Use this template for **Slack** messages that must repeat the full per-test narrative (rare):
 
-1. **User-triggered scoped runs** – when the user explicitly asks to post results to Slack for a **specific** subset of tests (same recipients and structure). Orchestration: `.cursor/commands/send-playwright-results-slack.md`.
+1. **User-triggered scoped runs** – when the user explicitly asks to post results to Slack for a **specific** subset of tests (same recipients and structure). Orchestration: `.claude/commands/send-playwright-results-slack.md`.
 
 The same structure MUST be used every time Playwright test results are sent to Slack for this flow.
 
-**Reference:** `Slack_reporting_paths.md`; `.cursor/rules/workflows/playwright_detailed_reporting.mdc` §4; `.cursor/commands/send-playwright-results-slack.md`.
+**Reference:** `Slack_reporting_paths.md`; `.claude/rules/workflows/playwright_detailed_reporting.md` §4; `.claude/commands/send-playwright-results-slack.md`.
 
 ---
 

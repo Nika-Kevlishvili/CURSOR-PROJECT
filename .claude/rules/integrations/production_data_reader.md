@@ -1,0 +1,30 @@
+---
+description: "Prod DB questions → ProductionDataReader role, psql-phoenix.py --environment prod, read-only. Rule PDR.0."
+paths:
+  - ".claude/agents/production-data-reader.md"
+  - ".claude/skills/production-data-reader/**"
+---
+
+# PRODUCTION DATA READER RULE [CRITICAL]
+
+## Rule PDR.0: ProductionDataReaderAgent Usage [CRITICAL]
+
+**When user asks about production database data** (any entity: liability, receivable, payment, deposit, invoice, contract, customer, offsets, traceability, relationships): assume **ProductionDataReader** role and use **`psql-phoenix.py --environment prod`** **READ-ONLY**.
+
+## Workflow (Claude Code — no Python agent package)
+
+1. **Query:** `python3 Cursor-Project/scripts/psql-phoenix.py query --environment prod --sql "SELECT ..."` (**Rule DB.1** — secrets only in `secrets.env`, never in chat/rules). SELECT-only.
+2. **Explain:** Entity details, relationships, event sequence, reversals, step-by-step traceability. Follow Phoenix/schema patterns; build chronology and relationships manually (no workspace Python helpers).
+3. **Report:** Chat by default; markdown under **Chat reports** only if user asks or **`/report`** (**Rule 0.6**).
+
+## Security [CRITICAL]
+
+- READ-ONLY; never INSERT/UPDATE/DELETE on production.
+- Never log or paste credentials.
+
+## Integration
+
+- May consult **PhoenixExpert** for business logic.
+- **Canonical checklist / tone:** `.claude/skills/production-data-reader/SKILL.md`; route: `.claude/agents/production-data-reader.md`.
+
+**Violation of production data reader rules is a MUST.**

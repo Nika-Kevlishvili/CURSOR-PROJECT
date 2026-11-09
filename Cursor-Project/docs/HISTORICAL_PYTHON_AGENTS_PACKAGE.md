@@ -1,12 +1,12 @@
 # Historical: `Cursor-Project/agents/` Python package
 
-**Where to work today:** **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)** — all subagent paths (`.cursor/agents/*.md`), report paths (`Cursor-Project/reports/...`), test case paths.
+**Where to work today:** **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)** — all subagent paths (`.claude/agents/*.md`), report paths (`Cursor-Project/reports/...`), test case paths.
 
 The **`Cursor-Project/agents/`** directory (Main, Support, Core, Adapters, Services, Utils) was **removed** from this workspace. Cursor-facing behavior is defined by:
 
-- **`.cursor/rules/**/*.mdc`**
-- **`.cursor/agents/*.md`**
-- **`.cursor/skills/`** and **`.cursor/commands/`**
+- **`.claude/rules/**/*.md`**
+- **`.claude/agents/*.md`**
+- **`.claude/skills/`** and **`.claude/commands/`**
 - **MCP** servers configured for this project
 
 ## Archived docs (Python agents era)

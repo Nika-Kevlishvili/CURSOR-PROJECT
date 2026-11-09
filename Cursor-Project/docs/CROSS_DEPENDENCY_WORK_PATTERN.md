@@ -2,7 +2,7 @@
 
 **Purpose:** Stable record of how **cross-dependency discovery** and **test-case handoff (Rule 35)** run in this workspace: **Jira + codebase + deep Confluence exploration** — **no** local merge/git archaeology on disk (e.g. `D:` clones are not a mandatory source of truth).
 
-**Rules:** `.cursor/rules/workflows/workflow_rules.mdc` — **Rule 35** and **Rule 35a** (rewritten: no local merge/git for cross-dep).
+**Rules:** `.claude/rules/workflows/workflow_rules.md` — **Rule 35** and **Rule 35a** (rewritten: no local merge/git for cross-dep).
 
 ---
 
@@ -44,8 +44,8 @@ Save optionally to **`Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope_slug>.
 
 | Role | Path |
 |------|------|
-| Skill | `.cursor/skills/cross-dependency-finder/SKILL.md` |
-| Subagent | `.cursor/agents/cross-dependency-finder.md` |
+| Skill | `.claude/skills/cross-dependency-finder/SKILL.md` |
+| Subagent | `.claude/agents/cross-dependency-finder.md` |
 | Slash command | Removed — route via **`cross-dependency-finder`** subagent / skill |
 | Design | `Cursor-Project/docs/CROSS_DEPENDENCY_FINDER_AGENT.md` |
 | Timing note (optional) | `Cursor-Project/docs/CROSS_DEPENDENCY_TIMING_ITERATIONS.md` |

@@ -1,5 +1,10 @@
 # Cursor hook / script operational logs (switch-phoenix-branches, etc.)
 .cursor/logs/
+
+# Claude Code: script logs, hook state, per-user settings
+.claude/logs/
+.claude/.phoenix_switch.lock
+.claude/settings.local.json
 *.log
 
 # macOS artifacts (ZIP extraction, Finder metadata)

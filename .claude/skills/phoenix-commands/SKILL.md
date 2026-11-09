@@ -1,0 +1,63 @@
+---
+name: phoenix-commands
+description: Maps user intent to **agents**, **skills**, and remaining **operational** command docs under `.claude/commands/` (branch switch, Swagger refresh, git/sync helpers). Duplicative slash-command markdown files were removed — route workflows via Task/subagents or natural language.
+---
+
+# Phoenix routing (agents / skills / operational commands)
+
+Use this skill when the user asks **which workflow or agent** applies.
+
+**Canonical behavior:** procedural detail lives in **`.claude/agents/*.md`** and **`.claude/skills/*/SKILL.md`**.
+
+**Remaining `.claude/commands/*.md`:** operational procedures only — notably **`switch-phoenix-branches.md`** (+ `.ps1`), **`update-swagger-specs.md`**, **`send-playwright-results-slack.md`**, and git/sync helpers (`sync-*`, `pull-energots`, `push-energots`, `update-*`).
+
+Rules load first (**Rule 0.0**) from **`.claude/rules/`**.
+
+## When to Apply
+
+- User asks how to run Phoenix Q&A, bug validation, test cases, reports, or EnergoTS tests.
+- User mentions an agent name or workflow keyword (`bug-validator`, `cross-dependency-finder`, etc.).
+- Need to align intent with the correct **Task/subagent** or skill.
+
+## Intent → canonical agent / skill
+
+| User intent | Route to |
+|-------------|-----------|
+| Phoenix question (endpoints, logic, docs) | `.claude/agents/phoenix-qa.md` — PhoenixExpert + Senior QA lens (**Rule 0.2**, **QA.0**) |
+| QA audit, doc gaps, code↔doc mismatch, spec vs implementation | `.claude/agents/senior-qa.md`, **`senior-qa-analysis`** skill (**Rule QA.0**) |
+| Consult before a Phoenix-related task | **Rule 8** + `.claude/skills/phoenix-agent-workflow/SKILL.md`; PhoenixExpert patterns like **`phoenix-qa`** |
+| Saved Chat report | `.claude/skills/phoenix-reporting/SKILL.md`, `.claude/agents/report-generator.md` — user explicitly asks to save (**Rule 0.6**) |
+| Session feedback file | **`phoenix-reporting`** skill — **Feedback saves**; **`report-generator`** |
+| Bug validation | `.claude/agents/bug-validator.md`, **`phoenix-bug-validation`** skill (**Rule 32**) |
+| Database query | **`phoenix-database`** skill — official psql via `psql-phoenix.py` (Rule DB.0). No PostgreSQL MCP |
+| Elasticsearch / Phoenix application logs | **`phoenix-elasticsearch`** skill — official Elastic CLI via `elastic-phoenix.py` (Rule ES.0). No Elasticsearch MCP |
+| Jira bug text (Experiments only) | **`jira-bug`** subagent, **`jira-bug-template`** skill (**Rule JIRA.0**) |
+| Production DB read-only analysis | **`production-data-reader`** agent + skill (**Rule PDR.0**) |
+| Resolve environment for Phoenix workflows | **`environment-resolver`** subagent — `.claude/agents/environment-resolver.md` |
+| Cross-dependencies / impact | **`cross-dependency-finder`** subagent + skill (**Rules 35, 35a**) |
+| Test cases (.md, Backend + Frontend) | **`cross-dependency-finder`** then **`test-case-generator`** — `.claude/skills/test-case-generator/SKILL.md` |
+| Run EnergoTS Playwright | **`energo-ts-run`** — `.claude/agents/energo-ts-run.md`, skill (**Rules 36, ENERGOTS.0**) |
+| Author EnergoTS `.spec.ts` (API, `src/tests/`) | **`energo-ts-test`** — `.claude/agents/energo-ts-test.md` (**Rule 0.8.1**, Swagger **Rule 41**) |
+| Listing performance test for one object (POD-style) | **`performance-test`** — `.claude/agents/performance-test.md`, **`performance-test`** skill. Asks object and environment, then writes and runs the listing timing specs. |
+| Author and run frontend Playwright (`src/frontend/`, cursorMerged only) | **`/playwright-frontend`** — `.claude/commands/playwright-frontend.md`, then `.claude/procedures/playwright-frontend/` (**Rule 45**). Not a subagent. |
+| Assess frontend specs once before that run | Read `.claude/procedures/playwright-frontend-validator/procedure.md` inside that command. Not a slash command. |
+| Scoped Playwright Slack | **`.claude/commands/send-playwright-results-slack.md`** — user-triggered test results to Slack |
+
+## Section notes
+
+### Phoenix Q&A
+
+Confluence (MCP, fresh) → codebase → **dual-track** answer (runtime vs spec) as PhoenixExpert + Senior QA lens. **Finding** when sources diverge (**Rule QA.2**). Optional disk reports only per **Rule 0.6** / **`report-generator`**.
+
+### Senior QA audit
+
+**Rule QA.0:** defects, doc gaps, mismatches — **`senior-qa`** subagent or **`senior-qa-analysis`** skill. READ-ONLY; cite both code and Confluence.
+
+### Bug validation
+
+Rule **32**: **`bug-validator`** subagent; evidence from **Confluence (mandatory full wiki URL per decision page in chat + Slack)**, mandatory **`update-swagger-specs.ps1`**, aligned Phoenix code, reproduce steps + diagrams per skill; **no** automatic test-case or Playwright pipeline inside Rule 32. **Env gate:** if Jira Environment is empty, parent must **not** delegate with a pre-filled env — subagent asks user (six options) before alignment/DB. Chat always; Slack **`bug-validation`** **only when user asks**; no disk unless user explicitly asks to save.
+
+## Summary
+
+- Route duplicated workflows through **agents/skills**, not deleted `.md` stubs.
+- Branch switching, Swagger refresh, and git/sync docs remain under **`.claude/commands/`** as runnable/checklist references.

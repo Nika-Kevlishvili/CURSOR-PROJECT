@@ -15,7 +15,7 @@ priority: 2
 **Before using ANY spec data, you MUST refresh all specs by running:**
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File ".cursor/commands/update-swagger-specs.ps1"
+powershell -ExecutionPolicy Bypass -File ".claude/commands/update-swagger-specs.ps1"
 ```
 
 Cached specs become stale as the backend evolves. New endpoints, renamed fields, and changed enum values will NOT appear in cached specs. **Real example of damage caused by skipping this step:**
@@ -24,7 +24,7 @@ Cached specs become stale as the backend evolves. New endpoints, renamed fields,
 - Field `birthdate` was used instead of correct `birthDate`
 - All of these caused **every test to fail at runtime**
 
-If the refresh fails (network/VPN), warn the user and continue with cached specs. See `.cursor/rules/integrations/swagger_refresh_mandatory.mdc` for the full enforcement checklist.
+If the refresh fails (network/VPN), warn the user and continue with cached specs. See `.claude/rules/integrations/swagger_refresh_mandatory.md` for the full enforcement checklist.
 
 ## Spec Location
 

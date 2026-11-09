@@ -1,6 +1,6 @@
 # Cross-Dependency Finder Agent – Design and Integration
 
-> **Saved work pattern (Jira + codebase + deep Confluence exploration; no local merge/git):** **`CROSS_DEPENDENCY_WORK_PATTERN.md`** in this folder. **Rule 35a** in `workflow_rules.mdc` forbids mandatory local merge/git for cross-dep.
+> **Saved work pattern (Jira + codebase + deep Confluence exploration; no local merge/git):** **`CROSS_DEPENDENCY_WORK_PATTERN.md`** in this folder. **Rule 35a** in `workflow_rules.md` forbids mandatory local merge/git for cross-dep.
 
 ## Overview
 
@@ -106,7 +106,7 @@ Structured payload that the test-case-generator can use:
 
 ### 5. Integration with Test Case Generator
 
-**Rule 35 (workflow_rules.mdc):** When the user requests test case creation, the parent MUST run **cross-dependency-finder** first, then pass its output to **test-case-generator**. Never skip the cross-dependency step.
+**Rule 35 (workflow_rules.md):** When the user requests test case creation, the parent MUST run **cross-dependency-finder** first, then pass its output to **test-case-generator**. Never skip the cross-dependency step.
 
 When generating test cases for the **same scope**:
 
@@ -123,7 +123,7 @@ When generating test cases for the **same scope**:
 
 The agent is exposed as a Cursor subagent in:
 
-- **File:** `.cursor/agents/cross-dependency-finder.md`
+- **File:** `.claude/agents/cross-dependency-finder.md`
 - **When to use:** User asks for dependency analysis, cross-dependencies, or more robust test coverage; or when generating test cases that should consider dependencies.
 
 ## Constraints
@@ -134,7 +134,7 @@ The agent is exposed as a Cursor subagent in:
 
 ## File organisation
 
-- **Agent descriptor:** `.cursor/agents/cross-dependency-finder.md`
+- **Agent descriptor:** `.claude/agents/cross-dependency-finder.md`
 - **Design doc:** `Cursor-Project/docs/CROSS_DEPENDENCY_FINDER_AGENT.md` (this file)
 - **Output (optional):** `Cursor-Project/cross_dependencies/YYYY-MM-DD_<scope_slug>.json`
 

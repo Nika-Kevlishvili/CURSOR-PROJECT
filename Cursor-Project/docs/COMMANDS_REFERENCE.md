@@ -6,9 +6,9 @@ This document lists every Cursor command and what it can do in detail.
 
 ## 1. Switch Phoenix repos to an environment branch (current command)
 
-**Command:** `.cursor/commands/switch-phoenix-branches.ps1`
-**Doc:** `.cursor/commands/switch-phoenix-branches.md`
-**Rule:** `.cursor/rules/integrations/phoenix_branch_switching.mdc` (Rule PHOENIX-SWITCH.0)
+**Command:** `.claude/commands/switch-phoenix-branches.ps1`
+**Doc:** `.claude/commands/switch-phoenix-branches.md`
+**Rule:** `.claude/rules/integrations/phoenix_branch_switching.md` (Rule PHOENIX-SWITCH.0)
 
 **What it does (per repo under `Cursor-Project/Phoenix/`, in order):**
 1. `git fetch origin --prune`
@@ -31,24 +31,24 @@ This document lists every Cursor command and what it can do in detail.
 **Usage:**
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment dev
-powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment test
-powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment experiments
+powershell -ExecutionPolicy Bypass -File .claude/commands/switch-phoenix-branches.ps1 -Environment dev
+powershell -ExecutionPolicy Bypass -File .claude/commands/switch-phoenix-branches.ps1 -Environment test
+powershell -ExecutionPolicy Bypass -File .claude/commands/switch-phoenix-branches.ps1 -Environment experiments
 # Plan only, no destructive actions:
-powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branches.ps1 -Environment dev -DryRun
+powershell -ExecutionPolicy Bypass -File .claude/commands/switch-phoenix-branches.ps1 -Environment dev -DryRun
 ```
 
 **When Cursor agents must run this:** before environment-sensitive Phoenix code reading — Phoenix Q&A, bug validation (Rule 32), cross-dependency analysis (Rule 35a), and test case generation (Rule 35). See Rule PHOENIX-SWITCH.0.
 
 **Scope:** Only repos under `Cursor-Project/Phoenix/`. Read-only for the remote (no commits, no pushes, no MRs). Phoenix source files remain READ-ONLY for Cursor AI (Rule 0.8 Tier A). EnergoTS is unaffected — that path stays locked to `cursor` (Rule ENERGOTS.0).
 
-> **Legacy note:** the older `/sync`, `!update <branch>`, `!checkout <branch>` triggers and the `git_sync_workflow.mdc` rule are no longer present in this workspace. Use the command above for any Phoenix branch alignment.
+> **Legacy note:** the older `/sync`, `!update <branch>`, `!checkout <branch>` triggers and the `git_sync_workflow.md` rule are no longer present in this workspace. Use the command above for any Phoenix branch alignment.
 
 ---
 
 ## 2. Sync workspace repo (Cursor-Project repository only)
 
-**Command:** `.cursor/commands/sync-workspace-repo.ps1`
+**Command:** `.claude/commands/sync-workspace-repo.ps1`
 
 **What it can do:**
 - Sync **only** the workspace root Git repository (the repo that contains `Cursor-Project`). Does **not** touch sub-repos (EnergoTS, Phoenix).
@@ -60,7 +60,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 
 ## 3. Pull EnergoTS
 
-**Command:** `.cursor/commands/pull-energots.ps1`  
+**Command:** `.claude/commands/pull-energots.ps1`  
 **Optional:** `-RepoUrl "https://github.com/.../EnergoTS.git"` or `$env:ENERGOTS_REPO_URL`
 
 **What it can do:**
@@ -75,7 +75,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 
 ## 4. Push EnergoTS
 
-**Command:** `.cursor/commands/push-energots.ps1`  
+**Command:** `.claude/commands/push-energots.ps1`  
 **Optional:** `-Message "Your commit message"` (default: "Update EnergoTS cursor branch")
 
 **What it can do:**
@@ -89,7 +89,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 
 ## 5. Sync Cursor with Main
 
-**Command:** `.cursor/commands/sync-cursor-with-main.ps1`  
+**Command:** `.claude/commands/sync-cursor-with-main.ps1`  
 **Optional:** `-SourceBranch main` (default) or `-SourceBranch staging`
 
 **What it can do:**
@@ -106,7 +106,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 
 ## 6. Sync Cursor with Staging (Backend-staging)
 
-**Command:** `.cursor/commands/sync-cursor-with-staging.ps1`  
+**Command:** `.claude/commands/sync-cursor-with-staging.ps1`  
 **Optional:** `-ForceSync` to force sync even with uncommitted changes
 
 **What it can do:**
@@ -119,7 +119,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 
 ## 7. Update experiments
 
-**Command:** `.cursor/commands/update-experiments.ps1`  
+**Command:** `.claude/commands/update-experiments.ps1`  
 **Optional:** `-Message "Custom commit message"` (default: "Update experiments branch")
 
 **What it can do:**
@@ -134,7 +134,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 
 ## 8. Update main from experiments
 
-**Command:** `.cursor/commands/update-main-from-experiments.ps1`
+**Command:** `.claude/commands/update-main-from-experiments.ps1`
 
 **What it can do:**
 - Stash uncommitted changes.
@@ -247,7 +247,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 **What it can do:**
 - **Step 1 (mandatory):** Run cross-dependency-finder for the same scope (Rule 35a); get report including what_could_break and technical_details; pass as `context['cross_dependency_data']`.
 - **Step 2:** Follow Rule 0.3; consult PhoenixExpert; search Confluence and codebase; run **test-case-generator** workflow (subagent/skill) with `cross_dependency_data` from step 1.
-- Save test cases under **`Cursor-Project/test_cases/`** per **`test_cases_structure.mdc`**:
+- Save test cases under **`Cursor-Project/test_cases/`** per **`test_cases_structure.md`**:
   - **`Backend/<Topic_name>.md`** — TC-BE-N only; **always** when test cases are generated.
   - **`Frontend/<Topic_name>.md`** — TC-FE-N only; **only** if user chose Backend+Frontend (TC-FRONTEND-ASK.0 = Yes).
   - **`Frontend/<Topic_name>.playwright.md`** — same frontend run; automation instructions for `/playwright-frontend`. Not scored by the quality validator.
@@ -279,7 +279,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 
 ## 17. Playwright frontend
 
-**Command:** `.cursor/commands/playwright-frontend.md`  
+**Command:** `.claude/commands/playwright-frontend.md`  
 **Trigger:** `/playwright-frontend <JIRA_KEY or Topic> [environment]`
 
 **What it can do:**
@@ -287,7 +287,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/commands/switch-phoenix-branche
 - Read `test_cases/Frontend/<Topic>.playwright.md` (written by test-case-generator when the user chose Backend+Frontend).
 - Inspect `Phoenix/phoenix-ui` with read-only git. Record missing locators with `playwright-cli` and update the existing page object.
 - Write `EnergoTS/src/frontend` specs in the `meterCreate.spec.ts` shape: API preconditions, `FrontendResponses`, then the page object.
-- Take one critique by reading `.cursor/procedures/playwright-frontend-validator/procedure.md`, apply it, then run `--project=frontend`.
+- Take one critique by reading `.claude/procedures/playwright-frontend-validator/procedure.md`, apply it, then run `--project=frontend`.
 - Report each result as passed, product code defect, automation defect, or environment blocker.
 
 **When to use:** Automate a merged frontend change. API specs stay with EnergoTS test (section 16).

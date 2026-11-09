@@ -1,0 +1,28 @@
+---
+description: "Rule 40: Playwright test constraints — no beforeAll for preconditions; use fixtures and test.step."
+paths:
+  - "Cursor-Project/EnergoTS/src/tests/**/*.spec.ts"
+  - "Cursor-Project/EnergoTS/src/frontend/**/*.spec.ts"
+  - ".claude/agents/energo-ts-test.md"
+  - ".claude/agents/playwright-test-validator.md"
+  - "Cursor-Project/config/playwright_generation/**/*.md"
+---
+
+# PLAYWRIGHT TEST CONSTRAINTS (Rule 40)
+
+## Rule 40: No `beforeAll` for preconditions [CRITICAL]
+
+**Intent:** Precondition data must be visible per test and traceable in reports. Shared `beforeAll` / `test.beforeAll` hooks hide setup from individual test cases and break TC-to-test mapping.
+
+**FORBIDDEN:**
+- `test.beforeAll` / `beforeAll` for creating test data or shared precondition state
+- Implicit shared state across tests in a describe block via hooks
+
+**REQUIRED instead:**
+- **Fixtures** — `src/backend/fixtures/token.json`, `src/backend/fixtures/envVariables.json`, `src/backend/fixtures/salesPortalToken.json`, and login fixtures under **`Cursor-Project/EnergoTS/src/backend/fixtures/`**
+- **`test.step('Precondition: …')`** — explicit precondition steps inside each `test()` block
+- Helper functions called from within `test()` — see **`precondition-data-creation.instructions.md`** in the playwright instructions pack
+
+**Canonical procedure:** **`.claude/skills/energo-ts-test/SKILL.md`**
+
+Violation is a **MUST** for EnergoTS `.spec.ts` authoring.

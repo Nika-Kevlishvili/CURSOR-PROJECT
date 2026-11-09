@@ -6,7 +6,7 @@ Workspace with **Cursor rules/subagents/skills**, Phoenix Java projects (read-on
 
 ```
 Cursor-Project/
-├── .cursor/               # Cursor IDE config (agents, rules, skills, commands, hooks)
+├── .claude/               # Cursor IDE config (agents, rules, skills, commands, hooks)
 ├── config/                # Swagger specs, Jira/Confluence scripts, Playwright generation, templates
 ├── cross_dependencies/    # Cross-dependency-finder JSON outputs (date_JIRA-KEY.json)
 ├── Cursor Setup/          # MCP config template, env.example for new machine setup
@@ -45,7 +45,7 @@ git config core.hooksPath Cursor-Project/scripts/git-hooks
 
 This enables:
 - **commit-msg** — enforces conventional commit format (`feat:`, `fix:`, `docs:`, etc.)
-- **pre-commit** — runs `validate-cursor-rules.ps1` when `.cursor/rules/**/*.mdc` files change
+- **pre-commit** — runs `validate-claude-rules.ps1` when `.claude/rules/**/*.md` files change
 
 ### Phoenix submodules
 
@@ -67,7 +67,7 @@ Requires Java 17+. Gradle wrapper included.
 ## Documentation
 
 - **[Agent / subagent map](docs/AGENT_SUBAGENT_MAP.md)** — canonical paths for all subagents
-- [Cursor subagents](docs/CURSOR_SUBAGENTS.md) — how `.cursor/agents/` works
+- [Cursor subagents](docs/CURSOR_SUBAGENTS.md) — how `.claude/agents/` works
 - [Commands reference](docs/COMMANDS_REFERENCE.md)
 - [Rules loading](docs/RULES_LOADING_SYSTEM.md)
 - [Workspace patterns](docs/WORKSPACE_PATTERNS.md)

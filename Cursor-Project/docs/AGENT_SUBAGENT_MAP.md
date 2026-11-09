@@ -4,7 +4,7 @@ Use this file as the **single map** from “agent role” to **where it lives to
 
 ## 1. Subagent specs (Cursor)
 
-**Path pattern:** `<workspace-root>/.cursor/agents/<name>.md`  
+**Path pattern:** `<workspace-root>/.claude/agents/<name>.md`  
 (The folder that contains `Cursor-Project` also contains `.cursor`.)
 
 | Subagent file | Role (concept) | Skill / command | Primary trigger |
@@ -19,10 +19,10 @@ Use this file as the **single map** from “agent role” to **where it lives to
 | **energo-ts-test.md** | Playwright API authoring | `energo-ts-test` | Rule 0.8.1; `EnergoTS/src/tests/` |
 | **performance-test.md** | Listing performance tests (POD-style) | `performance-test` | User calls `performance-test` / `perfomance-test` and names the object |
 | **playwright-test-validator.md** | API spec vs test cases | `playwright-test-validator` | After energo-ts-test authoring |
-| **playwright-frontend command** | Frontend Playwright author + run | `.cursor/procedures/playwright-frontend/procedure.md` | Rule 45. User entry is `/playwright-frontend` only. Not a subagent. The one critique is `.cursor/procedures/playwright-frontend-validator/procedure.md`. |
+| **playwright-frontend command** | Frontend Playwright author + run | `.claude/procedures/playwright-frontend/procedure.md` | Rule 45. User entry is `/playwright-frontend` only. Not a subagent. The one critique is `.claude/procedures/playwright-frontend-validator/procedure.md`. |
 | **energo-ts-run.md** | Playwright test run | `energo-ts-run` | Rule 36; `cursor`, `staging`, or `cursorMerged` |
 | **test-runner.md** | Test execution | — (consult PhoenixExpert) | Test-related runs |
-| **database-query.md** | PostgreSQL (Dev/Test/Prod) | `phoenix-database` | DB questions; `database_workflow.mdc` |
+| **database-query.md** | PostgreSQL (Dev/Test/Prod) | `phoenix-database` | DB questions; `database_workflow.md` |
 | **production-data-reader.md** | Production DB (read-only) | `production-data-reader` | Rule PDR.0; PostgreSQLProd MCP |
 | **jira-bug.md** | Jira bug text (Experiments) | `jira-bug-template` | Rule JIRA.0; `/jira-bug` |
 | **postman-collection.md** | Postman collections | — (stub; consult PhoenixExpert) | Postman generation flows |
@@ -30,17 +30,17 @@ Use this file as the **single map** from “agent role” to **where it lives to
 | **report-generator.md** | Persisted reports (Rule 0.6) | `phoenix-reporting` | **`/report`**; **`/feedback`**; explicit save |
 | **shell.md** | CLI / terminal delegation | — | Parent Task `shell`; hooks |
 
-**Git / sync (no dedicated subagent):** Phoenix branch alignment → **`.cursor/commands/switch-phoenix-branches.ps1`** (+ `.md`). Workspace git helpers → **`sync-workspace-repo`**, **`sync-cursor-with-staging`**, **`update-main-from-experiments`** under `.cursor/commands/`. Historical **`git-sync.md`** agent was removed.
+**Git / sync (no dedicated subagent):** Phoenix branch alignment → **`.claude/commands/switch-phoenix-branches.ps1`** (+ `.md`). Workspace git helpers → **`sync-workspace-repo`**, **`sync-cursor-with-staging`**, **`update-main-from-experiments`** under `.claude/commands/`. Historical **`git-sync.md`** agent was removed.
 
-**Registry:** `.cursor/agents/README.md` · **Commands:** `.cursor/commands/*.md` · **Rules index:** `.cursor/rules/main/phoenix.mdc` · **Intent router:** `phoenix-commands` skill
+**Registry:** `.claude/docs/agents-README.md` · **Commands:** `.claude/commands/*.md` · **Rules index:** `.claude/rules/main/phoenix.md` · **Intent router:** `phoenix-commands` skill
 
 ## 2. Rules and skills
 
 | Kind | Path |
 |------|------|
-| Rules | `.cursor/rules/**/*.mdc` |
-| Skills | `.cursor/skills/**/SKILL.md` |
-| Slash commands | `.cursor/commands/*.md` + `.ps1` |
+| Rules | `.claude/rules/**/*.md` |
+| Skills | `.claude/skills/**/SKILL.md` |
+| Slash commands | `.claude/commands/*.md` + `.ps1` |
 
 ## 3. Outputs (always under `Cursor-Project/`)
 

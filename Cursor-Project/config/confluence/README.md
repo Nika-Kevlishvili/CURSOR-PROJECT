@@ -1,12 +1,12 @@
 # Confluence REST reads (Cursor / agents)
 
-Confluence MCP is disabled (Rovo cost). Read wiki pages with **Cloud REST GET** per **`.cursor/rules/integrations/atlassian_zero_cost.mdc`** (Rule **CONFLUENCE.1** / workflow Rule **43**).
+Confluence MCP is disabled (Rovo cost). Read wiki pages with **Cloud REST GET** per **`.claude/rules/integrations/atlassian_zero_cost.md`** (Rule **CONFLUENCE.1** / workflow Rule **43**).
 
 ## Environment variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `CONFLUENCE_WIKI_BASE` | Recommended | Wiki API origin — **`https://asterbit.atlassian.net/wiki`** for Phoenix Confluence (user links: Rule LINK.1 in `atlassian_link_format.mdc`) |
+| `CONFLUENCE_WIKI_BASE` | Recommended | Wiki API origin — **`https://asterbit.atlassian.net/wiki`** for Phoenix Confluence (user links: Rule LINK.1 in `atlassian_link_format.md`) |
 | `CONFLUENCE_URL` | Optional fallback | e.g. `https://your-site.atlassian.net/wiki/home` — script normalizes to wiki base |
 | `JIRA_BASE_URL` | Optional fallback | e.g. `https://your-site.atlassian.net` — script may derive `https://your-site.atlassian.net/wiki` when wiki vars are unset |
 | `JIRA_EMAIL` | Yes* | Atlassian account email (shared with Jira on same cloud) |

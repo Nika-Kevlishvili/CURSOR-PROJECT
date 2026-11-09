@@ -1,0 +1,41 @@
+---
+description: "Confluence reads use Cloud REST GET scripts only. Confluence MCP is forbidden. See atlassian_zero_cost.md."
+paths:
+  - ".claude/agents/phoenix-qa.md"
+  - ".claude/agents/bug-validator.md"
+  - ".claude/agents/cross-dependency-finder.md"
+  - ".claude/agents/test-case-generator.md"
+  - ".claude/skills/phoenix-bug-validation/**"
+  - ".claude/skills/cross-dependency-finder/**"
+  - ".claude/skills/test-case-generator/**"
+---
+
+# CONFLUENCE READ PATH — REST GET ONLY [CRITICAL]
+
+## Rule CONFLUENCE.1: Confluence Cloud REST GET is the only read path [CRITICAL]
+
+This file used to say “Confluence MCP first, REST fallback.” MCP is retired (Rovo cost).
+
+Follow **`.claude/rules/integrations/atlassian_zero_cost.md`** Rule ATLASSIAN.4.
+
+**One page** (numeric id from `/wiki/spaces/.../pages/<id>/`):
+
+```powershell
+pwsh -NoProfile -File "Cursor-Project/config/confluence/get-confluence-page-rest.ps1" -PageId "<numericId>"
+```
+
+**CQL** (Rule 32 bug validation and Rule 35a cross-dependency only). Other workflows read linked page IDs (Rule 39):
+
+```powershell
+pwsh -NoProfile -File "Cursor-Project/config/confluence/search-confluence-cql-rest.ps1" -Cql "<cql>" -Limit 25
+```
+
+`-Limit` maximum **50**. Credentials: `CONFLUENCE_WIKI_BASE`, `JIRA_EMAIL`, `JIRA_API_TOKEN` (or `CONFLUENCE_EMAIL` / `CONFLUENCE_API_TOKEN`). Never print the token.
+
+**READ-ONLY.** No POST, PUT, or DELETE. Same prohibition as Rule 1.
+
+**Chat disclosure:** `Confluence source: Cloud REST GET.`
+
+If the script fails (missing vars, 401, network), state the failure and stop Confluence-dependent conclusions. Do **not** call Confluence MCP.
+
+Code remains runtime truth. Confluence remains documented intent. Disagreement → Finding (Rule QA.2).

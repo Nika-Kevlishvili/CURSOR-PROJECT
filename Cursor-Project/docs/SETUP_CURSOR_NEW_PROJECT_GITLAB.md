@@ -13,7 +13,7 @@ In this workspace, GitLab is configured as follows:
 | **Git host** | `git.domain.internal` (GitLab) |
 | **Base URL** | `https://git.domain.internal` |
 | **Auth** | GitLab Personal Access Token (read-only: `read_repository`, `read_api`) |
-| **Token env** | `GIT_READONLY_TOKEN` (in `.cursor/rules/integrations/git_sync_workflow.mdc`) |
+| **Token env** | `GIT_READONLY_TOKEN` (in `.claude/rules/integrations/git_sync_workflow.md`) |
 | **Repos** | Phoenix group projects under `Cursor-Project/Phoenix/` |
 | **Sync** | `!sync`, `!update <branch>`, `!checkout <branch>` (read-only fetch/merge/checkout) |
 
@@ -28,17 +28,17 @@ In this workspace, GitLab is configured as follows:
 
 ### 2.2 Add Cursor Rules for GitLab Sync
 
-1. **Create `.cursor/rules/` in the new project.**
+1. **Create `.claude/rules/` in the new project.**
 
-2. **Create a Git sync rule** (e.g. `git_sync_workflow.mdc`) adapted for your GitLab:
-   - Copy the structure from this workspace’s `.cursor/rules/integrations/git_sync_workflow.mdc`.
+2. **Create a Git sync rule** (e.g. `git_sync_workflow.md`) adapted for your GitLab:
+   - Copy the structure from this workspace’s `.claude/rules/integrations/git_sync_workflow.md`.
    - Replace:
      - **Git host** → your GitLab host (e.g. `git.mycompany.com` or `gitlab.com`).
      - **GIT_READONLY_TOKEN** → a **new** Personal Access Token from **that** GitLab (read-only: `read_repository`, `read_api`).
      - **Repository list** → your group/project names and clone URLs (e.g. `https://<host>/<group>/<repo>.git`).
    - Adjust **workspace/repo paths** if you use something other than `Cursor-Project/Phoenix/` (e.g. `MyProject/Repos/`).
 
-3. **Optional:** Copy other rules from this workspace (e.g. `core_rules.mdc`, `safety_rules.mdc`) if you want similar behavior; strip or change Phoenix-specific parts.
+3. **Optional:** Copy other rules from this workspace (e.g. `core_rules.md`, `safety_rules.md`) if you want similar behavior; strip or change Phoenix-specific parts.
 
 ### 2.3 Environment Variables (New GitLab)
 
@@ -87,7 +87,7 @@ You can add a script similar to `sync-main-project.ps1` that:
 Example layout:
 
 ```powershell
-# .cursor/commands/sync-my-project.ps1
+# .claude/commands/sync-my-project.ps1
 $workspaceRoot = "C:\Projects\MyNewProject"   # or detect from script path
 $reposPath    = Join-Path $workspaceRoot "Repos"
 # Then loop over Get-ChildItem $reposPath, and in each dir: git fetch, git merge, etc.
@@ -97,7 +97,7 @@ Use the same pattern as `sync-main-project.ps1` (stash → fetch → merge → u
 
 ### 2.6 Optional: automation outside Cursor
 
-This workspace’s **Cursor** workflows use **`.cursor/rules`**, **scripts** (e.g. sync), and **MCP** — not a bundled **`Cursor-Project/agents/`** Python tree.
+This workspace’s **Cursor** workflows use **`.claude/rules`**, **scripts** (e.g. sync), and **MCP** — not a bundled **`Cursor-Project/agents/`** Python tree.
 
 If your **new** project has **separate** Python or CI automation that talks to GitLab/Jira:
 
@@ -109,7 +109,7 @@ If your **new** project has **separate** Python or CI automation that talks to G
 ## 3. Checklist for the New Project
 
 - [ ] New folder opened as Cursor workspace.
-- [ ] `.cursor/rules/` created; Git sync rule added with **new** host and **new** token.
+- [ ] `.claude/rules/` created; Git sync rule added with **new** host and **new** token.
 - [ ] New GitLab Personal Access Token created (read-only) for **that** GitLab.
 - [ ] `GITLAB_URL` and `GITLAB_TOKEN` (or `GIT_READONLY_TOKEN`) set for the **new** GitLab only.
 - [ ] Git credentials (URL or credential helper) use the **new** token and host.
@@ -131,7 +131,7 @@ If your **new** project has **separate** Python or CI automation that talks to G
 | Aspect | This workspace | New project |
 |--------|----------------|-------------|
 | GitLab host | `git.domain.internal` | Your host (e.g. `git.mycompany.com`) |
-| Token | In `git_sync_workflow.mdc` / env | New token in new rule / env |
+| Token | In `git_sync_workflow.md` / env | New token in new rule / env |
 | Repos path | `Cursor-Project/Phoenix/` | Your path (e.g. `Repos/`) |
 | Commands | `!sync`, `!update`, `!checkout` | Same triggers if you copy the rule; script name can differ |
 

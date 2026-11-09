@@ -67,7 +67,7 @@ These are the branching points in the process. Each decision leads to different 
 
 - 4b. playwright<br>test-validator (≥80)
 - <b>Slack (2 reporting paths)</b>
-- database_workflow.mdc<br>Rules DB.0–DB.6
+- database_workflow.md<br>Rules DB.0–DB.6
 - <b>Mandatory Prerequisites for Playwright workflows</b><br><br>• Swagger refresh before .spec.ts (Rule 41)<br>• No beforeAll in preconditions (Rule 40)<br>• EnergoTS cursor branch locked (Rule ENERGOTS.0)<br>• Phoenix alignment checked (PHOENIX-SWITCH.0)<br>• Hooks enforce all gates automatically
 - 3b. tc-quality<br>validator (≥80)
 - Process box = Cross-cutting concern
@@ -102,7 +102,7 @@ These are the branching points in the process. Each decision leads to different 
 - Jira Cloud
 - Other: jira-bug,<br>postman, report,<br>env-access, shell
 - Full analysis → Chat
-- Citations: file path + lines / page title + ID<br>(evidence_only_project_answers.mdc)
+- Citations: file path + lines / page title + ID<br>(evidence_only_project_answers.md)
 - Path 1: Bug validation<br>#bug-validation (C0AUEEDVCEL)
 - Step 1b: Check diagrams<br>Ticket attachments → config/Diagrams/<br>(Bundle 4/5/6 .svg fallback)
 - switch-phoenix-branches.md &middot; update-swagger-specs.md<br>send-playwright-results-slack.md &middot; git-sync.md &middot; (others as needed)
@@ -115,12 +115,12 @@ These are the branching points in the process. Each decision leads to different 
 - Step 2: test-case-generator<br>Reads playwright instructions folder (MANDATORY)<br>Uses prompt + Confluence + codebase + cross_dependency_data<br>Writes Backend/&lt;Topic&gt;.md + Frontend/&lt;Topic&gt;.md
 - Prod = read-only (SELECT only)<br>production-data-reader uses PostgreSQLProd
 - Scoped Playwright Slack (DPR.0):<br>ScopedPlaywright_*.md under Chat reports (ScopedPlaywright)/
-- integrations/*.mdc<br>Jira/Conf fallback, branch switch,<br>Swagger, EnergoTS lock, prod reader
+- integrations/*.md<br>Jira/Conf fallback, branch switch,<br>Swagger, EnergoTS lock, prod reader
 - env-access
 - update-swagger-specs.ps1<br>MANDATORY before any .spec.ts create/edit
 - ALLOWED: Experiments board
 - 5. Read canon SKILL before work
-- safety_rules.mdc<br>Rules 1, 14, 18–31
+- safety_rules.md<br>Rules 1, 14, 18–31
 - Jira MCP (primary)<br>getJiraIssue + expand=names<br>+ all custom fields
 - <b>Safety Guards, Prohibitions & Quality Gates</b>
 - Dev2
@@ -152,16 +152,16 @@ These are the branching points in the process. Each decision leads to different 
 - Step 3: Swagger refresh (MANDATORY)<br>update-swagger-specs.ps1
 - Purple = Scoped Playwright Slack orchestration
 - test-runner
-- <b>Commands (.cursor/commands/*.md)</b><br>Operational checklists
+- <b>Commands (.claude/commands/*.md)</b><br>Operational checklists
 - switch-phoenix-branches.ps1<br>(align Phoenix repos to env branch)
 - Production DB — SELECT-ONLY<br>Never INSERT/UPDATE/DELETE
 - energo-ts-test
 - phoenix-qa<br>(PhoenixExpert)
 - CONFIRMED
-- <b>Hooks (.cursor/hooks.json + hooks/*.ps1)</b><br>Automated enforcement on agent events
+- <b>Hooks (.claude/settings.json + hooks/*.ps1)</b><br>Automated enforcement on agent events
 - 5. energo-ts-run<br>(cursor branch)
 - production-data-reader
-- <b>Skills (.cursor/skills/*/SKILL.md)</b><br>Step-by-step procedural docs
+- <b>Skills (.claude/skills/*/SKILL.md)</b><br>Step-by-step procedural docs
 - Confluence<br>Cloud
 - Document = Artifact / file output
 - <b>Request Flow Through Layers</b>
@@ -170,10 +170,10 @@ These are the branching points in the process. Each decision leads to different 
 - Hexagon = Orchestration layer<br>(rules, skills, hooks)
 - 0. Env resolve<br>+ Phoenix align
 - 7. Slack upload<br>Tester + #ai-report
-- <b>Rules (.cursor/rules/**/*.mdc)</b><br>Always injected — gates & constraints
+- <b>Rules (.claude/rules/**/*.md)</b><br>Always injected — gates & constraints
 - Green = EnergoTS / Playwright
 - playwright-report.json
-- Rules: .cursor/rules/**/*.mdc (always injected by Cursor)<br>Agents: .cursor/agents/*.md (Task tool subagent specs)<br>Skills: .cursor/skills/*/SKILL.md (step-by-step procedure)<br>Commands: .cursor/commands/*.md (operational checklists)<br>Hooks: .cursor/hooks.json + .cursor/hooks/*.ps1 (enforcement)<br><br>Rule → canon map: Cursor-Project/docs/RULES_CANONICAL_INDEX.md<br>Agent roster: Cursor-Project/docs/AGENT_SUBAGENT_MAP.md<br>Architecture: Cursor-Project/docs/WORKSPACE_PATTERNS.md
+- Rules: .claude/rules/**/*.md (always injected by Cursor)<br>Agents: .claude/agents/*.md (Task tool subagent specs)<br>Skills: .claude/skills/*/SKILL.md (step-by-step procedure)<br>Commands: .claude/commands/*.md (operational checklists)<br>Hooks: .claude/settings.json + .claude/hooks/*.ps1 (enforcement)<br><br>Rule → canon map: Cursor-Project/docs/RULES_CANONICAL_INDEX.md<br>Agent roster: Cursor-Project/docs/AGENT_SUBAGENT_MAP.md<br>Architecture: Cursor-Project/docs/WORKSPACE_PATTERNS.md
 - Step 4a: Phoenix code analysis<br>(aligned to env branch — READ-ONLY)<br>Endpoints, services, validators, schedulers
 - TCs saved and validated — workflow complete
 - Use test.step('Precondition: …')<br>+ helpers (Rule 40)
@@ -181,12 +181,12 @@ These are the branching points in the process. Each decision leads to different 
 - <b>Reporting Rules (Rule 0.6)</b>
 - playwright-test-validator
 - /report → Chat reports/ (on demand)<br>/feedback → Feedback/ (on demand)
-- workflow_rules.mdc<br>Rules 32, 35, 36, 37, 39–44
+- workflow_rules.md<br>Rules 32, 35, 36, 37, 39–44
 - test_cases/Frontend/&lt;Topic&gt;.md<br>(TC-FE-N only)
 - <b>Quality Gates (mandatory checks)</b>
 - <b>Shape Legend</b>
 - energo-ts-run
-- core_rules.mdc<br>Rule 0.x (PhoenixExpert, reports, path tiers)
+- core_rules.md<br>Rule 0.x (PhoenixExpert, reports, path tiers)
 - send-playwright-results-slack
 - GitLab — READ-ONLY<br>No commits, pushes, merges, edits
 - postman-collection
@@ -197,7 +197,7 @@ These are the branching points in the process. Each decision leads to different 
 - shell
 - <b>Intent → Rule → Agent Mapping</b>
 - config/swagger/<env>/swagger-spec.json
-- <b>Agents (.cursor/agents/*.md)</b><br>Task-tool subagent specs — 18 agents total
+- <b>Agents (.claude/agents/*.md)</b><br>Task-tool subagent specs — 18 agents total
 - phoenix-qa
 - Env resolve (PHOENIX-SWITCH.0)<br>switch-phoenix-branches.ps1
 - <b>Step 4: Playwright authoring (energo-ts-test)</b><br><br>1. Read playwright instructions pack (project-description, general-rules,<br> test-writing-rules, SKILL.md)<br>2. Swagger refresh (MANDATORY — Rule 41)<br>3. No beforeAll for preconditions (Rule 40)<br>4. Write .spec.ts under EnergoTS/src/tests/cursor/<br>5. Only EnergoTSTestAgent may write (Rule 0.8.1)
@@ -209,7 +209,7 @@ These are the branching points in the process. Each decision leads to different 
 - Step 5: 5-Verdict Matrix
 - <b>Step Details</b>
 - Proceed to workflow<br>(see dedicated pages: 4–9)
-- <b>TIER C — ALLOWED (default)</b><br>docs/, examples/, config/, postman/, reports/,<br>test_cases/, User story/, .cursor/, workspace root<br>User-requested edits permitted
+- <b>TIER C — ALLOWED (default)</b><br>docs/, examples/, config/, postman/, reports/,<br>test_cases/, User story/, .claude/, workspace root<br>User-requested edits permitted
 - 1. User sends message
 - Prod
 - <b>Execution Path (energo-ts-run — Rule 36)</b>

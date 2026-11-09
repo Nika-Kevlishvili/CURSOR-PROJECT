@@ -1,9 +1,9 @@
 # Cursor workspace operating model
 
-**Scope:** Orchestration (`.cursor/`) **and** how it connects to deliverables under `Cursor-Project/` (test cases, EnergoTS, reports).  
+**Scope:** Orchestration (`.claude/`) **and** how it connects to deliverables under `Cursor-Project/` (test cases, EnergoTS, reports).  
 **Purpose:** Single reference for how the workspace **should** work after reconciliation (Phase 1–3).  
 **Status:** **Phase 1–3 reconciliation implemented** in repo (see [§8](#8-current-vs-target)). Residual debt: context bloat, thin router skills, hook gaps, legacy TC content — see audit notes in §11.  
-**Related:** [WORKSPACE_PATTERNS.md](WORKSPACE_PATTERNS.md) · [RULES_CANONICAL_INDEX.md](RULES_CANONICAL_INDEX.md) · [../.cursor/README.md](../.cursor/README.md) · [../config/template/Slack_reporting_paths.md](../config/template/Slack_reporting_paths.md)
+**Related:** [WORKSPACE_PATTERNS.md](WORKSPACE_PATTERNS.md) · [RULES_CANONICAL_INDEX.md](RULES_CANONICAL_INDEX.md) · [../.claude/README.md](../.claude/README.md) · [../config/template/Slack_reporting_paths.md](../config/template/Slack_reporting_paths.md)
 
 ---
 
@@ -16,21 +16,21 @@ This repository is **not** the Phoenix application. It is the **QA automation an
 2. **Bug triage** with evidence (Confluence, Swagger, Phoenix code read-only, optional DB).
 3. **Safe AI operation** — hooks and rules block Phoenix edits, Confluence writes, wrong EnergoTS branches, and silent environment guesses.
 
-**Primary outputs:** `test_cases/`, `EnergoTS/src/tests/cursor/`, `reports/` (+ Slack uploads). **`.cursor/`** is the factory configuration; deliverables are the product.
+**Primary outputs:** `test_cases/`, `EnergoTS/src/tests/cursor/`, `reports/` (+ Slack uploads). **`.claude/`** is the factory configuration; deliverables are the product.
 
 ---
 
-## 1. Layer model (`.cursor/`)
+## 1. Layer model (`.claude/`)
 
 Each layer has one job. **Do not duplicate procedure in rules.**
 
 | Layer | Path | Responsibility | Must not |
 |-------|------|----------------|----------|
-| **Rules** | `.cursor/rules/**/*.mdc` | WHAT — obligations, gates, prohibitions, exit criteria | Full step-by-step workflows |
-| **Skills** | `.cursor/skills/**/SKILL.md` | HOW — canonical procedure per workflow | Contradict paired agent or rules |
-| **Agents** | `.cursor/agents/*.md` | WHO — Task subagent inputs/outputs | Duplicate skill steps |
-| **Commands** | `.cursor/commands/*.md` + `.ps1` | RUN — checklists and scripts | Business logic duplication |
-| **Hooks** | `.cursor/hooks/*.ps1` + `hooks.json` | ENFORCE — Tier A/B, MCP/shell guards | Orchestration |
+| **Rules** | `.claude/rules/**/*.md` | WHAT — obligations, gates, prohibitions, exit criteria | Full step-by-step workflows |
+| **Skills** | `.claude/skills/**/SKILL.md` | HOW — canonical procedure per workflow | Contradict paired agent or rules |
+| **Agents** | `.claude/agents/*.md` | WHO — Task subagent inputs/outputs | Duplicate skill steps |
+| **Commands** | `.claude/commands/*.md` + `.ps1` | RUN — checklists and scripts | Business logic duplication |
+| **Hooks** | `.claude/hooks/*.ps1` + `hooks.json` | ENFORCE — Tier A/B, MCP/shell guards | Orchestration |
 
 ### ASCII — request flow (always renders)
 
@@ -96,52 +96,52 @@ flowchart TD
 
 | Bundle | File(s) | Agent must apply |
 |--------|---------|------------------|
-| Core tiers & reports | `main/core_rules.mdc` | 0.6 chat-first; 0.8 Phoenix/EnergoTS tiers; 0.1 footer |
-| Safety | `safety/safety_rules.mdc` | GitLab/Confluence read-only |
-| Clarification | `main/clarification_and_confidence.mdc` | CONF.0 ask; CONF.1 score |
-| Evidence | `main/evidence_only_project_answers.mdc`, `main/senior_qa_product_quality.mdc` | Dual-track runtime vs spec; Findings on conflict; Jira completeness |
-| Workflow obligations | `workflows/workflow_rules.mdc` | Rules 32–44 **summary only** → link SKILL |
-| Agents | `agents/agent_rules.mdc` | Routing; PhoenixExpert consultation |
+| Core tiers & reports | `main/core_rules.md` | 0.6 chat-first; 0.8 Phoenix/EnergoTS tiers; 0.1 footer |
+| Safety | `safety/safety_rules.md` | GitLab/Confluence read-only |
+| Clarification | `main/clarification_and_confidence.md` | CONF.0 ask; CONF.1 score |
+| Evidence | `main/evidence_only_project_answers.md`, `main/senior_qa_product_quality.md` | Dual-track runtime vs spec; Findings on conflict; Jira completeness |
+| Workflow obligations | `workflows/workflow_rules.md` | Rules 32–44 **summary only** → link SKILL |
+| Agents | `agents/agent_rules.md` | Routing; PhoenixExpert consultation |
 
 ### 2.1a Today vs target (`alwaysApply`)
 
 | File | `alwaysApply` today | Target |
 |------|---------------------|--------|
-| `core_rules.mdc` | true | true |
-| `safety_rules.mdc` | true | true |
-| `clarification_and_confidence.mdc` | true | true |
-| `evidence_only_project_answers.mdc` | true | true |
-| `workflow_rules.mdc` | true | true |
-| `agent_rules.mdc` | true | true |
-| `phoenix.mdc` | false + globs | false + globs (index) |
-| `playwright_detailed_reporting.mdc` | false + globs | false + globs (scoped Slack path 2) |
-| `file_organization_rules.mdc` | false + globs | false + globs (file writes) |
-| `database_workflow.mdc` | false + globs | false + globs (DB MCP) |
-| `jira_rest_fallback.mdc` | false + globs | false + globs (Jira reads) |
-| `confluence_rest_fallback.mdc` | false + globs | false + globs (Confluence reads) |
-| `jira_bug_agent.mdc` | false + globs | false + globs (Jira bug agent) |
-| `production_data_reader.mdc` | false + globs | false + globs (PDR) |
-| `test_cases_structure.mdc` | false + globs | false + globs |
-| `playwright_test_constraints.mdc` | false + globs | false + globs |
-| `swagger_refresh_mandatory.mdc` | false + globs | false + globs |
-| `phoenix_branch_switching.mdc` | false + globs | false + globs |
-| `energots_branch_lock.mdc` | false + globs | false + globs |
+| `core_rules.md` | true | true |
+| `safety_rules.md` | true | true |
+| `clarification_and_confidence.md` | true | true |
+| `evidence_only_project_answers.md` | true | true |
+| `workflow_rules.md` | true | true |
+| `agent_rules.md` | true | true |
+| `phoenix.md` | false + globs | false + globs (index) |
+| `playwright_detailed_reporting.md` | false + globs | false + globs (scoped Slack path 2) |
+| `file_organization_rules.md` | false + globs | false + globs (file writes) |
+| `database_workflow.md` | false + globs | false + globs (DB MCP) |
+| `jira_rest_fallback.md` | false + globs | false + globs (Jira reads) |
+| `confluence_rest_fallback.md` | false + globs | false + globs (Confluence reads) |
+| `jira_bug_agent.md` | false + globs | false + globs (Jira bug agent) |
+| `production_data_reader.md` | false + globs | false + globs (PDR) |
+| `test_cases_structure.md` | false + globs | false + globs |
+| `playwright_test_constraints.md` | false + globs | false + globs |
+| `swagger_refresh_mandatory.md` | false + globs | false + globs |
+| `phoenix_branch_switching.md` | false + globs | false + globs |
+| `energots_branch_lock.md` | false + globs | false + globs |
 
-**Removed (Phase 1):** `no_auto_playwright_report_files.mdc` — merged into **`playwright_detailed_reporting.mdc`** (DPR).
+**Removed (Phase 1):** `no_auto_playwright_report_files.md` — merged into **`playwright_detailed_reporting.md`** (DPR).
 
 **Note (Phase 3 complete):** Cursor injects **six** `alwaysApply: true` core rules every session; integration/workflow detail loads via **globs** or **Rule 0.0** canonical SKILL/agent reads.
 
-**CI:** `Cursor-Project/scripts/validate-cursor-rules.ps1` + **`validate-cursor-consistency.ps1`** (alwaysApply count, hooks, STANDALONE invariants).
+**CI:** `Cursor-Project/scripts/validate-claude-rules.ps1` + **`validate-claude-consistency.ps1`** (alwaysApply count, hooks, STANDALONE invariants).
 
 ### 2.2 Scoped (globs / explicit workflow)
 
 | When | Rules | Procedure |
 |------|-------|-----------|
-| Test cases | `workspace/test_cases_structure.mdc` | cross-dep SKILL → test-case-generator SKILL |
-| Playwright | `playwright_test_constraints.mdc`, `swagger_refresh_mandatory.mdc`, `energots_branch_lock.mdc` | energo-ts-test agent |
-| Bug validation | `phoenix_branch_switching.mdc`, integrations | **`phoenix-bug-validation` SKILL** (primary) |
-| DB | `integrations/database_workflow.mdc` | `phoenix-database` SKILL |
-| EnergoTS tree | `energots_branch_lock.mdc` | ENERGOTS.0 + hooks |
+| Test cases | `workspace/test_cases_structure.md` | cross-dep SKILL → test-case-generator SKILL |
+| Playwright | `playwright_test_constraints.md`, `swagger_refresh_mandatory.md`, `energots_branch_lock.md` | energo-ts-test agent |
+| Bug validation | `phoenix_branch_switching.md`, integrations | **`phoenix-bug-validation` SKILL** (primary) |
+| DB | `integrations/database_workflow.md` | `phoenix-database` SKILL |
+| EnergoTS tree | `energots_branch_lock.md` | ENERGOTS.0 + hooks |
 
 **Rule 0.0:** Before substantive work → [RULES_CANONICAL_INDEX.md](RULES_CANONICAL_INDEX.md) → canonical SKILL and/or agent.
 
@@ -175,8 +175,8 @@ flowchart TD
 | Score test cases | `test-case-quality-validator` | `test-case-quality-validator` | rubric 10-axis, ≥80/100; does not score `.playwright.md` |
 | Write API Playwright spec | `energo-ts-test` | `energo-ts-test` | 0.8.1, 41, 40 |
 | Validate API spec | `playwright-test-validator` | `playwright-test-validator` | Rule 35 quality gate |
-| Write and run frontend Playwright | `/playwright-frontend` command | `.cursor/procedures/playwright-frontend/procedure.md` | Rule 45; `cursorMerged` only. Not a subagent. |
-| Assess frontend spec once | inside that command | `.cursor/procedures/playwright-frontend-validator/procedure.md` | One critique, then execute. Not a slash command. |
+| Write and run frontend Playwright | `/playwright-frontend` command | `.claude/procedures/playwright-frontend/procedure.md` | Rule 45; `cursorMerged` only. Not a subagent. |
+| Assess frontend spec once | inside that command | `.claude/procedures/playwright-frontend-validator/procedure.md` | One critique, then execute. Not a slash command. |
 | Run Playwright | `energo-ts-run` | `energo-ts-run` | 36, ENERGOTS.0 |
 | Scoped Playwright + Slack | parent or energo-ts-run | `send-playwright-results-slack.md` | DPR, path 2 |
 | DB query | `database-query` | `phoenix-database` | 33, DB.0a |
@@ -193,7 +193,7 @@ flowchart TD
 
 ## 5. Workflow diagrams
 
-**Full checklists:** `.cursor/skills/phoenix-bug-validation/SKILL.md` (Rule 32), `.cursor/commands/send-playwright-results-slack.md` (scoped Slack).
+**Full checklists:** `.claude/skills/phoenix-bug-validation/SKILL.md` (Rule 32), `.claude/commands/send-playwright-results-slack.md` (scoped Slack).
 
 ### 5.1 Test cases (Rule 35) — ASCII
 
@@ -267,7 +267,7 @@ User asks Slack for specific test run
   -> Slack path 2: short text + upload smart .md + playwright-report-detailed.md
 
 Does NOT run cross-dep or test-case generation unless user asks separately.
-Command: .cursor/commands/send-playwright-results-slack.md
+Command: .claude/commands/send-playwright-results-slack.md
 ```
 
 ---
@@ -326,23 +326,23 @@ Command: .cursor/commands/send-playwright-results-slack.md
 | warn-phoenix hook | Matches protect-phoenix paths only | Match protect-phoenix paths only | **Done (2)** |
 | Missing skills | 3 agents had no SKILL | Thin SKILL routers added | **Done (2)** |
 | EnergoTS Tier B hook | protect-energots-writes.ps1 wired | Wired | **Done (2)** |
-| validate-cursor-consistency | Cross-file + 6 core alwaysApply | CI script | **Done (3)** |
+| validate-claude-consistency | Cross-file + 6 core alwaysApply | CI script | **Done (3)** |
 | Post-audit remediation | TC Backend-only aligned; rubric Axis 4 STANDALONE; template example; legacy TC policy | Consistent orchestration | **Done (audit)** |
 | Doc map sync | AGENT_SUBAGENT_MAP, §4 cheat sheet, CURSOR_SUBAGENTS, COMMANDS_REFERENCE | Match Backend/Frontend layout; no git-sync ghost | **Done (P0 audit)** |
-| Repo hygiene | `.cursor/logs/` gitignored; tracked switch logs removed | No operational log noise in git | **Done (P0 audit)** |
+| Repo hygiene | `.claude/logs/` gitignored; tracked switch logs removed | No operational log noise in git | **Done (P0 audit)** |
 | Jira evidence slim | Heavy Jira blocks → `jira-evidence` SKILL; alwaysApply evidence gate only | −~90 lines alwaysApply | **Done (P1)** |
 | Router skills expanded | environment-resolver, energo-ts-test, playwright-test-validator, test-case-quality-validator | Real HOW in SKILL; thin agents | **Done (P1)** |
 | Hook hardening | Phoenix = all file types; EnergoTS tests/ = *.spec.ts + *.fixtures.ts only | Tier A/B enforcement | **Done (P1)** |
 | Legacy TC STANDALONE | expand script **disabled** (multiline bug); 4 DRY topics reverted | Manual migration when editing | **Reverted — safe** |
-| Rule 35 Step 2.5 | TC quality gate in command + agent + test_cases_structure.mdc | Mandatory before Playwright | **Done (remediation)** |
+| Rule 35 Step 2.5 | TC quality gate in command + agent + test_cases_structure.md | Mandatory before Playwright | **Done (remediation)** |
 | Strict validator exit | Playwright 4.5 BLOCK after 3 failures | No silent proceed to run | **Done (remediation)** |
 | Fat agent thinning (P1b) | bug-validator, test-case-generator, cross-dependency-finder → I/O contract (~45–65 lines) | Procedure only in SKILL | **Done (P1b)** |
 | P2 agent thinning | production-data-reader, energo-ts-run → I/O contract | Procedure in SKILL | **Done (P2)** |
-| P2 gate dedupe | TC quality gates -> SKILL pointers; TC gates authoritative in test_cases_structure.mdc | Less triplication | **Done (P2 partial)** |
-| Critical audit P0 | Rule 0.4 scoped; 0.8.1 hook honesty; Confluence fail-secure; playwright_test_constraints.mdc + SKILL | Runtime honesty | **Done (audit)** |
-| CI validate | `.github/workflows/validate-cursor-rules.yml` on `.cursor/**` PRs | Regression detection | **Done (audit)** |
-| P2b jira-bug + phoenix-switch slim | jira-bug.md 86→30; phoenix_branch_switching.mdc 306→43 + SKILL | Maintainability | **Done (P2b)** |
-| P3 CRITICAL → BLOCK/MUST | All `.mdc` files migrated to Rule 0.9 tiering (0 legacy CRITICAL violations left) | LLM followability | **Done (P3)** |
+| P2 gate dedupe | TC quality gates -> SKILL pointers; TC gates authoritative in test_cases_structure.md | Less triplication | **Done (P2 partial)** |
+| Critical audit P0 | Rule 0.4 scoped; 0.8.1 hook honesty; Confluence fail-secure; playwright_test_constraints.md + SKILL | Runtime honesty | **Done (audit)** |
+| CI validate | `.github/workflows/validate-claude-rules.yml` on `.claude/**` PRs | Regression detection | **Done (audit)** |
+| P2b jira-bug + phoenix-switch slim | jira-bug.md 86→30; phoenix_branch_switching.md 306→43 + SKILL | Maintainability | **Done (P2b)** |
+| P3 CRITICAL → BLOCK/MUST | All `.md` files migrated to Rule 0.9 tiering (0 legacy CRITICAL violations left) | LLM followability | **Done (P3)** |
 | R7 mega-slim + meta-scope | test_cases_structure 241→90; bug-validation SKILL 328→211; database_workflow 144→61; CONF.1+0.1 workflow-only | Context + UX | **Done (R7)** |
 | Compliance tiers | Rule 0.9 BLOCK / MUST / SHOULD | Less CRITICAL inflation | **Done (P1)** |
 
@@ -354,7 +354,7 @@ Command: .cursor/commands/send-playwright-results-slack.md
 |-------|-----------------|---------|
 | **1 Truth** | 1–2 | NPR→DPR; STANDALONE canonical; TC quality skill sync; wire EnergoTS hooks; TC Backend-only |
 | **2 Registry** | 2–3 | README indexes; 3 new skills; `protect-energots-writes.ps1`; fix warn-phoenix |
-| **3 Slim** | done | Dedupe Rule 35 in `workflow_rules.mdc`; **6** alwaysApply core; `validate-cursor-consistency.ps1` |
+| **3 Slim** | done | Dedupe Rule 35 in `workflow_rules.md`; **6** alwaysApply core; `validate-claude-consistency.ps1` |
 
 **Exit criterion Phase 1:** no pair of CRITICAL rules contradict on TC preconditions, reports, or rubric.
 
@@ -385,7 +385,7 @@ Command: .cursor/commands/send-playwright-results-slack.md
 
 **Effective LLM compliance (honest):** ~73–76/100 — hooks enforce Tier A/B edits and Confluence writes; workflow gates and SKILL loads depend on model discipline; validate scripts lint markdown consistency, not chat behavior. Meta-output scoping (CONF.1 + 0.1 workflow-only) reduces token waste but does not change runtime enforcement.
 
-Do **not** conflate repo score with runtime compliance. Treat `.cursor/` as **runbook + safety rails**, not a guaranteed orchestration engine.
+Do **not** conflate repo score with runtime compliance. Treat `.claude/` as **runbook + safety rails**, not a guaranteed orchestration engine.
 
 Remaining for 95+: legacy TC migrate/policy, EnergoTS hook + Rule 0.8.1 alignment.
 

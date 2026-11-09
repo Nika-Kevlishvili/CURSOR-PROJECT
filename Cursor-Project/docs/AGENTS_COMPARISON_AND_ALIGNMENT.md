@@ -6,10 +6,10 @@
 
 | Layer | Location | Role |
 |-------|-----------|------|
-| **Rules** | `.cursor/rules/**/*.mdc` | Mandatory constraints, workflows (Rule 32, 35, 35a, DB, Git sync, etc.) |
-| **Subagents** | `.cursor/agents/*.md` | Delegation specs: how to run a role in Cursor (Phoenix Q&A, bug validation, git-sync, …) |
-| **Skills** | `.cursor/skills/**/SKILL.md` | When/how to trigger workflows from the main agent |
-| **Commands** | `.cursor/commands/*.md` (+ `.ps1` where present) | Slash / `!` command procedures |
+| **Rules** | `.claude/rules/**/*.md` | Mandatory constraints, workflows (Rule 32, 35, 35a, DB, Git sync, etc.) |
+| **Subagents** | `.claude/agents/*.md` | Delegation specs: how to run a role in Cursor (Phoenix Q&A, bug validation, git-sync, …) |
+| **Skills** | `.claude/skills/**/SKILL.md` | When/how to trigger workflows from the main agent |
+| **Commands** | `.claude/commands/*.md` (+ `.ps1` where present) | Slash / `!` command procedures |
 | **MCP** | Jira, Confluence, PostgreSQL*, Slack, … | External read/query integrations (with safety allowlists) |
 | **Reports** | `Cursor-Project/reports/<area>/YYYY/<english-month>/<DD>/*.md` per **`reports/README.md`** | Rule 0.6 (markdown files, not a Python service) |
 
@@ -22,13 +22,13 @@ The **`Cursor-Project/agents/`** Python package (Main/Support/Core/Adapters/Serv
 
 ## Historical docs
 
-Files such as **`AGENTS_README.md`**, **`BUG_FINDER_AGENT.md`**, **`EnergoTSTestAgent_README.md`**, **`GITLAB_UPDATE_AGENT.md`**, and similar describe the **old Python layout** where applicable. Behavior for day-to-day Cursor use is defined by **`.cursor/`**, **`Cursor-Project/reports/README.md`**, and this section.
+Files such as **`AGENTS_README.md`**, **`BUG_FINDER_AGENT.md`**, **`EnergoTSTestAgent_README.md`**, **`GITLAB_UPDATE_AGENT.md`**, and similar describe the **old Python layout** where applicable. Behavior for day-to-day Cursor use is defined by **`.claude/`**, **`Cursor-Project/reports/README.md`**, and this section.
 
 ## Adding a new “agent” today
 
-1. Add **`.cursor/agents/<name>.md`** with role, triggers, and governing rules.
-2. Register in **`.cursor/agents/README.md`** and **`docs/CURSOR_SUBAGENTS.md`** if user-facing.
-3. Add or extend a **skill** under `.cursor/skills/` when discovery/trigger text helps.
-4. Cite rules under `.cursor/rules/` (commands registry Rule 38 if a new command is added).
+1. Add **`.claude/agents/<name>.md`** with role, triggers, and governing rules.
+2. Register in **`.claude/docs/agents-README.md`** and **`docs/CURSOR_SUBAGENTS.md`** if user-facing.
+3. Add or extend a **skill** under `.claude/skills/` when discovery/trigger text helps.
+4. Cite rules under `.claude/rules/` (commands registry Rule 38 if a new command is added).
 
 This keeps Phoenix-centric consultation, read-only safety, and reporting aligned without a Python agent tree.

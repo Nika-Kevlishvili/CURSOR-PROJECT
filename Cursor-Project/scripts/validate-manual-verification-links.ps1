@@ -18,12 +18,25 @@ $warnings = @()
 function Add-Failure([string]$Msg) { $script:failures += $Msg }
 function Add-Warning([string]$Msg) { $script:warnings += $Msg }
 
-$helperPath = Join-Path $RepoRoot 'Cursor-Project\EnergoTS\tests\cursor\shared\manual-verification-links.fixtures.ts'
-$summaryPath = Join-Path $RepoRoot 'Cursor-Project\EnergoTS\tests\cursor\shared\test-run-summary.fixtures.ts'
-$cursorFixturesPath = Join-Path $RepoRoot 'Cursor-Project\EnergoTS\tests\cursor\cursor-test.fixtures.ts'
+# EnergoTS layout: src/tests/cursor (cursorMerged / staging merge layout), else legacy tests/cursor
+$energoRoot = Join-Path $RepoRoot 'Cursor-Project\EnergoTS'
+$cursorTestsRel = 'src/tests/cursor'
+if (-not (Test-Path -LiteralPath (Join-Path $energoRoot $cursorTestsRel)) -and (Test-Path -LiteralPath (Join-Path $energoRoot 'tests/cursor'))) {
+    $cursorTestsRel = 'tests/cursor'
+}
+$cursorTestsDir = Join-Path $energoRoot $cursorTestsRel
+$energoPresent = Test-Path -LiteralPath (Join-Path $energoRoot 'package.json')
+if (-not $energoPresent) {
+    Add-Warning 'Cursor-Project/EnergoTS submodule is not checked out; EnergoTS fixture checks skipped'
+}
+$helperPath = Join-Path $cursorTestsDir 'shared\manual-verification-links.fixtures.ts'
+$summaryPath = Join-Path $cursorTestsDir 'shared\test-run-summary.fixtures.ts'
+$cursorFixturesPath = Join-Path $cursorTestsDir 'cursor-test.fixtures.ts'
 
-if (-not (Test-Path -LiteralPath $summaryPath)) {
-    Add-Failure 'Missing: Cursor-Project/EnergoTS/tests/cursor/shared/test-run-summary.fixtures.ts'
+if (-not $energoPresent) {
+    # skipped (warning above)
+} elseif (-not (Test-Path -LiteralPath $summaryPath)) {
+    Add-Failure "Missing: Cursor-Project/EnergoTS/$cursorTestsRel/shared/test-run-summary.fixtures.ts"
 } else {
     $summary = Get-Content -LiteralPath $summaryPath -Raw
     foreach ($export in @('TestRunSummaryCollector', 'finalizeTestRunSummary')) {
@@ -36,8 +49,10 @@ if (-not (Test-Path -LiteralPath $summaryPath)) {
     }
 }
 
-if (-not (Test-Path -LiteralPath $helperPath)) {
-    Add-Failure 'Missing: Cursor-Project/EnergoTS/tests/cursor/shared/manual-verification-links.fixtures.ts'
+if (-not $energoPresent) {
+    # skipped (warning above)
+} elseif (-not (Test-Path -LiteralPath $helperPath)) {
+    Add-Failure "Missing: Cursor-Project/EnergoTS/$cursorTestsRel/shared/manual-verification-links.fixtures.ts"
 } else {
     $helper = Get-Content -LiteralPath $helperPath -Raw
     foreach ($export in @(
@@ -56,11 +71,13 @@ if (-not (Test-Path -LiteralPath $helperPath)) {
     }
 }
 
-if (-not (Test-Path -LiteralPath $cursorFixturesPath)) {
-    Add-Failure 'Missing: Cursor-Project/EnergoTS/tests/cursor/cursor-test.fixtures.ts'
+if (-not $energoPresent) {
+    # skipped (warning above)
+} elseif (-not (Test-Path -LiteralPath $cursorFixturesPath)) {
+    Add-Failure "Missing: Cursor-Project/EnergoTS/$cursorTestsRel/cursor-test.fixtures.ts"
 } else {
     $cursorFixtures = Get-Content -LiteralPath $cursorFixturesPath -Raw
-    if ($cursorFixtures -notmatch "from '\.\./\.\./fixtures/baseFixture'") {
+    if ($cursorFixtures -notmatch "from '\.\./\.\./(backend/)?fixtures/baseFixture'") {
         Add-Failure 'cursor-test.fixtures must re-export from baseFixture'
     }
     if ($cursorFixtures -notmatch 'test\.afterEach') {
@@ -99,9 +116,9 @@ foreach ($name in $instructionFiles) {
     }
 }
 
-$energoSkill = Join-Path $RepoRoot '.cursor\skills\energo-ts-test\SKILL.md'
+$energoSkill = Join-Path $RepoRoot '.claude\skills\energo-ts-test\SKILL.md'
 if (-not (Test-Path -LiteralPath $energoSkill)) {
-    Add-Failure 'Missing .cursor/skills/energo-ts-test/SKILL.md'
+    Add-Failure 'Missing .claude/skills/energo-ts-test/SKILL.md'
 } elseif ((Get-Content -LiteralPath $energoSkill -Raw) -notmatch 'finalizeTestRunSummary') {
     Add-Failure 'energo-ts-test SKILL must mandate finalizeTestRunSummary'
 } elseif ((Get-Content -LiteralPath $energoSkill -Raw) -notmatch 'TestRunSummary') {
@@ -110,7 +127,7 @@ if (-not (Test-Path -LiteralPath $energoSkill)) {
     Add-Failure 'energo-ts-test SKILL must mandate cursor-test.fixtures for new cursor specs'
 }
 
-$validatorSkill = Join-Path $RepoRoot '.cursor\skills\playwright-test-validator\SKILL.md'
+$validatorSkill = Join-Path $RepoRoot '.claude\skills\playwright-test-validator\SKILL.md'
 if (-not (Test-Path -LiteralPath $validatorSkill)) {
     Add-Failure 'Missing playwright-test-validator SKILL.md'
 } elseif ((Get-Content -LiteralPath $validatorSkill -Raw) -notmatch 'finalizeTestRunSummary') {

@@ -1,6 +1,6 @@
 # Cursor Subagents in This Project
 
-This project defines **Cursor Subagents** in `.cursor/agents/` (workspace root). Each subagent maps to an existing project agent or workflow so the main Cursor agent can delegate Phoenix-related tasks correctly.
+This project defines **Cursor Subagents** in `.claude/agents/` (workspace root). Each subagent maps to an existing project agent or workflow so the main Cursor agent can delegate Phoenix-related tasks correctly.
 
 **Canonical path map (subagent file → role → outputs):** [`AGENT_SUBAGENT_MAP.md`](AGENT_SUBAGENT_MAP.md).
 
@@ -25,7 +25,7 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 | **Test Case Quality Validator** | `test-case-quality-validator.md` | `test-case-quality-validator` | 10-axis rubric, ≥80/100, max 3 rewrites (Rule 35 Step 2.5). |
 | **EnergoTS Test Author** | `energo-ts-test.md` | `energo-ts-test` | API specs under `EnergoTS/src/tests/`. |
 | **Playwright Test Validator** | `playwright-test-validator.md` | `playwright-test-validator` | API spec vs test cases quality gate. |
-| **Playwright Frontend** | `.cursor/commands/playwright-frontend.md` | `.cursor/procedures/playwright-frontend/procedure.md` | Rule 45. User entry is `/playwright-frontend` only. Not a subagent. |
+| **Playwright Frontend** | `.claude/commands/playwright-frontend.md` | `.claude/procedures/playwright-frontend/procedure.md` | Rule 45. User entry is `/playwright-frontend` only. Not a subagent. |
 | **EnergoTS Run** | `energo-ts-run.md` | `energo-ts-run` | Rule 36: run Playwright on `cursor`, `staging`, or `cursorMerged`. |
 | **Test Runner** | `test-runner.md` | — | Run tests; consult PhoenixExpert first. |
 | **Database Query** | `database-query.md` | `phoenix-database` | Official psql via `psql-phoenix.py`; correct env. |
@@ -36,7 +36,7 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 | **Report Generator** | `report-generator.md` | `phoenix-reporting` | Rule 0.6: **`/report`**, **`/feedback`**, explicit save. |
 | **Shell / CLI** | `shell.md` | — | Bash/PowerShell; respects hooks. |
 
-**Git / Phoenix sync (no subagent):** use **`.cursor/commands/switch-phoenix-branches.ps1`** and workspace sync commands (`sync-workspace-repo`, `sync-cursor-with-staging`). Historical **`git-sync.md`** subagent removed.
+**Git / Phoenix sync (no subagent):** use **`.claude/commands/switch-phoenix-branches.ps1`** and workspace sync commands (`sync-workspace-repo`, `sync-cursor-with-staging`). Historical **`git-sync.md`** subagent removed.
 
 ---
 
@@ -52,13 +52,13 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 - **EnergoTSTestAgent** → **`energo-ts-test`** (API specs under `EnergoTS/src/tests/`)
 - **PlaywrightFrontendAgent** → **`playwright-frontend`** (Rule 45, `cursorMerged` only)
 
-**This workspace:** The **`Cursor-Project/agents/`** Python package is **not** present. Roles are implemented **in Cursor chat** via **`.cursor/agents/*.md`**, **`.cursor/rules/**/*.mdc`**, **skills**, and **MCP**. **Rule 0.3:** no `from agents ...` imports in Cursor chat.
+**This workspace:** The **`Cursor-Project/agents/`** Python package is **not** present. Roles are implemented **in Cursor chat** via **`.claude/agents/*.md`**, **`.claude/rules/**/*.md`**, **skills**, and **MCP**. **Rule 0.3:** no `from agents ...` imports in Cursor chat.
 
 ---
 
 ## Where Subagents Live
 
-- **Path:** Workspace root `.cursor/agents/` (same level as `.cursor/commands/`, `.cursor/hooks/`, `.cursor/skills/`).
+- **Path:** Workspace root `.claude/agents/` (same level as `.claude/commands/`, `.claude/hooks/`, `.claude/skills/`).
 - **Format:** One markdown file per subagent with YAML frontmatter (`name`, `description`) and instructions in the body.
 - **Discovery:** Cursor discovers them automatically; they appear in the agent’s available tools.
 
@@ -66,6 +66,6 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 
 ## Rules and Skills
 
-- **Rules:** `.cursor/rules/**/*.mdc` — obligations and gates (WHAT).
-- **Skills:** `.cursor/skills/**/SKILL.md` — canonical procedure (HOW).
+- **Rules:** `.claude/rules/**/*.md` — obligations and gates (WHAT).
+- **Skills:** `.claude/skills/**/SKILL.md` — canonical procedure (HOW).
 - **Index:** [`RULES_CANONICAL_INDEX.md`](RULES_CANONICAL_INDEX.md) · [`CURSOR_OPERATING_MODEL.md`](CURSOR_OPERATING_MODEL.md)

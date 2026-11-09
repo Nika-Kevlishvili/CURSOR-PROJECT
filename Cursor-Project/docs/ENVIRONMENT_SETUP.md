@@ -1,6 +1,6 @@
 # Environment Variables Setup Guide
 
-> **Current:** Cursor/MCP and scripts use env vars from your machine or `.env` as documented per command. Environment **access** workflow: **`.cursor/agents/environment-access.md`**. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. “Agents” below means historical Python stack or generic tooling.
+> **Current:** Cursor/MCP and scripts use env vars from your machine or `.env` as documented per command. Environment **access** workflow: **`.claude/agents/environment-access.md`**. Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. “Agents” below means historical Python stack or generic tooling.
 
 ## პრობლემა / Problem
 
@@ -66,7 +66,7 @@ $env:CONFLUENCE_WIKI_BASE="https://your-company.atlassian.net/wiki"
 - `CONFLUENCE_URL` — Wiki UI / home URL (optional for MCP; helps derive wiki base), e.g. `https://your-company.atlassian.net/wiki/home`
 - `CONFLUENCE_WIKI_BASE` — Explicit REST origin, e.g. `https://your-company.atlassian.net/wiki` (recommended when using **`Cursor-Project/config/confluence/get-confluence-page-rest.ps1`** without `CONFLUENCE_URL`)
 - `CONFLUENCE_EMAIL` / `CONFLUENCE_API_TOKEN` — Optional overrides for Confluence REST only; if omitted, **`JIRA_EMAIL`** and **`JIRA_API_TOKEN`** are reused (same Atlassian Cloud site)
-- **Canonical:** `.cursor/rules/integrations/confluence_rest_fallback.mdc` (Rule **43** / **CONFLUENCE.1**); config notes: **`Cursor-Project/config/confluence/README.md`**
+- **Canonical:** `.claude/rules/integrations/confluence_rest_fallback.md` (Rule **43** / **CONFLUENCE.1**); config notes: **`Cursor-Project/config/confluence/README.md`**
 
 ## Permanent Setup
 

@@ -1,0 +1,53 @@
+---
+description: "Jira bug agent — Experiments board only; never Phoenix delivery bugs. Rule JIRA.0."
+paths:
+  - ".claude/agents/jira-bug.md"
+  - ".claude/skills/jira-bug-template/**"
+---
+
+# JIRA BUG AGENT RULE [CRITICAL]
+
+## Rule JIRA.0: Jira Bug Agent Scope and Phoenix Delivery Prohibition [CRITICAL]
+
+**Scope:** The Jira bug agent creates or rewrites Jira bug tickets using the Experiments board template only.
+
+**Allowed:**
+- Create a new Jira bug on the **Experiments** board.
+- Rewrite or improve an existing Jira bug using the standard template (Summary, Description, Steps to reproduce, Expected result, Actual result, Environment, Technical details, Example).
+- Use command `!jira-bug` or skill/agent when the user asks to create or edit a bug for the **Experiments** board.
+
+**PROHIBITED – ABSOLUTE:**
+- Creating or writing Jira bugs in **Phoenix delivery** (Phoenix Delivery board, project, or any Jira space used for Phoenix delivery).
+- Any prompt or command that asks to create, add, or write a bug ticket in Phoenix delivery MUST be blocked.
+- The Jira bug agent MUST NOT operate on Phoenix delivery; use Experiments board only.
+
+**Template (Experiments board):**
+- Summary, Description, Steps to reproduce, Expected result, Actual result.
+- Environment: Board: Experiments, Environment, Browser.
+- Technical details: Endpoint, Payload, Status.
+- Example: (sample data / JSON / logs).
+
+**Enforcement:**
+- Hooks block prompts that request Jira bug creation in Phoenix delivery.
+- Agent and skill refuse and redirect to Experiments board if user mentions Phoenix delivery for bug creation.
+
+Violation is a **BLOCK**.
+
+---
+
+## Cross-reference: Phoenix Phase 2 Bug Reporting
+
+**Rule JIRA.0 governs Experiments board bugs only.**
+
+For bugs in **Phoenix Phase 2 boards (PHN and related boards)**, use the **`phoenix-bug-reporter`** agent instead:
+
+- Agent: `.claude/agents/phoenix-bug-reporter.md`
+- Skill: `.claude/skills/phoenix-bug-reporter/SKILL.md`
+- Rule: `.claude/rules/integrations/phoenix_bug_reporter.md` (**Rule PHOENIX-BUG.0**)
+
+| Board | Agent to use |
+|-------|-------------|
+| Experiments | `jira-bug` (Rule JIRA.0 — this file) |
+| PHN / Phoenix Phase 2 | `phoenix-bug-reporter` (Rule PHOENIX-BUG.0) |
+
+If the user asks to file a bug on a Phoenix Phase 2 board, redirect immediately to `phoenix-bug-reporter`.

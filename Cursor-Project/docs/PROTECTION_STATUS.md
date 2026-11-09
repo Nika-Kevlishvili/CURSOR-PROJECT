@@ -9,8 +9,8 @@
 
 ### 2. Rules (AI Behavior Constraints)
 - **Rule 0.8**: ABSOLUTE PROHIBITION - Code Modification is STRICTLY FORBIDDEN
-- **Rule 7** (safety_rules.mdc): Code modification is STRICTLY FORBIDDEN - NO EXCEPTIONS
-- **Rule 31** (safety_rules.mdc): Cursor AI MUST NEVER modify ANY code files
+- **Rule 7** (safety_rules.md): Code modification is STRICTLY FORBIDDEN - NO EXCEPTIONS
+- **Rule 31** (safety_rules.md): Cursor AI MUST NEVER modify ANY code files
 
 ### 3. Protected Paths
 The following paths are protected:

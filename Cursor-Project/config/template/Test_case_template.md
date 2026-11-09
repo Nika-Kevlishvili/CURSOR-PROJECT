@@ -2,7 +2,7 @@
 
 **Scope:** All `.md` files under `Cursor-Project/test_cases/Backend/` and `Cursor-Project/test_cases/Frontend/` MUST follow this structure. Use **plain English**, full sentences where helpful, no unexplained jargon.
 
-**Two-folder layout:** **`Backend/<Topic>.md`** is **always** created (TC-BE-N only). **`Frontend/<Topic>.md`** (TC-FE-N only) is created **only when** the user chose Backend+Frontend (TC-FRONTEND-ASK.0). Never mix layers in one file. See `.cursor/rules/workspace/test_cases_structure.mdc`.
+**Two-folder layout:** **`Backend/<Topic>.md`** is **always** created (TC-BE-N only). **`Frontend/<Topic>.md`** (TC-FE-N only) is created **only when** the user chose Backend+Frontend (TC-FRONTEND-ASK.0). Never mix layers in one file. See `.claude/rules/workspace/test_cases_structure.md`.
 
 **Positive and negative (mandatory):** Each file MUST include at least one **(Positive)** and one **(Negative)** scenario (when the layer is applicable). Label every TC in its heading: `TC-BE-1 (Positive): …` or `TC-FE-2 (Negative): …`.
 
@@ -67,7 +67,7 @@ Preconditions MUST describe the **full data creation chain** required by the tes
 
 **Rule of thumb:** Every entity that must exist for the test to run MUST have its own creation step with endpoint and key parameters. If a tester cannot set up the test without guessing how to create an entity, the precondition is incomplete.
 
-**Reference:** `.cursor/rules/workspace/test_cases_structure.mdc`
+**Reference:** `.claude/rules/workspace/test_cases_structure.md`
 
 ---
 
@@ -79,7 +79,7 @@ Each TC's **`Preconditions:`** MUST be **executable on its own**: full numbered 
 
 **GOOD:** Every TC lists its own steps 1…N (customer, POD, product, IAP with **exact** `calculationValue`, billing run `billingType`, baseline invoice count).
 
-See **`.cursor/rules/workspace/test_cases_structure.mdc`** § **TC-STANDALONE-PRE.0**.
+See **`.claude/rules/workspace/test_cases_structure.md`** § **TC-STANDALONE-PRE.0**.
 
 ---
 
@@ -87,7 +87,7 @@ See **`.cursor/rules/workspace/test_cases_structure.mdc`** § **TC-STANDALONE-PR
 
 Do **not** create test cases whose main goal is to verify **skip logs**, interim row **SUCCESS** without invoice, or exploratory audit. Negative cases must assert **no invoice** / **no liability** via API (or DB read listed in steps), not log grep.
 
-See **`.cursor/rules/workspace/test_cases_structure.mdc`** § **TC-NOSKIP-OBS.0**.
+See **`.claude/rules/workspace/test_cases_structure.md`** § **TC-NOSKIP-OBS.0**.
 
 ---
 

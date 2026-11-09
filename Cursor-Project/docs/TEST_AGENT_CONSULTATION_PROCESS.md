@@ -1,6 +1,6 @@
 # TestAgent Consultation Process Documentation
 
-> **Current:** **`.cursor/agents/test-runner.md`**, Rule 8 (PhoenixExpert consultation). Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. Below: historical Python flow.
+> **Current:** **`.claude/agents/test-runner.md`**, Rule 8 (PhoenixExpert consultation). Map: **[AGENT_SUBAGENT_MAP.md](AGENT_SUBAGENT_MAP.md)**. Below: historical Python flow.
 
 ## Overview
 

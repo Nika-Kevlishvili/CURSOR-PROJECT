@@ -9,12 +9,12 @@ There are **two** distinct Slack delivery paths. **Do not merge or confuse them.
 
 ## Rules
 
-- **Path 1** (bug validation) stays the Rule 32 structured verdict report in **`bug-validation`** — see **`.cursor/skills/phoenix-bug-validation/SKILL.md`**. When documenting or implementing **path 2**, do **not** replace Path 1 with Playwright templates or conflate channels.
+- **Path 1** (bug validation) stays the Rule 32 structured verdict report in **`bug-validation`** — see **`.claude/skills/phoenix-bug-validation/SKILL.md`**. When documenting or implementing **path 2**, do **not** replace Path 1 with Playwright templates or conflate channels.
 - **Path 2** uses **short Slack text (three blocks)** + **upload the smart `.md` and the machine `playwright-report-detailed.md`** (when generated) + on-disk reports (see table).
 
 ## Related
 
-- Scoped Slack: `.cursor/commands/send-playwright-results-slack.md`
+- Scoped Slack: `.claude/commands/send-playwright-results-slack.md`
 - Short Slack: `Slack_report_summary_short_template.md` — detailed (human) file structure: `Cursor-Project/config/playwright/Playwright_run_detailed_report_template.md` — upload: `Cursor-Project/config/slack/upload-file-to-slack.ps1` — long Slack (optional): `Slack_report_template.md`
-- Bug validation: `.cursor/rules/workflows/workflow_rules.mdc` Rule 32, `.cursor/skills/phoenix-bug-validation/SKILL.md`
+- Bug validation: `.claude/rules/workflows/workflow_rules.md` Rule 32, `.claude/skills/phoenix-bug-validation/SKILL.md`
 - Machine detailed Markdown (`playwright-report-detailed.md` under **`Cursor-Project/EnergoTS/`**, next to JSON): Rule DPR.0 — **path 2:** generate + upload with smart report to **#ai-report** + Tester; **ad-hoc:** only on explicit user request

@@ -9,10 +9,10 @@ Each subdirectory holds the **exported OpenAPI document** for that environment (
 Run from workspace root:
 
 ```powershell
-.cursor\commands\update-swagger-specs.ps1
+.claude\commands\update-swagger-specs.ps1
 ```
 
-See also: **`.cursor/commands/update-swagger-specs.md`** (slash command / instructions).
+See also: **`.claude/commands/update-swagger-specs.md`** (slash command / instructions).
 
 ## Swagger UI (canonical links)
 

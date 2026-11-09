@@ -153,6 +153,6 @@ These are **automatic deductions**. If any of these patterns are detected, the c
 ## Relationship to other documents
 
 - **Template:** `Cursor-Project/config/template/Test_case_template.md` — structure and **TC-STANDALONE-PRE.0** preconditions.
-- **TC structure rule:** `.cursor/rules/workspace/test_cases_structure.mdc` — governs folder layout, numbering, coverage.
-- **Validator subagent:** `.cursor/agents/test-case-quality-validator.md` — applies this rubric independently after generation.
-- **Generator skill:** `.cursor/skills/test-case-generator/SKILL.md` — applies this rubric during self-check before file write.
+- **TC structure rule:** `.claude/rules/workspace/test_cases_structure.md` — governs folder layout, numbering, coverage.
+- **Validator subagent:** `.claude/agents/test-case-quality-validator.md` — applies this rubric independently after generation.
+- **Generator skill:** `.claude/skills/test-case-generator/SKILL.md` — applies this rubric during self-check before file write.

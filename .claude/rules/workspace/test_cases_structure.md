@@ -1,0 +1,92 @@
+---
+description: "Mandatory two-folder test_cases layout (Backend/Frontend), TC numbering, README updates. Loads when editing test cases or running test-case workflows."
+paths:
+  - "Cursor-Project/test_cases/**"
+  - "Cursor-Project/generated_test_cases/**"
+  - ".claude/agents/test-case-generator.md"
+  - ".claude/agents/cross-dependency-finder.md"
+  - ".claude/agents/environment-resolver.md"
+  - ".claude/skills/test-case-generator/**"
+  - ".claude/skills/cross-dependency-finder/**"
+---
+
+# TEST CASES FOLDER STRUCTURE [MANDATORY]
+
+## Gate order (Rule 35 — do not reorder)
+
+| Order | Gate | Skip when |
+|-------|------|-----------|
+| **1** | **TC-ENV-ASK.0** — resolve env (six options) | User named env in current chat |
+| **2** | **TC-FRONTEND-ASK.0** — Backend only vs Backend+Frontend | User explicitly said scope |
+| **3** | Phoenix alignment (`switch-phoenix-branches.ps1`) | Already aligned same env |
+| **4** | cross-dep → test-case-generator → quality validator | Never skip |
+
+**Detail:** `.claude/skills/test-case-generator/SKILL.md` (gates), `.claude/skills/environment-resolver/SKILL.md` (env).
+
+Violation of gate order is a **BLOCK**.
+
+---
+
+## Root layout
+
+**Path:** `Cursor-Project/test_cases/`
+
+| Folder | Contents | Required? |
+|--------|----------|-----------|
+| **Backend/** | Backend (API) test cases — `TC-BE-N` | **ALWAYS** |
+| **Frontend/** | Frontend (UI) test cases — `TC-FE-N` | **Only if user confirmed** |
+
+- `<Topic_name>.md` with underscores for multi-word names
+- **`<Topic_name>.xlsx`** beside that markdown — manual tester workbook (same topic stem). Columns and wording: **test-case-generator** SKILL § Human-readable Excel. No Playwright or API instructions in the workbook. Quality validator scores the `.md` only.
+- **`<Topic_name>.playwright.md`** in **Frontend/** only, beside the frontend markdown, when the user chose Backend+Frontend. Automation instructions for **playwright-frontend** (Rule 45). Quality validator does not score this file. Do not create it for Backend-only.
+- Backend file contains ONLY backend TCs; Frontend `.md` contains ONLY frontend TCs
+- Do NOT create empty Frontend file when user chose "No"
+- Do NOT create a Frontend `.xlsx` or `.playwright.md` when no Frontend `.md` was saved
+
+---
+
+## TC numbering
+
+- **Backend:** `TC-BE-1`, `TC-BE-2`, … with type: `TC-BE-1 (Positive): {title}`
+- **Frontend:** `TC-FE-1`, `TC-FE-2`, … with type: `TC-FE-2 (Negative): {title}`
+- Each file MUST include at least one **(Positive)** and one **(Negative)** TC
+
+---
+
+## Content rules
+
+- Follow **`Cursor-Project/config/template/Test_case_template.md`** for structure
+- **Rule TC-STANDALONE-PRE.0:** Every TC's `Preconditions:` block in the **markdown** MUST list the full numbered setup chain for that scenario. FORBIDDEN in the `.md`: `Apply Test data steps 1–N` without repeating; `see TC-BE-X`; multi-scenario per TC. One scenario per TC. Violation is a **MUST**. The companion `.xlsx` may say `Same setup as TC-BE-1, except …` when that row states the difference (see the Excel section of the test-case-generator SKILL).
+- **Rule TC-NOSKIP-OBS.0:** No TCs whose primary criterion is internal skip/log/audit mechanics. Assert observable business outcomes only. Violation is a **MUST**.
+
+---
+
+## READMEs
+
+Update `test_cases/README.md`, `Backend/README.md` always; `Frontend/README.md` only when Frontend file exists.
+
+---
+
+## File skeletons
+
+**Backend** (`test_cases/Backend/<Topic>.md`):
+
+```
+# {Title} – {Scope} ({JIRA_KEY})
+**Jira:** … **Type:** … **Summary:** … **Scope:** …
+---
+## Test data (preconditions)
+{Shared setup reference}
+---
+## Backend Test Cases
+### TC-BE-1 (Positive): {title}
+**Description:** … **Preconditions:** … **Test steps:** … **Expected test case results:** …
+### TC-BE-2 (Negative): {title}
+…
+---
+## References
+```
+
+**Frontend** (`test_cases/Frontend/<Topic>.md`): same structure with `TC-FE-N` and `## Frontend Test Cases`.
+
+**Frontend Playwright instructions** (`test_cases/Frontend/<Topic>.playwright.md`): written in the same run as the frontend markdown. Shape: **test-case-generator** SKILL § Frontend Playwright instructions. Consumed by **playwright-frontend**. Not a manual tester file.

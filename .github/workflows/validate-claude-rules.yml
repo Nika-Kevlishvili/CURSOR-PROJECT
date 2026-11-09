@@ -1,0 +1,31 @@
+name: Validate Claude Code rules
+
+on:
+  pull_request:
+    paths:
+      - '.claude/**'
+      - 'CLAUDE.md'
+      - 'Cursor-Project/scripts/validate-claude*.ps1'
+      - '.github/workflows/validate-claude-rules.yml'
+  push:
+    branches: [main, master, Do-not-touch]
+    paths:
+      - '.claude/**'
+      - 'CLAUDE.md'
+      - 'Cursor-Project/scripts/validate-claude*.ps1'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run validate-claude-rules.ps1
+        shell: pwsh
+        run: |
+          ./Cursor-Project/scripts/validate-claude-rules.ps1
+
+      - name: Run validate-claude-consistency.ps1
+        shell: pwsh
+        run: |
+          ./Cursor-Project/scripts/validate-claude-consistency.ps1

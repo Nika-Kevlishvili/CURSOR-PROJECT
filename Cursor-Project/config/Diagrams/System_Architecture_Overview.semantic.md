@@ -28,9 +28,9 @@
 - PhoenixExpert consultation (Rule 0.4 / 8)<br>ALL agents MUST consult before Phoenix tasks
 - test-case-generator
 - /report &middot; /feedback
-- Skills<br><font style='font-size:10px'>.cursor/skills/*/SKILL.md</font>
+- Skills<br><font style='font-size:10px'>.claude/skills/*/SKILL.md</font>
 - Generate test cases
-- Rules<br><font style='font-size:10px'>.cursor/rules/**/*.mdc</font>
+- Rules<br><font style='font-size:10px'>.claude/rules/**/*.md</font>
 - playwright-test-validator
 - Swagger / OpenAPI<br>update-swagger-specs.ps1<br>MANDATORY before any .spec.ts
 - database-query
@@ -51,7 +51,7 @@
 - phoenix-qa<br>(PhoenixExpert)
 - postman-collection
 - energo-ts-test<br>(EnergoTSTestAgent)
-- Agents<br><font style='font-size:10px'>.cursor/agents/*.md</font>
+- Agents<br><font style='font-size:10px'>.claude/agents/*.md</font>
 - EnergoTS<br>Cursor-Project/EnergoTS/<br><b>tests/cursor/</b> = AI-writable (agent only)
 - test-case-quality-validator
 - Reports (Rule 0.6)<br>reports/Chat reports/<br>reports/Feedback/
