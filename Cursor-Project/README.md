@@ -25,22 +25,22 @@ Cursor-Project/
 
 ### New machine (recommended)
 
-1. Clone this repo from GitHub; open it in Cursor.
-2. Install **Node.js/npm**, **PowerShell** extension, and **Playwright Test (Modified)** manually.
-3. Run:
+1. Install **Git**, **PowerShell 7** (`pwsh`), **Node.js 22.12+** and **Python 3**. Connect to the VPN.
+2. Clone this repo.
+3. From the workspace root, run:
 
-```powershell
-.\.cursor\commands\setup-new-machine.ps1
+```bash
+pwsh -NoProfile -File .claude/commands/setup-new-machine.ps1
 ```
 
-The script clones all submodules, copies `.env` from `Cursor Setup/env.example`, writes MCP config to **workspace** `.cursor/mcp.json`, installs marketplace extensions, and verifies layout.
+The script clones all submodules, creates the `.env` and `secrets.env` files from their templates, installs the Elastic CLI, the EnergoTS packages and the Playwright browsers, and prints a list of what is still left to fix. Run it again with `-VerifyOnly` at any time.
 
-Details: [`docs/QUICK_START.md`](docs/QUICK_START.md) · [`.cursor/commands/setup-new-machine.md`](../.cursor/commands/setup-new-machine.md) · templates in `Cursor Setup/`.
+Details: [`docs/QUICK_START.md`](docs/QUICK_START.md) · [`.claude/commands/setup-new-machine.md`](../.claude/commands/setup-new-machine.md).
 
 ### Git hooks (recommended)
 
-```powershell
-git config core.hooksPath Cursor-Project/scripts/git-hooks
+```bash
+pwsh -NoProfile -File .claude/commands/setup-new-machine.ps1 -InstallGitHooks
 ```
 
 This enables:
@@ -49,7 +49,7 @@ This enables:
 
 ### Phoenix submodules
 
-URLs in `.gitmodules` use `git.domain.internal`. Prefer `setup-new-machine.ps1` (optional `-GitLabToken`). Manual alternative:
+URLs in `.gitmodules` use `git.domain.internal`. `setup-new-machine.ps1` clones them; Git asks for your GitLab credentials on the first clone. Manual alternative:
 
 ```bash
 git submodule update --init --recursive

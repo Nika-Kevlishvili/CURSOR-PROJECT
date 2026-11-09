@@ -39,10 +39,10 @@ out.txt
 
 # --- Cursor-Project specific ---
 
-# # Environment variables
-# Cursor-Project/.env
-# Cursor-Project/.env.local
-# Cursor-Project/.env.*.local
+# Environment variables (real credentials, never commit)
+Cursor-Project/.env
+Cursor-Project/.env.local
+Cursor-Project/.env.*.local
 
 # Jira local exports (attachments, issue dumps)
 Cursor-Project/config/jira/attachments/
