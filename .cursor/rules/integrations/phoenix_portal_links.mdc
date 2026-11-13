@@ -18,7 +18,8 @@ Paths come from `Cursor-Project/Phoenix/phoenix-ui/src/app` routing. Use these s
 | Customer | `/customers/preview/basic?id={id}` |
 | Compensation | `/compensation/preview?id={id}` |
 | Invoice | `/invoices/preview/basic-data?id={id}` |
-| Billing run | `/billing-run/preview/basic-parameters?id={id}` |
+| Billing run | `/billing-run/preview/basic-parameters?id={id}&type={BILLING_TYPE}` |
+| Invoice correction billing run | `/billing-run/preview/basic-parameters?id={id}&type=INVOICE_CORRECTION` |
 | Customer receivable | `/customer-receivables/preview?id={id}` |
 | Customer liability | `/customer-liabilities/preview?id={id}` |
 | Product contract | `/energy-product-contracts/preview/basic-parameters?id={id}` |
@@ -32,6 +33,25 @@ Paths come from `Cursor-Project/Phoenix/phoenix-ui/src/app` routing. Use these s
 
 Billing-run tabs do use `basic-parameters`. Do not copy that segment onto invoice URLs.
 
-If a test log prints both a route and a second rewritten URL, prefer the path in the table above.
+## Rule PORTAL.1: Billing run `type` is required
+
+The billing-run preview reads `type` from the query string. If `type` is missing, the page replaces the URL with `type=STANDARD_BILLING` (`phoenix-ui` `create-or-edit.component.ts`, `checkDetailedDataLoad`). A correction run opened without `type` shows the standard billing screen.
+
+Every user-facing billing-run link MUST include `type` set to that run's billing type. For an invoice correction run the value is exactly `INVOICE_CORRECTION`.
+
+Known type values (`BillingTypeIds` in `phoenix-ui/.../billing-run-consts.ts`):
+
+| Run | `type` |
+|---|---|
+| Standard billing | `STANDARD_BILLING` |
+| Invoice correction | `INVOICE_CORRECTION` |
+| Invoice reversal | `INVOICE_REVERSAL` |
+| Manual invoice | `MANUAL_INVOICE` |
+| Manual credit or debit note | `MANUAL_CREDIT_OR_DEBIT_NOTE` |
+| Manual interim and advance | `MANUAL_INTERIM_AND_ADVANCE_PAYMENT` |
+
+Do not emit `/billing-run/preview/basic-parameters?id={id}` with no `type`.
+
+If a test log prints both a route and a second rewritten URL, prefer the path in the table above and still append the real `type`.
 
 Violation is a **MUST** when a user-facing Dev 1 link uses a path that is not in this table.

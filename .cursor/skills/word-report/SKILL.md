@@ -58,6 +58,8 @@ Omit Cursor-only footers (Confidence, Agents involved) from the Word file. Keep 
 
 Use **python-docx** + `docx_style.py` (fonts, hyperlinks, table, rules). A4 portrait, Calibri, ~1.8 cm margins. Clickable portal URLs.
 
+Billing-run links MUST include `type`. An invoice correction run is `/billing-run/preview/basic-parameters?id={id}&type=INVOICE_CORRECTION`. Without `type`, the portal opens the run as `STANDARD_BILLING`. See `.cursor/rules/integrations/phoenix_portal_links.mdc` (PORTAL.1).
+
 ```text
 python .cursor/skills/word-report/scripts/docx_style.py
 ```
