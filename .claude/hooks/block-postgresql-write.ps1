@@ -41,8 +41,8 @@ try {
     }
 
     if ($usesWrapper -and $lower -match "--allow-write") {
-        if ($lower -match "--environment(?:=|\s+)(prod|es|slr)\b") {
-            Write-Deny "BLOCK (DB.5): prod, es, and slr are read-only. Do not pass --allow-write for those environments."
+        if ($lower -match "--environment(?:=|\s+)(prod|es|slr|esprod|slrprod)\b") {
+            Write-Deny "BLOCK (DB.5): prod, es, slr, esprod, and slrprod are read-only. Do not pass --allow-write for those environments."
             exit 0
         }
         @{

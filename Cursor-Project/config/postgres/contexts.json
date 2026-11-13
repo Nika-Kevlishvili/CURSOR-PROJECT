@@ -63,6 +63,22 @@
       "user": "readonly_user",
       "password_env": "PGPASSWORD_SLR",
       "read_only": true
+    },
+    "esprod": {
+      "host": "10.236.20.99",
+      "port": 5432,
+      "database": "phoenix",
+      "user": "readonly_user",
+      "password_env": "PGPASSWORD_ESPROD",
+      "read_only": true
+    },
+    "slrprod": {
+      "host": "10.236.20.100",
+      "port": 5432,
+      "database": "phoenix",
+      "user": "readonly_user",
+      "password_env": "PGPASSWORD_SLRPROD",
+      "read_only": true
     }
   }
 }
