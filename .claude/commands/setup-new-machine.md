@@ -46,7 +46,7 @@ pwsh -NoProfile -File .claude/commands/setup-new-machine.ps1
 | Submodules | Clones every repository in `.gitmodules` that is not there yet. Puts a fresh EnergoTS on `cursorMerged`. An EnergoTS that is already on `cursor`, `staging` or `cursorMerged` is left alone |
 | Env files | Creates `Cursor-Project/.env` and `Cursor-Project/EnergoTS/.env` from `Cursor Setup/env.example`, and `secrets.env` from `secrets.env.example` in `config/postgres` and `config/elasticsearch`. Existing files are kept |
 | Dependencies | `npm install` in `config/elasticsearch` (Elastic CLI) and in EnergoTS, then downloads the Playwright browsers that are missing |
-| Wiring | Creates `.claude/logs/`. On Windows, rebuilds the two symlinked skills (`playwright-cli`, `flaky-test-fixer`) as junctions when Git checked them out as text files |
+| Wiring | Creates `.claude/logs/`. On Windows, rebuilds the symlinked `playwright-cli` skill as a junction when Git checked it out as a text file |
 | Verify | Tools, Claude Code config (runs both `validate-claude-*.ps1` scripts), skills, repositories, env keys (names only, values are never printed), packages, browsers, optional tools |
 | Live logins | With the filled credentials: one Confluence search, Slack `auth.test`, and a portal login on the Test endpoint. A rejected login is a `FAIL`. An unreachable service (VPN off) is a `WARN` |
 | Credentials | Lists every file with empty or rejected keys, waits for you to fill them, then runs Verify and the live logins again. Repeats until the required keys are filled and accepted, or you type `s` |

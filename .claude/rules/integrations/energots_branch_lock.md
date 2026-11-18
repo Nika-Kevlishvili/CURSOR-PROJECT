@@ -5,6 +5,9 @@ paths:
   - ".claude/agents/energo-ts-run.md"
   - ".claude/skills/energo-ts-run/SKILL.md"
   - ".claude/skills/energo-ts-test/SKILL.md"
+  - ".claude/agents/energo-ts-sync.md"
+  - ".claude/skills/energo-ts-sync/SKILL.md"
+  - ".claude/commands/sync-cursormerged.md"
   - ".claude/procedures/playwright-frontend/**"
   - ".claude/procedures/playwright-frontend-validator/**"
   - ".claude/commands/playwright-frontend.md"
@@ -49,6 +52,8 @@ Hooks **`block-energots-branch-switch.ps1`** (`PreToolUse (Bash)`) and **`block-
 
 - **Rule 0.8:** On `cursor`, `staging`, or `cursorMerged`, user-requested edits under `Cursor-Project/EnergoTS/**` are allowed, including page objects, fixtures, helpers, and frontend tests.
 - **Rule 45:** **playwright-frontend** and **playwright-frontend-validator** may run only when EnergoTS is already on `cursorMerged`. They must not checkout or switch, including to `cursor` or `staging`.
+- **energo-ts-sync:** `cursorMerged` receives new `staging` and `cursor` commits by cherry-pick through `.claude/commands/sync-cursormerged.ps1` (`.claude/skills/energo-ts-sync/SKILL.md`). That workflow stays on `cursorMerged`, reads `origin/staging` and `origin/cursor` without checking them out, never merges or rebases them in, and asks the user before `git push`.
+- **reg-fixer:** writes to EnergoTS on `staging` only. When the checkout is on another allowed branch, it switches to `staging` by itself if `git status --porcelain` is empty, and stops and asks when there are uncommitted changes. It never stashes, commits or discards to get there. This is a project-owner decision (2026-11-18) and applies to that workflow only (`.claude/skills/reg-fixer/SKILL.md` Step 8).
 - Phoenix/other repos: **not** covered by this rule. Phoenix stays read-only.
 
 **Violation of ENERGOTS.0 is a BLOCK.**

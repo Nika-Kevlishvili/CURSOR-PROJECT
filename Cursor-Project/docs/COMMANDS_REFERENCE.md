@@ -115,6 +115,23 @@ powershell -ExecutionPolicy Bypass -File .claude/commands/switch-phoenix-branche
 
 **When to use:** Either just refresh local cursor from remote, or merge Backend-staging into cursor with conflict resolution.
 
+
+---
+
+## 6a. Sync cursorMerged from staging and cursor
+
+**Command:** `.claude/commands/sync-cursormerged.ps1` (slash command `/sync-cursormerged`, agent `energo-ts-sync`)  
+**Options:** `-Apply`, `-Adapt`, `-Check`, `-Source staging|cursor`, `-Exclude <sha>`, `-StagingBase <sha>`, `-CursorBase <sha>`, `-AllowDirty`, `-NoFetch`
+
+**What it can do:**
+- **Default (plan):** fetch `cursor`, `staging` and `cursorMerged` from `origin`, find the last staging and cursor commits already on `cursorMerged`, and list the commits after them. Changes nothing else.
+- **`-Apply`:** `git cherry-pick -x` each pending commit onto `cursorMerged`, staging first, then cursor. Stops at the first conflict. Then fits the picked files to the `cursorMerged` layout.
+- **`-Adapt`:** re-run the layout fit for commits not yet pushed (move files out of pre-merge folders, remove root run logs, rewrite imports).
+- **`-Check`:** type-check and list the errors the sync introduced.
+
+It never switches branches, stashes, resets or pushes. Procedure: `.claude/skills/energo-ts-sync/SKILL.md`.
+
+**When to use:** Keep EnergoTS `cursorMerged` up to date with `staging` and `cursor`.
 ---
 
 ## 7. Update experiments

@@ -17,10 +17,12 @@ Use this file as the **single map** from “agent role” to **where it lives to
 | **test-case-generator.md** | Test cases (Rule 35) | `test-case-generator` | After **`cross-dependency-finder`** |
 | **test-case-quality-validator.md** | TC quality (10-axis ≥80) | `test-case-quality-validator` | Rule 35 Step 2.5 |
 | **energo-ts-test.md** | Playwright API authoring | `energo-ts-test` | Rule 0.8.1; `EnergoTS/src/tests/` |
+| **reg-fixer.md** | Triage of the Playwright regression report (merged-reports zip): root cause and class per failed case, known-bug marks, test fixes | `reg-fixer` | Slash command `/reg-fixer [zip-or-folder]` only. Does not start from plain words. Writes to EnergoTS `staging` only, after approval |
 | **performance-test.md** | Listing performance tests (POD-style) | `performance-test` | User calls `performance-test` / `perfomance-test` and names the object |
 | **playwright-test-validator.md** | API spec vs test cases | `playwright-test-validator` | After energo-ts-test authoring |
 | **playwright-frontend command** | Frontend Playwright author + run | `.claude/procedures/playwright-frontend/procedure.md` | Rule 45. User entry is `/playwright-frontend` only. Not a subagent. The one critique is `.claude/procedures/playwright-frontend-validator/procedure.md`. |
 | **energo-ts-run.md** | Playwright test run | `energo-ts-run` | Rule 36; `cursor`, `staging`, or `cursorMerged` |
+| **energo-ts-sync.md** | Keep EnergoTS `cursorMerged` up to date with `staging` and `cursor` by cherry-pick | `energo-ts-sync`, `/sync-cursormerged` | User asks to sync or update `cursorMerged`, or what is pending there. Stays on `cursorMerged`; asks before push |
 | **test-runner.md** | Test execution | — (consult PhoenixExpert) | Test-related runs |
 | **database-query.md** | PostgreSQL (Dev/Test/Prod) | `phoenix-database` | DB questions; `database_workflow.md` |
 | **production-data-reader.md** | Production DB (read-only) | `production-data-reader` | Rule PDR.0; PostgreSQLProd MCP |

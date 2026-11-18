@@ -278,8 +278,7 @@ function Invoke-Dependencies {
 
 # ---------- workspace wiring ----------
 $skillLinks = @(
-    @{ Name = 'playwright-cli'; Target = '.agents/skills/playwright-cli' },
-    @{ Name = 'flaky-test-fixer'; Target = 'Cursor-Project/EnergoTS/.cursor/skills/flaky-test-fixer' }
+    @{ Name = 'playwright-cli'; Target = '.agents/skills/playwright-cli' }
 )
 
 function Test-SkillLink {
@@ -291,8 +290,8 @@ function Invoke-Wiring {
     Write-Step 'Workspace wiring'
     $null = New-Item -ItemType Directory -Path (Join-Path (Join-Path $root '.claude') 'logs') -Force
 
-    # Two skills are symlinks. Git on Windows checks a symlink out as a small text file
-    # unless core.symlinks is on, so rebuild those as directory junctions.
+    # The playwright-cli skill is a symlink. Git on Windows checks a symlink out as a small text file
+    # unless core.symlinks is on, so rebuild it as a directory junction.
     foreach ($link in $skillLinks) {
         if (Test-SkillLink $link.Name) { continue }
         $linkPath = Join-Path (Join-Path (Join-Path $root '.claude') 'skills') $link.Name

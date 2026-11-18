@@ -1,0 +1,416 @@
+diff --git a/src/backend/fixtures/baseFixture.ts b/src/backend/fixtures/baseFixture.ts
+index 55b1557..9b9c67a 100644
+--- a/src/backend/fixtures/baseFixture.ts
++++ b/src/backend/fixtures/baseFixture.ts
+@@ -17,6 +17,7 @@ import { Endpoints as EndpointsConst, EndpointsType } from './constants/endpoint
+ import {saveResponsesToFile, loadResponsesFromFile, loadResponseById, clearStashedResponses} from './utils/stashResponses';
+ import { billingValidator } from "../validations/billingValidator";
+ import {receivableValidations} from "../validations/receivableValidations";
++import { applyKnownBug } from './knownBugs/knownBugs';
+ 
+ /**
+  * Base fixture type definition for Playwright test context.
+@@ -40,6 +41,8 @@ export type baseFixture = {
+   loadResponseById: typeof loadResponseById;
+   clearStashedResponses: typeof clearStashedResponses;
+   frontend: FrontendContext;
++  /** Runs for every test. Reports cases listed in knownBugs/known-bugs.json as known Phoenix bugs. */
++  knownBug: void;
+ };
+ 
+ export type FrontendContext = {
+@@ -55,6 +58,11 @@ export type FrontendContext = {
+  * Import this instead of @playwright/test in your test files.
+  */
+ export const test = base.extend<baseFixture>({
++  knownBug: [async ({ baseURL }, use, testInfo) => {
++    await use();
++    applyKnownBug(testInfo, baseURL);
++  }, { auto: true }],
++
+   Request: async ({ baseURL }, use) => {
+     const normalizedURL = normalizeBaseURL(baseURL);
+     
+diff --git a/src/backend/fixtures/knownBugs/README.md b/src/backend/fixtures/knownBugs/README.md
+new file mode 100644
+index 0000000..9cb098f
+--- /dev/null
++++ b/src/backend/fixtures/knownBugs/README.md
+@@ -0,0 +1,38 @@
++# Known Phoenix bugs
++
++`known-bugs.json` lists regression cases that fail because of a confirmed bug in Phoenix, not because of the test. The `knownBug` fixture in `baseFixture.ts` reads it after every test.
++
++## What a listed case does
++
++| The case on a listed environment | Result in the report |
++|----------------------------------|----------------------|
++| Fails or times out, and the error matches `errorPattern` | Not counted as failed. Labelled `known-bug` with the Jira key. Counted under "known bugs" in Slack. Its REG ticket stays Failed. |
++| Fails with a different error | Failed, labelled `known-bug-drift`. Something new is wrong. |
++| Passes | Failed, labelled `known-bug-fixed`. The bug no longer reproduces, so remove the entry. |
++| Runs on an environment that is not listed | Judged normally. |
++
++In the HTML report, type `annot:known-bug` in the search box to list them.
++
++## Entry
++
++```json
++{
++  "case": "REG-1008",
++  "jira": "PHN-1234",
++  "envs": ["dev", "test"],
++  "errorPattern": "No invoices found",
++  "summary": "Billing run creates no invoice for a scale with scale code",
++  "markedOn": "2026-11-18"
++}
++```
++
++| Field | Meaning |
++|-------|---------|
++| `case` | The id in the test title, for example `REG-1008`. For a test with no id, use `title` with the exact test title instead. |
++| `jira` | Key of the Phoenix bug ticket. `null` only while the ticket is being created. |
++| `envs` | Environments where the bug is confirmed: `dev`, `dev2`, `test`. |
++| `errorPattern` | Regular expression, case-insensitive, matched against the error text of the failure. Keep it as specific as the error allows. |
++| `summary` | One line that says what is wrong in Phoenix. |
++| `markedOn` | Date the entry was added. |
++
++Add an entry only after the failure is confirmed as a Phoenix bug. Remove it when the bug is fixed on that environment.
+diff --git a/src/backend/fixtures/knownBugs/known-bugs.json b/src/backend/fixtures/knownBugs/known-bugs.json
+new file mode 100644
+index 0000000..046955d
+--- /dev/null
++++ b/src/backend/fixtures/knownBugs/known-bugs.json
+@@ -0,0 +1,3 @@
++{
++  "entries": []
++}
+diff --git a/src/backend/fixtures/knownBugs/knownBugs.ts b/src/backend/fixtures/knownBugs/knownBugs.ts
+new file mode 100644
+index 0000000..ef1771f
+--- /dev/null
++++ b/src/backend/fixtures/knownBugs/knownBugs.ts
+@@ -0,0 +1,105 @@
++import * as fs from 'fs';
++import * as path from 'path';
++import type { TestInfo } from '@playwright/test';
++
++export type KnownBugEnv = 'dev' | 'dev2' | 'test';
++
++export interface KnownBugEntry {
++  /** Id from the test title, for example "REG-1008". */
++  case?: string;
++  /** Exact test title, for a test that has no id. */
++  title?: string;
++  /** Key of the Phoenix bug ticket. */
++  jira: string | null;
++  /** Environments where the bug is confirmed. */
++  envs: KnownBugEnv[];
++  /** Case-insensitive regular expression matched against the error text. */
++  errorPattern: string;
++  summary: string;
++  markedOn?: string;
++}
++
++/** Annotation types written to the report. The reporters read `KNOWN_BUG`. */
++export const KNOWN_BUG = 'known-bug';
++export const KNOWN_BUG_FIXED = 'known-bug-fixed';
++export const KNOWN_BUG_DRIFT = 'known-bug-drift';
++
++const REGISTRY_PATH = path.resolve(__dirname, 'known-bugs.json');
++const ANSI = /\u001b\[[0-9;]*m/g;
++
++let cachedEntries: KnownBugEntry[] | undefined;
++
++function loadEntries(): KnownBugEntry[] {
++  if (cachedEntries) return cachedEntries;
++  try {
++    const data = JSON.parse(fs.readFileSync(REGISTRY_PATH, 'utf-8'));
++    cachedEntries = Array.isArray(data?.entries) ? data.entries : [];
++  } catch (error) {
++    // A broken registry must not hide failures: with no entries every case is judged normally.
++    console.warn(`[knownBugs] Could not read ${REGISTRY_PATH}; no case is treated as a known bug.`, error);
++    cachedEntries = [];
++  }
++  return cachedEntries!;
++}
++
++export function knownBugEnv(baseURL?: string): KnownBugEnv | undefined {
++  const url = (process.env.BASE_URL || baseURL || '').toLowerCase();
++  if (url.includes('phoenix2-dev')) return 'dev2';
++  if (url.includes('phoenix1-dev')) return 'dev';
++  if (url.includes('phoenix-epres')) return 'test';
++  const named = (process.env.ENV_NAME ?? '').toLowerCase();
++  return named === 'dev' || named === 'dev2' || named === 'test' ? named : undefined;
++}
++
++export function findKnownBug(title: string, env: KnownBugEnv | undefined): KnownBugEntry | undefined {
++  if (!env) return undefined;
++  const id = title.match(/\[([A-Z][A-Z0-9]+-\d+)\]/)?.[1];
++  return loadEntries().find(entry =>
++    Array.isArray(entry.envs) && entry.envs.includes(env)
++    && ((!!entry.case && entry.case === id) || (!!entry.title && entry.title === title))
++  );
++}
++
++function matchesPattern(entry: KnownBugEntry, errorText: string): boolean {
++  try {
++    return new RegExp(entry.errorPattern, 'is').test(errorText);
++  } catch {
++    console.warn(`[knownBugs] Invalid errorPattern for ${entry.case ?? entry.title}: ${entry.errorPattern}`);
++    return false;
++  }
++}
++
++/**
++ * Runs after the test body. When the case is listed for this environment:
++ * - the listed failure is reported as an expected one, labelled `known-bug`
++ * - a different failure stays failed, labelled `known-bug-drift`
++ * - a pass fails the case, labelled `known-bug-fixed`, so the entry gets removed
++ */
++export function applyKnownBug(testInfo: TestInfo, baseURL?: string): void {
++  const entry = findKnownBug(testInfo.title, knownBugEnv(baseURL));
++  if (!entry) return;
++
++  const label = `${entry.jira ?? 'no Jira ticket yet'}: ${entry.summary}`;
++  const status = testInfo.status;
++
++  if (status === 'passed') {
++    testInfo.annotations.push({ type: KNOWN_BUG_FIXED, description: label });
++    throw new Error(
++      `Known bug no longer reproduces (${label}). ` +
++      `Remove "${entry.case ?? entry.title}" from src/backend/fixtures/knownBugs/known-bugs.json.`
++    );
++  }
++  if (status !== 'failed' && status !== 'timedOut') return;
++
++  const errorText = testInfo.errors
++    .map(error => `${error.message ?? ''}\n${error.stack ?? ''}`)
++    .join('\n')
++    .replace(ANSI, '');
++
++  if (matchesPattern(entry, errorText)) {
++    testInfo.annotations.push({ type: KNOWN_BUG, description: label });
++    testInfo.expectedStatus = status;
++  } else {
++    testInfo.annotations.push({ type: KNOWN_BUG_DRIFT, description: `${label} (failed with a different error)` });
++  }
++}
+diff --git a/src/backend/scripts/mergeReports.js b/src/backend/scripts/mergeReports.js
+index 682cf9a..b67f275 100644
+--- a/src/backend/scripts/mergeReports.js
++++ b/src/backend/scripts/mergeReports.js
+@@ -65,6 +65,13 @@ function isSkippedSpec(spec) {
+   });
+ }
+ 
++/** A case listed in fixtures/knownBugs/known-bugs.json that failed with the listed error. */
++function isKnownBugSpec(spec) {
++  if (!spec.ok) return false;
++  return (spec.tests || []).some((test) =>
++    (test.annotations || []).some((annotation) => annotation.type === 'known-bug'));
++}
++
+ function utcTimestamp() {
+   return new Date().toLocaleString('en-GB', {
+     timeZone: 'UTC', day: '2-digit', month: '2-digit',
+@@ -166,7 +173,7 @@ function main() {
+   const reportJson = path.join(ROOT, 'playwright-report.json');
+   let statusClass = 'badge-passed';
+   let statusLabel = 'Passed';
+-  let passed = 0, failed = 0, skipped = 0, total = 0;
++  let passed = 0, failed = 0, skipped = 0, knownBugs = 0, total = 0;
+   const failedTests = [];
+   const seenFailures = new Set();
+ 
+@@ -188,6 +195,9 @@ function main() {
+             // test.skip() still sets spec.ok, so it must not be counted as passed.
+             if (isSkippedSpec(spec)) {
+               skipped++;
++            } else if (isKnownBugSpec(spec)) {
++              // Confirmed Phoenix bug: neither passed nor failed.
++              knownBugs++;
+             } else if (spec.ok) {
+               passed++;
+             } else {
+@@ -213,9 +223,10 @@ function main() {
+     statusLabel = 'Setup failed';
+   }
+ 
+-  const ran = passed + failed;
++  const ran = passed + failed + knownBugs;
++  const knownBugsStat = knownBugs > 0 ? `<span class="stat-skipped">🐞 ${knownBugs} known bugs</span>` : '';
+   const statsLine = total > 0
+-    ? `<div class="stats"><span class="stat-passed">✓ ${passed} passed</span>${failed > 0 ? `<span class="stat-failed">✗ ${failed} failed</span>` : ''}<span class="stat-skipped">⏭ ${skipped} skipped</span><span class="stat-total">${ran} ran</span></div>`
++    ? `<div class="stats"><span class="stat-passed">✓ ${passed} passed</span>${failed > 0 ? `<span class="stat-failed">✗ ${failed} failed</span>` : ''}${knownBugsStat}<span class="stat-skipped">⏭ ${skipped} skipped</span><span class="stat-total">${ran} ran</span></div>`
+     : '';
+ 
+   const card = `
+@@ -251,9 +262,9 @@ function main() {
+       console.log(`Removed stale stats.json entry for env "${staleEnv}"`);
+     }
+   }
+-  allStats[env] = { passed, failed, skipped, total, timestamp: utcTimestamp() };
++  allStats[env] = { passed, failed, skipped, knownBugs, total, timestamp: utcTimestamp() };
+   fs.writeFileSync(statsFile, JSON.stringify(allStats, null, 2));
+-  console.log(`Updated stats.json for ${env}: ${passed} passed, ${failed} failed, ${skipped} skipped, ${passed + failed} ran`);
++  console.log(`Updated stats.json for ${env}: ${passed} passed, ${failed} failed, ${knownBugs} known bugs, ${skipped} skipped, ${ran} ran`);
+ 
+   // ── 6. ZIP the entire shared dir → playwright-report/merged-reports.zip ──
+   // Windows 10/11: tar (bsdtar) natively supports ZIP via the -a flag.
+diff --git a/src/backend/utils/generateReport.ts b/src/backend/utils/generateReport.ts
+index 23ff35d..4c80f17 100644
+--- a/src/backend/utils/generateReport.ts
++++ b/src/backend/utils/generateReport.ts
+@@ -36,13 +36,13 @@ export default class reportGenerator {
+         return this.parser.countActualTests(suites);
+     }
+ 
+-    public getTestStats(suites: any[]): { passed: number; failed: number; skipped: number; total: number } {
++    public getTestStats(suites: any[]): { passed: number; failed: number; skipped: number; knownBugs: number; total: number } {
+         return this.parser.getTestStats(suites);
+     }
+ 
+     public async sendReportToSlack(
+         statusMap: Record<string, 31 | 2>, 
+-        testStats?: { passed: number; failed: number; skipped?: number; total: number; setupFailed?: boolean },
++        testStats?: { passed: number; failed: number; skipped?: number; knownBugs?: number; total: number; setupFailed?: boolean },
+     ) {
+         return this.slackReporter.sendReport(statusMap, testStats);
+     }
+diff --git a/src/backend/utils/reporters/ReportParser.ts b/src/backend/utils/reporters/ReportParser.ts
+index d955cef..ee85f86 100644
+--- a/src/backend/utils/reporters/ReportParser.ts
++++ b/src/backend/utils/reporters/ReportParser.ts
+@@ -29,7 +29,8 @@ export class ReportParser {
+         // Check direct specs
+         for (const spec of suite.specs || []) {
+             const specId = this.extractJiraId(spec.title);
+-            const passed = !!spec.ok;
++            // A known Phoenix bug is an expected failure (spec.ok is true), but its ticket stays Failed.
++            const passed = !!spec.ok && !this.isKnownBugSpec(spec);
+ 
+             if (specId) {
+                 statusMap[specId] = passed ? 31 : 2;
+@@ -102,15 +103,18 @@ export class ReportParser {
+     /**
+      * Gets actual test statistics (passed/failed counts from specs only)
+      */
+-    public getTestStats(suites: any[]): { passed: number; failed: number; skipped: number; total: number } {
++    public getTestStats(suites: any[]): { passed: number; failed: number; skipped: number; knownBugs: number; total: number } {
+         let passed = 0;
+         let failed = 0;
+         let skipped = 0;
++        let knownBugs = 0;
+ 
+         for (const suite of suites) {
+             for (const spec of suite.specs || []) {
+                 if (this.isSkippedSpec(spec)) {
+                     skipped++;
++                } else if (this.isKnownBugSpec(spec)) {
++                    knownBugs++;
+                 } else if (spec.ok) {
+                     passed++;
+                 } else {
+@@ -122,10 +126,22 @@ export class ReportParser {
+                 passed += childStats.passed;
+                 failed += childStats.failed;
+                 skipped += childStats.skipped;
++                knownBugs += childStats.knownBugs;
+             }
+         }
+ 
+-        return { passed, failed, skipped, total: passed + failed + skipped };
++        return { passed, failed, skipped, knownBugs, total: passed + failed + skipped + knownBugs };
++    }
++
++    /**
++     * A case listed in fixtures/knownBugs/known-bugs.json that failed with the listed error.
++     * The knownBug fixture reports it as an expected failure and adds a `known-bug` annotation.
++     */
++    private isKnownBugSpec(spec: any): boolean {
++        if (!spec.ok) return false;
++        return (spec.tests || []).some((test: any) =>
++            (test.annotations || []).some((annotation: any) => annotation.type === 'known-bug')
++        );
+     }
+ 
+     /** test.skip() leaves spec.ok true, so skipped cases must be classified from test status. */
+diff --git a/src/backend/utils/reporters/SlackReporter.ts b/src/backend/utils/reporters/SlackReporter.ts
+index 9997fcb..aef393a 100644
+--- a/src/backend/utils/reporters/SlackReporter.ts
++++ b/src/backend/utils/reporters/SlackReporter.ts
+@@ -57,19 +57,22 @@ export class SlackReporter {
+         return 'C0ANBH2FERJ'; // Regression channel (default for all *-regression.yml and others)
+     }
+ 
+-    private formatCounts(stats: { passed: number; failed: number; skipped?: number }): string {
++    private formatCounts(stats: { passed: number; failed: number; skipped?: number; knownBugs?: number }): string {
+         const skipped = stats.skipped ?? 0;
+-        return `✅ ${stats.passed} passed / ⚠️ ${stats.failed} failed / ⏭️ ${skipped} skipped`;
++        const knownBugs = stats.knownBugs ?? 0;
++        // Cases that fail because of a confirmed Phoenix bug are neither passed nor failed.
++        const knownBugPart = knownBugs > 0 ? ` / 🐞 ${knownBugs} known bugs` : '';
++        return `✅ ${stats.passed} passed / ⚠️ ${stats.failed} failed${knownBugPart} / ⏭️ ${skipped} skipped`;
+     }
+ 
+-    private buildSummaryMessage(testStats: { passed: number; failed: number; skipped?: number; total: number; setupFailed?: boolean }): string {
++    private buildSummaryMessage(testStats: { passed: number; failed: number; skipped?: number; knownBugs?: number; total: number; setupFailed?: boolean }): string {
+         if (testStats.setupFailed) {
+             return `❌ Global setup failed or timed out\nEnvironment is unreachable or setup exceeded timeout`;
+         }
+ 
+         const isRegression = process.env.REGRESSION === 'true';
+         const counts = this.formatCounts(testStats);
+-        const ran = testStats.passed + testStats.failed;
++        const ran = testStats.passed + testStats.failed + (testStats.knownBugs ?? 0);
+ 
+         return isRegression
+             ? `Regression run\n${counts} — ${ran} ran`
+@@ -126,7 +129,7 @@ export class SlackReporter {
+ 
+     public async sendReport(
+         statusMap: Record<string, 31 | 2>, 
+-        testStats?: { passed: number; failed: number; skipped?: number; total: number; setupFailed?: boolean },
++        testStats?: { passed: number; failed: number; skipped?: number; knownBugs?: number; total: number; setupFailed?: boolean },
+     ) {
+         const dateStr = randomGens.generateTodaysDate('dd.mm.yyyy');
+         const htmlFileName = `report(${dateStr})`;
+@@ -137,7 +140,7 @@ export class SlackReporter {
+         }
+ 
+         // Use test stats if provided, otherwise calculate from Jira IDs (fallback)
+-        let stats: { passed: number; failed: number; skipped?: number; total: number; setupFailed?: boolean };
++        let stats: { passed: number; failed: number; skipped?: number; knownBugs?: number; total: number; setupFailed?: boolean };
+ 
+         if (testStats) {
+             stats = testStats;
+@@ -193,14 +196,14 @@ export class SlackReporter {
+                 const ENV_ORDER: Record<string, string> = {
+                     dev: 'Dev', dev2: 'Dev2', test: 'Test',
+                 };
+-                let allStatsData: Record<string, { passed: number; failed: number; skipped?: number; total: number }> = {};
++                let allStatsData: Record<string, { passed: number; failed: number; skipped?: number; knownBugs?: number; total: number }> = {};
+                 if (fs.existsSync(statsJsonPath)) {
+                     try { allStatsData = JSON.parse(fs.readFileSync(statsJsonPath, 'utf-8')); } catch (_) {}
+                 }
+                 const lines = Object.entries(ENV_ORDER).map(([id, label]) => {
+                     const s = allStatsData[id];
+                     if (!s) return `${label} — ⏳ not run`;
+-                    const ran = s.passed + s.failed;
++                    const ran = s.passed + s.failed + (s.knownBugs ?? 0);
+                     return `${label} — ${this.formatCounts(s)} — ${ran} ran`;
+                 });
+                 slackMessage = `Regression run\n${lines.join('\n')}`;
+diff --git a/src/tests/setup/global-teardown.ts b/src/tests/setup/global-teardown.ts
+index addba34..bf4cba3 100644
+--- a/src/tests/setup/global-teardown.ts
++++ b/src/tests/setup/global-teardown.ts
+@@ -65,7 +65,7 @@ teardown('send report to slack', async () => {
+   
+   // Get actual test statistics from the report
+   const testStats = report.getTestStats(reportFile.suites);
+-  console.log(`Test results: ${testStats.passed} passed, ${testStats.failed} failed, ${testStats.skipped} skipped, ${testStats.passed + testStats.failed} ran`);
++  console.log(`Test results: ${testStats.passed} passed, ${testStats.failed} failed, ${testStats.knownBugs} known bugs, ${testStats.skipped} skipped, ${testStats.passed + testStats.failed + testStats.knownBugs} ran`);
+ 
+   await report.sendReportToSlack(statusMap, testStats);
+ 

@@ -26,6 +26,8 @@ Subagents are specialized AI assistants the main Cursor agent can delegate to. T
 | **EnergoTS Test Author** | `energo-ts-test.md` | `energo-ts-test` | API specs under `EnergoTS/src/tests/`. |
 | **Playwright Test Validator** | `playwright-test-validator.md` | `playwright-test-validator` | API spec vs test cases quality gate. |
 | **Playwright Frontend** | `.claude/commands/playwright-frontend.md` | `.claude/procedures/playwright-frontend/procedure.md` | Rule 45. User entry is `/playwright-frontend` only. Not a subagent. |
+| **EnergoTS cursorMerged Sync** | `energo-ts-sync.md` | `energo-ts-sync` | Cherry-pick new `staging` and `cursor` commits onto `cursorMerged` (`/sync-cursormerged`). Asks before push. |
+| **Reg Fixer** | `reg-fixer.md` | `reg-fixer` | Slash command `/reg-fixer` only. Triage the merged-reports zip: class and root cause per failed case; known-bug marks and test fixes on EnergoTS `staging` after approval. |
 | **EnergoTS Run** | `energo-ts-run.md` | `energo-ts-run` | Rule 36: run Playwright on `cursor`, `staging`, or `cursorMerged`. |
 | **Test Runner** | `test-runner.md` | — | Run tests; consult PhoenixExpert first. |
 | **Database Query** | `database-query.md` | `phoenix-database` | Official psql via `psql-phoenix.py`; correct env. |
