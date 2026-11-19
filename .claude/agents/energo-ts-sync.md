@@ -49,8 +49,8 @@ description: >-
 - Never stash, reset, or discard the user's uncommitted work. If it is in the way, stop and ask.
 - Never resolve a conflict by taking one whole side without reading both.
 - Never replace a `cursorMerged` shared file (`cursor-test.fixtures.ts`, `shared/*`, `src/backend/**`) with the `cursor` version. The picked file adapts to `cursorMerged`.
-- Do not commit the adaptation or offer to push while `-Adapt` or `-Check` still reports something for the synced files.
-- **Never push without asking.** After a local sync, ask the user before `git push origin cursorMerged`. Never force-push.
+- Do not commit the adaptation while `-Adapt` or `-Check` still reports something for the synced files.
+- **Never push `cursorMerged`** (Rule ENERGOTS.1), not even when the user says yes. After a local sync, report how many commits the branch is ahead of `origin/cursorMerged`; the user pushes it. Never force-push.
 - If the script finds no watermark for a source, stop and ask which commit was last brought over. Do not guess.
 - English output for anything written to disk, including commit messages (Rule 0.7).
 

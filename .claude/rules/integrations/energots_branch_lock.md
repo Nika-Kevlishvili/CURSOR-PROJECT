@@ -1,5 +1,5 @@
 ---
-description: "EnergoTS (Cursor-Project/EnergoTS) git branch lock (Rule ENERGOTS.0): use the `cursor`, `staging`, or `cursorMerged` branch. Do not checkout main or any other branch. Do not auto-sync from main unless the user explicitly asks. File writes under EnergoTS are allowed when the user requests them (Rule 0.8). Playwright authoring uses the post-merge src/tests layout."
+description: "EnergoTS (Cursor-Project/EnergoTS) git branch lock (Rule ENERGOTS.0): use the `cursor`, `staging`, or `cursorMerged` branch. Do not checkout main or any other branch. Do not auto-sync from main unless the user explicitly asks. Never push cursorMerged to origin (Rule ENERGOTS.1). File writes under EnergoTS are allowed when the user requests them (Rule 0.8). Playwright authoring uses the post-merge src/tests layout."
 paths:
   - "Cursor-Project/EnergoTS/**"
   - ".claude/agents/energo-ts-run.md"
@@ -35,8 +35,17 @@ Playwright authoring and runs for the current EnergoTS tree MUST see `testDir: '
 
 ### Allowed vs prohibited
 
-- **Allowed on EnergoTS:** All git ops while already on `cursor`, `staging`, or `cursorMerged`; switching **to** one of those three branches when the user asks; merging `main` into the current allowed branch only after an explicit user request.
+- **Allowed on EnergoTS:** All git ops while already on `cursor`, `staging`, or `cursorMerged`, except pushing `cursorMerged` (Rule ENERGOTS.1); switching **to** one of those three branches when the user asks; merging `main` into the current allowed branch only after an explicit user request.
 - **Prohibited:** `git checkout` / `switch` to any branch other than `cursor`, `staging`, or `cursorMerged`; `checkout -b` new branches; any proactive sync with `main` without an explicit request; switching from `cursorMerged` to `cursor` during Playwright work.
+
+## Rule ENERGOTS.1: Never push cursorMerged [BLOCK]
+
+**Claude Code MUST NEVER push `cursorMerged` to `origin`** (or any other remote). This is a project-owner decision (2026-11-19). It holds even when the user says yes to a push in chat, and for every workflow, including **energo-ts-sync**, **reg-fixer**, **energo-ts-test**, and **playwright-frontend**.
+
+- Forbidden: `git push` while on `cursorMerged`, `git push origin cursorMerged`, any refspec that updates `refs/heads/cursorMerged` on a remote (for example `HEAD:cursorMerged`), `--force` / `--force-with-lease` variants, `--all` / `--mirror`, and pushing through another tool or script.
+- Commit on `cursorMerged` locally when the user asks. Then stop and tell the user the branch is ahead of `origin/cursorMerged` by N commits; the user pushes it themselves.
+- Do not offer to push `cursorMerged`, and do not put a push button or question in the wrap-up.
+- Pushing `cursor` or `staging` is not covered by this rule; it still needs the user's explicit request.
 
 ### Before git branch ops under EnergoTS
 
@@ -52,8 +61,8 @@ Hooks **`block-energots-branch-switch.ps1`** (`PreToolUse (Bash)`) and **`block-
 
 - **Rule 0.8:** On `cursor`, `staging`, or `cursorMerged`, user-requested edits under `Cursor-Project/EnergoTS/**` are allowed, including page objects, fixtures, helpers, and frontend tests.
 - **Rule 45:** **playwright-frontend** and **playwright-frontend-validator** may run only when EnergoTS is already on `cursorMerged`. They must not checkout or switch, including to `cursor` or `staging`.
-- **energo-ts-sync:** `cursorMerged` receives new `staging` and `cursor` commits by cherry-pick through `.claude/commands/sync-cursormerged.ps1` (`.claude/skills/energo-ts-sync/SKILL.md`). That workflow stays on `cursorMerged`, reads `origin/staging` and `origin/cursor` without checking them out, never merges or rebases them in, and asks the user before `git push`.
+- **energo-ts-sync:** `cursorMerged` receives new `staging` and `cursor` commits by cherry-pick through `.claude/commands/sync-cursormerged.ps1` (`.claude/skills/energo-ts-sync/SKILL.md`). That workflow stays on `cursorMerged`, reads `origin/staging` and `origin/cursor` without checking them out, never merges or rebases them in, and never pushes (Rule ENERGOTS.1); the user pushes `cursorMerged` themselves.
 - **reg-fixer:** writes to EnergoTS on `staging` only. When the checkout is on another allowed branch, it switches to `staging` by itself if `git status --porcelain` is empty, and stops and asks when there are uncommitted changes. It never stashes, commits or discards to get there. This is a project-owner decision (2026-11-18) and applies to that workflow only (`.claude/skills/reg-fixer/SKILL.md` Step 8).
 - Phoenix/other repos: **not** covered by this rule. Phoenix stays read-only.
 
-**Violation of ENERGOTS.0 is a BLOCK.**
+**Violation of ENERGOTS.0 or ENERGOTS.1 is a BLOCK.**

@@ -18,6 +18,7 @@ QA workspace for the Phoenix platform. `Cursor-Project/Phoenix/*` holds the prod
 
 - Never edit anything under `Cursor-Project/Phoenix/` (Rule 0.8). Switch Phoenix branches only with `.claude/commands/switch-phoenix-branches.ps1`.
 - `Cursor-Project/EnergoTS` stays on `cursor`, `staging` or `cursorMerged` (Rule ENERGOTS.0).
+- Never push EnergoTS `cursorMerged` to `origin`, even when the user says yes. Commit locally and let the user push (Rule ENERGOTS.1, rule only, no hook).
 - Jira: official `acli jira workitem view` and `search` only, search with `--jql` and `--limit` of 50 or less. No Jira or Confluence MCP, no Rovo or Teamwork Graph commands (ATLASSIAN.0).
 - Confluence: read-only through `Cursor-Project/config/confluence/get-confluence-page-rest.ps1` and `search-confluence-cql-rest.ps1`.
 - PostgreSQL: `python3 Cursor-Project/scripts/psql-phoenix.py` only, never the bare client or a PostgreSQL MCP. Ask the environment first (DB.0a). `prod`, `es`, `slr` are read-only.
@@ -47,7 +48,7 @@ These load automatically when a matching file is read. Read the file yourself wh
 - `.claude/rules/integrations/confluence_rest_fallback.md` — Confluence reads use Cloud REST GET scripts only. Confluence MCP is forbidden. See atlassian_zero_cost.md
 - `.claude/rules/integrations/database_workflow.md` — PostgreSQL via official psql (psql-phoenix.py)
 - `.claude/rules/integrations/elasticsearch_workflow.md` — Elasticsearch log search via the official Elastic CLI (elastic-phoenix.py). Read-only. Rule ES.0
-- `.claude/rules/integrations/energots_branch_lock.md` — EnergoTS (Cursor-Project/EnergoTS) git branch lock (Rule ENERGOTS.0): use the `cursor`, `staging`, or `cursorMerged` branch
+- `.claude/rules/integrations/energots_branch_lock.md` — EnergoTS (Cursor-Project/EnergoTS) git branch lock (Rule ENERGOTS.0): use the `cursor`, `staging`, or `cursorMerged` branch; never push `cursorMerged` (Rule ENERGOTS.1)
 - `.claude/rules/integrations/jira_bug_agent.md` — Jira bug agent — Experiments board only; never Phoenix delivery bugs. Rule JIRA.0
 - `.claude/rules/integrations/jira_rest_fallback.md` — Jira reads use official ACLI only. Jira MCP and hand-written issue GET are not the path. See atlassian_zero_cost.md
 - `.claude/rules/integrations/phoenix_branch_switching.md` — Phoenix branch switching (Rule PHOENIX-SWITCH.0): align Cursor-Project/Phoenix/* repos to origin/<branch> before env-sensitive code reads

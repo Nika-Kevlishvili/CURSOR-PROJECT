@@ -1,6 +1,6 @@
 ---
 name: energo-ts-sync
-description: Keeps the EnergoTS cursorMerged branch up to date with staging and cursor by cherry-pick. Finds the last staging and cursor commits already on cursorMerged, cherry-picks the commits after them, then fits everything that came from cursor to the cursorMerged architecture (folders, imports, shared helpers, types), verifies, and asks before pushing. Use when the user asks to sync or update cursorMerged, move staging or cursor commits to cursorMerged, or asks what is missing there.
+description: Keeps the EnergoTS cursorMerged branch up to date with staging and cursor by cherry-pick. Finds the last staging and cursor commits already on cursorMerged, cherry-picks the commits after them, then fits everything that came from cursor to the cursorMerged architecture (folders, imports, shared helpers, types), verifies, and stops without pushing (the user pushes cursorMerged). Use when the user asks to sync or update cursorMerged, move staging or cursor commits to cursorMerged, or asks what is missing there.
 ---
 
 # EnergoTS cursorMerged sync
@@ -93,7 +93,7 @@ To give up on one commit: `git cherry-pick --skip`, then pass `-Exclude <sha>` o
 
 ### 5. Fit everything to the cursorMerged architecture [MANDATORY]
 
-A sync is not finished when the picks apply. `cursor` and `cursorMerged` are different codebases now, so every picked commit, and above all every cursor commit, must be fitted to the `cursorMerged` tree before the work is reported or pushed. Staging shares the layout, so it usually needs nothing, but the same checks run for it.
+A sync is not finished when the picks apply. `cursor` and `cursorMerged` are different codebases now, so every picked commit, and above all every cursor commit, must be fitted to the `cursorMerged` tree before the work is reported. Staging shares the layout, so it usually needs nothing, but the same checks run for it.
 
 **How the two branches differ**
 
@@ -181,7 +181,7 @@ Fitting changes where code lives and what it imports, calls and is typed against
 4. Every "Review" item is settled or reported to the user.
 5. `git status` shows no file in a pre-merge folder and no run log in the root.
 
-Do not commit the adaptation, report success, or offer to push before all five hold. If one cannot be met, say which and why.
+Do not commit the adaptation or report success before all five hold. If one cannot be met, say which and why.
 
 ### 6. Closing commit
 
@@ -198,19 +198,13 @@ Synced-cursor: <sha printed by the script>
 
 When there is nothing to adapt, make this commit only if the script printed `Marker needed: YES` (the newest commit of a source was skipped or excluded, so nothing records it). In that case use `git commit --allow-empty` with a subject such as `Sync marker: cursorMerged is up to date with staging and cursor` and the same trailers.
 
-### 7. Report, then ask before pushing
+### 7. Report. Never push
 
 Run the plan once more. It must report both sources as up to date.
 
 Report in chat: commits picked per source, commits skipped and why, each conflict and how it was resolved, what the adaptation changed (files moved, imports rewritten, type fits and where), the `-Check` and `--list` results, and anything left for the user or for **energo-ts-test**.
 
-Then ask the user whether to push. On yes:
-
-```bash
-git push origin cursorMerged
-```
-
-Never force-push. If the push is rejected because the remote moved, run the workflow again from step 1.
+Then tell the user how many commits `cursorMerged` is ahead of `origin/cursorMerged`. Do not push and do not offer to push: Claude Code never pushes `cursorMerged` (Rule ENERGOTS.1). The user pushes it themselves. If the remote has moved by the next sync, run the workflow again from step 1.
 
 ## Script reference
 
@@ -242,7 +236,7 @@ Never force-push. If the push is rejected because the remote moved, run the work
 - Stay on `cursorMerged`. No checkout of `cursor` or `staging`, no new branches (Rule ENERGOTS.0).
 - No merge or rebase of `staging` or `cursor` into `cursorMerged`. Cherry-pick only.
 - No stash, no reset, no discard of the user's work.
-- No push without the user's yes in this conversation. No force-push.
+- Never push `cursorMerged`, even when the user says yes (Rule ENERGOTS.1). No force-push.
 - Never sync from `main` here.
 - Commit messages in English (Rule 0.7).
 

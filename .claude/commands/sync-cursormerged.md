@@ -9,7 +9,7 @@ Keep the EnergoTS `cursorMerged` branch up to date with `staging` and `cursor`.
 **Usage:** `/sync-cursormerged` or `/sync-cursormerged plan`
 
 - `plan` (or "what is pending"): show what would be cherry-picked. Nothing is changed.
-- No argument: plan, cherry-pick, adapt, verify, then ask before pushing.
+- No argument: plan, cherry-pick, adapt, verify, then report. Never pushes (Rule ENERGOTS.1).
 
 ## What this command does
 
@@ -41,7 +41,7 @@ Follow `.claude/skills/energo-ts-sync/SKILL.md` (agent: `.claude/agents/energo-t
    ```
 
    Fix every type error in the synced files, read each picked file against the layout rules, confirm `npx playwright test --list` loads the new specs, then commit the adaptation.
-7. Report, and ask before `git push origin cursorMerged`.
+7. Report, including how many commits `cursorMerged` is ahead of `origin/cursorMerged`. Never push it (Rule ENERGOTS.1); the user pushes it themselves.
 
 ## What the script does
 

@@ -741,7 +741,7 @@ try {
 
         $null = Invoke-Adaptation
         Say ''
-        Say "Nothing was pushed. Next: run this script with -Check, finish the adaptation (SKILL step 5), commit it, then ask the user before 'git push'."
+        Say "Nothing was pushed. Next: run this script with -Check, finish the adaptation (SKILL step 5), commit it. Never push cursorMerged (Rule ENERGOTS.1); the user pushes it."
     }
     exit $exitCode
 }
